@@ -22,3 +22,4 @@ class Element extends XHTMLElement {
   }
 
 }
+
