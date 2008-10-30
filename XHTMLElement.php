@@ -7,7 +7,7 @@ class XHTMLElement extends simpleXmlElement {
   }
 
   function getElementsByTagName($tag){
-    $list = $this->xpath("//$tag");
+    $list = $this->xpath("descendant::$tag");
     return $list;
   }
 
