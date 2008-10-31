@@ -21,5 +21,27 @@ class Element extends XHTMLElement {
     return $parsed ? Selectors_Utils::filter($this, $parsed, array() ):true;
   }
 
+  function clean(){
+    $c=0; $name = $this->getName();
+    foreach ($this->getParent()->$name as $node) {
+        if($node == $this) {
+            unset($this->getParent()->tr[$c]);
+            return false;
+        } $c++;
+    }
+  }
+
+  function get($key){
+    if($key=="text") {
+        $str = "";
+        return dom_import_simplexml($this)->textContent;
+    }else {
+
+        return (string)$this[$key];
+
+    }
+
+  }
 }
+
 

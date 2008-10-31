@@ -39,8 +39,8 @@ class Selectors_Utils {
   }
 
   static function parseTagAndID($selector){
-    $tag = preg_filter(Selectors::$RegExps['tag'], $selector);
-    $id  = preg_filter(Selectors::$RegExps['id'], $selector);
+    $tag = preg_reduce(Selectors::$RegExps['tag'], $selector);
+    $id  = preg_reduce(Selectors::$RegExps['id'], $selector);
     return array($tag?$tag:'*', $id?$id:false);
   }
 

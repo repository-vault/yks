@@ -11,8 +11,8 @@ class XHTMLElement extends simpleXmlElement {
     return $list;
   }
 
-  function getParent(){
-    return current($this->xpath(".."));
+  function getParent($tag=false){
+    return end($this->xpath($tag?"ancestor::$tag":".."));
   }
 
 }
