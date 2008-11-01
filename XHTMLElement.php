@@ -14,7 +14,12 @@ class XHTMLElement extends simpleXmlElement {
   function getParent($tag=false){
     return end($this->xpath($tag?"ancestor::$tag":".."));
   }
-
+  function nextSibling(){
+    return current($this->xpath("following-sibling::*"));
+  }
+  function previousSibling(){
+    return end($this->xpath("preceding-sibling::*"));
+  }
 }
 
 

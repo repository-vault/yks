@@ -9,6 +9,34 @@ class Selectors_Utils {
     return false;
   }
 
+
+  static function parseNthArgument($argument){
+    preg_match('#^([+-]?\d*)?([a-z]+)?([+-]?\d*)?$#', $argument, $parsed);
+    if(!$parsed) return false;
+    $a = is_numeric($inta = $parsed[1])?$inta:1;
+    $special = $parsed[2];
+    $b = (int) $parsed[3];
+
+    if($a) {
+        $b--;
+        while($b<1) $b+=$a;
+        while($b>=$a)$b-=$a;
+    } else {
+        $a = $b;
+        $special  = "index";
+    }
+    switch($special) {
+        case 'n'    : $parsed = array('a'=>$a,  'b'=>$b, 'special'=> 'n'); break;
+        case 'odd'  : $parsed = array('a'=>2,   'b'=>0,  'special'=> 'n'); break;
+        case 'even' : $parsed = array('a'=>2,   'b'=>1,  'special'=> 'n'); break;
+        case 'first': $parsed = array('a'=>0,   'special'=> 'index'); break;
+        case 'last' : $parsed = array('special'=>'last-child'); break;
+        case 'only' : $parsed = array('special'=>'only-child'); break;
+        default     : $parsed = array('a'=>      $a - 1, 'special'=> 'index');
+    }
+    return $parsed;
+  }
+
   static function parseSelector($selector){
     $parsed = array(
         'classes'=> array(),
@@ -22,7 +50,9 @@ class Selectors_Utils {
         if($cn) {
             $parsed['classes'][] = $cn;
         } elseif($pn) {
-            //todo
+            $parser = Selectors_Pseudo::resolve($pn);
+            if ($parser) $parsed['pseudos'][] = array('parser'=>$parser, 'argument'=>$pa);
+            else $parsed['attributes'][] = array('name'=> $pn, 'operator'=> '=', 'value'=>$pa);
         } elseif($an) {
             $parsed['attributes'][] = array(
                 'name'=>$an,
@@ -54,8 +84,10 @@ class Selectors_Utils {
         foreach($parsed['attributes'] as $att)
             if(!Selectors_Filters::byAttribute($item, $att['name'],  $att['operator'],  $att['value']))
                 return false;
-    if($parsed['pseudo'])
-        return false; //todo
+    if($parsed['pseudos'])
+        foreach($parsed['pseudos'] as $psd )
+            if (!Selectors_Filters::byPseudo($item, $psd['parser'], $psd['argument'], $psd['local']))
+                return false;
 
     return true;
   }
@@ -94,7 +126,9 @@ class Selectors_Utils {
         $parsed = Selectors_Utils::parseSelector($selector);
         if($parsed) {
             $filtered = array();
-            foreach($items as $item) if (Selectors_Utils::filter($item, $parsed, $local)) $filtered[] = $item;
+            foreach($items as $item)
+                if (Selectors_Utils::filter($item, $parsed, $local))
+                    $filtered[] = $item;
             $items = $filtered;
 
         }

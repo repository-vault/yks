@@ -15,7 +15,8 @@ class Selectors_Filters {
   }
 
   static function byPseudo($self, $parser, $argument, $local) {
-    Selectors_Pseudo::$parser($self, $argument, $local);
+    $parser = Selectors_Pseudo::resolve($parser);
+    return Selectors_Pseudo::$parser($self, $argument, $local);
   }
 
   static function byAttribute($self, $name, $operator, $value) {

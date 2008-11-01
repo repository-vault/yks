@@ -25,7 +25,7 @@ class Element extends XHTMLElement {
     $c=0; $name = $this->getName();
     foreach ($this->getParent()->$name as $node) {
         if($node == $this) {
-            unset($this->getParent()->tr[$c]);
+            unset($this->getParent()->{$name}[$c]);
             return false;
         } $c++;
     }
