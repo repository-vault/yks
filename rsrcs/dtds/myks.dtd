@@ -1,0 +1,46 @@
+<!ENTITY % MYKSEntities PUBLIC "-//YKS//MYKSEntities" "sql_entities.dtd">
+%MYKSEntities;
+<!ENTITY % MYKSProcedures PUBLIC "-//YKS//MYKSProcedures" "sql_procedures.dtd">
+<!ENTITY % MYKSViews PUBLIC "-//YKS//MYKSViews" "sql_views.dtd">
+
+<!ELEMENT myks (mykse|table|procedure|view)+>
+
+<!ELEMENT mykse ( description?,(%mykses;)?)>
+
+<!ELEMENT table ( description?, fields+)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT def (#PCDATA)>
+
+<!ATTLIST table
+  name	CDATA	#REQUIRED
+  %block;
+>
+<!ENTITY % fk_actions "(cascade|set_null|no_action)">
+
+<!ELEMENT fields (field+)>
+
+<!ELEMENT field EMPTY>
+<!ATTLIST field
+  type	CDATA	#REQUIRED
+  name	CDATA	#IMPLIED
+  key   CDATA  #IMPLIED
+  extra (auto_increment) #IMPLIED
+  default CDATA	#IMPLIED
+  update %fk_actions; 'cascade'
+  delete %fk_actions; 'no_action'
+  defer (defer|strict) 'defer'
+>
+
+
+<!ATTLIST mykse
+  type  CDATA	#REQUIRED
+  birth	CDATA	#IMPLIED
+  default CDATA	#IMPLIED
+  %null;
+  %block;
+>
+
+
+%MYKSProcedures;
+%MYKSViews;
+

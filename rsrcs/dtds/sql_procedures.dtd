@@ -1,0 +1,14 @@
+<!ELEMENT procedure (param*, def)>
+<!ELEMENT param EMPTY>
+
+
+
+<!ATTLIST param 
+  name	CDATA	#IMPLIED
+  type	CDATA	#REQUIRED
+>
+
+<!ATTLIST procedure
+  name	CDATA	#REQUIRED
+  type CDATA #REQUIRED
+>
