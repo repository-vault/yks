@@ -180,7 +180,7 @@ class sql {
 }
   static function unfix($str){ return preg_replace(self::$pfx['search'],self::$pfx['replace'],$str);}
   static function unquote($key){ return trim(sql::unfix("`$key`"),'"'); }
-  static function in_join($field,$vals){ return "$field IN('".join("','",$vals)."')"; }
+  static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }
   static function rows($lnk=false){ return  pg_num_rows($lnk?$lnk:self::$result); }

@@ -112,7 +112,8 @@ class sql {
 
   static function delete($table,$where,$extras=''){
     if(!$where) return false;
-    return sql::query("DELETE FROM `$table` ".sql::where($where)." $extras");
+    $query = "DELETE FROM `$table` ".sql::where($where)." $extras";
+    return sql::query($query);
   }
 
   static function select($table,$where='TRUE',$cols="*",$extra=''){

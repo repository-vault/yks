@@ -84,7 +84,7 @@ class table extends table_base {
         foreach($this->keys_sql_def as $key=>$def){
 		if($this->keys_xml_def[$key] != $def){
                         if($def['type']=="PRIMARY") $drop = "$table_alter DROP PRIMARY KEY";
-			else $drop = "$table_alter DROP CONSTRAINT \"$key\"";
+			else $drop = "$table_alter DROP INDEX `$key`";//TODO
                         array_unshift($todo, $drop );
                 } else unset($this->keys_xml_def[$key]);
         }

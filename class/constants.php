@@ -34,7 +34,7 @@ define('TYPE_CSS',"Content-Type: text/css;");
 define('TYPE_PNG',"Content-Type: image/png;");
 define('TYPE_JPEG',"Content-Type: image/jpeg;");
 define('TYPE_ZIP',"Content-Type: application/zip;");
-define('TYPE_JS',"Content-Type: application/x-javascript");
+define('TYPE_JS',"Content-Type: application/x-javascript; charset=utf-8");
 define('TYPE_FILE', "Content-type: application/octet-stream");
 define('TYPE_PDF', "Content-type:application/pdf");
 define('TYPE_CSV',"Content-type: application/vnd.ms-excel");
