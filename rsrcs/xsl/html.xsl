@@ -42,13 +42,15 @@
 	</script>
   </xsl:template>
 
+
   <xsl:template match="domready">
-	<script type='text/javascript'>window.addEvent('domready',function(){
+        <xsl:variable name='id' select="concat('script_', count(ancestor::*), '_', count(preceding::*))"/>
+	<script type='text/javascript' id='{$id}'>window.addEvent('domready',function(){
 	<xsl:choose>
 		<xsl:when test="@src">new Asset.javascript("<xsl:value-of select="@src"/>",{ onload:function(){ <xsl:apply-templates /> } });</xsl:when>
 		<xsl:otherwise><xsl:apply-templates /></xsl:otherwise>
 	</xsl:choose>
-	}.bind(Doms.context));</script>
+	}.bind(<xsl:choose><xsl:when test="/*/@jsx">Doms.context</xsl:when><xsl:otherwise>$('<xsl:value-of select="$id"/>')</xsl:otherwise></xsl:choose>));</script>
 	
   </xsl:template>
 

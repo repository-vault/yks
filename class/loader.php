@@ -31,7 +31,8 @@ include "$class_path/zero_functions.php";
 
 $config_file="$config_path/$host.xml";
 
-if(!is_file($config_file)) die("Unable to load config file <b>$config_file</b>");
+if(!is_file($config_file))
+    die("Unable to load config file <b>".basename($config_file)."</b>");
 
 
 $config = config::load($config_file);
