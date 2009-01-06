@@ -24,31 +24,31 @@
             <xsl:call-template name="box_attribute"/>
 
             <tr class='{$theme}_u'>
-            <td class='{$theme}_lu'> </td>
+            <td class='{$theme}_lu'>&#160;</td>
             <td class='{$theme}_mu'><xsl:apply-templates select='mu/node()'/>
 
     <xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme};{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if>
 
             </td>
-            <td class='{$theme}_ru'> </td>
+            <td class='{$theme}_ru'>&#160;</td>
           </tr>
           <tr>
-            <td class='{$theme}_lm'><xsl:apply-templates select='lm/*'/></td>
+            <td class='{$theme}_lm'><xsl:apply-templates select='lm/*'/>&#160;</td>
             <td class='inner {$theme}_mm'><xsl:apply-templates/></td>
             <td class='{$theme}_rm'>
             <xsl:if test="contains(@options,'close')">
-            <div class='{$theme}_close'> </div>
+            <div class='{$theme}_close'>&#160;</div>
             </xsl:if>
             <xsl:if test="contains(@options,'reload')">
-            <div class='{$theme}_reload'> </div>
+            <div class='{$theme}_reload'>&#160;</div>
             </xsl:if>
-            <xsl:apply-templates select='rm/*'/>
+            <xsl:apply-templates select='rm/*'/>&#160;
             </td>
           </tr>
           <tr>
-            <td class='{$theme}_ld'> </td>
-            <td class='{$theme}_md'><xsl:apply-templates select='md/node()'/></td>
-            <td class='{$theme}_rd'> </td>
+            <td class='{$theme}_ld'>&#160;</td>
+            <td class='{$theme}_md'><xsl:apply-templates select='md/node()'/>&#160;</td>
+            <td class='{$theme}_rd'>&#160;</td>
           </tr>
         </table>
     </xsl:when>
