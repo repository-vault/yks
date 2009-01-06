@@ -24,13 +24,13 @@
             <xsl:call-template name="box_attribute"/>
 
             <tr class='{$theme}_u'>
-            <td class='{$theme}_lu'/>
-            <td class='{$theme}_mu'><xsl:apply-templates select='mu/node()'/>
+            <td class='{$theme}_lu'> </td>
+            <td class='{$theme}_mu'><xsl:apply-templates select='mu/node()'> </td>
 
     <xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme};{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if>
 
             </td>
-            <td class='{$theme}_ru'/>
+            <td class='{$theme}_ru'> </td>
           </tr>
           <tr>
             <td class='{$theme}_lm'><xsl:apply-templates select='lm/*'/></td>
@@ -46,9 +46,9 @@
             </td>
           </tr>
           <tr>
-            <td class='{$theme}_ld'/>
+            <td class='{$theme}_ld'> </td>
             <td class='{$theme}_md'><xsl:apply-templates select='md/node()'/></td>
-            <td class='{$theme}_rd'/>
+            <td class='{$theme}_rd'> </td>
           </tr>
         </table>
     </xsl:when>
