@@ -7,6 +7,8 @@ $class_path=dirname(__FILE__);
 $host=$_SERVER['SERVER_NAME'];
 
 define('YKS_PATH', realpath("$class_path/.."));
+define('EXYKS_PATH', dirname(realpath($_SERVER['SCRIPT_FILENAME'])));
+
 $root_path=dirname($_SERVER['SCRIPT_FILENAME']);
 
 if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
@@ -47,10 +49,11 @@ $default=ROBOT||IPOD?"html":DEFAULT_MODE;
 $screen_id=$_SERVER['HTTP_SCREEN_ID'];
 
 preg_match("#^([a-z]+)/([a-z]+)#",$_SERVER['HTTP_ACCEPT'],$accept);
-list($accept,$accept_main,$accept_spec)=$accept;
+list($accept, $accept_main, $accept_spec) = $accept;
 
 if($screen_id || $_POST['jsx'])$mode="jsx";
 else $mode=$default;
+$screen_id = 10;
 
 define('MODE', $mode);
 define('JSX', MODE=="jsx");

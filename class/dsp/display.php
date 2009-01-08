@@ -72,12 +72,21 @@ class dsp{
     return "<a href='mailto:".mailto_escape($str).$subject."'>$name</a>";
   }
 
+    //find doc in the manual
+  static function element_truncate($str, $len, $element, $alternative=false){
+    $empty = !((bool)trim($str)); $truncated = truncate($str, $len);
+    if($empty && $alternative) $truncated = $alternative;
+    $element_name = preg_reduce('#([^\s]+)#', $element);
+    $title = !$empty && $truncated!=$str?" title=\"$str\"":'';
+    return "<{$element}{$title}>$truncated</$element_name>";
+  }
   static function dd($data,$opts=false){
     if(!is_array($opts))$opts=array('selected'=>array($opts));
     $selected=$opts['selected']; if(!is_array($selected))$selected=array($selected);
     $mykse=$opts['mykse'];$col=$opts['col'];if(!$col)$col="value";
+    if(!$data) $data = array();
     $list=!is_array($data)?array_combine(
-            $list=self::resolve($GLOBALS['types_xml'],$data),
+            $list=self::resolve(yks::$get->types_xml,$data),
             array_mask($list,"&$data.%s;")):$data;
 
     $options="";$pad=$opts['pad']?$opts['pad']:"&#160;&#160;";

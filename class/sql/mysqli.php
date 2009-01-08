@@ -16,7 +16,7 @@ class sql {
    static public $log=true;
 
   static function &connect($lnk=false){
-    if(!self::$servs) self::$servs=&$GLOBALS['config']->sql;
+    if(!self::$servs) self::$servs=&yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
     if(self::$servs->prefixs) foreach(self::$servs->prefixs->attributes() as $prefix=>$trans){
         self::$pfx['search'][]="#`{$prefix}_([a-z0-9_-]+)`#";

@@ -5,6 +5,7 @@
 */
 
  include "sess.php";
- include "auth_restricted_ip.php";
- include "auth_password.php";
+ include "interfaces/restricted_ip.php";
+ include "interfaces/password.php";
  include "auth.php";
+ include "security_manager.php";

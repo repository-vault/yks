@@ -3,7 +3,9 @@
 class yks_list {
   public $href;
   public $target;
-  public $table_name;
+  public $tables_name;
+  private $tables_xml;
+
   private $filters;
   public $results;
   public $table_index;
@@ -14,25 +16,27 @@ class yks_list {
 
 
   function __sleep(){
-    $this->table_xml = $this->table_xml->asXML();
-    return array('results','table_name','href','target','table_index','table_xml','results_nb','filters','order_by');
+    foreach($this->tables_xml as $table_name=>$table_xml)
+        $this->tables_xml[$table_name] = $table_xml->asXML();
+
+    $unexport = array( 'by', 'page_id');
+    $me = new ReflectionObject($this); $props = array();
+    foreach($me->getProperties() as $prop)
+        $props[] = $prop->name;
+    return array_diff($props, $unexport);
   }
+
   function __wakeup(){
-    $this->table_xml = simplexml_load_string($this->table_xml);
+    foreach($this->tables_xml as $table_name=>$table_xml_str)
+        $this->tables_xml[$table_name] = simplexml_load_string($table_xml_str);
   }
 
   function __construct($table_name, $filters = true){
 
-    $this->table_name = $table_name;
+    $this->tables_set($table_name);
 
-        //retourne le nom de la clée primaire de la table
-
-    $types = yks::$get->types_xml;
-    $xpath  ="//*[@birth='{$this->table_name}']";
-    $this->table_index=current($types->xpath($xpath))->getName();
-    $this->table_xml = yks::$get->tables_xml->$table_name;
-
-    if(!$filters['filter_context']) $filters['filter_context'] = array();
+    if(!$filters['filter_context'])
+        $filters['filter_context'] = array();
     $this->filters = $filters;
 
     $this->order_by($this->table_index);
@@ -40,7 +44,27 @@ class yks_list {
     $this->filters_apply($this->filters['filter_initial']);
 
   }
- 
+
+  function tables_set($table_name){
+        //table_name est une liste de table
+    if(!is_array($table_name))
+        $table_name = array($table_name);
+    $this->tables_name = $table_name;
+    $table_name = reset($this->tables_name);
+
+        //retourne le nom de la clée primaire de la table
+        //on ne s'interesse qu'à la premiere table ici
+    $types = yks::$get->types_xml;
+    $xpath  ="//*[@birth='$table_name']";
+    $this->table_index=current($types->xpath($xpath))->getName();
+    $this->tables_xml = array();
+
+    foreach($this->tables_name as $table_name){
+        $tmp = yks::$get->tables_xml->$table_name;
+        if($tmp) $this->tables_xml[$table_name] = $tmp;
+    }
+  }
+
   function filters_apply($filters){
     if(!is_array($filters)) $filters = array();
     $this->filters['filters_results'] = array_merge($this->filters['filter_context'], $filters);
@@ -48,7 +72,7 @@ class yks_list {
   }
 
   function build_list(){
-    sql::select($this->table_name, $this->filters['filters_results'], $this->table_index);
+    sql::select($this->tables_name, $this->filters['filters_results'], $this->table_index);
     $liste = sql::brute_fetch(false, $this->table_index);
     $this->results = $liste;
     $this->results_nb = count($liste);
@@ -62,7 +86,7 @@ class yks_list {
     $order_by = $order_by?"ORDER BY ".join(',', $order_by):'';
     $filters = array( $this->table_index=> $this->results);
     $start = $this->page_id * $this->by;
-    sql::select($this->table_name,  $filters, "*", "$order_by LIMIT $this->by OFFSET $start");
+    sql::select($this->tables_name,  $filters, "*", "$order_by LIMIT $this->by OFFSET $start");
     return sql::brute_fetch($this->table_index);
     
   }

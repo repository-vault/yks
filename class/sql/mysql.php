@@ -14,7 +14,7 @@ class sql {
    static private $lnks=array();
 
   static function &connect($lnk=false){
-	if(!self::$servs) self::$servs=&$GLOBALS['config']->sql;
+	if(!self::$servs) self::$servs=&yks::$get->config->sql;
 
 	foreach(self::$servs->prefixs->attributes() as $prefix=>$trans){
 		self::$pfx['search'][]="#`$prefix(_[a-z0-9_-]+)`#";

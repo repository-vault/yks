@@ -67,8 +67,10 @@ function array_step($array,$val,$way=1,$loop=true){
     return $array[$loop?(($tmp+count($array))%count($array)):$tmp];
 }
 
-function preg_areplace($tmp,$str){ return preg_replace(array_keys($tmp),array_values($tmp),$str); }
-function preg_clean($filter,$txt,$rem='^'){ return preg_replace("#[{$rem}{$filter}]#i",'',$txt); }
+function preg_areplace($tmp, $str){ return preg_replace(array_keys($tmp),array_values($tmp),$str); }
+function preg_clean($filter, $str,$rem='^'){ return preg_replace("#[{$rem}{$filter}]#i",'',$str); }
+function preg_reduce($mask, $str){ preg_match($mask, $str, $out); return $out[1]; }
+
 function array_sort($array,$keys){
     $keys = is_array($keys)?$keys:array_slice(func_get_args(),1);
     return array_intersect_key(array_merge($keys=array_flip($keys),$array),$keys,$array);
