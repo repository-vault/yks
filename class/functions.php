@@ -170,3 +170,10 @@ function array_reindex($array,$cols=array()){
 }
 
 
+function retrieve_constants($mask = "#.*?#", $format="{%s}"){
+    $tmp = get_defined_constants (true); $tmp = $tmp['user']; $constants = array();
+    foreach($tmp as $name=>$val)
+        if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;
+    return $constants;
+}
+

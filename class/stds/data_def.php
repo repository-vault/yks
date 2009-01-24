@@ -24,10 +24,7 @@ if($flag=="tables_xml"){
 if($flag=="entities"){
 	include_once "$class_path/dom/dtds.php";
 	$lang=$zone;if(!$lang)$lang=USER_LANG;
-
-        $constants=get_defined_constants (true);$constants=$constants['user'];
-        foreach($constants as $name=>$val) if(substr($name,0,5)=="FLAG_")unset($constants[$name]);
-        $constants=array_combine(array_mask(array_keys($constants),'&%s;'),array_values($constants));
+        $constants = retrieve_constants("#^(?!FLAG_)#", "&%s;");
 
         $dyn_entities = array();
         if($config->dyn_entities)

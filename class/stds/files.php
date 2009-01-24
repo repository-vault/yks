@@ -22,6 +22,12 @@ function load_constants_ini($file) {
   } 
 }
 
+function locate_file($file, $paths) {
+    foreach($paths as $path)
+        if(is_file($tmp = "$path/$file")) return $tmp;
+    return false;
+}
+
 
 /*
     Check if a file the user upload is fine to be used
