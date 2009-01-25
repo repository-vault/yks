@@ -9,11 +9,15 @@ class source {
     $code = (string)$node->getAttribute('code');
     $code = $code?$code:'php';
 
+    $file = (string) $node->getAttribute('file');
+    $text = $node->textContent;
+    if(is_file($file))
+        $text = file_get_contents($file);
 
     if($code == "xml")
-        $text = self::render_xml($node->textContent);
+        $text = self::render_xml($text);
     else {
-        $text = self::render_php($node->textContent);
+        $text = self::render_php($text);
     }
 
     $add = simplexml_load_string($text);

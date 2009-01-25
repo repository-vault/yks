@@ -8,7 +8,7 @@ class highlight_xml {
   private $inline_node=null;
 
   private $no_pad = array("script");
-  private $inline = array("br", "img", "span", "b", "a");
+  private $inline = array("br", "img", "span", "b", "a", "em");
   private $node_name;
 
   public  static function highlight($str){
@@ -17,8 +17,14 @@ class highlight_xml {
   }
 
   function parse($str){
+
+    $str = preg_replace("#<\?.*?\?>#", "<![CDATA[\\0]]>", $str);
+
     xml_parse($this->parser, $str);
-    return $this->contents;
+    $str = $this->contents;
+    $str = preg_replace("#<\?.*?\?>#", "<![CDATA[\\0]]>", $str);
+
+    return $str;
   }
 
   function __construct(){
