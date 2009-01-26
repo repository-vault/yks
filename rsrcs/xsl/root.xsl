@@ -15,6 +15,7 @@
 
 <xsl:output method="xml" cdata-section-elements="cdata" version="1.0"  encoding="utf-8" omit-xml-declaration="yes"  doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" "/>
 
+ <xsl:variable name="jsx" select="/*/@jsx"/>
 
   <xsl:template match="/">
 	<xsl:apply-templates/>

@@ -48,10 +48,11 @@ class yks
    ";" is not really the smartest args separator since escaped XML entities are in a &..; pattern,
     what conflict easily with ";" separator, we remplate it by | to split here
     fyi : $args=array_slice(preg_split("#(?<!.&lt|&amp|.&gt);#", ";$args_str;;;"),1); does the trick, but negative lookbehind assertions cannot have a variable length
+    //DONT CORRECT THIS TO SUPPORT &#160;, send proper %C2%A0 instead
 */
 
   static function prepare($url){
-    $tmp = htmlspecialchars(strtr(urldecode($url),';','|'),ENT_QUOTES,'utf-8');
+    $tmp = htmlspecialchars(strtr(urldecode($url),';','|'),ENT_QUOTES,'UTF-8');
     yks::$href_ks = strtr($tmp, '|', ';');
     yks::$is_script = substr(yks::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts
     $url_tree  = self::url_tokenize_single_slash($tmp);

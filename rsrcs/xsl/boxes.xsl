@@ -2,8 +2,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml">
 
 <xsl:template name="box_attribute">
-    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="//jsx/@jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if> <xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"> <xsl:value-of select="@theme"/>_table</xsl:if></xsl:attribute>
+    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if> <xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"> <xsl:value-of select="@theme"/>_table</xsl:if></xsl:attribute>
     <xsl:copy-of select="@style|@id|@src"/>
+
 </xsl:template>
 
   <xsl:template match="box">

@@ -50,7 +50,7 @@
 		<xsl:when test="@src">new Asset.javascript("<xsl:value-of select="@src"/>",{ onload:function(){ <xsl:apply-templates /> } });</xsl:when>
 		<xsl:otherwise><xsl:apply-templates /></xsl:otherwise>
 	</xsl:choose>
-	}.bind(<xsl:choose><xsl:when test="/*/@jsx">Doms.context</xsl:when><xsl:otherwise>$('<xsl:value-of select="$id"/>')</xsl:otherwise></xsl:choose>));</script>
+	}.bind(<xsl:choose><xsl:when test="$jsx">Doms.context</xsl:when><xsl:otherwise>$('<xsl:value-of select="$id"/>')</xsl:otherwise></xsl:choose>));</script>
 	
   </xsl:template>
 
