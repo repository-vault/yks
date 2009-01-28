@@ -55,7 +55,7 @@ $accept_hash = md5($base);
 unset($_SESSION['langs'][$accept_hash]);
 if(!$user_lang = $_SESSION['langs'][$accept_hash]) {
     include "detect_lang.php";
-    $langs=vals($types_xml->lang_key);
+    $langs = vals($types_xml->lang_key);
     $user_lang =  find_best_lang($base, $langs);
     $_SESSION['langs'][$accept_hash] = $user_lang;
 }

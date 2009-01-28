@@ -9,8 +9,6 @@ define('JSX_RELOAD',"this.getBox().reload();");
 define('JSX_CLOSE',"this.getBox().close();");
 
 class jsx {
-  static private $customs = array();
-
   const MASK_INVALID_ENTITIES = "#&(?!lt;|gt;|\#[0-9]+;|quot;|amp;)#";
 
   static public $rbx=false; //only rbx mode
@@ -30,14 +28,14 @@ class jsx {
     $json=unicode_decode($json);
     $json=str_replace("&quot;","\\\"",$json);
 
-    return jsx::translate($json,$_SESSION['lang']);
+    return jsx::translate($json);
   }
 
   static function set($key,$val){ yks::$get->config->head->jsx[$key]=$val;  }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
   static function js_eval($msg) { rbx::msg(JSX_EVAL,"$msg;"); }
 
-  static function translate($str,$lang=USER_LANG){ if(!$lang) $lang = USER_LANG;
+  static function translate($str, $lang = USER_LANG){
     $entities = yks::$get->get("entities",$lang);
     if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
 
@@ -59,33 +57,6 @@ class jsx {
     return $str;
   }
 
-  static function load_xml($str){
-    $doc = new DOMDocument('1.0','UTF-8');
-    $doc->formatOutput = false;
-    $doc->preserveWhiteSpace= false;
-    $doc->loadXML($str, LIBXML_YKS);
-    return $doc;
-  }
-
-  static function register($tagName, $callback){
-    self::$customs[$tagName] = $callback;
-  }
-
-  static function parse($doc){
-    if(!self::$customs) return;
-
-    $xpath = new DOMXPath($doc);
-    $query = mask_join("|",array_keys(self::$customs), "//%s");
-    $entries = $xpath->query($query);
-    if(!$entries->length) return;
-
-    foreach ($entries as $entry) {
-        $nodeName = $entry->nodeName;
-        $callback = self::$customs[$nodeName];
-        if($callback)
-            call_user_func($callback, $doc, $entry);
-    }
-  }
 
 }
 

@@ -25,7 +25,7 @@ class tpls {
     self::$body=$href;
  }
  static function page_def($subs_file){
-    yks::$page_def = $subs_file;
+    exyks::$page_def = $subs_file;
  }
  static function css_add($href,$media=false){
     $tmp=yks::$get->config->head->styles->addChild("css");
@@ -37,21 +37,6 @@ class tpls {
     $tmp=yks::$get->config->head->scripts->addChild("js");
     if($defer)$tmp['defer']="true";
     $tmp['src']=$href;
- }
-
- static function build($vars=array()){
-    global $config,$href,$href_fold,$user_lang;
-    extract($vars);
-
-    ob_start();
-    include 'tpls/Yks/xml_head.tpl';
-    foreach(self::$top as $top) include "tpls/$top";
-    include "tpls/".tpls::$body;
-    foreach(self::$bottom as $bottom ) include "tpls/$bottom";
-    $str=ob_get_contents();ob_end_clean();
-
-    $str=jsx::translate($str,$user_lang);
-    return $str;
  }
 
  static function call($page,$vars=array()){

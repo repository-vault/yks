@@ -4,7 +4,6 @@
 */
 
 
-define('Yks', 'Exyks core, Yks');
 	//Usefull constants
 define('LF',"\n");define('CRLF',"\r\n");
 define('_NOW',$_SERVER['REQUEST_TIME']);
@@ -86,15 +85,6 @@ $action=(string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['k
 
 define('XSL_ENGINE', $engine);
 
-$headers_mode=array(
-	'xml'=>TYPE_XML,
-	'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,
-	'pop'=>TYPE_XML,
-	'jsx'=>TYPE_XML,
-	'src'=>TYPE_TEXT,
-	'img'=>TYPE_PNG,
-	'inframe'=>TYPE_XML,
-);
 
 
 $charsets=array(

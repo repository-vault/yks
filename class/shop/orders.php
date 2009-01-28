@@ -73,7 +73,7 @@ class orders {
       $product_infos['price_ce']=$product_infos['product_qty']*$product_infos['product_price'];
       $product_infos['price_ci']=$product_infos['price_ce']*(1+$product_infos['tax_rate']);
 
-      if($product_infos['parent_id']==30) $order_infos['delivery_time'] = 86400*30*2; //!
+      if( in_array($product_infos['parent_id'], array(30,34)) ) $order_infos['delivery_time'] = 86400*30*2; //!
 
       if($product_infos['product_qty']){
         $order_infos['total_ci']+=$product_infos['price_ci']+$product_infos['shipping_cost'];

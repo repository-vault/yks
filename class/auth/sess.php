@@ -1,9 +1,9 @@
 <?
 
-class sess {
+class sess extends storage {
   static $sess = array();
   static $id = false;
-  static $_storage = array(); //private
+
   static $connected = false;
   static $renewed = false;
 
@@ -36,12 +36,6 @@ class sess {
 
   static function status_check(){
     self::$connected=(self::$sess['user_id'] && self::$sess['user_id']!=USERS_ROOT);
-  }
-  static function store($key, $value){
-    self::$_storage[$key]=$value;
-  }
-  static function retrieve($key){
-    return self::$_storage[$key];
   }
 
   static function get_computed($cols='*'){

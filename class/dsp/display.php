@@ -145,7 +145,7 @@ class dsp{
                 continue;
         $title=$link_infos['title'];
         $children=(bool)$link_infos['children'];
-        $current=(substr(yks::$href,0,strlen($link_key))==$link_key);
+        $current=(substr(exyks::$href,0,strlen($link_key))==$link_key);
         $target=$link_infos['target']?"target=\"{$link_infos['target']}\"":'';
         $class=$children?"class='parent'":'';
         $str.="<li $class>";
