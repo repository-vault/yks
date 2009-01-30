@@ -48,6 +48,7 @@ class view {
 
 
     // Retourne la liste des requetes à effectuer pour creer la vue courante 
+    // la premiere query retournée DOIT être CREATE VIEW // see current_signature shift
   function build_view($view_name) {
     $queries = array();
     $queries[]= "CREATE OR REPLACE VIEW  \"public\".\"$view_name\" AS ".CRLF
@@ -70,6 +71,11 @@ class view {
     $view_name = "ks_tmp_view_".crpt(_NOW,__CLASS__,5);
         //creating ghost temporary view
     $queries = $this->build_view($view_name);
+    $create_view = array_shift($queries);
+    $res = sql::query($create_view);
+    if(!$res) 
+        throw rbx::error("-- Unable to check signature for $this->view_name");
+
     foreach($queries as $query)
         sql::query($query);
 

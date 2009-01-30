@@ -1,11 +1,17 @@
 <?
 
-class sess extends storage {
+class sess  {
   static $sess = array();
   static $id = false;
 
   static $connected = false;
   static $renewed = false;
+
+    //need 5.3 late static binding self::_class
+  static protected $_storage = array();
+  static function store($key, $value){ return self::$_storage[$key]=$value; }
+  static function retrieve($key){ return self::$_storage[$key]; }
+
 
   static function init(){
     if(sess::$id) return false;

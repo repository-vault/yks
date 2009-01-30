@@ -21,7 +21,7 @@ define('XSL_SERVER', XSL_NODE_SET);
 include "engine_detection.php";
 
 
-define('BOM',chr(239).chr(187).chr(191));
+define('BOM', pack('C*',239,187,191));
 
 	//Headers stds types
 define('TYPE_XML',"Content-Type: text/xml; charset=utf-8");

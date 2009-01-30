@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE xsl SYSTEM "../dtds/sql_entities.dtd">
+<!DOCTYPE xsl SYSTEM "../../dtds/sql_entities.dtd">
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ewxsl="http://exslt.org/common">
 <xsl:param name="root_xml" select="'mykse'"/>
 <xsl:output indent='yes'/>

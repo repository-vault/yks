@@ -4,7 +4,7 @@
     distributed under the terms of GNU General Public License - ? 2008
 */
 
-class exyks extends storage {
+class exyks {
 
   static public $href_ks;
   static public $page_def = 'home';
@@ -18,6 +18,11 @@ class exyks extends storage {
     return ($now?self::bench($now):microtime(true)) - self::retrieve("time_$key");
   }
 
+
+    //need 5.3 late static binding self::_class (extend storage)
+  static protected $_storage = array();
+  static function store($key, $value){ return self::$_storage[$key]=$value; }
+  static function retrieve($key){ return self::$_storage[$key]; }
 
   static function load_xml($str){
     $doc = new DOMDocument('1.0','UTF-8');
@@ -60,18 +65,13 @@ class exyks extends storage {
                 $href_base, // href_fold, with current args
       , ... ) used as tuples in index.php.
     )
-   ";" is not really the smartest args separator since escaped XML entities are in a &..; pattern,
-    what conflict easily with ";" separator, we remplate it by | to split here
-    fyi : $args=array_slice(preg_split("#(?<!.&lt|&amp|.&gt);#", ";$args_str;;;"),1); does the trick, but negative lookbehind assertions cannot have a variable length
     //DONT CORRECT THIS TO SUPPORT &#160;, send proper %C2%A0 instead
 */
 
   static function prepare($url){
-    $tmp = htmlspecialchars(strtr(urldecode($url),';','|'),ENT_QUOTES,'UTF-8');
-    self::$href_ks = strtr($tmp, '|', ';');
+    self::$href_ks = htmlspecialchars(urldecode($url),ENT_QUOTES,'UTF-8');
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts
-    $url_tree  = self::url_tokenize_single_slash($tmp);
-
+    preg_match_all("#/([^/]+)(?://([^/]*))?#", self::$href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
          $url_tree= array(array(1=>ucfirst(SITE_CODE)));
@@ -85,7 +85,7 @@ class exyks extends storage {
 
     foreach($url_tree as $tmp){
         list($node_name, $args_str) = array($tmp[1],$tmp[2]); 
-        $args = explode('|', "$args_str||||");
+        $args = explode(';', "$args_str;;;;");
 
             //sanitize all malicious attempts '/Admin/../config...'
         if(preg_match("#[.]#",$node_name) || $node_name=="main")
@@ -121,11 +121,6 @@ class exyks extends storage {
     ( regroupement des blocs avec leurs parametres )
 */
     
-  static function url_tokenize_single_slash($url) {
-    preg_match_all("#/([^/]+)(?://([^/]*))?#", $url, $tree,PREG_SET_ORDER);
-    return $tree;
-  }
-
 
     //Ferme les subs : close session, shut SQL link down & co
   static function context_end(){

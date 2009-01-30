@@ -16,7 +16,7 @@ if($flag=="tables_xml"){
 	
 	$myks_gen=new myks_parser(MYKS_DIR);
 	$tables_xml=$myks_gen->out("table");
-	$xsl = new DOMDocument();$xsl->load(RSRCS_DIR."/xsl/myks_tables.xsl",LIBXML_YKS);
+	$xsl = new DOMDocument();$xsl->load(RSRCS_DIR."/xsl/metas/myks_tables.xsl",LIBXML_YKS);
 	$xslt = new XSLTProcessor(); $xslt->importStyleSheet($xsl);
 	return $xslt->transformToXML($tables_xml);
 }

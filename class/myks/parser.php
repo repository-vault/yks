@@ -20,7 +20,7 @@ class myks_parser {
     $main_xml=$this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
     //	$old_dir=getcwd();chdir($myks_dir);
     $files = $myks_dir?find_file($myks_dir,'.*?\.xml$',FIND_FOLLOWLINK):array();
-    $xsl_file = RSRCS_DIR."/xsl/myks_gen.xsl";
+    $xsl_file = RSRCS_DIR."/xsl/metas/myks_gen.xsl";
     if(!is_file($xsl_file)) die("Unable to locate ressource myks_gen.xsl, please check rsrcs");
     foreach($files as $xml_file){
 
