@@ -16,7 +16,7 @@ class mykse extends mykse_base {
 		'small'=>'smallint(5)',
 		'int'=>'mediumint(8)',
 		'big'=>'int(10)',
-		'giga'=>'BIGINT',
+		'giga'=>'bigint(20)',
 		'float'=>'float',
 		'decimal'=>'float(10,5)',
 	);$type=$sizes[(string)$this->mykse_xml['size']];

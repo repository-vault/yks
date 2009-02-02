@@ -120,8 +120,8 @@ class sql {
     return sql::query("SELECT $cols ".sql::from($table).sql::where($where)." $extra");
   }
 
-  static function row($table,$where='TRUE',$cols="*"){
-    return sql::qrow("SELECT $cols ".sql::from($table).sql::where($where)." LIMIT 1");
+  static function row($table,$where='TRUE',$cols="*", $extras="LIMIT 1"){
+    return sql::qrow("SELECT $cols ".sql::from($table).sql::where($where)." ".$extras);
   }
 
     /** move the #nth item down */
