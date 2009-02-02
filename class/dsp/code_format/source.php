@@ -28,7 +28,7 @@ class source {
   }
 
 
-  private static function render_php($str){
+  public static function render_php($str){
     $str = trim($str);
     if(substr($str ,0,2)!='<?') $str= "<?php".CRLF.$str;
     $str = highlight_string($str ,true);
@@ -48,7 +48,7 @@ class source {
     return $str;
   }
 
-  private static function render_xml($str){
+  public static function render_xml($str){
     require_once "highlight_xml.php";
     $res = highlight_xml::highlight($str);
     $res = sprintf("<code>%s</code>", $res);

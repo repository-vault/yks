@@ -8,7 +8,8 @@ class highlight_xml {
   private $inline_node=null;
 
   private $no_pad = array("script");
-  private $inline = array("br", "img", "span", "b", "a", "em");
+  private $inline = array("br", "img", "span", "b", "a", "em" ,"md", "mu");
+  private $skip  =  array("null");
   private $node_name;
 
   public  static function highlight($str){
@@ -17,13 +18,12 @@ class highlight_xml {
   }
 
   function parse($str){
-
-    $str = preg_replace("#<\?.*?\?>#", "<![CDATA[\\0]]>", $str);
-
+    preg_match_all("#<\?.*?\?>#", $str, $out); $pis = $out[0];$i=0;
+    $str = preg_replace("#<\?.*?\?>#e", '"[¤".$i++."¤]"', $str);
+    $str = "<null>$str</null>";
     xml_parse($this->parser, $str);
     $str = $this->contents;
-    $str = preg_replace("#<\?.*?\?>#", "<![CDATA[\\0]]>", $str);
-
+    $str = preg_replace("#\[¤([0-9]+)¤\]#e", '"<![CDATA[".$pis[\\1]."]]>"', $str);
     return $str;
   }
 
@@ -38,6 +38,7 @@ class highlight_xml {
   }
 
   private function tag_open($parser, $name, $attribs) {
+    if( in_array($name, $skip) ) return;
     $this->pos_pad('tag', $name);
     $this->depth++; $this->node_name = $name;
 
@@ -49,6 +50,7 @@ class highlight_xml {
   }
 
   private function tag_close($parser, $name) {
+    if( in_array($name, $skip) ) return;
     $this->depth--; $this->node_name = false;
     if($this->empty_node) {
         $this->contents = preg_replace('/&gt;?$/', '',$this->contents);
@@ -62,7 +64,7 @@ class highlight_xml {
   private function cdata($parser, $str) {
     if(!trim($str)) return;
     $this->pos_pad('cdata');
-    $this->feed(nl2br(trim(strtr($str,array(' '=>'&#160;')))));
+    $this->feed(nl2br(trim($str))); //strtr($str,array(' '=>'&#160;'))
   }
 
   private function std($parser, $str) {
