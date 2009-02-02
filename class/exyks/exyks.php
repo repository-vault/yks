@@ -157,13 +157,12 @@ class exyks {
 
     if(!tpls::$body) tpls::body("$subs_file.tpl");
 
-    if(JSX && !$config->tpl_jsx){
+    if(JSX){
         tpls::top('Yks/'.MODE.'_top.tpl',TPLS_ERASE);
         tpls::bottom('Yks/'.MODE.'_bottom.tpl',TPLS_ERASE);
     }
 
-
-
+    tpls::top('Yks/xml_head.tpl', TPLS_TOP);
   }
 
   static function render(){

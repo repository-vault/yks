@@ -2,6 +2,7 @@
 
 define('TPLS_REPLACE',1);
 define('TPLS_ERASE',2);
+define('TPLS_TOP',3);
 
 
 class tpls {
@@ -13,6 +14,7 @@ class tpls {
  static function top($href,$mode=0){
     if($mode==TPLS_REPLACE)array_pop(self::$top);
     elseif($mode==TPLS_ERASE) self::$top=array();
+    elseif($mode==TPLS_TOP) return array_unshift(self::$top, $href);
     array_push(self::$top,$href);
  }
  static function bottom($href,$mode=0){

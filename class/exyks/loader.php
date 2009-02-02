@@ -30,13 +30,11 @@ $tmp_path="$config_path/tmp";
 
 include "$class_path/constants.php";
 include "$class_path/config.php";
-include "$class_path/stds/basics/storage.abstract";
 
 include "$class_path/yks.php";
 include "$class_path/exyks/exyks.php";
 
 include "$class_path/zero_functions.php";
-
 
 
 $config_file="$config_path/$host.xml";
