@@ -7,15 +7,8 @@ function unicode_value($code) {
     else return chr((($v&0xf000)>>12)|0xe0).chr((($v&0x0fc0)>>6)|0x80).chr(($v&0x3f)|0x80);
 }
 
-//there is no reason to use this function anymore
-function pict_clean($str){
-    // $str = preg_replace("#(?<!&[^;]+);#", '', $str);   // :/  not fixed length
-    $str = preg_replace("#&([^;]+);#","&$1<", $str); // replace valid ; by <
-    $str = preg_replace("#[/]#",' ',$str);
-    $str = preg_replace("#&([^<]+)<#","&$1;", $str); // restore valid ;
-    $str = urlencode($str);
-    return $str;
-}
+
+function pict_clean($str){ return strtr($str, '/', ' '); }
 
 
 
@@ -66,6 +59,7 @@ function entity_dynamics($str,$lang){
 
 
 
+    //may be usefull for search forms
 function strip_accents($str){
     return strtr($str,array('À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'Ç'=>'C', 'ç'=>'c', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ÿ'=>'y', 'Ñ'=>'N', 'ñ'=>'n'));
 }
@@ -92,9 +86,8 @@ function rte_clean($str){
         '#>#'=>'&gt;',
         '#&ks_start;#'=>'<',
         '#&ks_end;#'=>'>',
-        "#(\r|\n)#"=>'',
-        '#^(<br/>)+#'=>'',
-        '#(<br/>)+$#'=>'',
+        "#[\r\n]#"=>'',
+        '#^(<br/>)+|(<br/>)+$#'=>'',
     );$str=preg_areplace($replaces,$str);
 
     return $str;
