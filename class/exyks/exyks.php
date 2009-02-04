@@ -141,9 +141,9 @@ class exyks {
     jsx::set("href","?".exyks::$href);
     jsx::set("href_ks","?".exyks::$href_ks);
     jsx::set("href_base","?$href_base");
+    jsx::set("ks_flag",FLAG_KS);
 
     if(!JSX) {
-        jsx::set("ks_flag",FLAG_KS);
         jsx::set("xsl_engine",XSL_ENGINE);
         jsx::set("site_code",SITE_CODE);
         jsx::set("cache_dir", CACHE_DIR);

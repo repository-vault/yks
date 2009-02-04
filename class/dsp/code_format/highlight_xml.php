@@ -38,7 +38,7 @@ class highlight_xml {
   }
 
   private function tag_open($parser, $name, $attribs) {
-    if( in_array($name, $skip) ) return;
+    if( in_array($name, $this->skip) ) return;
     $this->pos_pad('tag', $name);
     $this->depth++; $this->node_name = $name;
 
@@ -50,7 +50,7 @@ class highlight_xml {
   }
 
   private function tag_close($parser, $name) {
-    if( in_array($name, $skip) ) return;
+    if( in_array($name, $this->skip) ) return;
     $this->depth--; $this->node_name = false;
     if($this->empty_node) {
         $this->contents = preg_replace('/&gt;?$/', '',$this->contents);
