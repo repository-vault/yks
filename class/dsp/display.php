@@ -60,9 +60,15 @@ class dsp{
   }
   static function resolve($types_xml,$type){
     $mykse = $types_xml->$type;
-    if($mykse['type']=='enum') return vals($mykse);
+    $types= array('enum','int','string','text','time');
+
+    if(in_array((string)$mykse['type'],$types)) return $mykse;
     elseif(!$mykse) return array();
     else return self::resolve($types_xml,$mykse['type']);
+  }
+  static function resolve_enum($types_xml,$type){
+    $mykse = self::resolve($types_xml,$type);
+    return $mykse['type']!='enum'?array():vals($mykse);
   }
 
   static function mailto($str, $subject=false){
@@ -86,7 +92,7 @@ class dsp{
     $mykse=$opts['mykse'];$col=$opts['col'];if(!$col)$col="value";
     if(!$data) $data = array();
     $list=!is_array($data)?array_combine(
-            $list=self::resolve(yks::$get->types_xml,$data),
+            $list=self::resolve_enum(yks::$get->types_xml,$data),
             array_mask($list,"&$data.%s;")):$data;
 
     $options="";$pad=$opts['pad']?$opts['pad']:"&#160;&#160;";
@@ -124,6 +130,9 @@ class dsp{
             (($size>>10)?round($size/(1<<10),2).' Ko':"$size octets"));
   }
 
+  static function datef($date=_NOW,$format=DATE_MASK){
+    return self::date($date, preg_replace("#[a-z]#i",'$$0', $format));
+  }
   static function date($date=_NOW,$format=DATE_DAY,$format_rel=false){
     static $rs=false; if(!$rs) $rs=array(
             date('z/Y',_NOW)=>'&date.today;',
@@ -132,7 +141,7 @@ class dsp{
     if($z<79 or $z>354)$a=4; elseif($z<172)$a=1; elseif($z<265)$a=2;else $a=3; //a = season
     if('0/1970'=="$z/$Y") return "&date.0;";
     if($date==2147483647) return "&date.never;";
-    $t=ceil($n/3); $rel=$rs["$z/$Y"]; //trimestre ?
+    $t=ceil($n/3); $rel=$rs["$z/$Y"]; 
     return preg_replace(VAR_MASK,VAR_REPL,$rel&&$format_rel?$format_rel:$format);
   }
 

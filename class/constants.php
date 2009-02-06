@@ -43,6 +43,8 @@ define('HTTP_CACHED_FILE',"Last-Modified: Thu, 12 Apr 2007 19:31:20 GMT");
 	//XHTML stuffs
 define('XML_VERSION','<?xml version="1.0" encoding="utf-8"?>'.LF);
 define('XML_DOCTYPE','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "">'.LF);
+define('XML_EMPTY', '<![CDATA[]]>');
+
 define('XHTML',"http://www.w3.org/1999/xhtml");
 
 
@@ -60,7 +62,7 @@ define('MEMORY_USAGE',"ps -aeo rss | awk '{sum+=$1} END {print sum*1024}'");
 $var_safe='\$[A-Z]?[a-z0-9_]*';
 define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
-define("FUNC_MASK","#[a-z0-9_]+\($var_safe\)#e");
+define("FUNC_MASK","#[a-z0-9_:]+\(.*?\)#e");
 
 define('MAIL_MASK','#([.0-9a-z_+-]+)@((?:[0-9a-z-]+\.)+[0-9a-z]{2,})#i');
 

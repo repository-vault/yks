@@ -21,8 +21,9 @@ function mykse_validate($data,$filter_in){
         if(!$mykse) break;
         $mykse_type=(string) $mykse['type'];
 
+        $nullable = $mykse['null']=='null';
         if($null && $mykse['null']=='not_null' && is_not_null($mykse['default']))break;
-        if($null && $mykse['null']=='null'){ $out[$mykse_key]=null; break;}
+        if($null && $nullable){ $out[$mykse_key]=null; break;}
 
         if($mykse_type=="text"){
             $out[$mykse_key]=rte_clean($val);
@@ -35,6 +36,7 @@ function mykse_validate($data,$filter_in){
             if($null) break;
             $out[$mykse_key]=(int) $val;
         }elseif($mykse_type=='time'){
+            if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
             else $out[$mykse_key]=date::validate($val);
         }elseif($mykse_type=='string'){

@@ -84,6 +84,14 @@ function abort($code) {
     } reloc("?$dest");
 }
 
+    //cf doc in the manual
+function str_evaluate($str, $vars = array()){  extract($vars);
+    $str = preg_replace(array(FUNC_MASK,VAR_MASK), VAR_REPL, $str);
+    $str = preg_replace('#<([a-z]+)>\s*</\\1>#','', $str);
+    $str = join("<br/>",array_filter(preg_split('#(<br\s*/>\s*)#', $str)));
+    return $str;
+}
+
 function retrieve_constants($mask = "#.*?#", $format="{%s}"){
     $tmp = get_defined_constants (true); $tmp = $tmp['user']; $constants = array();
     foreach($tmp as $name=>$val)

@@ -74,8 +74,11 @@ class auth {
     return $acces;
   }
 
-  static function verif($acces_zone='',$lvl='acces',$die=false){
-    $valid=isset(sess::$sess['user_acces'][$acces_zone][$lvl]);
+  static function verif($acces_zones='',$lvl='acces',$die=false){
+    if(!is_array($acces_zones)) $acces_zones=array($acces_zones);
+    $base = sess::$sess['user_acces'];
+    foreach($acces_zones as $acces_zone) $base=$base[$acces_zone];
+    $valid=isset($base[$lvl]);
     if($die && !$valid)abort($die);
     return $valid;
   }

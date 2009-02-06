@@ -18,7 +18,7 @@
         <xsl:otherwise>even</xsl:otherwise>
     </xsl:choose>
 </xsl:variable>
-    <tr class="{@class} line_{$pair}"><xsl:copy-of select="@style"/><xsl:apply-templates/></tr>
+    <tr class="{@class} line_{$pair}"><xsl:copy-of select="@*[name()!='class']"/><xsl:apply-templates/></tr>
 
 
   </xsl:template>

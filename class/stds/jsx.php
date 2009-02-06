@@ -5,6 +5,7 @@ define('JSX_EVAL','jsx_eval');
 define('JSX_PLACE','place');
 define('JSX_MODAL','modal');
 define('JSX_PARENT_RELOAD',"this.getBox().opener.reload();");
+define('JSX_PARENT_CLOSE',"this.getBox().opener.close();");
 define('JSX_RELOAD',"this.getBox().reload();");
 define('JSX_CLOSE',"this.getBox().close();");
 
