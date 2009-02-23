@@ -64,7 +64,7 @@ class highlight_xml {
   private function cdata($parser, $str) {
     if(!trim($str)) return;
     $this->pos_pad('cdata');
-    $this->feed(nl2br(trim($str))); //strtr($str,array(' '=>'&#160;'))
+    $this->feed(nl2br( strtr(trim($str),array(' '=>'&#160;')) )); //)
   }
 
   private function std($parser, $str) {

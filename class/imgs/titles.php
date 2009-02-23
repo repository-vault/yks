@@ -20,7 +20,7 @@ function draw_title($data){ extract($data);
     if(!isset($box_ml))$box_ml=$box_xl;
     if(!isset($box_mr))$box_mr=$box_xr;
     $img_h=max( $text_h+$box_mu+$box_md, $box_yu+$box_ym+$box_yd);
-    $img_w=max( $text_w+$box_ml+$box_mr, $box_xl+$box_xm+$box_xr);
+    $img_w=max( $text_w+$box_ml+$box_mr, $box_xl+$box_xm+$box_xr, $width);
     $img_back=imagecreatetruealpha($img_w,$img_h);
 
     if($box_src){
@@ -33,8 +33,13 @@ function draw_title($data){ extract($data);
     $img_text=imagecreatetruealpha($img_w,$img_h);
     $img_text_mask=imagecreatetruealpha($img_w,$img_h);
 
+    $text_align = $text_align?$text_align:"center";
+
     $text_y= floor(($box_mu+$text_h+$img_h-$box_md)/2);if(!$db)$text_y-=$text_tmp[1];
-    $text_x= $box_ml+floor(($img_w-($box_ml+$box_mr+$text_w))/2);
+    $text_x= 0;
+    if($text_align=="left") $text_x = $box_ml; //left
+    elseif($text_align=="right") $text_x = $img_w - ($text_w+$box_mr); //right
+    else  $text_x = $box_ml + floor(($img_w-($box_ml+$box_mr+$text_w))/2); //center
 
     imagettftext($img_text_mask,$font_size,0,$text_x,$text_y,COLOR_GRAY,$font,$text);
 

@@ -16,6 +16,8 @@ class source {
 
     if($code == "xml")
         $text = self::render_xml($text);
+    elseif($code == "js")
+        $text = self::render_js($text);
     else {
         $text = self::render_php($text);
     }
@@ -26,7 +28,14 @@ class source {
     $add = $doc->importNode($add, true);
     $node->parentNode->replaceChild($add, $node );
   }
-
+        //js is nothing but PHP (for now..)
+  public static function render_js($str){
+    $str = preg_replace("#\r?\n#", "",self::render_php($str));//(?<=^ powa
+    $str = preg_replace("#(?<=^<code><span class='php_html'>)"
+        ."<span class=.php_default.>&lt;\?php.*?</span>#s","", $str);
+    $str = preg_replace("#(?<=class=')php_#", "js_", $str);
+    return $str;
+  }
 
   public static function render_php($str){
     $str = trim($str);

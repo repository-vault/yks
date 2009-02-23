@@ -34,6 +34,9 @@ class tpls {
     if($media)$tmp['media']=$media;
     $tmp['href']=$href;
  }
+ static function css_clean(){
+    yks::$get->config->head->styles = null;
+ }
 
  static function js_add($href,$defer=false){
     $tmp=yks::$get->config->head->scripts->addChild("js");
