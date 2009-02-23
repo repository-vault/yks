@@ -76,6 +76,17 @@ class users
   static function get_children($user_id,$depth=-1){
     return get_children($user_id,'ks_users_tree','user_id',$depth);}
 
+    //this implementation only works for postgres 
+  static function get_children_infos($parent_id, $where=true){
+    $query = "SELECT * FROM
+    ivs_users_tree($parent_id) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)
+    LEFT JOIN ivs_users_list USING(user_id) 
+    LEFT JOIN ivs_users_profile USING(user_id)
+    ".sql::where($where);
+    sql::query($query);
+    return sql::brute_fetch('user_id');
+  }
+
   static function get_root_dir($user_id){ return 'files/'.crpt($user_id,FLAG_FILE,10);}
   static function get_tmp_dir($user_id){ return ROOT_PATH.'/config/tmp/'.crpt($user_id,FLAG_FILE,10);}
 
