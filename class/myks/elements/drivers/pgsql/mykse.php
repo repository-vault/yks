@@ -22,6 +22,19 @@ class mykse extends mykse_base {
 	$this->field_def["Type"]=$type;
   }
 
+
+  function default_value($type){
+
+    if( $this->field_def['Default']==null && isset($this->mykse_xml['default'])){
+        $this->field_def['Default']=(string)$this->mykse_xml['default'];
+        if($this->field_def['Default']=="unix_timestamp()"){
+           //$this->field_def['Default']=0;
+           //die("HW");
+        }
+    }
+  }
+
+
   function enum_node(){
         $set=((string)$this->mykse_xml['set'])=='set';
         $length=0;foreach(vals($this->mykse_xml) as $val)$length=max($length,strlen($val));

@@ -11,4 +11,5 @@
 <!ATTLIST procedure
   name	CDATA	#REQUIRED
   type CDATA #REQUIRED
+  setof (setof) #IMPLIED
 >

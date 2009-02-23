@@ -16,7 +16,7 @@ class mykse_base {
   protected $depth=0;
   public $base_type=0;
 
-  function  __construct($field_xml,$table){
+  function  __construct($field_xml, $table){
 
     $this->table=$table;
     $this->type=$field_xml['type'];
@@ -68,7 +68,6 @@ class mykse_base {
   }
 
   function resolve($type){
-     //echo "resolving $type\n";
 
     $tmp=myks_gen::$mykse_xml->$type;
     if($this->depth++ > $this->depth_max && !$tmp)
@@ -77,32 +76,11 @@ class mykse_base {
 
     $this->field_def['Null']|=$this->mykse_xml['null']=='null';
 
-    if( $this->field_def['Default']==null && isset($this->mykse_xml['default'])){
-        $this->field_def['Default']=(string)$this->mykse_xml['default'];
-        if($this->field_def['Default']=="unix_timestamp()")
-            $this->field_def['Default']=0;
-    }
+    if(SQL_DRIVER=="pgsql")  $this->default_value($type); // doit etre corrigé à terme
 
     $this->type=$type;
     $this->types_tree[]=$type;
     return $this;
-  }
-
-  function default_value(){
-    if(is_null($this->field_def['Default']) && !($this->field_def['Null']) ) {
-
-        if($this->field_def['Extra']=='auto_increment') $val=null;
-        elseif($this->base_type=="int") $val = 0;
-        elseif($this->base_type=="string") $val = "''";
-        elseif($this->base_type=="enum") $val = null;
-        elseif($this->base_type=="text") $val = "''";
-        else throw rbx::error("Unable to resolve default value type : '$this->base_type'");
-        $this->field_def['Default'] = $val;
-    }
-
-    if($data['Default']==='')$data['Default']="''";
-    if($this->field_def['Default']=="unix_timestamp()")
-        $this->field_def['Default']=0;
   }
 
   function get_def(){

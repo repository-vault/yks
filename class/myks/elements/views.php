@@ -12,6 +12,7 @@ class view {
   private static $definition_mask = '';
   private static $definition_mask_str = '';
   private static $tmp_view_name='';
+  const rule_nothing = 'NOTHING;';
 
   function __construct($view_xml){
     $view_name = (string) $view_xml['name'];
@@ -31,7 +32,7 @@ class view {
 
     if($same) return false; //nothing to do
 
-    //print_r($this->xml_def);print_r($this->sql_def);die;
+    //print_r(array_keys(array_diff($this->sql_def,  $this->xml_def)));   print_r($this->xml_def);print_r($this->sql_def);die;
     $signature = $this->current_signature();
 
     $queries = array();
@@ -57,11 +58,15 @@ class view {
     foreach($this->_rules as $rule_name=>$rule_infos){
         $event = strtoupper($rule_infos['event']);
         $where = $rule_infos['where']?"WHERE {$rule_infos['where']}":'';
+        $definition = (string) $rule_infos['definition'];
+        if(!$definition) $definition = self::rule_nothing;
+        $format = $definition==self::rule_nothing ? "%s":"(%s)";
+        $definition = sprintf($format, $definition);
         $queries[]= "CREATE RULE \"$rule_name\" AS
             ON $event
             TO \"$view_name\"
             $where
-            DO INSTEAD ".$rule_infos['definition'];
+            DO INSTEAD $definition;";
     }
 
     return $queries;
@@ -70,13 +75,11 @@ class view {
   function current_signature(){
     $view_name = "ks_tmp_view_".crpt(_NOW,__CLASS__,5);
         //creating ghost temporary view
-    $queries = $this->build_view($view_name);
-    $create_view = array_shift($queries);
-    $res = sql::query($create_view);
-    if(!$res) 
-        throw rbx::error("-- Unable to check signature for $this->view_name");
 
-    foreach($queries as $query)
+    if(!sql::query($this->xml_def['def']))
+        throw rbx::error("-- Unable to check signature for $this->view_name");
+    
+    foreach($this->build_view($view_name) as $query)
         sql::query($query);
 
         //retrieve signature from ghost
@@ -126,7 +129,7 @@ class view {
         $row['base_definition'] =  $alternative_description;
     else {
         preg_match(self::$definition_mask, $row['description'], $out);
-        $row['base_definition'] = newline((string)$out[2]);
+        $row['base_definition'] = myks_gen::sql_clean_def($out[2]);
         $row['base_signature'] = (string)$out[1];
     }
 
@@ -162,7 +165,7 @@ class view {
     foreach($this->view_xml->rule as $rule) {
         $event = (string)$rule['on'];
         $where = (string)$rule['where'];
-        $definition  = sql_clean_def($rule);
+        $definition  = myks_gen::sql_clean_def($rule);
         $hash = substr(md5($event.$definition),0,5);
         $name = "{$this->view_uname}_{$event}_{$hash}";
         $this->_rules[$name] = compact('name', 'definition', 'event', 'where'); //instead, where...
@@ -170,7 +173,7 @@ class view {
 
     $this->xml_def = array(
         'name'=>$this->view_uname,
-        'def'=> sql::unfix(sql_clean_def($this->view_xml->def)),
+        'def'=> sql::unfix(myks_gen::sql_clean_def($this->view_xml->def)),
         'signature'=>true,
         'rules'=>count($this->_rules),
     );

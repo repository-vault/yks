@@ -27,6 +27,16 @@ class myks_gen {
 		return $view->check();
 	} catch(rbx $r){}
   }
+
+
+  static function sql_clean_def($def, $trim=";"){
+    //specialchars_decode ne devrait pas être necessaire ( CDATA) ??
+    return trim(self::newline(specialchars_decode( (string)$def) ), $trim).$trim;
+  }
+
+  static function newline($str){
+    return preg_replace("#\r?\n#","\n",trim($str));
+  }
 }
 
 class field extends SimpleXMLElement {
@@ -47,6 +57,3 @@ function directory_recursive_sublink($dir,$dest){
 }
 
 
-function newline($str){return preg_replace("#\r?\n#","\n",$str); }
-//specialchars_decode ne devrait pas être necessaire ( CDATA) ??
-function sql_clean_def($def){return trim(newline(trim(specialchars_decode((string)$def))),';').';'; }
