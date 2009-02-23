@@ -6,7 +6,7 @@ function preg_reduce($mask, $str){
     return $out[1];
 }
 
-function simplexml_load_html($str, $class=false){
+function simplexml_load_html($str, $class="Element"){
     libxml_use_internal_errors(true);
     $doc = new DomDocument("1.0");
     $doc->loadHTML($str);
