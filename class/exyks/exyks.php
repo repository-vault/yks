@@ -22,7 +22,9 @@ class exyks {
     //need 5.3 late static binding self::_class (extend storage)
   static protected $_storage = array();
   static function store($key, $value){ return self::$_storage[$key]=$value; }
-  static function retrieve($key){ return self::$_storage[$key]; }
+  static function retrieve($key,$fallback=false){
+    return isset(self::$_storage[$key])?self::$_storage[$key]:$fallback;
+  }
 
   static function load_xml($str){
     $doc = new DOMDocument('1.0','UTF-8');
@@ -69,8 +71,8 @@ class exyks {
 */
 
   static function prepare($url){
-    self::$href_ks = htmlspecialchars(urldecode($url),ENT_QUOTES,'UTF-8');
-    self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts
+    self::$href_ks = htmlspecialchars(strtok(urldecode($url), "¦"),ENT_QUOTES,'UTF-8');
+    self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts root
     preg_match_all("#/([^/]+)(?://([^/]*))?#", self::$href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
@@ -82,6 +84,7 @@ class exyks {
     $subs_path = "subs";
     $href_fold = "";
     $href_base = "";
+    $value = strtok("¦");
 
     foreach($url_tree as $tmp){
         list($node_name, $args_str) = array($tmp[1],$tmp[2]); 
@@ -111,20 +114,13 @@ class exyks {
     $result_path[] = array($subs_fold, &$node_name, $args, $href_fold, $href_base);
 
         /* $context, $href, $href_ks, $context_depths */
-    return array($result_path, self::$href, self::$href_ks, count($result_path) - 1);
+    return array($result_path, self::$href, self::$href_ks, count($result_path) - 1, $value);
   }
 
 
-/*
-    Split une QUERY_STRING /Admin/Users//3123/Manage/Addrs//23/manage
-    en [[/Admin], [/Users, 3123] ,  [/Manage],  [/Addrs,23], [/manage] ]
-    ( regroupement des blocs avec leurs parametres )
-*/
-    
-
     //Ferme les subs : close session, shut SQL link down & co
   static function context_end(){
-
+    if(exyks::$is_script) die;
     sess::close();
     exyks::store('generation_time', exyks::tick('generation_start'));
 
@@ -175,13 +171,15 @@ class exyks {
     $doc = exyks::load_xml($str);
     exyks::parse($doc);
 
-    header(exyks::retrieve('CURRENT_TYPE'));
+    $mode = self::retrieve('MODE', MODE);
+    $headers= exyks::retrieve('HEADERS_MODE');
+    header($headers[$mode]);
     header("Cache-Control: no-cache");
 
-    if(MODE=="xml" || MODE=="jsx")
+    if($mode=="xml" || $mode=="jsx")
         die($doc->saveXML());
 
-    if(MODE=="html"){
+    if($mode=="html"){
         $r = xsl::resolve($doc, XSL_SERVER_PATH);
         $content = $r->saveXML();
         $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$content);

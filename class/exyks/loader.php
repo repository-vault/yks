@@ -61,19 +61,18 @@ if($screen_id || $_POST['jsx'])$mode="jsx";
 else $mode=$default;
 $screen_id = 10;
 
-define('MODE', $mode);
+define('MODE', exyks::store('MODE', $mode));
 
-$headers_mode=array(
-	'xml'=>TYPE_XML,
-	'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,
-	'pop'=>TYPE_XML,
-	'jsx'=>TYPE_XML,
-	'src'=>TYPE_TEXT,
-	'img'=>TYPE_PNG,
-	'inframe'=>TYPE_XML,
-);
+exyks::store('HEADERS_MODE', array(
+    'xml'=>TYPE_XML,
+    'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,
+    'pop'=>TYPE_XML,
+    'jsx'=>TYPE_XML,
+    'src'=>TYPE_TEXT,
+    'img'=>TYPE_PNG,
+    'inframe'=>TYPE_XML,
+));
 
-exyks::store('CURRENT_TYPE', $headers_mode[MODE]);
 
 define('JSX', MODE=="jsx");
 define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
