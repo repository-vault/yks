@@ -43,7 +43,9 @@ class Js {
     if(is_array($load['deps']))    //need true recursion stack here
         foreach($load['deps'] as $dep)
             array_unshift($build_list, $dep);
-
+    if(is_array($load['patch']))
+        foreach($load['patch'] as $patch)
+            $build_list[] = $patch;
 
     $build_list = array_map(array('Js','realpath'), $build_list);
 

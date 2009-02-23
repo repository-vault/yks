@@ -28,7 +28,7 @@ define('TYPE_XML',"Content-Type: text/xml; charset=utf-8");
 define('TYPE_HTML',"Content-Type: text/html; charset=utf-8");
 define('TYPE_XHTML',"Content-Type: application/xhtml+xml; charset=utf-8");
 define('TYPE_TEXT',"Content-Type: text/plain; charset=utf-8");
-define('TYPE_JSON',"Content-Type: text/json; charset=utf-8");
+define('TYPE_JSON',"Content-Type: application/json; charset=utf-8");
 define('TYPE_CSS',"Content-Type: text/css;");
 define('TYPE_PNG',"Content-Type: image/png;");
 define('TYPE_JPEG',"Content-Type: image/jpeg;");

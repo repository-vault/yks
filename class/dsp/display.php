@@ -34,7 +34,7 @@ class dsp{
         } elseif($step && $b>$page_id+2 && $b<$total-5){
             if($b==$page_id+3) $str.="... "; continue;
         } $str.="<a href='$href$b' ".($target?"target='$target'":'').">$tmp</a>&#160;";
-    } return $str." ($max)";
+    } return $str?$str." ($max)":'';
   }
 
   static function radio($type,$actives=false,$mode="radio"){

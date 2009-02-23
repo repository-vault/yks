@@ -11,6 +11,7 @@ function draw_title($data){ extract($data);
     $text_tmp=imagettfbbox($font_size,0,$font,$text);
     $text_w=max(abs($text_tmp[4]-$text_tmp[0]),abs($text_tmp[2]-$text_tmp[6]));
 
+
     $db=(bool)$drop_bottom;$db=false;
     $text_h=max(abs($text_tmp[7]-($db?0:$text_tmp[1])),abs($text_tmp[5]-($db?0:$text_tmp[3])));
 
@@ -28,6 +29,13 @@ function draw_title($data){ extract($data);
         if(!$box_x) $box_x = array(0,imagesx($box_img));
         if(!$box_y) $box_y = array(0,imagesy($box_img));
         image_bg_scale($img_back, $box_img, $box_x, $box_y);  
+
+        if($icon){
+            $icon = imagecreatefromfile($icon);
+            $icon_h = imagesy($icon);
+            $icon_y = floor(($img_h-$icon_h)/2);
+            imagefusion($img_back, $icon, $box_xl, $icon_y);
+        }
     }
 
     $img_text=imagecreatetruealpha($img_w,$img_h);
