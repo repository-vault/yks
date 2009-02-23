@@ -29,7 +29,7 @@
 
   <xsl:template match='empty'/>
   <xsl:template match='null'><xsl:apply-templates select="node()"/></xsl:template>
-  <xsl:template match='clear'><div class='clear'>&#160;</div></xsl:template>
+  <xsl:template match='clear'><div class='clear line'>&#160;</div></xsl:template>
 
   <xsl:template match="jsx">
 	<script type='text/javascript'>
@@ -45,7 +45,7 @@
 
   <xsl:template match="domready">
         <xsl:variable name='id' select="concat('script_', count(ancestor::*), '_', count(preceding::*))"/>
-	<script type='text/javascript' id='{$id}'>window.addEvent('domready',function(){
+	<script type='text/javascript' id='{$id}'>window.addEvent('<xsl:value-of select="@event"/>' || 'domready',function(){
 	<xsl:choose>
 		<xsl:when test="@src">new Asset.javascript("<xsl:value-of select="@src"/>",{ onload:function(){ <xsl:apply-templates /> } });</xsl:when>
 		<xsl:otherwise><xsl:apply-templates /></xsl:otherwise>
