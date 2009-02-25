@@ -15,6 +15,7 @@ class jsx {
   static public $rbx=false; //only rbx mode
   static function end($var=false, $force_array=false){
     header(TYPE_JSON);
+    if(is_string($var)) {jsx::js_eval($var); $var=rbx::$rbx;}
     die(($force_array && !$var)? "[]" : jsx::encode($var===false?rbx::$rbx:$var));
   }
   static function encode($var){

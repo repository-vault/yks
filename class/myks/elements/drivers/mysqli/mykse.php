@@ -12,6 +12,7 @@ class mykse extends mykse_base {
 
 
   function default_value(){
+
     if(is_null($this->field_def['Default']) && !($this->field_def['Null']) ) {
 
         if($this->field_def['Extra']=='auto_increment') $val=null;
@@ -24,10 +25,9 @@ class mykse extends mykse_base {
     }
 
     if($data['Default']==='')$data['Default']="''";
-    if($this->field_def['Default']=="unix_timestamp()")
+    if($this->field_def['Default']==="unix_timestamp()")
         $this->field_def['Default']=0;
-  }
-
+   }
 
   function int_node(){
 	$sizes=array(

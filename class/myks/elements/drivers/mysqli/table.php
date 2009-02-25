@@ -114,8 +114,8 @@ class table extends table_base {
 
 	sql::query("SHOW FULL COLUMNS FROM `$table_name`");
 
-$test= sql::brute_fetch('Field');
-$table_cols=array();
+        $test = sql::brute_fetch('Field');
+        $table_cols=array();
 
         foreach($test as $column_name=>$column){
 
@@ -124,14 +124,17 @@ $table_cols=array();
                 'Default'=>$column['Default']?"'{$column['Default']}'":$column['Default'],
                 'Field'=>$column_name,
                 'Type'=> $column['Type'],
-                'Null'=>(int)($column['Null']=="YES"),
+                'Null'=>($column['Null']=="YES"),
             );
-            if($data['Default']===''){
+            if($data['Default']==='' || ($data['Type']=='text' && !$data['Null']) ){
                 $type = reset(explode('(',$data['Type']));
                 if($type=="enum" || $type=="set") $data['Default']=null;
                 else  $data['Default']="''";
             }
+
+
             $table_cols[$column_name]=$data;
+
         }
 
 

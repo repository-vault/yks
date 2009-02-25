@@ -23,7 +23,7 @@ class mykse_base {
     $this->field_def=array(
         'Field'=>$field_xml->get_name(),
         'Extra'=>'',
-        'Default'=>$field_xml['default'], //casting seems not necessary (simplexml_tostring)
+        'Default'=>isset($field_xml['default'])?(string)$field_xml['default']:null, //casting seems not necessary (simplexml_tostring)
     ); $this->resolve($this->type);
 
     // faut faire tomber les key sur les types qui ne sont pas directs.. 
@@ -50,7 +50,9 @@ class mykse_base {
     }
 
     $this->get_def(); 
-    if(SQL_DRIVER=="mysqli")  $this->default_value(); // doit etre corrigé à terme
+
+
+
 
     $birth=(string)$this->mykse_xml['birth'];
     if($birth && $this->depth > 1){
@@ -75,6 +77,8 @@ class mykse_base {
     $this->mykse_xml=$tmp;
 
     $this->field_def['Null']|=$this->mykse_xml['null']=='null';
+
+    if(SQL_DRIVER=="mysqli")  $this->default_value(); // doit etre corrigé à terme
 
     if(SQL_DRIVER=="pgsql")  $this->default_value($type); // doit etre corrigé à terme
 
