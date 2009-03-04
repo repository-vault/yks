@@ -71,7 +71,8 @@ class exyks {
 */
 
   static function prepare($url){
-    self::$href_ks = htmlspecialchars(strtok(urldecode($url), "¦"),ENT_QUOTES,'UTF-8');
+
+    self::$href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts root
     preg_match_all("#/([^/]+)(?://([^/]*))?#", self::$href_ks, $url_tree, PREG_SET_ORDER);
 
@@ -84,7 +85,7 @@ class exyks {
     $subs_path = "subs";
     $href_fold = "";
     $href_base = "";
-    $value = strtok("¦");
+    $value = strtok("|");
 
     foreach($url_tree as $tmp){
         list($node_name, $args_str) = array($tmp[1],$tmp[2]); 

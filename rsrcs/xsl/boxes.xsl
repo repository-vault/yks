@@ -27,7 +27,7 @@
             <tr class='{$theme}_u'>
             <td class='{$theme}_lu'>&#160;</td>
             <td class='{$theme}_mu'><xsl:apply-templates select='mu/node()'/>
-                <xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme};{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if>
+                <xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme}|{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if>
                 &#160;</td>
             <td class='{$theme}_ru'>&#160;</td>
           </tr>

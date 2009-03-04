@@ -20,9 +20,7 @@ class Js {
 
   static function dynload($uid, $js_build_list, $commons_dir){
 
-    $build_list = array( $uid );
     $list = glob("$commons_dir/mts/Headers/*.js");
-
     foreach($list as $file){
         $contents = file_get_contents($file);
         unset($out);
@@ -38,15 +36,15 @@ class Js {
             $js_build_list[$key] = $body;
         }
     }
-
+    $deps = array(); $patchs = array();
     $load = $js_build_list[$uid];
     if(is_array($load['deps']))    //need true recursion stack here
         foreach($load['deps'] as $dep)
-            array_unshift($build_list, $dep);
+            $deps[] = $dep;
     if(is_array($load['patch']))
         foreach($load['patch'] as $patch)
-            $build_list[] = $patch;
-
+            $patchs[] = $patch;
+    $build_list = array_merge($deps, array($uid), $patchs);
     $build_list = array_map(array('Js','realpath'), $build_list);
 
     return $build_list;
