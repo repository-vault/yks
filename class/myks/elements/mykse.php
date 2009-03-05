@@ -23,7 +23,7 @@ class mykse_base {
     $this->field_def=array(
         'Field'=>$field_xml->get_name(),
         'Extra'=>'',
-        'Default'=>isset($field_xml['default'])?(string)$field_xml['default']:null, //casting seems not necessary (simplexml_tostring)
+        'Default'=>isset($field_xml['default'])?(string)$field_xml['default']:null,
     ); $this->resolve($this->type);
 
     // faut faire tomber les key sur les types qui ne sont pas directs.. 
@@ -78,9 +78,7 @@ class mykse_base {
 
     $this->field_def['Null']|=$this->mykse_xml['null']=='null';
 
-    if(SQL_DRIVER=="mysqli")  $this->default_value(); // doit etre corrigé à terme
-
-    if(SQL_DRIVER=="pgsql")  $this->default_value($type); // doit etre corrigé à terme
+    $this->default_value($type);
 
     $this->type=$type;
     $this->types_tree[]=$type;

@@ -14,14 +14,16 @@ class mykse extends mykse_base {
   function default_value(){
 
     if(is_null($this->field_def['Default']) && !($this->field_def['Null']) ) {
-
         if($this->field_def['Extra']=='auto_increment') $val=null;
+        elseif(isset($this->mykse_xml['default'])){
+            $this->field_def['Default']=(string)$this->mykse_xml['default'];
+        }
         elseif($this->base_type=="int") $val = 0;
         elseif($this->base_type=="string") $val = "''";
         elseif($this->base_type=="enum") $val = null;
         elseif($this->base_type=="text") $val = "''";
         else throw rbx::error("Unable to resolve default value type : '$this->base_type'");
-        $this->field_def['Default'] = $val;
+        if(!is_null($val))$this->field_def['Default'] = $val;
     }
 
     if($data['Default']==='')$data['Default']="''";
