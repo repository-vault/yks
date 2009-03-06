@@ -42,16 +42,17 @@
 	</script>
   </xsl:template>
 
-
   <xsl:template match="domready">
-        <xsl:variable name='id' select="concat('script_', count(ancestor::*), '_', count(preceding::*))"/>
-	<script type='text/javascript' id='{$id}'>window.addEvent('<xsl:value-of select="@event"/>' || 'domready',function(){
-	<xsl:choose>
-		<xsl:when test="@src">new Asset.javascript("<xsl:value-of select="@src"/>",{ onload:function(){ <xsl:apply-templates /> } });</xsl:when>
-		<xsl:otherwise><xsl:apply-templates /></xsl:otherwise>
-	</xsl:choose>
-	}.bind(<xsl:choose><xsl:when test="$jsx">Doms.context</xsl:when><xsl:otherwise>$('<xsl:value-of select="$id"/>')</xsl:otherwise></xsl:choose>));</script>
-	
+    <xsl:variable name='id' select="concat('script_', count(ancestor::*), '_', count(preceding::*))"/>
+    <script type='text/javascript' id='{$id}'>window.addEvent('<xsl:value-of select="@event"/>' || 'domready',function(){
+      <xsl:choose>
+        <xsl:when test="@src">new Asset.javascript("<xsl:value-of select="@src"/>",{ onload:function(){
+            <xsl:value-of disable-output-escaping="yes" select="."/> } });
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of disable-output-escaping="yes" select="."/></xsl:otherwise>
+      </xsl:choose>
+      }.bind(<xsl:choose><xsl:when test="$jsx">Doms.context</xsl:when><xsl:otherwise>$('<xsl:value-of select="$id"/>')</xsl:otherwise></xsl:choose>));
+    </script>
   </xsl:template>
 
   <xsl:template match="styles/css">

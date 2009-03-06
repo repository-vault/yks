@@ -43,16 +43,11 @@ class jsx {
 
     if(strpos($str,"&")!==false)$str=entity_dynamics($str,$lang);
 
-
-
     if(preg_match(self::MASK_INVALID_ENTITIES, $str)) {
         error_log("There are invalid entities in your document");
         $str = preg_replace(self::MASK_INVALID_ENTITIES,'&amp;',$str);
-
-        if(preg_match("#<!\[CDATA\[(?s:.*?)\]\]>#",$str,$out,PREG_OFFSET_CAPTURE)){
-          $str=substr($str,0,$out[0][1])
-            .str_replace("&amp;",'&',$out[0][0])
-            .substr($str,$out[0][1]+strlen($out[0][0]));
+        if(preg_match("#<!\[CDATA\[(?s:.*?)\]\]>#",$str,$out)){
+          $str= str_replace($out[0], str_replace("&amp;",'&',$out[0]),$str );
         }
     }
 

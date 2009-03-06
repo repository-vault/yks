@@ -20,8 +20,8 @@ function array_step($array,$val,$way=1,$loop=true){
 }
 
 function array_sort($array,$keys){
-    $keys = is_array($keys)?$keys:array_slice(func_get_args(),1);
-    return array_intersect_key(array_merge($keys=array_flip($keys),$array),$keys,$array);
+    $keys = array_flip(is_array($keys)?$keys:array_slice(func_get_args(),1));
+    return array_intersect_key(array_merge_numeric($keys, $array),$keys,$array);
 }
 
     //!!dont sprintf($v,$k) ! bad thing © use mask_join else
@@ -34,10 +34,9 @@ function mask_join($glue,$array,$mask){
 }
 
 
-function array_extract($array, $col){
-    $ret=array();
-    foreach($array as $v) $ret[]=$v[$col];
-    return array_unique($ret);
+function array_extract($array, $col, $unique=false){
+    $ret=array(); foreach($array as $v) $ret[]=$v[$col];
+    return $unique?array_unique($ret):$ret;
 }
 function array_get($array,$col){return $col?$array[$col]:$array; }
 
@@ -63,7 +62,7 @@ function linearize_tree($tree,$depth=0){
     }return $ret;
 }
 
-function array_sort_deep($array,$sort_by,$order='asort'){
+function array_sort_deep($array,$sort_by,$order='asort'){ 
     $keys=array(); foreach($array as $k=>$v)$keys[$k]=$v[$sort_by]; $order($keys);
     return array_merge_numeric($keys,$array);
 }
