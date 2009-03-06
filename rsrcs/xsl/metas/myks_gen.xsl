@@ -28,16 +28,18 @@
   <xsl:variable name="elem" select="&mykses;"/>
   <xsl:variable name="name"><xsl:value-of select="string(@type)"/></xsl:variable>
   <xsl:variable name="type"><xsl:value-of select="name($elem)"/></xsl:variable>
+  <xsl:variable name="alike" select="/mykse[@type=$name]"/>
+
   <xsl:if test="not(preceding-sibling::mykse[@type=$name])">
    <xsl:element name="{$name}">
     <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
+
     <xsl:copy-of select="*[name()='mykse']/@type"/>
     <xsl:copy-of select="$elem/@*"/>
-    <xsl:copy-of select="@null|@birth|@default"/>
-
+    <xsl:copy-of select="$alike/@null|$alike/@birth|$alike/@default"/>
     <xsl:choose>
     <xsl:when test="$type='enum'">
-        <xsl:copy-of select="//*[@type=$name]/*/*"/>
+        <xsl:copy-of select="$alike/*/*"/>
     </xsl:when>
     </xsl:choose>
 
