@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml">
 
 <xsl:template name="box_attribute">
-    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if> <xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"> <xsl:value-of select="@theme"/>_table </xsl:if> <xsl:if test="@id"> <xsl:value-of select="@id"/>_contents</xsl:if></xsl:attribute>
+    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if> <xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"> <xsl:value-of select="@theme"/>_table </xsl:if></xsl:attribute>
     <xsl:copy-of select="@style|@id|@src"/>
 
 </xsl:template>
@@ -33,7 +33,10 @@
           </tr>
           <tr>
             <td class='{$theme}_lm'><xsl:apply-templates select='lm/*'/>&#160;</td>
-            <td class='inner {$theme}_mm'><xsl:apply-templates/></td>
+            <td class='inner {$theme}_mm'>
+                <xsl:if test="@id"><div id="{@id}_contents"><xsl:apply-templates/></div></xsl:if>
+                <xsl:if test="not(@id)"><xsl:apply-templates/></xsl:if>
+            </td>
             <td class='{$theme}_rm'>
             <xsl:if test="contains(@options,'close')">
             <div class='{$theme}_close'>&#160;</div>
@@ -57,7 +60,8 @@
             <xsl:call-template name="box_attribute"/>
             <xsl:if test="@caption"><p class='title'><xsl:value-of select="@caption"/></p></xsl:if>
             <xsl:if test="not(./node())"><a href="{@src}"><xsl:value-of select="@src"/></a></xsl:if>
-            <xsl:apply-templates/>
+            <xsl:if test="@id"><div id="{@id}_contents"><xsl:apply-templates/></div></xsl:if>
+            <xsl:if test="not(@id)"><xsl:apply-templates/></xsl:if>
         </div>
     </xsl:otherwise>
 
