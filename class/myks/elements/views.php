@@ -25,9 +25,9 @@ class view {
     self::$definition_mask_str = "$pad <definition signature='%2\$s'> $pad\r\n%1\$s\r\n$pad </definition> $pad\r\n";
   }
 
-  function check(){
+  function check($force = false){
     $this->xml_infos();
-    $this->sql_infos();
+    if(!$force) $this->sql_infos();
     $same=$this->sql_def == $this->xml_def;
 
     if($same) return false; //nothing to do
@@ -36,8 +36,8 @@ class view {
     $signature = $this->current_signature();
 
     $queries = array();
-    if($this->sql_def['name'])
-        $queries[] = "DROP VIEW \"public\".\"{$this->view_uname}\" CASCADE;";
+    if($force || $this->sql_def['name'])
+        $queries[] = "DROP VIEW IF EXISTS \"public\".\"{$this->view_uname}\" CASCADE;";
     
     $queries = array_merge($queries, $this->build_view($this->view_uname));
 

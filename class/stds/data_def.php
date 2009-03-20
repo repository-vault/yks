@@ -28,9 +28,10 @@ if($flag=="entities"){
 
         $dyn_entities = array();
         if($config->dyn_entities)
-          foreach($config->dyn_entities->children() as $entity_type=>$entity_def){
+          foreach($config->dyn_entities->children() as $entity_def){
             if(strpos($entity_def['options'],"cachable")===false)continue;
-            $dyn_entities = array_merge($dyn_entities, entity_load($entity_type,$entity_def,$lang));
+            $dyn_entities = array_merge($dyn_entities,
+                locale_renderer::render($entity_def->getName(),false, $lang));
         }
 
         $entities=count($args)>=3 && is_array($args[2])?$args[2]:array();

@@ -3,7 +3,8 @@
 <!ELEMENT def (#PCDATA)>
 
 <!ATTLIST table
-  name	CDATA	#REQUIRED
+  name    CDATA    #REQUIRED
+  extend  CDATA    #IMPLIED
   %block;
 >
 <!ENTITY % fk_actions "(cascade|set_null|no_action)">

@@ -7,6 +7,8 @@
 require "$class_path/stds/rbx.php";
 require "$class_path/stds/txt.php";
 require "$class_path/stds/jsx.php";
+require "$class_path/stds/renderer.php";
+require "$class_path/stds/locale_renderer.php";
 require "$class_path/stds/date.php";
 require "$class_path/stds/data.php";
 require "$class_path/myks/input.php";
@@ -40,11 +42,11 @@ function vals($enum,$chld="val"){
 
 function fields($table){
     $res=array();
-    foreach($table->field as $test)
+    if($table->field) foreach($table->field as $test)
         $res["$test"]=(string)($test['type']?$test['type']:$test);
     return $res;
 }
-
+ 
 
 function between($a,$min,$max){return $a>=$min && $a<=$max; }
 
@@ -56,6 +58,8 @@ function preg_reduce($mask, $str){ preg_match($mask, $str, $out); return $out[1]
 
 
 
+function input_deep($v){return is_array($v)?array_map(__FUNCTION__,$v):input_check($v);}
+function input_check($v){return $v==null || $v=="\0"?null:$v;}
 
 function specialchars_encode($v){ return htmlspecialchars($v,ENT_QUOTES,'utf-8'); }
 function specialchars_decode($str){ return htmlspecialchars_decode($str,ENT_QUOTES); }

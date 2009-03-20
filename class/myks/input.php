@@ -1,5 +1,10 @@
 <?
+function mykse_is_of_type($field_type, $of_type){
+  static $types_xml = false; if($types_xml===false)$types_xml = yks::$get->types_xml;
+  echo "$field_type";
+  return dsp::resolve($types_xml, $field_type, $of_type);
 
+}
 function mykse_validate($data,$filter_in){
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;
@@ -66,18 +71,24 @@ function mykse_validate($data,$filter_in){
 
 
 
-function mykse_out($data){
-    global $types_xml; $out=array();
-    foreach($data as $mykse_key=>$val){
-        $mykse=$types_xml->$mykse_key;
+function mykse_out($data, $fields=array()){
+    $types_xml = yks::$get->types_xml; $out=array();
+
+    foreach($data as $field_name=>$val){
+        $mykse_type = isset($fields[$field_name])?$fields[$field_name]:$field_name;
+        $mykse=$types_xml->$mykse_type;
 
       while(true) {    //loop to recurse
-        if(!$mykse) { $out[$mykse_key]=$val; continue 2; }
+        if(!$mykse) { $out[$field_name]=$val; continue 2; }
         $mykse_type=$mykse['type'];
         if($mykse_type=='bool'){
-            $out[$mykse_key]=bool($val,true);
+            $out[$field_name]=bool($val,true);
         }elseif($mykse_type=='time'){
-            $out[$mykse_key]=date('d/m/Y',$val);
+            $out[$field_name]=date('d/m/Y',$val);
+        }elseif($mykse_type == 'text'){
+            $out[$field_name]=specialchars_encode($val);
+        }elseif(in_array($mykse_type, array('text', 'string','int')) ){
+            $out[$field_name]=$val;
         } elseif($mykse_type){
             $mykse=$types_xml->$mykse_type;
             continue;
@@ -87,5 +98,6 @@ function mykse_out($data){
 
      } return $out;
 }
+
 
 

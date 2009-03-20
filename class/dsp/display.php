@@ -5,22 +5,38 @@
 
 class dsp{
 
-    /**
-        Helps you to create easily <ks_forms' fields based on a table_name
-        Part 1/∞
-        $skipped_locals : fields to skip ( there's defined in the page context (ie: $sub0))
-    */
-  static function fields($table_name, $skipped_locals=array()){
-    $ret="";
-    $table_infos = yks::$get->tables_xml->$table_name;
-    if(!$table_infos) return "";
 
-    foreach($table_infos->field as $field){
-        if(in_array($field, $skipped_locals)) continue;
-        $ret.="<field title='&mykse.$field;' type='$field'/>";
-    }
-    return $ret;
-    print_r($table_infos);die;
+  static function field_value($field_type,  $field_value){
+    $type_xml = yks::$get->types_xml->$field_type;
+    if($birth_table_name = (string) $type_xml['birth']) {
+      $birth_xml = yks::$get->tables_xml->$birth_table_name;
+      $birth_fields = fields($birth_xml);
+          //look for a "_name" field in birth table
+      $birth_name = reset(preg_split('#_id$#', $field_type))."_name";
+      if($birth_fields[$birth_name]) { //!!We have a birth field description
+          if(!renderer::defined($field_type))
+              renderer::register_std_renderer($field_type, $birth_table_name, $birth_name);
+          return "&$field_type.$field_value;";
+      }
+    } return $field_value;
+  }
+
+  static function field_input($field_type, $field_name, $field_value=false){
+    $type_xml = yks::$get->types_xml->$field_type;
+    if($birth_table_name = (string) $type_xml['birth']) {
+      $birth_xml = yks::$get->tables_xml->$birth_table_name;
+      $birth_fields = fields($birth_xml);
+          //look for a "_name" field in birth table
+      $birth_name = reset(preg_split('#_id$#', $field_type))."_name";
+      if($birth_fields[$birth_name]) { //!!We have a birth field description
+          sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
+          $birth_description = sql::brute_fetch($field_type, $birth_name);
+          $str = "<field title='$field_name'><select name='$field_name'>"
+              .dsp::dd($birth_description,array('selected'=>$field_value,'truncate'=>20))
+              ."</select></field>";
+          return $str;
+      }
+    } return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'/>";
   }
 
 
@@ -58,13 +74,11 @@ class dsp{
     return "<select name='$name' id='$name'><option value='$city'>$commune</option></select>";
    } else return "<input type='text' name='$name' id='$name' value='$city'/>";
   }
-  static function resolve($types_xml,$type){
+  static function resolve($types_xml,$type, $types = array('enum','int','string','text','time')){
     $mykse = $types_xml->$type;
-    $types= array('enum','int','string','text','time');
-
     if(in_array((string)$mykse['type'],$types)) return $mykse;
     elseif(!$mykse) return array();
-    else return self::resolve($types_xml,$mykse['type']);
+    else return self::resolve($types_xml,$mykse['type'], $types);
   }
   static function resolve_enum($types_xml,$type){
     $mykse = self::resolve($types_xml,$type);

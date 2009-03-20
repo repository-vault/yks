@@ -7,6 +7,7 @@
   <div>
     <input type="hidden" name="ks_flag" value="{//jsx/@ks_flag}"/>
     <input type="hidden" name="ks_action" value="{@ks_action}"/>
+    <input type="submit" style="display:none"/>
     <xsl:apply-templates/>
     <xsl:if test="@submit"><div class="submit">
                   <xsl:call-template name='button'>

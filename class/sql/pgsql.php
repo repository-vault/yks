@@ -188,6 +188,7 @@ class sql {
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }
+  static function value(){ $arg=func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
   static function rows($lnk=false){ return  pg_num_rows($lnk?$lnk:self::$result); }
   static function auto_indx($table){
     return (int)current(sql::qrow("SELECT auto_increment_retrieve('`$table`')"));
@@ -197,6 +198,7 @@ class sql {
 
   static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
   static function set_link($lnk){ self::$link=$lnk; }
+  static function reset($res){ self::$result = $res; }
 
   static function table_infos($table_name){
     $where=array('table_schema'=>'public','table_name'=>sql::unquote($table_name));

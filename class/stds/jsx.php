@@ -41,7 +41,7 @@ class jsx {
     $entities = yks::$get->get("entities",$lang);
     if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
 
-    if(strpos($str,"&")!==false)$str=entity_dynamics($str,$lang);
+    if(strpos($str,"&")!==false)$str = renderer::process_entities($str, $lang);
 
     if(preg_match(self::MASK_INVALID_ENTITIES, $str)) {
         error_log("There are invalid entities in your document");
@@ -53,8 +53,7 @@ class jsx {
 
     return $str;
   }
-
-
 }
+
 
 

@@ -11,56 +11,6 @@ function unicode_value($code) {
 function pict_clean($str){ return strtr($str, '/', ' '); }
 
 
-
-function entity_load($entity_type, $entity_def, $lang, $vals=false){
-        $entities=array();
-        $entity_key=(string)($entity_def['key']?$entity_def['key']:$entity_type);
-        $entity_pfx= isset($entity_def['prefix'])?(string)$entity_def['prefix']:false;
-        $prefix_len = $entity_pfx?($entity_pfx?strlen($entity_pfx)+1:0):0;
-
-        if($vals) {
-            if($entity_pfx) $vals=array_mask($vals, "$entity_pfx.$entity_type.%s");
-            $where=array($entity_key=>$vals);
-            $limit="LIMIT ".count($vals);
-        }else $where=array("true");
-
-        if($entity_def['mode']=='col') $val=$entity_def['col']?$entity_def['col']:$lang;
-        else {
-            $where['lang_key']=$lang;
-            $val = $entity_def['col'];
-        }
-
-        sql::select($entity_def['table'],$where, "`$entity_key` as key, `$val` as val",$limit);
-        while(extract(sql::fetch()))
-            $entities['&'.(
-                    $entity_pfx!==false?substr($key,$prefix_len):$entity_type.'.'.$key
-                  ).';']=$val;
-        return $entities;
-}
-
-function entity_dynamics($str,$lang){
-    $dyn_entities = yks::$get->config->dyn_entities;
-    $entity_mask=join('|',array_keys((array)$dyn_entities));
-    $entity_dynamic_mask="#&($entity_mask)\.([.a-zA-Z0-9_-]+);#";
-    preg_match_all($entity_dynamic_mask,$str,$out);
-
-    $entity_loaded=array();
-    
-    foreach($out[1] as $k=>$entity_type)
-        $entity_loaded[$entity_type][]=$out[2][$k];
-
-    $entities=array();
-    foreach($entity_loaded as $entity_type=>$vals)
-        $entities= array_merge(
-            $entities,
-            entity_load($entity_type, $dyn_entities->$entity_type,$lang,$vals)
-        );
-    return strtr($str,$entities);
-}
-
-
-
-
     //may be usefull for search forms
 function strip_accents($str){
     return strtr($str,array('À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'Ç'=>'C', 'ç'=>'c', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ÿ'=>'y', 'Ñ'=>'N', 'ñ'=>'n'));

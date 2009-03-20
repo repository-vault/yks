@@ -37,7 +37,7 @@ class users
     } else { 
         foreach($cols as $col) if(self::$cols_def[$col]&& !$selected[$col]) {
             $tables_used=array_merge($tables_used,self::$cols_def[$col]);
-            $selected[$col]=coalesce(array_mask(self::$cols_def[$col],"`%s`.$col"),$col);
+            $selected[$col]=coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"),$col);
         }elseif(strpos($col," ")!==false) $selected[]=$col;
         $selected=join(',',$selected);
     }
@@ -45,7 +45,7 @@ class users
     if($where && $slice=array_keys($tmp=array_filter($where,'is_array'))){
         foreach($slice as $k=>$col){
                 $tables_used=array_merge($tables_used,self::$cols_def[$col]);
-                $slice[$k]=coalesce(array_mask(self::$cols_def[$col],"`%s`.$col"));
+                $slice[$k]=coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"));
         } $where=array_merge(array_diff($where,$tmp),array_combine($slice,$tmp)); //powa
     }
 
@@ -77,14 +77,17 @@ class users
     return get_children($user_id,'ks_users_tree','user_id',$depth);}
 
     //this implementation only works for postgres 
-  static function get_children_infos($parent_id, $where=true){
+  static function get_children_infos($parent_id, $where=true, $cols=array()){
     $query = "SELECT * FROM
     ivs_users_tree($parent_id) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)
     LEFT JOIN ivs_users_list USING(user_id) 
-    LEFT JOIN ivs_users_profile USING(user_id)
     ".sql::where($where);
     sql::query($query);
-    return sql::brute_fetch('user_id');
+    $users_list = sql::brute_fetch('user_id');
+    if($cols)
+        $users_list = array_merge_numeric($users_list,
+            self::get_infos(array_keys($users_list), $cols));
+    return $users_list;
   }
 
   static function get_root_dir($user_id){ return 'files/'.crpt($user_id,FLAG_FILE,10);}

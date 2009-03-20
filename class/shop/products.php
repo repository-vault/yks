@@ -24,11 +24,19 @@ class products {
         $products_infos = self::get_tree_definition($product_infos);
         //if(!$force) $verif_products+=$verif_status;
     }
+    $verif_products = array('product_id'=>array_keys($products_infos));
+    sql::select("ks_shop_products_specifications", $verif_products);
+    $products_specifications  = array();
+    while($l=sql::fetch())
+        $products_specifications[$l['product_id']]
+            [$l['specification_key']] = $l['specification_value'];
 
     $types=array();$products_children=array();
 
     foreach($products_infos as $product_id=>&$product_infos){
         $product_infos = &$products_infos[$product_id]; //php bug (5.2.1)
+        $product_specifications = $products_specifications[$product_id];
+        $product_infos['product_options'] = $product_specifications;
         $parent_id = $product_infos['parent_id'];
 
         //..$types[]=$type=$product_infos['product_type'];
@@ -36,11 +44,16 @@ class products {
 
         $product_infos['product_img'] = "/imgs/".SITE_CODE."/products/$product_id";
         if($parent_id && $parent_id != $product_id) {
+            $parent_infos = &$products_infos[$parent_id];
             if(!glob(ROOT_PATH.$product_infos['product_img']))
-                $product_infos['product_img']=&$products_infos[$parent_id]['product_img'];
+                $product_infos['product_img']=&$parent_infos['product_img'];
             if(!$product_infos['product_price'] )
-                $product_infos['product_price']=&$products_infos[$parent_id]['product_price'];
-
+                $product_infos['product_price']=&$parent_infos['product_price'];
+            foreach($product_specifications as $specification_key=>$specification_value) {
+                $parent_infos['product_declinaisons']['product_options']
+                    [$specification_key][$specification_value] = $product_id;
+            }
+            unset($parent_infos);
         }
 
         continue; //!

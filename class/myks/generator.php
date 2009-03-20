@@ -21,10 +21,10 @@ class myks_gen {
 	} catch(rbx $r){}
   }
 
-  static function view_check($view_xml){
+  static function view_check($view_xml, $force= false){
 	try {
 		$view=new view($view_xml);
-		return $view->check();
+		return $view->check($force);
 	} catch(rbx $r){}
   }
 

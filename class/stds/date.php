@@ -17,7 +17,7 @@ class date {
 
     /** get universal day **/
   static function get_uday($d=false,$m=false,$y=false,$timestamp=false){
-	return floor(($timestamp?$timestamp:mktime(12,0,0,
+	return floor(($timestamp?$timestamp:mktime(0,0,0,
 		$m!==false?$m:idate('m'),
 		$d!==false?$d:idate('d'),
 		$y!==false?$y:idate('Y')))/86400);

@@ -12,6 +12,11 @@ class config  {
     $tmp=self::$config->$var;
     return $key?($tmp[$key]?$tmp[$key]:$tmp->$key):$tmp;
   }
+  static function retrieve($key){
+    $tmp = self::$config->$key;
+    if(!$tmp) return null;
+    return isset($tmp['file'])?simplexml_load_file($tmp['file']):$tmp;
+  }
 
   static function load($config_file){
     $config = simplexml_load_file($config_file);
