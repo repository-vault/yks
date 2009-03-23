@@ -7,18 +7,9 @@ class dsp{
 
 
   static function field_value($field_type,  $field_value){
-    $type_xml = yks::$get->types_xml->$field_type;
-    if($birth_table_name = (string) $type_xml['birth']) {
-      $birth_xml = yks::$get->tables_xml->$birth_table_name;
-      $birth_fields = fields($birth_xml);
-          //look for a "_name" field in birth table
-      $birth_name = reset(preg_split('#_id$#', $field_type))."_name";
-      if($birth_fields[$birth_name]) { //!!We have a birth field description
-          if(!renderer::defined($field_type))
-              renderer::register_std_renderer($field_type, $birth_table_name, $birth_name);
-          return "&$field_type.$field_value;";
-      }
-    } return $field_value;
+    if(renderer::register_mykse_renderer($field_type))
+        return "&$field_type.$field_value;";
+    else return $field_value;
   }
 
   static function field_input($field_type, $field_name, $field_value=false){

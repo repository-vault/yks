@@ -8,7 +8,7 @@ define('FIND_SURFACE',1);    //non recursive
 define('FIND_FOLLOWLINK',2); //follow sym links
 define('FIND_DEFAULT',0);    //non recursive && no follow sym links
 
-define("CACHE_DIR",isset($_ENV['TMP'])?$_ENV['TMP']:"/tmp");
+define("FILE_CACHE_DIR",isset($_ENV['TMP'])?$_ENV['TMP']:"/tmp");
 define("CACHE_DELAY",3600);
 
 
@@ -56,7 +56,7 @@ function rp($path) {
 
 function file_get_cached($url,$use_include=true,$context=null,$force=false){
     $hash=md5("cache $url");
-    $cached_file=CACHE_DIR."/$hash";
+    $cached_file=FILE_CACHE_DIR."/$hash";
     if(!$force && file_exists($cached_file) && (_NOW-filemtime($cached_file)) <CACHE_DELAY)
         return file_get_contents($cached_file);
     $cache_contents=ltrim(file_get_contents($url,$use_include,$context),BOM);

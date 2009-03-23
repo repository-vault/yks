@@ -8,7 +8,6 @@ define('Ex/yks', 'Exyks, Exupery style');
 
 $class_path=realpath(dirname(__FILE__).'/..');
 
-$host=$_SERVER['SERVER_NAME'];
 
 define('YKS_PATH', realpath("$class_path/.."));
 define('EXYKS_PATH', dirname(realpath($_SERVER['SCRIPT_FILENAME'])));
@@ -19,32 +18,17 @@ if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
     $root_path=substr($root_path,0,-strlen($rel)-1);
 $root_path = realpath($root_path);
 
-
-
 define('ROOT_PATH', $root_path);
-
-$config_path="$root_path/config";
-
-
-$tmp_path="$config_path/tmp";
+define('CONFIG_PATH', ROOT_PATH."/config");
+define('TMP_PATH', CONFIG_PATH."/tmp");
 
 include "$class_path/constants.php";
 include "$class_path/config.php";
+include "$class_path/stds/classes.php";
+include "$class_path/zero_functions.php";
 
 include "$class_path/yks.php";
 include "$class_path/exyks/exyks.php";
-
-include "$class_path/zero_functions.php";
-
-
-$config_file="$config_path/$host.xml";
-
-if(!is_file($config_file))
-    die("Unable to load config file <b>".basename($config_file)."</b>");
-
-
-$config = config::load($config_file);
-
 
 
 $tmp = (string)$config->site['default_mode'];

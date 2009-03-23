@@ -20,6 +20,17 @@ class renderer {
     self::$entities_std_definition[$entity_type] = compact('entity_table', 'entity_col');
     self::register($entity_type, array(__CLASS__, 'std_entity_renderer'));
   }
+  public static function register_mykse_renderer($myks_type){
+    if( self::defined($myks_type)) return true; //nothing to do
+    $type_xml = yks::$get->types_xml->$myks_type;
+    if(!$birth_table_name = (string) $type_xml['birth']) return;
+    $birth_fields = fields( yks::$get->tables_xml->$birth_table_name);
+    //look for a "_name" field in birth table
+    $birth_name = reset(preg_split('#_id$#', $myks_type))."_name";
+    if(!$birth_fields[$birth_name]) return; // no explicit field founded, abort
+    self::register_std_renderer($myks_type, $birth_table_name, $birth_name);
+    return true;
+  }
 
   public static function process_entities($str, $lang){
     $entity_mask=join('|', array_keys(self::$entities_renderer) );
@@ -37,6 +48,7 @@ class renderer {
 
 
   private static function process($entities_vals, $lang){
+
     $entities = array();
     foreach($entities_vals as $entity_type=>$entities_vals){ //copy
         if($renderer = self::$entities_renderer[$entity_type]) 

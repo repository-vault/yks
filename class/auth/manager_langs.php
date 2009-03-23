@@ -14,6 +14,7 @@ if(!$user_lang = $_SESSION['langs'][$accept_hash]) {
 
 define('USER_LANG', $user_lang);
 
-$entities=yks::$get->get("entities",USER_LANG);
+$entities=yks::$get->get("entities", USER_LANG);
 
-locale_renderer::init();
+if($config->dyn_entitities)
+    locale_renderer::init();

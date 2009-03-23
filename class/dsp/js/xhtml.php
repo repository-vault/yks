@@ -27,8 +27,8 @@ function xhtml_check_syntax($str,&$err=null,$doctype="XHTML"){
 }
 
 function js_check_syntax($content,$err){
-  global $tmp_path;
-  $tmp_file=$tmp_path."/".md5(uniqid(rand(), true));
+
+  $tmp_file=CONFIG_PATH."/".md5(uniqid(rand(), true));
   file_put_contents($tmp_file,$content);
 
   $cmd = "java -jar ".YUI_COMPRESSOR_PATH." --charset UTF-8  --type js $tmp_file 2>&1";

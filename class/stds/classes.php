@@ -27,6 +27,7 @@ class classes {
   }
 
   static function activate(){
+    spl_autoload_extensions(".php,.inc,.class.php");
     spl_autoload_register();
     spl_autoload_register(array(__CLASS__,"autoload"));
   }
