@@ -134,10 +134,10 @@ class sql {
     return sql::query("DELETE FROM `$table` ".sql::where($where)." $extras",false,true);
   }
   static function select($table,$where='TRUE',$cols="*",$extra=''){
-    return sql::query("SELECT $cols ".sql::from($table).sql::where($where)." $extra");
+    return sql::query("SELECT $cols ".sql::from($table).' '.sql::where($where)." $extra");
   }
   static function row($table,$where='TRUE',$cols="*",$extras=''){
-    return sql::qrow("SELECT $cols ".sql::from($table)." ".sql::where($where)." $extras LIMIT 1");
+    return sql::qrow("SELECT $cols ".sql::from($table).' '.sql::where($where)." $extras LIMIT 1");
   }
   static function where($cond,$mode='&&'){
     if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
@@ -159,13 +159,12 @@ class sql {
   static function from($tables){
         $ret='';
     if(!is_array($tables))
-            return 'FROM '.(preg_match('#^[a-z0-9_.-]+$#',$tables)? ' `'.str_replace('.', '`.`',$tables).'` '
-                    :$tables);
+            return 'FROM '.(preg_match('#^[a-z0-9_.-]+$#',$tables)? ' `'.str_replace('.', '`.`',$tables).'`':$tables);
     foreach($tables as $k=>$table)
         $ret.=is_numeric($k)?(($k?',':'FROM ').' `'.str_replace('.','`.`',$table).'` '):
             (((is_array($table)&&list($join,$v)=each($table))
                 ?"$join `$v`":"INNER JOIN `$table`")." USING($k) ");
-    return $ret.' ';
+    return $ret;
   }
   static function begin(){ sql::$transaction=true;sql::query('begin');  }
   static function rollback($error=false){

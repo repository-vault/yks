@@ -16,5 +16,5 @@ define('USER_LANG', $user_lang);
 
 $entities=yks::$get->get("entities", USER_LANG);
 
-if($config->dyn_entitities)
+if($config->dyn_entities)
     locale_renderer::init();

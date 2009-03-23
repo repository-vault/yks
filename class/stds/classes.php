@@ -26,8 +26,8 @@ class classes {
         die("Unable to load $class_name (in $file)");    
   }
 
-  static function activate(){
-    spl_autoload_extensions(".php,.inc,.class.php");
+  static function activate($exts = false){
+    if($exts) spl_autoload_extensions($exts);
     spl_autoload_register();
     spl_autoload_register(array(__CLASS__,"autoload"));
   }

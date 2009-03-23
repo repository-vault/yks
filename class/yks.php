@@ -5,6 +5,7 @@ class yks
   static public $get;
 
   static function init(){
+    $tmp_dir = getcwd();chdir(ROOT_PATH);
     $host = strtolower($_SERVER['SERVER_NAME']);
     if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
 
@@ -15,11 +16,10 @@ class yks
 
     self::$get = new yks();
 
-    if(!$config->include_path) return;
-    $paths = array();
-    foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
-        $paths[] = realpath(substr($path,0,1)=="/"?$path:ROOT_PATH."/$path");
-    classes::extend_include_path($paths); classes::activate();
+    if($config->include_path) {
+        $paths = array_map('realpath', explode(PATH_SEPARATOR, $config->include_path['paths']));
+        classes::extend_include_path($paths); classes::activate($config->include_path['exts']);
+    } chdir($tmp_dir);
   }
 
   public function get($key, $args = false){ //dont use it as a static, use yks::$get->get(

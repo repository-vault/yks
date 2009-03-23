@@ -2,6 +2,7 @@
 
 include "manager_core.php";
 
+  sess::init();
   security_manager::sanitize();
 
 

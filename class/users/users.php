@@ -72,7 +72,13 @@ class users
   }
 
   static function get_addr($user_id){return sql::row("ks_users_addrs",compact('user_id'));}
-  static function get_parents($user_id){ return get_parents($user_id,'ks_users_tree','user_id'); }
+  static function get_parents($user_id){
+    if(SQL_DRIVER =='pgsql') {
+        sql::select("`ks_users_parents`($user_id) AS (parent_id INTEGER)");
+        $res = array_reverse(sql::brute_fetch(false, 'parent_id')); $res[]= $user_id;
+        return $res;
+    } else return get_parents($user_id,'ks_users_tree','user_id');
+  }
   static function get_children($user_id,$depth=-1){
     return get_children($user_id,'ks_users_tree','user_id',$depth);}
 

@@ -12,7 +12,11 @@ class sess  {
   static function store($key, $value){ return self::$_storage[$key]=$value; }
   static function retrieve($key){ return self::$_storage[$key]; }
 
-
+  static function flag_ks($connected = true){
+    $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
+    define('FLAG_KS', crpt($id, FLAG_SESS, 10));
+    return FLAG_KS;
+  }
   static function init(){
     if(sess::$id) return false;
     session_name(SESSION_NAME);
@@ -22,7 +26,7 @@ class sess  {
     self::$id = session_id();
     self::$_storage = &$_SESSION['storage'];
     self::status_check();
-    define('FLAG_KS', crpt(self::$id, FLAG_SESS, 10));
+    self::flag_ks();
   }
   static function deco(){
     $_COOKIE['user_id']=false;
@@ -65,4 +69,4 @@ class sess  {
     );
     self::status_check();
   }
-} sess::init();
+} 
