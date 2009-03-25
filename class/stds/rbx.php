@@ -45,9 +45,10 @@ class rbx extends Exception {
   static function line(){ echo str_repeat("-",RBX_PAD)."\n\n"; }
 
   static function init($max,$flag=false){
-    self::$pos=0;self::$max=$max;
+    self::$max=$max;
     if(self::$flag=$flag) data::store(self::$flag,0,2000);
     if(self::$output_mode)echo "[";
+    return self::$pos=0;
   }
   static function walk($step){
     $current=self::$max?($step/self::$max):1;
