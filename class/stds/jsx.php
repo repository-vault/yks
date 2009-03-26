@@ -8,6 +8,8 @@ define('JSX_PARENT_RELOAD',"this.getBox().opener.reload();");
 define('JSX_PARENT_CLOSE',"this.getBox().opener.close();");
 define('JSX_RELOAD',"this.getBox().reload();");
 define('JSX_CLOSE',"this.getBox().close();");
+define('JSX_WALK_INIT', "jsx.rbx.loader(0);");
+
 
 class jsx {
   const MASK_INVALID_ENTITIES = "#&(?!lt;|gt;|\#[0-9]+;|quot;|amp;)#";
@@ -36,6 +38,7 @@ class jsx {
   static function set($key,$val){ yks::$get->config->head->jsx[$key]=$val;  }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
   static function js_eval($msg) { rbx::msg(JSX_EVAL,"$msg;"); }
+  static function walk($step){ rbx::msg("walk", floor(100*$step)); jsx::end();}
 
   static function translate($str, $lang = USER_LANG){
     $entities = yks::$get->get("entities",$lang);

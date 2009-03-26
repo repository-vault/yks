@@ -46,16 +46,16 @@ class rbx extends Exception {
 
   static function init($max,$flag=false){
     self::$max=$max;
-    if(self::$flag=$flag) data::store(self::$flag,0,2000);
+    if(self::$flag=$flag) data::store(self::$flag,0,600);
     if(self::$output_mode)echo "[";
     return self::$pos=0;
   }
   static function walk($step){
-    $current=self::$max?($step/self::$max):1;
+    $current = round(self::$max?($step/self::$max):1,3);
     $step = floor($current*RBX_PAD);
-    $old=self::$pos; self::$pos= $step;
-    if($step == $old) return false;
-    if(self::$flag) return data::store(self::$flag, $current, 2000);
+    $old = self::$pos; self::$pos= $step;
+    if($step == $old) return $current;
+    if(self::$flag) return data::store(self::$flag, $current, 600);
 
     if(!self::$output_mode) return;
     echo str_repeat("=",$step - $old).($step==RBX_PAD?"]\n":'');flush();

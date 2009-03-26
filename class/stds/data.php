@@ -9,7 +9,7 @@ class data {
   static $callbacks=array();
   static $includes=array();
 
-  static function store($flag,$val,$ttl=0){ return apc_store(FLAG_APC."_$flag",$val,$ttl); }
+  static function store($flag, $v, $ttl=0){return apc_store(FLAG_APC."_$flag", $v, $ttl)?$v:false; }
   static function delete($flag) { return apc_delete(FLAG_APC."_$flag"); }
   static function fetch($flag){ return apc_fetch(FLAG_APC."_$flag"); }
   static function register($flag, $callback,$file=false){
