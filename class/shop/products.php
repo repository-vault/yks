@@ -49,10 +49,11 @@ class products {
                 $product_infos['product_img']=&$parent_infos['product_img'];
             if(!$product_infos['product_price'] )
                 $product_infos['product_price']=&$parent_infos['product_price'];
-            foreach($product_specifications as $specification_key=>$specification_value) {
-                $parent_infos['product_declinaisons']['product_options']
-                    [$specification_key][$specification_value] = $product_id;
-            }
+            if($product_specifications)
+                foreach($product_specifications as $specification_key=>$specification_value)
+                    $parent_infos['product_declinaisons']['product_options']
+                        [$specification_key][$specification_value] = $product_id;
+            
             unset($parent_infos);
         }
 

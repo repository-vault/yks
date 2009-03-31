@@ -28,7 +28,7 @@ class config  {
 
         if(!$config->site['code'])
             $config->site['code']=join('.',array_slice(explode(".",$domain['host']),0,-2));
-        if(!((string)$config->site['code']))die("Unable to load config, site_code undefined");
+        if(!((string)$config->site['code'])) $config->site['code'] = "site";
     }
 
     if(!$config->head)$config->addChild("head");

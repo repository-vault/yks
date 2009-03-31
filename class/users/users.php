@@ -102,8 +102,13 @@ class users
   static function show($user_infos){
     if(!$avatar=$user_infos['user_avatar'])$avatar="/imgs/blank.png";
     return "<div class='user'>
-        <img src='$avatar' alt='avatar'/><br/>{$user_infos['user_name']}
+        <img src='$avatar' alt='avatar'/>{$user_infos['user_name']}
     </div>";
+  }
+  static function infos_renderer($user_ids, $key, $lang, $cols=array('user_name','user_avatar')){
+    $users_infos = users::get_infos($user_ids, $cols);$res=array();
+    foreach($users_infos as $user_id=>$user_infos)$res["&$key.$user_id;"] = self::show($user_infos);
+    return $res;
   }
 
   static function init(){
@@ -125,4 +130,5 @@ class users
   }
 
 }
+
 

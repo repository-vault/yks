@@ -47,6 +47,7 @@ $screen_id = 10;
 
 define('MODE', exyks::store('MODE', $mode));
 
+exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->languages['keys']));
 exyks::store('HEADERS_MODE', array(
     'xml'=>TYPE_XML,
     'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,

@@ -167,7 +167,7 @@ class table extends table_base {
             'Extra'=>'',
             'Default'=>$column['column_default'],
             'Field'=>$column['column_name'],
-            'Type'=>$column['data_type'],
+            'Type'=>myks_gen::$type_resolver->convert($column['data_type'], 'in'),
             'Null'=>(int)bool($column['is_nullable']),
         );
     } return $table_cols;

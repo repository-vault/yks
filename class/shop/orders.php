@@ -19,7 +19,7 @@ class orders {
   static function init($order_infos){
         self::$order_infos = $order_infos;
         self::$products_list = & self::$order_infos['products_list'];
-        self::$basket = &sess::$sess['basket'];
+        self::$basket = &sess::$sess->retrieve('basket');
         if((!self::$basket)) self::$basket = array('products_list'=>array());
   }
 
@@ -37,7 +37,7 @@ class orders {
         'order_start'=>_NOW,
         'order_status'=>'process',
     ),$order_extras);
-    sess::$sess['order_id'] = $order_id = sql::insert("ks_shop_orders",$data,true);
+    sess::$sess->store("order_id", $order_id = sql::insert("ks_shop_orders",$data,true) );
     return $order_id;
   }
 
@@ -119,7 +119,7 @@ class orders {
     $verif_order=compact('order_id');
 
     sql::update('ks_shop_orders', $data, $verif_order);
-    unset(sess::$sess['order_id']);
+    sess::$sess->delete('order_id');
     return $order_id;
   }
 

@@ -34,6 +34,19 @@ class mykse extends mykse_base {
     }
   }
 
+  protected function get_def(){
+    if($this->mykse_xml == "sql_timestamp") {
+        $this->field_def["Type"]="timestamp(0)";
+    }else return parent::get_def();
+  }
+
+  protected function resolve($type){
+    if($type=="sql_timestamp") {
+        $this->mykse_xml = $type;
+        return $this;
+    }else return parent::resolve($type);
+  }
+
 
   function enum_node(){
         $set=((string)$this->mykse_xml['set'])=='set';

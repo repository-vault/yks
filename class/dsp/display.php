@@ -18,11 +18,11 @@ class dsp{
       $birth_xml = yks::$get->tables_xml->$birth_table_name;
       $birth_fields = fields($birth_xml);
           //look for a "_name" field in birth table
-      $birth_name = reset(preg_split('#_id$#', $field_type))."_name";
+      $birth_name = reset(preg_split('#_id|_key$#', $field_type))."_name";
       if($birth_fields[$birth_name]) { //!!We have a birth field description
           sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
           $birth_description = sql::brute_fetch($field_type, $birth_name);
-          $str = "<field title='$field_name'><select name='$field_name'>"
+          $str = "<field title='$field_name'><select name='$field_name'>&select.choose;"
               .dsp::dd($birth_description,array('selected'=>$field_value,'truncate'=>20))
               ."</select></field>";
           return $str;

@@ -29,18 +29,18 @@ class sess  {
     self::flag_ks();
   }
   static function deco(){
-    $_COOKIE['user_id']=false;
+    $_COOKIE['user_id'] = false;
     setcookie("user_pswd_".sess::$sess['user_id'],false);
     self::renew(); 
     rbx::ok("&auth_deco;");
   }
 
   static function renew(){
-    setcookie('user_id',false);
+    setcookie('user_id', false);
     sess::$sess=array('users_tree'=>array(), 'session_id'=>self::$id);
     sess::$_storage=array();
     self::$renewed=true;
-    auth::update(USERS_ROOT, false, true);
+    auth::update(USERS_ROOT);
   }
   static function close(){ return session_write_close(); }
 
@@ -48,25 +48,14 @@ class sess  {
     self::$connected=(self::$sess['user_id'] && self::$sess['user_id']!=USERS_ROOT);
   }
 
-  static function get_computed($cols='*'){
-    $computed = array();
-    $lines = users::get_infos(self::$sess['users_tree'],$cols);
-    foreach($lines as $line) $computed=array_merge($computed,array_filter($line,'is_not_null'));
-    return $computed;
+  static function update($user_id, $force=false){
+    if(!auth::update($user_id, $force)) return false;
+    sess::load();
+    return true;
   }
 
   static function load(){
-    $user_id=(int)sess::$sess['user_id'];
-    sess::$sess=array_merge(
-        sess::$sess,
-        array(
-          'user_addr'=>users::get_addr($user_id),
-          'user_acces'=>auth::renew(sess::$sess['users_tree']),
-        ),
-        sql::row(array('ks_users_list','user_id'=>'ks_users_tree'),compact('user_id')),
-        users::get_infos_unique($user_id),
-        array('computed'=>self::get_computed())
-    );
+    sess::$sess = new user(sess::$sess['user_id'], sess::$sess['users_tree']);
     self::status_check();
   }
 } 

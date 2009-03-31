@@ -25,27 +25,14 @@ class auth {
     }return true;
   }
 
-  static function update($user_id, $force=false, $skip_full_load=false){
+  static function update($user_id, $force=false){
     if(!$user_id) return false;	//root_id=0 graou ?
-
     //get the tree above user_id, then check if current tree is compatible
-
-    if($force) $tree = users::get_parents($user_id);
-    else $tree = auth::get_tree($user_id);
-    if(!$tree) return false;
-
-    sess::$sess['user_id']=$user_id;
-    sess::$sess['users_tree']=$tree;
-
-        sql::update("ks_users_profile",array('user_connect'=>_NOW),compact('user_id'));
-
-        $types=array();
-        sql::select("ks_users_list",array('user_id'=>$tree));
-        $types_raw= sql::brute_fetch('user_id','user_type');
-        foreach($tree as $user_id)$types[$types_raw[$user_id]]=$user_id;
-        sess::$sess['users_types']=$types;
-
-    if(!$skip_full_load) sess::load();
+    $asked_tree = users::get_parents($user_id);
+    $diff = array_intersect(sess::$sess['users_tree'], $asked_tree);
+    $users_tree = $force?$asked_tree:self::get_tree($diff, $asked_tree);
+    if(!$users_tree) return false;
+    sess::$sess = compact('user_id', 'users_tree');
     return true;
   }
 
@@ -56,9 +43,8 @@ class auth {
     } return true; 
   }
 
-  static function is_valid($user_id){
-    $auth_types=sql::row("ks_users_list",compact('user_id'),'auth_type');
-    $grant=true;$auth_types=array_filter(explode(',',$auth_types['auth_type']));
+  static function is_valid($user_id, $auth_types){
+    $grant=true;$auth_types=array_filter(explode(',',$auth_types));
     foreach($auth_types as $auth_type)$grant&=call_user_func(array($auth_type, 'verif'),$user_id);
     return $grant;
   }
@@ -83,15 +69,17 @@ class auth {
     return $valid;
   }
 
-  static function get_tree($user_id){
+  static function get_tree($final_tree, $asked_tree){
         //merge current tree with (indirectly) requested tree, stop at join point - meng point
-    $tree=sess::$sess['users_tree'];$path=array();
-    do {
-        if(!auth::is_valid($user_id))return false;
-        $path[]=$user_id;
-        if(!extract(sql::row('ks_users_tree',compact('user_id'),'parent_id as user_id'))) return false;
-    }while(!in_array($user_id,$tree) && $user_id!=USERS_ROOT);
-    return array_unique(array_merge($tree,array_reverse($path)));
+    sql::select("ks_users_list", array('user_id'=>$asked_tree), 'user_id, auth_type');
+    $auths_types = array_sort(sql::brute_fetch('user_id','auth_type'), array_reverse($asked_tree));
+
+    foreach($auths_types as $user_id=>$auth_types) {
+        if(!auth::is_valid($user_id, $auth_types)) return false;
+        if(in_array($user_id, $final_tree) || $user_id == USERS_ROOT) break;
+    } return $asked_tree;
   }
+
+
 }
 

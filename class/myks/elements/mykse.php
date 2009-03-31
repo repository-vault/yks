@@ -1,13 +1,11 @@
 <?
 
-include "procedures.php";
-include "views.php";
 
   /**	Myks_gen by 131 for Exyks distributed under GPL V2
 	this class export the basic field SQL definition from a myks_xml structure
   */
 
-class mykse_base {
+abstract class mykse_base {
   public $field_def=array();
   protected $table;
   protected $types_tree=array();
@@ -69,15 +67,12 @@ class mykse_base {
 
   }
 
-  function resolve($type){
-
-    $tmp=myks_gen::$mykse_xml->$type;
-    if($this->depth++ > $this->depth_max && !$tmp)
+  protected function resolve($type){
+    $this->mykse_xml = myks_gen::$mykse_xml->$type;
+    if($this->depth++ > $this->depth_max && !$this->mykse_xml)
         throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
-    $this->mykse_xml=$tmp;
 
     $this->field_def['Null']|=$this->mykse_xml['null']=='null';
-
     $this->default_value($type);
 
     $this->type=$type;
@@ -85,7 +80,7 @@ class mykse_base {
     return $this;
   }
 
-  function get_def(){
+  protected function get_def(){
 
     $this->base_type=(string)$this->mykse_xml['type'];
     if($this->base_type=="int") $this->int_node();

@@ -14,12 +14,12 @@ class yks
         die("Unable to load config file <b>".basename($config_file)."</b>");
     $GLOBALS['config'] = $config =  config::load($config_file);
 
-    self::$get = new yks();
-
+    self::$get = new yks(); $paths = array();
     if($config->include_path) {
         $paths = array_map('realpath', explode(PATH_SEPARATOR, $config->include_path['paths']));
-        classes::extend_include_path($paths); classes::activate($config->include_path['exts']);
-    } chdir($tmp_dir);
+        classes::activate($config->include_path['exts']);
+    } $paths[] = YKS_PATH."/libs"; classes::extend_include_path($paths);
+    chdir($tmp_dir);
   }
 
   public function get($key, $args = false){ //dont use it as a static, use yks::$get->get(
@@ -40,7 +40,7 @@ class yks
     return $this->$flag;
   }
 
-  private function __get($key){ return $this->get($key);  }
+  public function __get($key){ return $this->get($key);  }
 
 
 } yks::init();

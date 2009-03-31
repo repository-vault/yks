@@ -40,10 +40,11 @@ function vals($enum,$chld="val"){
 }
 
 
-function fields($table){
+function fields($table, $key=false){
     $res=array();
-    if($table->field) foreach($table->field as $test)
-        $res["$test"]=(string)($test['type']?$test['type']:$test);
+    if($table->field) foreach($table->field as $field)
+        if(!$key || $field['key']==$key)
+        $res["$field"]=(string)($field['type']?$field['type']:$field);
     return $res;
 }
  
@@ -54,7 +55,8 @@ function is_not_null($a){return !is_null($a);}
 
 function preg_areplace($tmp, $str){ return preg_replace(array_keys($tmp),array_values($tmp),$str); }
 function preg_clean($filter, $str,$rem='^'){ return preg_replace("#[{$rem}{$filter}]#i",'',$str); }
-function preg_reduce($mask, $str){ preg_match($mask, $str, $out); return $out[1]; }
+function preg_list($mask, $str){ return preg_match($mask, $str, $out)?array_slice($out,1):array(); }
+function preg_reduce($mask, $str){ return reset(preg_list($mask, $str)); }
 
 
 

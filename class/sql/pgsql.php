@@ -121,8 +121,8 @@ class sql {
 
   
   static function update($table,$vals,$where='',$extras="") {
-        if(!$vals) return false;
-    return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where).$extras,false,true);
+    if(!$vals) return false;
+    return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where, $table).$extras,false,true);
   }
 
   static function replace($table,$vals,$where=array(),$auto_indx=false){
@@ -131,21 +131,22 @@ class sql {
     return sql::update($table,$vals,$where);
   }
   static function delete($table,$where,$extras=''){
-    return sql::query("DELETE FROM `$table` ".sql::where($where)." $extras",false,true);
+    return sql::query("DELETE FROM `$table` ".sql::where($where, $table)." $extras",false,true);
   }
   static function select($table,$where='TRUE',$cols="*",$extra=''){
-    return sql::query("SELECT $cols ".sql::from($table).' '.sql::where($where)." $extra");
+    return sql::query("SELECT $cols ".sql::from($table).' '.sql::where($where, $table)." $extra");
   }
   static function row($table,$where='TRUE',$cols="*",$extras=''){
-    return sql::qrow("SELECT $cols ".sql::from($table).' '.sql::where($where)." $extras LIMIT 1");
+    sql::select($table, $where, $cols, " $extras LIMIT 1"); return sql::fetch();
   }
-  static function where($cond,$mode='&&'){
+  static function where($cond, $table=false, $mode='&&'){
     if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
+    if(is_object($cond)) $cond = array($cond);
     if(!is_array($cond)) return $cond&&strpos($cond,"WHERE")===false?"WHERE $cond":$cond;
     $obj = array_filter($cond,'is_object');
     foreach($obj as $k=>$obj){
         if(!method_exists($obj, '__sql_where'))continue;
-        unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where());
+        unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
     }
     $slice=array_filter(array_keys($cond),'is_numeric');
     $conds=array_intersect_key($cond,array_flip($slice));

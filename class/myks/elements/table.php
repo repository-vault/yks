@@ -1,7 +1,7 @@
 <?
 
 
-class table_base {
+abstract class table_base {
   public $name;
   protected $xml;
   protected $sql;
@@ -20,32 +20,27 @@ class table_base {
 
 
   function __construct($table_xml){
-	$this->xml=$table_xml;
-	$this->name=$this->xml["name"];
-        $this->uname=sql::unquote($this->xml['name']);
-        $this->table_shema =  (string) yks::$get->config->sql->links->db_link['db'];
-	$this->keys_def=array();
-
+    $this->xml=$table_xml;
+    $this->name=$this->xml["name"];
+    $this->uname=sql::unquote($this->xml['name']);
+    $this->table_shema =  (string) yks::$get->config->sql->links->db_link['db'];
+    $this->keys_def=array();
   }
   
   function check(){
-        $this->xml_infos();
+    $this->xml_infos();
 
-        $this->sql=sql::table_infos($this->name);
-	if($this->sql) {
-            $this->sql_infos();
-            $diff=$this->fields_xml_def != $this->fields_sql_def
-              || $this->keys_xml_def != $this->keys_sql_def;
-            if(!$diff)  return false;
-            //print_r($this->fields_xml_def);print_r($this->fields_sql_def);die;
-            //print_r($this->keys_sql_def);print_r($this->keys_xml_def);die;
+    $this->sql = sql::table_infos($this->name);
+    if(!$this->sql) return $this->create();
 
-            return $this->update();
-        }
-
-	return $this->create();
+    $this->sql_infos();
+    $diff = $this->fields_xml_def != $this->fields_sql_def
+        || $this->keys_xml_def != $this->keys_sql_def;
+    if(!$diff)  return false;
+    //print_r($this->fields_xml_def);print_r($this->fields_sql_def);die;
+    //print_r($this->keys_sql_def);print_r($this->keys_xml_def);die;
+    return $this->update();
   }
-
 
 
 /*
@@ -53,9 +48,8 @@ class table_base {
 */
 
   function sql_infos(){
-        $this->fields_sql_def=table::table_fields($this->uname);
-        $this->keys_sql_def=table::table_keys($this->uname, $this->table_shema);
-
+    $this->fields_sql_def=table::table_fields($this->uname);
+    $this->keys_sql_def=table::table_keys($this->uname, $this->table_shema);
   }
 
 /*
@@ -63,12 +57,10 @@ class table_base {
 */
 
   function xml_infos(){
-
     foreach($this->xml->fields->field as $field_xml){
         $mykse=new mykse($field_xml,$this);
         $this->fields_xml_def[$mykse->field_def['Field']] = $mykse->field_def;
     }
-
   }
 
   function key_add($type,$field,$refs=array()){$TYPE=strtoupper($type);
@@ -95,17 +87,9 @@ class table_base {
         $this->tmp_key[$type][]=$field;
     }
 
-
-
   }
 
-
-
-
-
-
-
- static function table_keys($table_name, $table_schema){
+  static function table_keys($table_name, $table_schema){
     
     $where=array('table_name'=>$table_name,'table_schema'=>$table_schema);
     sql::select("information_schema.table_constraints",$where,
@@ -153,10 +137,6 @@ class table_base {
 
     return $table_keys;
  }
-
-
-
-
 
 
 }
