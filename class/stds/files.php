@@ -8,7 +8,7 @@ define('FIND_SURFACE',1);    //non recursive
 define('FIND_FOLLOWLINK',2); //follow sym links
 define('FIND_DEFAULT',0);    //non recursive && no follow sym links
 
-define("FILE_CACHE_DIR",isset($_ENV['TMP'])?$_ENV['TMP']:"/tmp");
+define("FILE_CACHE_PATH",isset($_ENV['TMP'])?$_ENV['TMP']:"/tmp");
 define("CACHE_DELAY",3600);
 
 
@@ -35,10 +35,10 @@ function locate_file($file, $paths) {
     returns compact('tmp_file', 'file_ext');
 */
 function upload_check($upload_type, $upload_file){
-    $tmp_dir=users::get_tmp_dir(sess::$sess['user_id']); //tmp upload dir
+    $tmp_path=users::get_tmp_path(sess::$sess['user_id']); //tmp upload dir
     $tmp_file = "$upload_type.$upload_file";
 
-    if(!preg_match(FILE_MASK,$tmp_file)|| !is_file($tmp_file="$tmp_dir/$tmp_file") )
+    if(!preg_match(FILE_MASK,$tmp_file)|| !is_file($tmp_file="$tmp_path/$tmp_file") )
         return false;
 
     $file_ext=file_ext($tmp_file);
@@ -56,7 +56,7 @@ function rp($path) {
 
 function file_get_cached($url,$use_include=true,$context=null,$force=false){
     $hash=md5("cache $url");
-    $cached_file=FILE_CACHE_DIR."/$hash";
+    $cached_file=FILE_CACHE_PATH."/$hash";
     if(!$force && file_exists($cached_file) && (_NOW-filemtime($cached_file)) <CACHE_DELAY)
         return file_get_contents($cached_file);
     $cache_contents=ltrim(file_get_contents($url,$use_include,$context),BOM);
@@ -77,7 +77,8 @@ function find_file($dir,$pattern='.',$opts=FIND_DEFAULT){
 function create_dir($dir){
     if($dir && !is_dir( $dir=rtrim($dir,'/') ) ) {
         create_dir(substr($dir,0,strrpos($dir,'/')));
-        mkdir($dir);
+        $res = mkdir($dir);
+        if(!$res) throw new Exception("Unable to create directory");
     }return $dir;
 }
 

@@ -9,6 +9,7 @@ define('JSX_PARENT_CLOSE',"this.getBox().opener.close();");
 define('JSX_RELOAD',"this.getBox().reload();");
 define('JSX_CLOSE',"this.getBox().close();");
 define('JSX_WALK_INIT', "jsx.rbx.loader(0);");
+define('JSX_WALKER', "jsx.rbx.loader();");
 
 
 class jsx {
@@ -42,8 +43,9 @@ class jsx {
 
   static function translate($str, $lang = USER_LANG){
     $entities = yks::$get->get("entities",$lang);
+    foreach(exyks::$entities as $k=>$v) $entities["&$k;"] = $v;
     if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
-
+    
     if(strpos($str,"&")!==false)$str = renderer::process_entities($str, $lang);
 
     if(preg_match(self::MASK_INVALID_ENTITIES, $str)) {

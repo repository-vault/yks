@@ -1,0 +1,5 @@
+<!ELEMENT rule (#PCDATA)>
+<!ATTLIST rule
+  on  (insert|update|delete) #REQUIRED
+  where  CDATA	 #IMPLIED
+>

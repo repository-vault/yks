@@ -18,8 +18,10 @@
 	</xsl:if>
 	<xsl:if test="not($href)">
 	  <input alt="{$value}" type="image" src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}">
+          <xsl:if test="name()='button'">
         <xsl:if test="$confirm"><xsl:attribute name="onclick">return window.confirm("<xsl:value-of select="$confirm"/> ?")</xsl:attribute></xsl:if>
             <xsl:copy-of select="@name|@src|@class|@onclick|@id|@style"/>
+          </xsl:if>
             </input>
 	</xsl:if>
   </xsl:template>

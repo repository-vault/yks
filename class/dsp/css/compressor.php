@@ -4,7 +4,7 @@ Compress CSS rules
 */
 
 function compute_css($file,$files_path=array()){
-    static $current_dir=false; if(!$current_dir) $current_dir="/";
+    static $current_path=false; if(!$current_path) $current_path="/";
     static $site_url=false;
     if(!$site_url) {
         $file_infos=parse_url($file);
@@ -12,14 +12,14 @@ function compute_css($file,$files_path=array()){
         $site_url=$file_infos['host']?"http://{$file_infos['host']}":SITE_URL;
     }
 
-    $old_dir=$current_dir;
+    $old_path=$current_path;
 
     $dir=dirname($file);
     $file=basename($file);
-    $current_dir=($dir[0]!="/")?$current_dir.($current_dir=='/'?'/':'/').$dir:$dir;
+    $current_path=($dir[0]!="/")?$current_path.($current_path=='/'?'/':'/').$dir:$dir;
 
-    $current_dir=rp($current_dir);
-    $file_path="$current_dir/$file";
+    $current_path=rp($current_path);
+    $file_path="$current_path/$file";
     $file_url=$site_url.$file_path;
 
     $contents='';
@@ -43,7 +43,7 @@ function compute_css($file,$files_path=array()){
                 $search=$out[0][$k]; $sep=$out[1][$k];
                 //this line is a mystery, if someone understand why i was trying to do...
                 //$file=preg_replace(array('#\\\?{#','#\\\?}#'),array("%7B","%7D"),$file);
-                if(!preg_match("#^http|/#",$file)) $file="$current_dir/$file";
+                if(!preg_match("#^http|/#",$file)) $file="$current_path/$file";
                 if($search!=($url="url($sep$file$sep)"))
                         $contents=str_replace($search,$url,$contents);
                         
@@ -67,7 +67,7 @@ function compute_css($file,$files_path=array()){
 
     $files_path[]=$file_url;
 
-    $current_dir=$old_dir;
+    $current_path=$old_path;
     return $contents;
 }
 

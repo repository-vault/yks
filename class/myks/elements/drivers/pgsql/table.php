@@ -2,15 +2,51 @@
 
 
 class table extends table_base {
-    public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
-    public $tmp_refs=array();
-    static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
-    static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
+  public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
+  public $tmp_refs=array();
+  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
+  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
+
+  private $rules; //rules only exists in this driver
+
+
+  function __construct($table_xml){
+    parent::__construct($table_xml);
+    if($table_xml->rules->rule) {
+        rbx::ok("-- !! It seems $this->name has rules");
+    }
+    $this->rules = new rules($table_xml->rules, $this);
+  }
+
+
+  function sql_infos(){
+    parent::sql_infos();
+    $this->rules_sql_def = $this->rules->sql_infos();
+  }
+
+  function xml_infos(){
+    parent::xml_infos();
+    $this->rules_xml_def = $this->rules->xml_infos();
+  }
+
+
+  function modified(){
+    return parent::modified()
+        || $this->rules_xml_def != $this->rules_sql_def;
+  }
+
 
   function update(){
+    return array_merge(
+        $this->alter_fields(),
+        $this->alter_keys(),
+        $this->rules->alter_rules()
+    );
+  }
 
-    $todo=array( );
+  function alter_fields() {
     $table_alter = "ALTER TABLE `$this->name` ";
+    $todo = array();
     //fields sync
     foreach($this->fields_xml_def as $field_name=>$field_xml){
         $field_sql = $this->fields_sql_def[$field_name]; 
@@ -18,13 +54,14 @@ class table extends table_base {
             unset($this->fields_sql_def[$field_name]);
             if($field_sql==$field_xml) continue;
 
-
             $diff = array_diff_assoc($field_xml,$field_sql);
             foreach($diff as $diff_type=>$new_value){
                 if($diff_type=="Null"){
                     if(!$new_value && !is_null($field_xml['Default']))
-                        $todo[] = "UPDATE `$this->name` SET `$field_name`={$field_xml['Default']} WHERE `$field_name` IS NULL";
-                    $todo[] = "$table_alter ALTER COLUMN `$field_name` ".($new_value?"DROP NOT NULL":"SET NOT NULL");
+                        $todo[] = "UPDATE `$this->name` "
+                            ."SET `$field_name`={$field_xml['Default']} WHERE `$field_name` IS NULL";
+                    $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+                              .($new_value?"DROP NOT NULL":"SET NOT NULL");
                 }elseif($diff_type == "Type")
                     $todo[] = "$table_alter ALTER COLUMN `$field_name` TYPE $new_value";
                 elseif($diff_type == "Default"){
@@ -36,42 +73,47 @@ class table extends table_base {
         } else { //ajout de colonne
             $todo[] = "$table_alter ADD COLUMN `$field_name` {$field_xml['Type']}";
             if(!is_null($field_xml['Default'])){
-                $todo[] = "$table_alter ALTER COLUMN `$field_name` SET DEFAULT {$field_xml['Default']}";
+                $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+                          ." SET DEFAULT {$field_xml['Default']}";
                 $todo[] = "UPDATE `$this->name` SET `$field_name`={$field_xml['Default']}";
             }
-            $todo[] = "$table_alter ALTER COLUMN `$field_name` ".($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
+            $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+                .($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
         }
 
     } foreach(array_keys($this->fields_sql_def) as $field_name)
         $todo[]="$table_alter DROP `$field_name`";
 
-    if($this->keys_xml_def != $this->keys_sql_def){
-
-        foreach($this->keys_sql_def as $key=>$def){
-		if($this->keys_xml_def[$key] != $def){
-			$drop = "$table_alter DROP ".(($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
-                            "CONSTRAINT \"$key\"":"INDEX `$key`");
-                        array_unshift($todo, $drop );
-                } else unset($this->keys_xml_def[$key]);
-        }
-
-        foreach($this->keys_xml_def as $key=>$def){
-            $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
-            $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-            if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->name}` $members";continue;}
-            if($type=="FOREIGN"){
-                $add.=" REFERENCES {$def['refs']} ";
-                if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
-                if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
-                if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
-            }
-            $todo[]="$table_alter $add";
-        }
-    }
-
-    return $todo?join(";\n",$todo).";\n":false;
+    return $todo;
   }
 
+  function alter_keys(){
+    $table_alter = "ALTER TABLE `$this->name` ";
+    $todo = array();
+    if($this->keys_xml_def == $this->keys_sql_def) return $todo;
+
+    foreach($this->keys_sql_def as $key=>$def){
+        if($this->keys_xml_def[$key] != $def)
+            array_unshift($todo, $drop = "$table_alter DROP ".
+                (($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
+                    "CONSTRAINT \"$key\""
+                    :"INDEX `$key`") );
+        else unset($this->keys_xml_def[$key]);
+    }
+
+    foreach($this->keys_xml_def as $key=>$def){
+        $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
+        $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->name}` $members";continue;}
+        elseif($type=="FOREIGN"){
+            $add.=" REFERENCES {$def['refs']} ";
+            if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
+            if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
+            if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
+        } $todo[]="$table_alter $add";
+    }
+    return $todo;
+  }
 
   function create() {
     $todo=array();
@@ -90,12 +132,8 @@ class table extends table_base {
 
     $query="CREATE TABLE `$this->name` (\n\t".join(",\n\t",$todo)."\n);\n";
 
-
     return $query;
   }
-
-
-
 
 
 

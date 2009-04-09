@@ -3,7 +3,7 @@
 /**
     Exyks No myks Parser, by 131
 
-    myks_parser  : build a full DOM tree based on every $myks_dir files.
+    myks_parser  : build a full DOM tree based on every $myks_path files.
     output mode specify the root node what you want work with (table,view,mykse,procedure ..)
 */
 
@@ -13,14 +13,14 @@ class myks_parser {
   private $myks_gen;
   const myks_public_name = "-//YKS//MYKS";
 
-  function __construct($myks_dir){
+  function __construct($myks_path){
 
     $this->myks_gen = new DomDocument("1.0");
 
     $main_xml=$this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
-    //	$old_dir=getcwd();chdir($myks_dir);
-    $files = $myks_dir?find_file($myks_dir,'.*?\.xml$',FIND_FOLLOWLINK):array();
-    $xsl_file = RSRCS_DIR."/xsl/metas/myks_gen.xsl";
+    //	$old_path=getcwd();chdir($myks_path);
+    $files = $myks_path?find_file($myks_path,'.*?\.xml$',FIND_FOLLOWLINK):array();
+    $xsl_file = RSRCS_PATH."/xsl/metas/myks_gen.xsl";
     if(!is_file($xsl_file)) die("Unable to locate ressource myks_gen.xsl, please check rsrcs");
     foreach($files as $xml_file){
 
@@ -43,7 +43,7 @@ class myks_parser {
 
   static function resolve_dtd($xml_file){
     $search = '#<\!DOCTYPE\s+myks\s+PUBLIC\s+"'.(self::myks_public_name).'"[^>]*>#';
-    $replace = '<!DOCTYPE myks SYSTEM "'.(RSRCS_DIR."/dtds/myks.dtd").'">';
+    $replace = '<!DOCTYPE myks SYSTEM "'.(RSRCS_PATH."/dtds/myks.dtd").'">';
 
     $str = file_get_contents($xml_file);
     $str = preg_replace( $search, $replace, $str);

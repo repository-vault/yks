@@ -34,8 +34,8 @@ class renderer {
   }
 
   public static function process_entities($str, $lang=false){
-    $entity_mask=join('|', array_keys(self::$entities_renderer) );
-    $entity_dynamic_mask="#&($entity_mask)\.([.a-zA-Z0-9_-]+);#";
+    $entity_mask = join('|', array_keys(self::$entities_renderer) );
+    $entity_dynamic_mask = "#&($entity_mask)\.([.a-zA-Z0-9_-]+);#";
     preg_match_all($entity_dynamic_mask, $str, $out);
 
     $entity_loaded=array();

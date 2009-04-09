@@ -37,7 +37,7 @@ class xsl {
     }return join(', ',$errs);
   }
   static function load_multiples($xml_file,$xsl_file=false){
-    $old_dir=getcwd();chdir(dirname($xml_file));
+    $old_path=getcwd();chdir(dirname($xml_file));
     $xml = new DOMDocument();
     $xsl = new DOMDocument();
     $xslt = new XSLTProcessor();
@@ -51,7 +51,7 @@ class xsl {
     }
     $xsl->load($xsl_file,LIBXML_YKS);
     $xslt->importStyleSheet($xsl);
-    chdir($old_dir);
+    chdir($old_path);
     $res=$xslt->transformToDoc($xml);	//beah
 
     return 	simplexml_import_dom($res);

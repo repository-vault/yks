@@ -10,7 +10,7 @@ class exyks {
   static public $page_def = 'home';
   static public $href;
   static public $is_script = false;
-
+  static public $entities = array();
   static private $customs = array();
 
   static function bench($key) { return self::store("time_$key", microtime(true)); }
@@ -122,7 +122,7 @@ class exyks {
     //Ferme les subs : close session, shut SQL link down & co
   static function context_end(){
     if(exyks::$is_script) die;
-    sess::close();
+    if(class_exists('sess')) sess::close();
     exyks::store('generation_time', exyks::tick('generation_start'));
 
     $str = ob_get_contents(); ob_end_clean(); //did subs provide contents ?
@@ -131,7 +131,7 @@ class exyks {
   }
 
   static function render_prepare($vars = array()){
-    extract($vars); //!
+    extract(self::$entities = $vars); //!
     exyks::bench('display_start'); 
     ob_start();
 
@@ -143,7 +143,7 @@ class exyks {
     if(!JSX) {
         jsx::set("xsl_engine",XSL_ENGINE);
         jsx::set("site_code",SITE_CODE);
-        jsx::set("cache_dir", CACHE_DIR);
+        jsx::set("cache_path", CACHE_URL);
         jsx::set("href_fold","?$href_fold");
         jsx::set("screen_id",10);
 

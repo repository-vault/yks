@@ -16,9 +16,13 @@ $root_path=dirname($_SERVER['SCRIPT_FILENAME']);
 
 if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
     $root_path=substr($root_path,0,-strlen($rel)-1);
-$root_path = realpath($root_path);
+$www_path = realpath($root_path);
+$root_path = dirname($www_path);
+
+chdir($root_path);
 
 define('ROOT_PATH', $root_path);
+define('WWW_PATH', $www_path);
 define('CONFIG_PATH', ROOT_PATH."/config");
 define('TMP_PATH', CONFIG_PATH."/tmp");
 
@@ -70,14 +74,13 @@ $site_base=SITE_BASE;
 $verif_site=compact("site_code");
 $site_name="&site.$site_code;";
 
-$cache_dir      = $root_path.'/'.CACHE_DIR;
-$js_cache_dir   = "$cache_dir/js";
-$xsl_cache_dir	= "$cache_dir/xsl";  //see site_xsl
-$xml_cache_dir	= "$cache_dir/xml";
-$img_cache_dir	= "$cache_dir/imgs";
+$cache_path     =  CACHE_PATH;
+$js_cache_path  = "$cache_path/js";
+$xsl_cache_path = "$cache_path/xsl";  //see site_xsl
+$xml_cache_path = "$cache_path/xml";
+$img_cache_path = "$cache_path/imgs";
 
-$site_xsl= CACHE_DIR."/xsl/{$engine}_client.xsl"; // relative
-define('XSL_PATH',"$site_url/$site_xsl");
-define('XSL_SERVER_PATH', "$xsl_cache_dir/{$engine}_server.xsl");
-
+$site_xsl       =  CACHE_URL."/xsl/{$engine}_client.xsl"; // relative
+define('XSL_PATH',        "$site_url/$site_xsl");
+define('XSL_SERVER_PATH', "$xsl_cache_path/{$engine}_server.xsl");
 

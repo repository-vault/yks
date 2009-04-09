@@ -62,4 +62,12 @@ function directory_recursive_sublink($dir,$dest){
     }
 }
 
+function array_show_diff($a1, $a2){
+    $diff = array();
+    foreach($a1 as $k=>$v) if(!in_array($v, $a2)) $diff["a1_$k"] = $v;
+    foreach($a2 as $k=>$v) if(!in_array($v, $a1)) $diff["a2_$k"] = $v;
+    return $diff;
+}
+
+
 

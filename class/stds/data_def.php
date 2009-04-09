@@ -6,7 +6,7 @@ global $config,$class_path;
 
 if($flag=="types_xml"){
 	include_once "$class_path/myks/parser.php";
-	$myks_gen=new myks_parser(MYKS_DIR);
+	$myks_gen=new myks_parser(MYKS_PATH);
 	return $myks_gen->out("mykse")->saveXML();
 }
 
@@ -14,9 +14,9 @@ if($flag=="types_xml"){
 if($flag=="tables_xml"){
 	include_once "$class_path/myks/parser.php";
 	
-	$myks_gen=new myks_parser(MYKS_DIR);
+	$myks_gen=new myks_parser(MYKS_PATH);
 	$tables_xml=$myks_gen->out("table");
-	$xsl = new DOMDocument();$xsl->load(RSRCS_DIR."/xsl/metas/myks_tables.xsl",LIBXML_YKS);
+	$xsl = new DOMDocument();$xsl->load(RSRCS_PATH."/xsl/metas/myks_tables.xsl",LIBXML_YKS);
 	$xslt = new XSLTProcessor(); $xslt->importStyleSheet($xsl);
 	return $xslt->transformToXML($tables_xml);
 }

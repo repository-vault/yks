@@ -1,6 +1,7 @@
 <?
 
 
+
 abstract class table_base {
   public $name;
   protected $xml;
@@ -34,14 +35,22 @@ abstract class table_base {
     if(!$this->sql) return $this->create();
 
     $this->sql_infos();
-    $diff = $this->fields_xml_def != $this->fields_sql_def
-        || $this->keys_xml_def != $this->keys_sql_def;
-    if(!$diff)  return false;
+    if(!$this->modified())  return false;
+
+    //print_r(array_show_diff($this->fields_xml_def, $this->fields_sql_def));
+    //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def));
     //print_r($this->fields_xml_def);print_r($this->fields_sql_def);die;
     //print_r($this->keys_sql_def);print_r($this->keys_xml_def);die;
-    return $this->update();
+
+    $todo  = $this->update();
+    if(!$todo) throw rbx::error("Error while looking for differences in $this->name");
+    return join(";\n",$todo).";\n";
   }
 
+  function modified(){
+    return $this->fields_xml_def != $this->fields_sql_def
+        || $this->keys_xml_def != $this->keys_sql_def;
+  }
 
 /*
     populate fields_sql_def and keys_sql_def definition based on the SQL structure
@@ -88,6 +97,17 @@ abstract class table_base {
     }
 
   }
+
+  function update(){
+    return array_merge(
+        $this->alter_fields(),
+        $this->alter_keys()
+    );
+  }
+
+  function alter_fields(){ return array(); }
+  function alter_keys(){ return array(); }
+
 
   static function table_keys($table_name, $table_schema){
     

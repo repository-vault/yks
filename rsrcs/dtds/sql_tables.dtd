@@ -1,4 +1,4 @@
-<!ELEMENT table ( description?, fields+)>
+<!ELEMENT table ( description?, fields+,rule*)>
 <!ELEMENT description (#PCDATA)>
 <!ELEMENT def (#PCDATA)>
 

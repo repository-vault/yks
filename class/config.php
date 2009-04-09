@@ -52,16 +52,18 @@ class config  {
     define('BASE_CC',(string)$config->lang['country_code']);
     define('ERROR_PAGE','/'.SITE_BASE.'/error');
     define('ERROR_404',"Location: /?".ERROR_PAGE.'//404');
-    define('MYKS_DIR',(string) $config->data['myks_dir']);
+    define('MYKS_PATH',(string) $config->data['myks_path']);
     define('SESSION_NAME', crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
-    define('CACHE_DIR','cache/'.FLAG_DOMAIN);
-    define('LIBRARIES_DIR', isset($config->site['libraries_dir'])
-            ?realpath($config->site['libraries_dir']):realpath(YKS_PATH."/.."));
+    define('CACHE_URL','cache/'.FLAG_DOMAIN);
+    define('CACHE_PATH', WWW_PATH.'/'.CACHE_URL);
 
-    define('COMMONS_DIR', isset($config->site['commons_dir'])
-            ?realpath($config->site['commons_dir']):ROOT_PATH);
+    define('LIBRARIES_PATH', isset($config->site['libraries_path'])
+            ?realpath($config->site['libraries_path']):realpath(YKS_PATH."/.."));
+
+    define('COMMONS_PATH', isset($config->site['commons_path'])
+            ?realpath($config->site['commons_path']):ROOT_PATH);
     define('COMMONS_URL',$config->site['commons_url']);
-    define('RSRCS_DIR',YKS_PATH.'/rsrcs');
+    define('RSRCS_PATH',YKS_PATH.'/rsrcs');
     return $config;
   }
 }

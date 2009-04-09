@@ -60,6 +60,9 @@
     <fields>
          <xsl:copy-of select="//table[@name=$name]/fields/*"/>
     </fields>
+    <rules>
+    <xsl:copy-of select="//table[@name=$name]/rule"/>
+    </rules>
   </table>
   </xsl:if>
 </xsl:template>

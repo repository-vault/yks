@@ -22,6 +22,7 @@ include "engine_detection.php";
 
 
 define('BOM', pack('C*',239,187,191));
+define('VAL_SPLITTER', '#\s*[;,]\s*#');
 
 	//Headers stds types
 define('TYPE_XML',"Content-Type: text/xml; charset=utf-8");

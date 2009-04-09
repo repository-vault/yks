@@ -5,7 +5,7 @@ class yks
   static public $get;
 
   static function init(){
-    $tmp_dir = getcwd();chdir(ROOT_PATH);
+    $tmp_path = getcwd();chdir(ROOT_PATH);
     $host = strtolower($_SERVER['SERVER_NAME']);
     if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
 
@@ -20,7 +20,7 @@ class yks
     $paths[] = YKS_PATH."/libs";
     classes::extend_include_path($paths);
     classes::activate($config->include_path['exts']);
-    chdir($tmp_dir);
+    chdir($tmp_path);
   }
 
   public function get($key, $args = false){ //dont use it as a static, use yks::$get->get(
@@ -45,6 +45,7 @@ class yks
 
 
 } yks::init();
+
 
 
 

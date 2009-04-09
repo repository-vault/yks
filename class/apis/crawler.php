@@ -5,14 +5,14 @@ $svn_url="http://svn.mootools.net/trunk/Source/";
 include "$class_path/stds/files.php";
 
 $host="http://svn.mootools.net";
-$base_dir="/trunk/Source/";
+$base_path="/trunk/Source/";
 
 $dir_toscan=array(
-	$base_dir=>1	
+	$base_path=>1	
 ); $file_generated=array();
 
 
-$dest_dir="test_trunk";
+$dest_path="test_trunk";
 
 
 while($toscan=array_keys($dir_toscan,1)){
@@ -27,16 +27,16 @@ while($toscan=array_keys($dir_toscan,1)){
 			preg_match('#^((/?).*?/?)([^/]*)?$#',$href,$path);
 			$_fold= rp( ($path[2]=='/')?$path[1]:$fold.$path[1] ); $file=$path[3];
 
-			if(substr($_fold,0,strlen($base_dir))!=$base_dir) continue;
+			if(substr($_fold,0,strlen($base_path))!=$base_path) continue;
 
 			if(!isset($dir_toscan[$_fold])) $dir_toscan[$_fold]= 1;
 
 			if($file){
-				$local_dir=$dest_dir.$_fold; $_file=$_fold.$file;
-				$local_file=$local_dir.$file;
+				$local_path=$dest_path.$_fold; $_file=$_fold.$file;
+				$local_file=$local_path.$file;
 				if(!$file_generated[$_fold]){
 					$file_generated[$_fold]=true;
-					create_dir($local_dir);
+					create_dir($local_path);
 				}
 
 				if(!$file_generated[$_file]){

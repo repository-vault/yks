@@ -1,12 +1,5 @@
 <!ELEMENT view (rule | def)*>
 
-<!ELEMENT rule (#PCDATA)>
-<!ATTLIST rule
-  on  (insert|update|delete) #REQUIRED
-  where  CDATA	 #IMPLIED
->
-
-
 
 <!ATTLIST view
   name	CDATA	#REQUIRED

@@ -30,7 +30,7 @@ class xsl_cache {
   }
 
   static function out_file($engine_name, $transformation_side){
-    return XSL_CACHE_DIR."/{$engine_name}_{$transformation_side}.xsl";
+    return XSL_CACHE_PATH."/{$engine_name}_{$transformation_side}.xsl";
   }
 }
 

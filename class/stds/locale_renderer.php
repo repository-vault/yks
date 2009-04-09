@@ -7,7 +7,7 @@ class locale_renderer {
     foreach(yks::$get->config->dyn_entities->children() as $entity_def)
         renderer::register($entity_def->getName(), array(__CLASS__, 'render'));
   }
-  static function render($entity_type, $vals, $lang){
+  static function render($vals, $entity_type, $lang){
     $entity_def = yks::$get->config->dyn_entities->$entity_type;
     $entity_key = (string)($entity_def['key']?$entity_def['key']:$entity_type);
     $entity_pfx = isset($entity_def['prefix'])?(string)$entity_def['prefix']:false;

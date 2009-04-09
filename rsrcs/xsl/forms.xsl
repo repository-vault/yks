@@ -10,9 +10,9 @@
     <input type="submit" style="display:none"/>
     <xsl:apply-templates/>
     <xsl:if test="@submit"><div class="submit">
-                  <xsl:call-template name='button'>
-                      <xsl:with-param name='value' select='@submit'/>
-                  </xsl:call-template>
+        <xsl:call-template name='button'>
+            <xsl:with-param name='value' select='@submit'/>
+        </xsl:call-template>
     </div></xsl:if>
   </div>
     </form>

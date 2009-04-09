@@ -1,6 +1,6 @@
 <?
 
-define('DTD_XHTML',RSRCS_DIR."/dtds/xhtml1-strict.dtd");
+define('DTD_XHTML', RSRCS_PATH."/dtds/xhtml1-strict.dtd");
 
 function errors_format($errors){
 	$str="";foreach($errors as $error)

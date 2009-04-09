@@ -21,6 +21,7 @@ abstract class mykse_base {
     $this->field_def=array(
         'Field'=>$field_xml->get_name(),
         'Extra'=>'',
+        'Null'=>null,
         'Default'=>isset($field_xml['default'])?(string)$field_xml['default']:null,
     ); $this->resolve($this->type);
 
@@ -50,6 +51,8 @@ abstract class mykse_base {
     $this->get_def(); 
 
 
+    if(is_null($this->field_def['Null']))
+        $this->field_def['Null'] = true;
 
 
     $birth=(string)$this->mykse_xml['birth'];

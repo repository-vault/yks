@@ -3,8 +3,8 @@ include_once "$class_path/stds/files.php";
 define("YUI_COMPRESSOR","yuicompressor-2.2.4");
 define("JAVA_PATH", ($tmp=$config->apis->java['bin_path'])?$tmp:"java");
 
-define("YUI_COMPRESSOR_PATH",RSRCS_DIR."/yui_compressor/yui_compressor.jar");
-define("JS_CACHE_DIR",$js_cache_dir);
+define("YUI_COMPRESSOR_PATH",RSRCS_PATH."/yui_compressor/yui_compressor.jar");
+define("JS_CACHE_PATH",$js_cache_path);
 
 $js_prefixs=array();
 $js_build_list=array();
@@ -18,9 +18,9 @@ class Js {
   }
 
 
-  static function dynload($uid, $js_build_list, $commons_dir){
+  static function dynload($uid, $js_build_list, $commons_path){
 
-    $list = glob("$commons_dir/mts/Headers/*.js");
+    $list = glob("$commons_path/mts/Headers/*.js");
     foreach($list as $file){
         $contents = file_get_contents($file);
         unset($out);
@@ -60,13 +60,13 @@ class Js {
         $hash.= "$file:$time;";
     } $hash = md5($hash);
 
-    $cache_full   = JS_CACHE_DIR."/{$hash}.uncompressed.js";
-    $cache_packed = JS_CACHE_DIR."/{$hash}.packed.js";
+    $cache_full   = JS_CACHE_PATH."/{$hash}.uncompressed.js";
+    $cache_packed = JS_CACHE_PATH."/{$hash}.packed.js";
     $cache_file   = $compress ? $cache_packed : $cache_full;
     if(is_file($cache_file)) return $cache_file;
 
-    //delete_dir(JS_CACHE_DIR,false);
-    create_dir(JS_CACHE_DIR);
+    //delete_dir(JS_CACHE_PATH,false);
+    create_dir(JS_CACHE_PATH);
 
     $contents="";
     foreach($build_list as $file) $contents.=file_get_contents($file);
