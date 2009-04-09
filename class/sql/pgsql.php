@@ -143,8 +143,7 @@ class sql {
     if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
     if(is_object($cond)) $cond = array($cond);
     if(!is_array($cond)) return $cond&&strpos($cond,"WHERE")===false?"WHERE $cond":$cond;
-    $obj = array_filter($cond,'is_object');
-    foreach($obj as $k=>$obj){
+    foreach(array_filter($cond,'is_object') as $k=>$obj){
         if(!method_exists($obj, '__sql_where'))continue;
         unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
     }
@@ -157,6 +156,8 @@ class sql {
            :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
     return $conds?"WHERE ".join(" $mode ",$conds):'';
   }
+
+
   static function from($tables){
         $ret='';
     if(!is_array($tables))

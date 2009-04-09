@@ -2,6 +2,7 @@
 /*  "Exyks MySQL" by Leurent F. (131)
     distributed under the terms of GNU General Public License - © 2005-2006-2007-2008
 */
+include "$class_path/sql/functions.php";
 
 class sql {
    const FAMILY='mysql';
@@ -101,7 +102,7 @@ class sql {
   
   static function update($table,$vals,$where='',$extras="LIMIT 1") {
     if(!$vals) return false;
-    return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where)." $limit");
+    return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where, $table)." $limit");
   }
 
   static function replace($table, $vals, $where=array(), $auto_indx=false, $limit=''){
@@ -112,16 +113,16 @@ class sql {
 
   static function delete($table,$where,$extras=''){
     if(!$where) return false;
-    $query = "DELETE FROM `$table` ".sql::where($where)." $extras";
+    $query = "DELETE FROM `$table` ".sql::where($where, $table)." $extras";
     return sql::query($query);
   }
 
   static function select($table,$where='TRUE',$cols="*",$extra=''){
-    return sql::query("SELECT $cols ".sql::from($table).sql::where($where)." $extra");
+    return sql::query("SELECT $cols ".sql::from($table).sql::where($where, $table)." $extra");
   }
 
-  static function row($table,$where='TRUE',$cols="*", $extras="LIMIT 1"){
-    return sql::qrow("SELECT $cols ".sql::from($table).sql::where($where)." ".$extras);
+  static function row($table,$where='TRUE',$cols="*", $extras=""){
+    sql::select($table, $where, $cols, " $extras LIMIT 1"); return sql::fetch();
   }
 
     /** move the #nth item down */
@@ -133,20 +134,24 @@ class sql {
   }
 
 
-  static function where($cond,$mode='&&'){
+  static function where($cond, $table=false, $mode='&&'){
     if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
+    if(is_object($cond)) $cond = array($cond);
     if(!is_array($cond)) return $cond&&strpos($cond,"WHERE")===false?"WHERE $cond":$cond;
+    foreach(array_filter($cond,'is_object') as $k=>$obj){
+        if(!method_exists($obj, '__sql_where'))continue;
+        unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
+    }
     $slice=array_filter(array_keys($cond),'is_numeric');
     $conds=array_intersect_key($cond,array_flip($slice));
 
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
-	$conds[]= is_array($v)
-	    ?((list($type,$val)=each($v)) && $type==='sql'?
-	    " $k $val": ($v?sql::in_join($k,$v):"FALSE") )
-	    :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
+       $conds[]= is_array($v)
+           ?((list($type,$val)=each($v)) && $type==='sql'?
+               " $k $val": ($v?sql::in_join($k,$v):"FALSE") )
+           :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
     return $conds?"WHERE ".join(" $mode ",$conds):'';
   }
-
 
   static function from($tables){
     $ret=''; if(!is_array($tables)) $ret = preg_match("#[ ]#",$tables)?$tables:"`$tables`";

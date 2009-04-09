@@ -15,10 +15,11 @@ class yks
     $GLOBALS['config'] = $config =  config::load($config_file);
 
     self::$get = new yks(); $paths = array();
-    if($config->include_path) {
+    if($config->include_path) 
         $paths = array_map('realpath', explode(PATH_SEPARATOR, $config->include_path['paths']));
-        classes::activate($config->include_path['exts']);
-    } $paths[] = YKS_PATH."/libs"; classes::extend_include_path($paths);
+    $paths[] = YKS_PATH."/libs";
+    classes::extend_include_path($paths);
+    classes::activate($config->include_path['exts']);
     chdir($tmp_dir);
   }
 
