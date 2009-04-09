@@ -26,7 +26,7 @@ class Element extends XHTMLElement {
     foreach ($this->getParent()->$name as $node) {
         if($node == $this) {
             unset($this->getParent()->{$name}[$c]);
-            return false;
+            return $this;
         } $c++;
     }
   }
@@ -35,8 +35,11 @@ class Element extends XHTMLElement {
     if($key=="text") {
         $str = "";
         return dom_import_simplexml($this)->textContent;
+    }elseif($key=="html") {
+        return $this->asXML();
+    }elseif($key=="innerHTML") {
+        return preg_reduce("#^[^>]+>(.*?)<[^<^]+$#s", $this->asXML());
     }else {
-
         return (string)$this[$key];
 
     }
