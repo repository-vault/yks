@@ -22,9 +22,9 @@ class _user extends _sql_base {
     } $data = array_intersect_key($line, array_flip(array('auth_type', 'user_type', 'user_name')));
     $data["parent_id"] = $this->users_tree[max(count($this->users_tree)-2,0)];
     parent::__construct($data);
-    $user_type = ltrim($this->user_type,'ks_').'_id';
-    if($this->user_type!="ks_users") $this->$user_type = $user_id;
-    $this->sql_key = $user_type;
+    $type_id = preg_reduce('#^[a-z]{2,3}_(.*?)s?$#', $this->user_type).'_id';
+    if($this->user_type!="ks_users") $this->$type_id = $user_id;
+    $this->sql_key = $type_id;
   }
 
   function _set($key, $value){
@@ -42,7 +42,7 @@ class _user extends _sql_base {
     $key = $this->sql_key;
     if($table_xml  = yks::$get->tables_xml->$sql_table)
         $key = reset(array_keys(fields($table_xml), _user::sql_key));
-    return array($key => $this->$key);
+    return array($key => $this->user_id);
   }
 
   function __get($key){
