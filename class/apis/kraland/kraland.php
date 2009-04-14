@@ -1,7 +1,7 @@
 <?
 define('KRA_URL',"http://www.kraland.org");
-define('KRA_XML_CACHE_DIR', "$cache_dir/kraland/xml");
-define('KRA_JS_CACHE_DIR', "$cache_dir/kraland/js");
+define('KRA_XML_CACHE_PATH', "$cache_path/kraland/xml");
+define('KRA_JS_CACHE_PATH', "$cache_path/kraland/js");
 
 
 

@@ -3,7 +3,7 @@
 
 function get_kra_xml($players_list, $player_country){
 
-    $file = KRA_XML_CACHE_DIR."/$player_country.xml";
+    $file = KRA_XML_CACHE_PATH."/$player_country.xml";
     $xml = simplexml_load_file($file);
     if(!$xml) return false;
 
