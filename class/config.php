@@ -14,7 +14,7 @@ class config  {
   }
   static function retrieve($key){
     $tmp = self::$config->$key;
-    if(!$tmp) return null;
+    if(!$tmp) return simplexml_load_string("<$key/>");
     return isset($tmp['file'])?simplexml_load_file($tmp['file']):$tmp;
   }
 
@@ -31,13 +31,8 @@ class config  {
         if(!((string)$config->site['code'])) $config->site['code'] = "site";
     }
 
-    if(!$config->head)$config->addChild("head");
-    if(!$config->head->jsx)$config->head->addChild("jsx");
-    if(!$config->head->styles)$config->head->addChild("styles");
-    if(!$config->head->scripts)$config->head->addChild("scripts");
-
-    define('SQL_DRIVER',(string)$config->sql['driver']?$config->sql['driver']:'mysqli');
     define('DEBUG',(bool)strpos(" {$config->site['debug']}",$_SERVER['REMOTE_ADDR']));
+    define('SQL_DRIVER',(string)$config->sql['driver']?$config->sql['driver']:'mysqli');
     define('SITE_CODE',strtr($config->site['code'],'.','_'));
     define('SITE_URL',(string)$config->site['url']);
     define('SITE_BASE',ucfirst(SITE_CODE));
@@ -52,18 +47,25 @@ class config  {
     define('BASE_CC',(string)$config->lang['country_code']);
     define('ERROR_PAGE','/'.SITE_BASE.'/error');
     define('ERROR_404',"Location: /?".ERROR_PAGE.'//404');
-    define('MYKS_PATH',(string) $config->data['myks_path']);
     define('SESSION_NAME', crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
     define('CACHE_URL','cache/'.FLAG_DOMAIN);
     define('CACHE_PATH', WWW_PATH.'/'.CACHE_URL);
 
-    define('LIBRARIES_PATH', isset($config->site['libraries_path'])
-            ?realpath($config->site['libraries_path']):realpath(YKS_PATH."/.."));
-
-    define('COMMONS_PATH', isset($config->site['commons_path'])
-            ?realpath($config->site['commons_path']):ROOT_PATH);
+    define('ROOT_PATH', paths_merge(WWW_PATH,$config->site['root_path'],".."));
+    define('TMP_PATH', ROOT_PATH."/tmp");
+    define('LIBRARIES_PATH', paths_merge(YKS_PATH, $config->site['libraries_path'], ".."));
+    define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
     define('COMMONS_URL',$config->site['commons_url']);
     define('RSRCS_PATH',YKS_PATH.'/rsrcs');
+    define('MYKS_PATH',paths_merge(ROOT_PATH, $config->data['myks_path'],"config/myks"));
+
+
+        //head element creation
+    if(!$config->head)$config->addChild("head");
+    if(!$config->head->jsx)$config->head->addChild("jsx");
+    if(!$config->head->styles)$config->head->addChild("styles");
+    if(!$config->head->scripts)$config->head->addChild("scripts");
+
     return $config;
   }
 }

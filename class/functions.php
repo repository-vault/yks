@@ -81,11 +81,11 @@ function reloc($url) {
 function abort($code) {
     if(ERROR_PAGE==exyks::$href) return; //empeche les redirections en boucle
     $dest=ERROR_PAGE."//$code";
-    if($code==404 && $dest==exyks::$href_ks) reloc("?/Yks/error//404");
-    $_SESSION[SESS_TRACK_ERR]="?".exyks::$href_ks;
+    if($code==404 && $dest==exyks::$href_ks) reloc("/?/Yks/error//404");
+    $_SESSION[SESS_TRACK_ERR]="/?".exyks::$href_ks;
 
     if(JSX){if($code!=403)rbx::error($code);
-        else jsx::js_eval("Jsx.open('?$dest','error_box',this)");
+        else jsx::js_eval("Jsx.open('/?$dest','error_box',this)");
         jsx::end();
     } reloc("?$dest");
 }

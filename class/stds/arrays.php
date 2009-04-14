@@ -40,8 +40,8 @@ function array_extract($array, $col, $unique=false){
 }
 function array_get($array,$col){return $col?$array[$col]:$array; }
 
-function array_merge_numeric($a,$b){
-  foreach($b as $k=>$v)$a[$k]=is_array($v)&&is_array($a[$k])?array_merge($a[$k],$v):$v;return $a;
+function array_merge_numeric($a,$b, $depth="array_merge"){
+  foreach($b as $k=>$v)$a[$k]=is_array($v)&&is_array($a[$k])?$depth($a[$k],$v):$v;return $a;
 }
 function attributes_to_assoc($x){$tmp=array(); //php 5.3 grrrr
     foreach($x->attributes() as $k=>$v)$r[$k]=(string)$v;

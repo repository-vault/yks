@@ -18,8 +18,6 @@ define('XSL_NODE_SET',2);
 define('XSL_ROBOT',3);
 define('XSL_SERVER', XSL_NODE_SET);
 
-include "engine_detection.php";
-
 
 define('BOM', pack('C*',239,187,191));
 define('VAL_SPLITTER', '#\s*[;,]\s*#');
@@ -40,6 +38,7 @@ define('TYPE_PDF', "Content-type:application/pdf");
 define('TYPE_CSV',"Content-type: application/vnd.ms-excel");
 define('MIME_VERSION','MIME-Version: 1.0');
 define('HTTP_CACHED_FILE',"Last-Modified: Thu, 12 Apr 2007 19:31:20 GMT");
+define('SESS_TRACK_ERR', 'SESS_TRACK_ERR');
 
 	//XHTML stuffs
 define('XML_VERSION','<?xml version="1.0" encoding="utf-8"?>'.LF);
@@ -56,16 +55,12 @@ define('LIBXML_YKS',LIBXML_DTDLOAD|LIBXML_DTDATTR
 define('LIBXML_MYKS',LIBXML_YKS|LIBXML_DTDVALID);
 
 
-define('YKS_INSTALLED',1);
-
-define('MEMORY_USAGE',"ps -aeo rss | awk '{sum+=$1} END {print sum*1024}'");
 
 $var_safe='\$[A-Z]?[a-z0-9_]*';
 define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
 define("FUNC_MASK","#[a-z0-9_:]+\(.*?\)#e");
 
-define('MAIL_MASK','#([.0-9a-z_+-]+)@((?:[0-9a-z-]+\.)+[0-9a-z]{2,})#i');
 
 	//Dates masks
 define('DATE', '$d/$m/$Y');
@@ -85,9 +80,9 @@ $action=(string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['k
 
 
 
+include "engine_detection.php";
 
 define('XSL_ENGINE', $engine);
-
 
 
 $charsets=array(

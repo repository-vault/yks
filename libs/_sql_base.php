@@ -46,12 +46,25 @@ abstract class _sql_base  implements ArrayAccess {
   }
 
 
-  static function from_where($class, $sql_table, $sql_key, $where) {
+  static function from_where($class, $sql_table, $sql_key, $where) {//, optionals
+    $args = array_slice(func_get_args(),4); //retrieve optionals args
     sql::select($sql_table, $where); $tmp = array();
-    foreach(sql::brute_fetch($sql_key) as $key_id=>$key_infos)
+    if(!$args) foreach(sql::brute_fetch($sql_key) as $key_id=>$key_infos)
         $tmp[$key_id] = new $class($key_infos);
-    return $tmp;
+    else {
+        $class = new ReflectionClass($class);
+        foreach(sql::brute_fetch($sql_key) as $key_id=>$key_infos){
+            $args_tmp = array($key_infos); foreach($args as $arg) $args_tmp[] = $arg==PH?false:$arg[$key_id];
+            $tmp[$key_id] = $class->newInstanceArgs($args_tmp);
+        }
+    } return $tmp;
   }
+
+  static function extract_where($array){
+    if(!$array) return array();
+    return array(($key = current($array)->sql_key) => array_values(array_extract($array, $key)));
+  }
+
 
   static function from_ids($class, $sql_table, $sql_key, $ids) {
     $results = self::from_where($class,  $sql_table, $sql_key, array($sql_key=>$ids));

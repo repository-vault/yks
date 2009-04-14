@@ -54,6 +54,11 @@ class exyks {
     }
   }
 
+  static function context_prepare(){
+    $base_path = $_SERVER['QUERY_STRING'];
+    chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
+    return self::parse_path($base_path);
+  }
 
 
 /*
@@ -70,7 +75,7 @@ class exyks {
     //DONT CORRECT THIS TO SUPPORT &#160;, send proper %C2%A0 instead
 */
 
-  static function prepare($url){
+  static function parse_path($url){
 
     self::$href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts root
@@ -93,7 +98,7 @@ class exyks {
 
             //sanitize all malicious attempts '/Admin/../config...'
         if(preg_match("#[.]#",$node_name) || $node_name=="main")
-            return self::prepare('/');
+            return self::parse_path('/');
             //on s'arrete si l'on est plus dans un noeud
         if(!$node_name || !is_dir($subs_path.="/$node_name"))
             break;

@@ -6,31 +6,24 @@
 
 define('Ex/yks', 'Exyks, Exupery style');
 
-$class_path=realpath(dirname(__FILE__).'/..');
+      // from this file path
+  $class_path=realpath(dirname(__FILE__).'/..');
+  define('YKS_PATH', realpath("$class_path/.."));
+     // from index.php path
+  define('EXYKS_PATH', dirname(realpath($_SERVER['SCRIPT_FILENAME'])));
 
+  $www_root = dirname($_SERVER['SCRIPT_FILENAME']);
+    //remove www relatives paths
+  if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
+    $www_root = substr($www_root, 0, -strlen($rel)-1);
 
-define('YKS_PATH', realpath("$class_path/.."));
-define('EXYKS_PATH', dirname(realpath($_SERVER['SCRIPT_FILENAME'])));
-
-$root_path=dirname($_SERVER['SCRIPT_FILENAME']);
-
-if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
-    $root_path=substr($root_path,0,-strlen($rel)-1);
-$www_path = realpath($root_path);
-$root_path = dirname($www_path);
-
-chdir($root_path);
-
-define('ROOT_PATH', $root_path);
-define('WWW_PATH', $www_path);
-define('CONFIG_PATH', ROOT_PATH."/config");
-define('TMP_PATH', CONFIG_PATH."/tmp");
+  define('WWW_PATH', realpath($www_root));
+  define('CONFIG_PATH', dirname(WWW_PATH)."/config"); //hard-coded, one level up from WWW_PATH
 
 include "$class_path/constants.php";
 include "$class_path/config.php";
 include "$class_path/stds/classes.php";
 include "$class_path/zero_functions.php";
-
 include "$class_path/yks.php";
 include "$class_path/exyks/exyks.php";
 
