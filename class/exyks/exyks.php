@@ -54,7 +54,19 @@ class exyks {
     }
   }
 
+    //website initialisation
   static function context_prepare(){
+    $config  = yks::$get->config;
+
+    define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
+    define('COMMONS_URL',$config->site['commons_url']);
+
+        //head element creation
+    if(!$config->head)$config->addChild("head");
+    if(!$config->head->jsx)$config->head->addChild("jsx");
+    if(!$config->head->styles)$config->head->addChild("styles");
+    if(!$config->head->scripts)$config->head->addChild("scripts");
+
     $base_path = $_SERVER['QUERY_STRING'];
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
     return self::parse_path($base_path);
