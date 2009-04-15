@@ -1,7 +1,7 @@
 <?
 
-/*	"Exyks controller" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - ? 2008
+/*  "Exyks controller" by Leurent F. (131)
+    distributed under the terms of GNU General Public License - © 2009
 */
 
 class exyks {
@@ -172,8 +172,8 @@ class exyks {
     if(!tpls::$body) tpls::body("$subs_file.tpl");
 
     if(JSX){
-        tpls::top('Yks/'.MODE.'_top.tpl',TPLS_ERASE);
-        tpls::bottom('Yks/'.MODE.'_bottom.tpl',TPLS_ERASE);
+        tpls::top('Yks/jsx_top.tpl',TPLS_ERASE);
+        tpls::bottom('Yks/jsx_bottom.tpl',TPLS_ERASE);
     }
 
     tpls::top('Yks/xml_head.tpl', TPLS_TOP);
@@ -186,7 +186,9 @@ class exyks {
 
     if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 
-    $render_side = self::retrieve('RENDER_SIDE');
+    $render_mode = exyks::retrieve('RENDER_MODE');
+    $render_side = exyks::retrieve('RENDER_SIDE');
+    $render_style = "$render_mode-$render_side";
 
     if(self::$customs || $render_side=="server"){ // || optim XML
         $doc = exyks::load_xml($str);
@@ -194,9 +196,8 @@ class exyks {
         if($render_side=="client") $str = $doc->saveXML();
     }
 
-    $mode = self::retrieve('MODE');
-    $headers= exyks::retrieve('HEADERS_MODE');
-    header($headers[$mode]);
+    $headers= exyks::retrieve('HEADERS');
+    header($headers[$render_style]);
     header("Cache-Control: no-cache");
 
     if($render_side == "client") die($str);

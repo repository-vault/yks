@@ -49,38 +49,24 @@ exyks::store('RENDER_MODE', JSX?"jsx":"full");
 exyks::store('RENDER_SIDE', ($mode=="html"?"server":"client")); //rbx is a render_side too
 
 
-preg_match("#^([a-z]+)/([a-z]+)#",$_SERVER['HTTP_ACCEPT'],$accept);
-list($accept, $accept_main, $accept_spec) = $accept;
-
-
-exyks::store('HEADERS_MODE', array(
-    'xml'=>TYPE_XML,
-    'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,
-    'pop'=>TYPE_XML,
-    'jsx'=>TYPE_XML,
-    'src'=>TYPE_TEXT,
-    'img'=>TYPE_PNG,
-    'inframe'=>TYPE_XML,
+exyks::store('HEADERS', array(
+    'full-server'=>ROBOT?TYPE_XHTML:TYPE_HTML,
+    'full-client'=>TYPE_XML,
+    'jsx-client'=>TYPE_XML,
 ));
 
 exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->languages['keys']));
 define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 
-$site_code=SITE_CODE;
-$site_url=SITE_URL;
-$site_base=SITE_BASE;
+$site_code = SITE_CODE;
+$site_url  = SITE_URL;
+$site_base = SITE_BASE;
 
-$verif_site=compact("site_code");
-$site_name="&site.$site_code;";
+$verif_site = compact("site_code");
+$site_name  = "&site.$site_code;";
 
-$cache_path     =  CACHE_PATH;
-$js_cache_path  = "$cache_path/js";
-$xsl_cache_path = "$cache_path/xsl";  //see site_xsl
-$xml_cache_path = "$cache_path/xml";
-$img_cache_path = "$cache_path/imgs";
-
-$site_xsl       =  CACHE_URL."/xsl/{$engine}_client.xsl"; // relative
+$site_xsl =                     CACHE_URL."/xsl/{$engine}_client.xsl"; // relative
 exyks::store('XSL_PATH',        "$site_url/$site_xsl");
-exyks::store('XSL_SERVER_PATH', "$xsl_cache_path/{$engine}_server.xsl");
+exyks::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
 

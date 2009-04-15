@@ -4,7 +4,7 @@ define("YUI_COMPRESSOR","yuicompressor-2.2.4");
 define("JAVA_PATH", ($tmp=$config->apis->java['bin_path'])?$tmp:"java");
 
 define("YUI_COMPRESSOR_PATH",RSRCS_PATH."/yui_compressor/yui_compressor.jar");
-define("JS_CACHE_PATH",$js_cache_path);
+define("JS_CACHE_PATH", CACHE_PATH."/js");
 
 $js_prefixs=array();
 $js_build_list=array();
