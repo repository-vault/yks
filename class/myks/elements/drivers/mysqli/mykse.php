@@ -44,7 +44,7 @@ class mykse extends mykse_base {
 	$signed=(((string)$this->mykse_xml['signed'])=='signed')?'':' unsigned';
 	if($this->birth){
            $this->field_def["Extra"]="auto_increment";
-           $this->field_def["Null"]=null;
+           $this->field_def["Null"]=false;
         }
 	$this->field_def["Type"]=$type.$signed;
   }
