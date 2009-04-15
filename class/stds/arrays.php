@@ -34,9 +34,9 @@ function mask_join($glue,$array,$mask){
 }
 
 
-function array_extract($array, $col, $unique=false){
+function array_extract($array, $col, $clean=false){
     $ret=array(); foreach($array as $k=>$v) $ret[$k]=$v[$col];
-    return $unique?array_unique($ret):$ret;
+    return $clean?array_filter(array_unique($ret)):$ret;
 }
 function array_get($array,$col){return $col?$array[$col]:$array; }
 

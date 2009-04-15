@@ -32,23 +32,27 @@ include "$class_path/exyks/exyks.php";
 
     //someday, this should end up in exyks::initialize()...
 
-$tmp = (string)$config->site['default_mode'];
-define('DEFAULT_MODE',$tmp?$tmp:"xml");
-
-$default=ROBOT||IPOD?"html":DEFAULT_MODE;
-
 $screen_id=$_SERVER['HTTP_SCREEN_ID'];
 
-preg_match("#^([a-z]+)/([a-z]+)#",$_SERVER['HTTP_ACCEPT'],$accept);
-list($accept, $accept_main, $accept_spec) = $accept;
+$tmp = (string)$config->site['default_mode'];
+define('DEFAULT_MODE',$tmp?$tmp:"xml");
+$default=ROBOT||IPOD?"html":DEFAULT_MODE;
 
 if($screen_id || $_POST['jsx'])$mode="jsx";
 else $mode=$default;
 $screen_id = 10;
 
-define('MODE', exyks::store('MODE', $mode));
+define('JSX', $mode=="jsx");
 
-exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->languages['keys']));
+
+exyks::store('RENDER_MODE', JSX?"jsx":"full");
+exyks::store('RENDER_SIDE', ($mode=="html"?"server":"client")); //rbx is a render_side too
+
+
+preg_match("#^([a-z]+)/([a-z]+)#",$_SERVER['HTTP_ACCEPT'],$accept);
+list($accept, $accept_main, $accept_spec) = $accept;
+
+
 exyks::store('HEADERS_MODE', array(
     'xml'=>TYPE_XML,
     'html'=>ROBOT?TYPE_XHTML:TYPE_HTML,
@@ -59,8 +63,7 @@ exyks::store('HEADERS_MODE', array(
     'inframe'=>TYPE_XML,
 ));
 
-
-define('JSX', MODE=="jsx");
+exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->languages['keys']));
 define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 
@@ -78,6 +81,6 @@ $xml_cache_path = "$cache_path/xml";
 $img_cache_path = "$cache_path/imgs";
 
 $site_xsl       =  CACHE_URL."/xsl/{$engine}_client.xsl"; // relative
-define('XSL_PATH',        "$site_url/$site_xsl");
-define('XSL_SERVER_PATH', "$xsl_cache_path/{$engine}_server.xsl");
+exyks::store('XSL_PATH',        "$site_url/$site_xsl");
+exyks::store('XSL_SERVER_PATH', "$xsl_cache_path/{$engine}_server.xsl");
 

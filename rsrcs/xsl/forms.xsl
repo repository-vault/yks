@@ -69,7 +69,7 @@
   </xsl:when>
 
   <xsl:when test="$item_type='upload'">
-    <span class='input_upload'><xsl:call-template name="button"><xsl:with-param name='href' select="concat('?/Yks/Wysiwyg//;',@name,';',@upload_type,'/upload')"/><xsl:with-param name='target' select="'upload_file'"/><xsl:with-param name="value" select="@upload_title"/></xsl:call-template><input type="hidden" name="{@name}" id="{@name}"/></span>
+    <span class='input_upload'><xsl:call-template name="button_href"><xsl:with-param name='href' select="concat('?/Yks/Wysiwyg//;',@name,';',@upload_type,'/upload')"/><xsl:with-param name='target' select="'upload_file'"/><xsl:with-param name="value" select="@upload_title"/></xsl:call-template><input type="hidden" name="{@name}" id="{@name}"/></span>
   </xsl:when>
 
   <xsl:when test="$type='text'">

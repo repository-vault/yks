@@ -37,9 +37,9 @@ class dsp{
         $b=$a/$by;$tmp=$b+1;$total=ceil($max/$by);
         if($b==$page_id)$tmp="[$tmp]";
         if($step && $b>4 && $b<$page_id-2){
-            if($b==5) $str.="... "; continue;
+            if($b==5) $str.="…"; continue;
         } elseif($step && $b>$page_id+2 && $b<$total-5){
-            if($b==$page_id+3) $str.="... "; continue;
+            if($b==$page_id+3) $str.="…"; continue;
         } $str.="<a href='$href$b' ".($target?"target='$target'":'').">$tmp</a>&#160;";
     } return $str?$str." ($max)":'';
   }

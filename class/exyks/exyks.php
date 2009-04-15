@@ -184,23 +184,30 @@ class exyks {
     $str = ob_get_contents(); ob_end_clean();
     $str = jsx::translate($str);
 
-    if(DEBUG)$str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
+    if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 
-    $doc = exyks::load_xml($str);
-    exyks::parse($doc);
+    $render_side = self::retrieve('RENDER_SIDE');
 
-    $mode = self::retrieve('MODE', MODE);
+    if(self::$customs || $render_side=="server"){ // || optim XML
+        $doc = exyks::load_xml($str);
+        exyks::parse($doc);
+        if($render_side=="client") $str = $doc->saveXML();
+    }
+
+    $mode = self::retrieve('MODE');
     $headers= exyks::retrieve('HEADERS_MODE');
     header($headers[$mode]);
     header("Cache-Control: no-cache");
 
-    if($mode=="xml" || $mode=="jsx")
-        die($doc->saveXML());
+    if($render_side == "client") die($str);
 
-    if($mode=="html"){
-        $r = xsl::resolve($doc, XSL_SERVER_PATH);
-        $content = $r->saveXML();
-        $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$content);
+    if($render_side == "server"){
+        $xsl_server_path = self::retrieve('XSL_SERVER_PATH');
+        $doc = xsl::resolve($doc, $xsl_server_path);
+        if(!$doc)  die("FATAL XSL DEAD $xsl_server_path");
+     //   if(!$doc) die($str); //?
+            //drop redondant ns
+        $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$doc->saveXML());
         if(IE6) echo strstr($content,"<!DOCTYPE");
         else echo $content;
     }
