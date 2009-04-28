@@ -1,9 +1,0 @@
-<!ELEMENT mykse ( description?,(%mykses;)?)>
-
-<!ATTLIST mykse
-  type  CDATA	#REQUIRED
-  birth	CDATA	#IMPLIED
-  default CDATA	#IMPLIED
-  %null;
-  %block;
->
