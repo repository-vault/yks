@@ -4,17 +4,32 @@
     distributed under the terms of GNU General Public License - ? 2008
 */
 
-require "$class_path/stds/rbx.php";
-require "$class_path/stds/txt.php";
-require "$class_path/stds/jsx.php";
-require "$class_path/stds/renderer.php";
-require "$class_path/stds/locale_renderer.php";
-require "$class_path/stds/date.php";
-require "$class_path/stds/data.php";
-require "$class_path/myks/input.php";
-require "$class_path/stds/arrays.php";
+require CLASS_PATH."/stds/rbx.php";
+require CLASS_PATH."/stds/txt.php";
+require CLASS_PATH."/stds/jsx.php";
+require CLASS_PATH."/stds/renderer.php";
+require CLASS_PATH."/stds/locales/renderer.php";
+require CLASS_PATH."/stds/date.php";
+require CLASS_PATH."/stds/data.php";
+require CLASS_PATH."/myks/input.php";
+require CLASS_PATH."/stds/arrays.php";
 
-if(defined('Ex/yks')) rbx::$output_mode = exyks::$href?0:1;
+    //register additionnal classes paths
+classes::register_class_paths(array(
+    "mail"            => CLASS_PATH."/mails/mail.php",
+    "xsl"             => CLASS_PATH."/xsl/xsl.php",
+    "xml"             => CLASS_PATH."/stds/xml.php",
+    "files"           => CLASS_PATH."/stds/files.php",
+    "users"           => CLASS_PATH."/users/users.php",
+    "dsp"             => CLASS_PATH."/dsp/display.php",
+    "tpls"            => CLASS_PATH."/dsp/tpls.php",
+    "sql"             => CLASS_PATH."/sql/".SQL_DRIVER.".php",
+    "yks_list"        => CLASS_PATH."/list/yks_list.php",
+    "dtd"             => CLASS_PATH."/dom/dtds.php",
+    "myks"            => CLASS_PATH."/myks/myks.php",
+    "locales_fetcher" => CLASS_PATH."/stds/locales/fetcher.php",
+    "exyks_session"   => CLASS_PATH."/exyks/session.php",
+));
 
 function sys_end($generation_time,$display_time=0){
     return sprintf("\n<!-- powerdé by exyks in - subs : %0-5Fs - tpls : %0-5Fs %s-->",
@@ -81,7 +96,7 @@ function reloc($url) {
 function abort($code) {
     if(ERROR_PAGE==exyks::$href) return; //empeche les redirections en boucle
     $dest=ERROR_PAGE."//$code";
-    if($code==404 && $dest==exyks::$href_ks) reloc("/?/Yks/error//404");
+    if($code==404 && $dest==exyks::$href_ks) yks::fatality(yks::FATALITY_404);
     $_SESSION[SESS_TRACK_ERR]="/?".exyks::$href_ks;
 
     if(JSX){if($code!=403)rbx::error($code);

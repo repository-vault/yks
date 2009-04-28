@@ -10,3 +10,13 @@ function password_prompt(){
         system('stty echo');
     } return $password;
 }
+
+function load_constants_ini($file) { 
+  $data = parse_ini_file ($file);
+  foreach($data as $key=>$value){
+    if(is_numeric($value)) $value = (int)$value;
+    $key =  strtoupper(strtr($key,array('.'=>'_')));
+    define($key, $value);
+  } 
+}
+

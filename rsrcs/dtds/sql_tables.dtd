@@ -1,5 +1,4 @@
-<!ELEMENT table ( description?, fields+,rule*)>
-<!ELEMENT description (#PCDATA)>
+<!ELEMENT table (fields|rule|grant)+>
 <!ELEMENT def (#PCDATA)>
 
 <!ATTLIST table

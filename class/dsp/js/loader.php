@@ -1,5 +1,5 @@
 <?
-include_once "$class_path/stds/files.php";
+include_once CLASS_PATH."/stds/files.php";
 define("YUI_COMPRESSOR","yuicompressor-2.2.4");
 define("JAVA_PATH", ($tmp=$config->apis->java['bin_path'])?$tmp:"java");
 
@@ -65,8 +65,8 @@ class Js {
     $cache_file   = $compress ? $cache_packed : $cache_full;
     if(is_file($cache_file)) return $cache_file;
 
-    //delete_dir(JS_CACHE_PATH,false);
-    create_dir(JS_CACHE_PATH);
+    //files::delete_dir(JS_CACHE_PATH,false);
+    files::create_dir(JS_CACHE_PATH);
 
     $contents="";
     foreach($build_list as $file) $contents.=file_get_contents($file);

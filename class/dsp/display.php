@@ -163,8 +163,8 @@ class dsp{
         $target=$link_infos['target']?"target=\"{$link_infos['target']}\"":'';
         $class=$children?"class='parent'":'';
         $str.="<li $class>";
-        if($link_infos['theme'])
-            $title="<title theme='ivs_".($current?'on':'off')."'>$title</title>";
+        if($theme=$link_infos['theme'])
+            $title="<title theme='{$theme}_".($current?'on':'off')."'>$title</title>";
         $href=$link_infos['href']?"href='{$link_infos['href']}'":'';
         $class=$current?"class='current'":'';
         $str.="<a $class $target $href>$title</a>";

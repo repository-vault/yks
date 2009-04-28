@@ -14,6 +14,10 @@ class classes {
   static function register_class_path($class_name, $file_path){
     self::$classes_paths[$class_name] = $file_path;
   }
+  static function register_class_paths($paths){
+    self::$classes_paths = array_merge(self::$classes_paths, $paths);
+  }
+
   static function autoload($class_name){
     $class_name = strtolower($class_name);
     if(isset(self::$classes_paths[$class_name]))

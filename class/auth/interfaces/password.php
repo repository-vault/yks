@@ -3,10 +3,8 @@
     distributed under the terms of GNU General Public License - © 2007 
 */
 
-define("COOKIE_EXPIRE",_NOW+86400*10);
-
 class auth_password {
-
+  
   static function reload($user_login = false, $user_pswd = false, $allow_redirect = true){
     $user_id = &$_COOKIE['user_id']; if($_POST['user_id']) $user_id = $_POST['user_id'];
     $user_id = (int)$user_id; //safe cookie
@@ -21,8 +19,9 @@ class auth_password {
         setcookie($cookie_pswd, false);
         return false;
     }
-    setcookie('user_id', $user_id, COOKIE_EXPIRE,'/');
-    setcookie($cookie_pswd, $_COOKIE[$cookie_pswd], COOKIE_EXPIRE, '/');
+    $COOKIE_EXPIRE = _NOW+86400*10;
+    setcookie('user_id', $user_id, $COOKIE_EXPIRE,'/');
+    setcookie($cookie_pswd, $_COOKIE[$cookie_pswd], $COOKIE_EXPIRE, '/');
     return $allow_redirect?auth::reloc_chk():true;
   }
 

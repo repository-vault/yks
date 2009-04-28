@@ -29,10 +29,17 @@ class mime_part {
   function add_child(mime_part $child){
     $this->children[] = $child;
   }
+
   function apply_context(){
+    if(!$this->is_textual()) return ;
+
     $context = (array) $this->mail->vars_list; extract($context);
     $this->contents = preg_replace(VAR_MASK,VAR_REPL,$this->contents);
+
+    if($this->type_extension=="plain") //escape in no longer necessary
+        $this->contents = specialchars_decode($this->contents);
   }
+
   function add_file($file_path, $file_name=false){
     if(!is_file($file_path )) return false;
 
@@ -58,13 +65,14 @@ class mime_part {
 
   function headers_output(){
     $str="";
-        $str.= "Content-Type: $this->type_primary/$this->type_extension";
-        if($this->is_composed())
-            $str.=";boundary=\"$this->boundary\"";
-        if($this->file_name)
-            $str.=";name=\"$this->file_name\"";
-
-        $str.=CRLF;
+    $str.= "Content-Type: $this->type_primary/$this->type_extension";
+    if($this->is_textual())
+        $str.=";charset=\"UTF-8\"";
+    if($this->is_composed())
+        $str.=";boundary=\"$this->boundary\"";
+    if($this->file_name)
+        $str.=";name=\"$this->file_name\"";
+    $str.=CRLF;
 
     $str.=  "Content-Transfer-Encoding: $this->transfer_encoding".CRLF;
 
@@ -72,9 +80,8 @@ class mime_part {
         
     }
     if($this->file_name) {
-            $str.="Content-Disposition:attachment;filename=\"$this->file_name\"".CRLF;
+        $str.="Content-Disposition:attachment;filename=\"$this->file_name\"".CRLF;
     }
-
     return $str.CRLF;
   }
 
@@ -85,39 +92,18 @@ class mime_part {
     $str.=$this->headers_output();
 
     if($this->is_composed()){
-        $str.="There is no contents is a multipart";
+        $str.="There is no contents in a multipart";
 
         foreach($this->children as $child_part ){
             $str.=CRLF."--$this->boundary".CRLF;
             $str.=$child_part->encode();
         }
     } else {
-        if($this->is_textual())
-             $this->apply_context();
-        $str.=mime::encoding_encode($this->contents,$this->transfer_encoding);
-
-    }
-    return $str;
-
+        $this->apply_context();
+        $str.=mime::encoding_encode($this->contents, $this->transfer_encoding);
+    } return $str;
   }
-
 
 }
 
-/*
-
-Content-Type: image/png;
-	name="bug.png"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="bug.png"
-
-                $basename= basename($part['file']);
-                $message.= "Content-Type: application/pdf; name=\"$basename\"".CRLF;
-                $message.= "Content-Transfer-Encoding: base64".CRLF;
-                $message.= "Content-Disposition: attachment; filename=\"$basename\"".CRLF;
-                $message.= CRLF;
-                $message.= chunk_split(base64_encode(file_get_contents($part['file'])));
-
-*/
 

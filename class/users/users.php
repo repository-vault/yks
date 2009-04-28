@@ -4,8 +4,7 @@ function coalesce($cols,$alias=false){
  return count($cols)==1?$cols[0]:("COALESCE(".join(',',$cols).")".($alias?" AS $alias":''));}
 
 
-class users 
-{
+class users  {
     // user_id || users_id
 
   static $cols_def=false;
@@ -31,9 +30,9 @@ class users
 
     $limit="LIMIT ".count($users);
 
-    if($cols =='*') {
-        $tables_used=self::$users_profiles;
-        $selected="*";
+    if(is_string($cols) ) {
+        $tables_used = self::$users_profiles;
+        $selected = $cols;
     } else { 
         foreach($cols as $col) if(self::$cols_def[$col]&& !$selected[$col]) {
             $tables_used=array_merge($tables_used,self::$cols_def[$col]);
@@ -85,8 +84,8 @@ class users
     //this implementation only works for postgres 
   static function get_children_infos($parent_id, $where=true, $cols=array()){
     $query = "SELECT * FROM
-    ivs_users_tree($parent_id) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)
-    LEFT JOIN ivs_users_list USING(user_id) 
+    `ks_users_tree`($parent_id) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)
+    LEFT JOIN `ks_users_list` USING(user_id) 
     ".sql::where($where);
     sql::query($query);
     $users_list = sql::brute_fetch('user_id');
@@ -129,6 +128,25 @@ class users
     //done
   }
 
+}
+
+
+
+
+/*
+    Check if a file the user upload is fine to be used
+    Usage $file_infos = upload_check( upload_type, $_POST['myfile'] )
+    returns compact('tmp_file', 'file_ext');
+*/
+function upload_check($upload_type, $upload_file){
+    $tmp_path=users::get_tmp_path(sess::$sess['user_id']); //tmp upload dir
+    $tmp_file = "$upload_type.$upload_file";
+
+    if(!preg_match(FILE_MASK,$tmp_file)|| !is_file($tmp_file="$tmp_path/$tmp_file") )
+        return false;
+
+    $file_ext=file_ext($tmp_file);
+    return compact('tmp_file','file_ext');
 }
 
 

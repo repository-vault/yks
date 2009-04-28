@@ -8,6 +8,7 @@ define('Yks', 'A cloudy tool');
 
       // from this file path
   $class_path=realpath(dirname(__FILE__).'/..');
+  define('CLASS_PATH', $class_path);
   define('YKS_PATH', realpath("$class_path/.."));
 
   $public_root = dirname($_SERVER['SCRIPT_FILENAME']);

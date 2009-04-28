@@ -6,6 +6,8 @@
 
 class exyks {
 
+  static public $headers;
+
   static public $href_ks;
   static public $page_def = 'home';
   static public $href;
@@ -30,8 +32,8 @@ class exyks {
     $doc = new DOMDocument('1.0','UTF-8');
     $doc->formatOutput = false;
     $doc->preserveWhiteSpace= false;
-    $doc->loadXML($str, LIBXML_YKS);
-    return $doc;
+    $tmp = $doc->loadXML($str, LIBXML_YKS);
+    return $tmp?$doc:false;
   }
 
   static function register($tagName, $callback){
@@ -55,21 +57,45 @@ class exyks {
   }
 
     //website initialisation
-  static function context_prepare(){
+  static function context_prepare($base_path){
     $config  = yks::$get->config;
 
     define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
     define('COMMONS_URL',$config->site['commons_url']);
 
-        //head element creation
-    if(!$config->head)$config->addChild("head");
-    if(!$config->head->jsx)$config->head->addChild("jsx");
-    if(!$config->head->styles)$config->head->addChild("styles");
-    if(!$config->head->scripts)$config->head->addChild("scripts");
-
-    $base_path = $_SERVER['QUERY_STRING'];
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
-    return self::parse_path($base_path);
+
+    include CLASS_PATH."/functions.php";
+
+    data::register('types_xml',   array('myks', 'get_types_xml'));
+    data::register('tables_xml',  array('myks', 'get_tables_xml'));
+    data::register('entities',    array('locales_fetcher', 'retrieve'));
+
+    $parsed = self::parse_path($base_path);
+    self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
+    if(!self::$is_script) self::website_prepare($config);
+    return $parsed;
+  }
+
+  static function website_prepare($config){
+    rbx::$output_mode = 0;
+
+        //head element creation
+    if(!$config->head)          $config->addChild("head");
+    if(!$config->head->jsx)     $config->head->addChild("jsx");
+    if(!$config->head->styles)  $config->head->addChild("styles");
+    if(!$config->head->scripts) $config->head->addChild("scripts");
+
+    exyks_session::init_core();
+    security_manager::sanitize();
+    locales_manager::init();
+
+    if(! bool($config->users['custom_session_manager']))
+        exyks_session::load_classic();
+
+    tpls::top("Yks/top.tpl");
+    tpls::bottom("Yks/bottom.tpl");
+
   }
 
 
@@ -90,7 +116,6 @@ class exyks {
   static function parse_path($url){
 
     self::$href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
-    self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/"; //no args on scripts root
     preg_match_all("#/([^/]+)(?://([^/]*))?#", self::$href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
@@ -160,7 +185,7 @@ class exyks {
     if(!JSX) {
         jsx::set("xsl_engine",XSL_ENGINE);
         jsx::set("site_code",SITE_CODE);
-        jsx::set("cache_path", CACHE_URL);
+        jsx::set("cache_path", CACHE_REL);
         jsx::set("href_fold","?$href_fold");
         jsx::set("screen_id",10);
 
@@ -172,12 +197,13 @@ class exyks {
     if(!tpls::$body) tpls::body("$subs_file.tpl");
 
     if(JSX){
-        tpls::top('Yks/jsx_top.tpl',TPLS_ERASE);
-        tpls::bottom('Yks/jsx_bottom.tpl',TPLS_ERASE);
+        tpls::top('Yks/jsx_top.tpl', tpls::ERASE);
+        tpls::bottom('Yks/jsx_bottom.tpl',tpls::ERASE);
     }
 
-    tpls::top('Yks/xml_head.tpl', TPLS_TOP);
+    tpls::top('Yks/xml_head.tpl', tpls::TOP);
   }
+
 
   static function render(){
 
@@ -186,34 +212,38 @@ class exyks {
 
     if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 
-    $render_mode = exyks::retrieve('RENDER_MODE');
-    $render_side = exyks::retrieve('RENDER_SIDE');
+    $render_mode  = exyks::retrieve('RENDER_MODE');
+    $render_side  = exyks::retrieve('RENDER_SIDE');
     $render_style = "$render_mode-$render_side";
+    $xsl_client   = exyks::retrieve('XSL_CLIENT_PATH');
+    $xsl_server   = exyks::retrieve('XSL_SERVER_PATH');
 
-    if(self::$customs || $render_side=="server"){ // || optim XML
+    header(self::$headers[$render_style]);
+    header("Cache-Control: no-cache");
+
+    if(true || self::$customs || $render_side=="server"){ // || optim XML
         $doc = exyks::load_xml($str);
+        if(!$doc) yks::fatality(yks::FATALITY_XML_SYNTAX, $render_mode);
         exyks::parse($doc);
         if($render_side=="client") $str = $doc->saveXML();
     }
-
-    $headers= exyks::retrieve('HEADERS');
-    header($headers[$render_style]);
-    header("Cache-Control: no-cache");
-
-    if($render_side == "client") die($str);
-
-    if($render_side == "server"){
-        $xsl_server_path = self::retrieve('XSL_SERVER_PATH');
-        $doc = xsl::resolve($doc, $xsl_server_path);
-        if(!$doc)  die("FATAL XSL DEAD $xsl_server_path");
-     //   if(!$doc) die($str); //?
-            //drop redondant ns
-        $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$doc->saveXML());
-        if(IE6) echo strstr($content,"<!DOCTYPE");
-        else echo $content;
+    
+    if($render_side == "client"){
+        if(!is_file($xsl_client))
+            yks::fatality(yks::FATALITY_XSL_404, "xsl file is missing : $xsl_client",  $render_mode);
+        die($str);
     }
 
-
+    if($render_side == "server"){
+        if(!is_file($xsl_server))
+            yks::fatality(yks::FATALITY_XSL_404, "xsl file is missing : $xsl_server");
+        $render_start = exyks::retrieve('RENDER_START');
+        $doc = xsl::resolve($doc, $xsl_server);
+        $contents = $doc->saveXML();
+        if($render_start) die(strstr($contents, $render_start));
+        die($contents);
+        $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$str);
+    }
   }
 
 

@@ -18,7 +18,7 @@ function compute_css($file,$files_path=array()){
     $file=basename($file);
     $current_path=($dir[0]!="/")?$current_path.($current_path=='/'?'/':'/').$dir:$dir;
 
-    $current_path=rp($current_path);
+    $current_path = files::rp($current_path);
     $file_path="$current_path/$file";
     $file_url=$site_url.$file_path;
 

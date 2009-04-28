@@ -1,10 +1,10 @@
 <?
-include_once "$class_path/stds/files.php";
+
 
 if(!function_exists('mime_content_type')) {
 
     function  mime_content_type($file_path){
-        $file_ext = file_ext($file_path);
+        $file_ext = files::ext($file_path);
 
         $content_types = array(
             'png'=>'image/png',

@@ -73,13 +73,16 @@
   </xsl:when>
 
   <xsl:when test="$type='text'">
-    <textarea class="wyzzie" name="{$name}"><xsl:copy-of select="@style|@id"/><xsl:apply-templates/><xsl:if test="not(./node())">…</xsl:if></textarea>
+    <textarea class="wyzzie" name="{$name}"><xsl:copy-of select="@style|@id"/><xsl:apply-templates/><xsl:comment/></textarea>
   </xsl:when> 
 
   <xsl:when test="$item_type='textarea'">
-    <textarea name="{$name}"><xsl:copy-of select="@style|@id"/><xsl:apply-templates/>&#160;</textarea>
+    <textarea name="{$name}"><xsl:copy-of select="@style|@id"/><xsl:apply-templates/><xsl:comment/></textarea>
   </xsl:when> 
 
+  <xsl:when test="$item_type='bool' and @mode='checkbox'">
+    <input type="checkbox" name="{@name}"/>
+  </xsl:when>
 
   <xsl:when test="$type='enum'">
     <xsl:variable name="value" select="@value"/>

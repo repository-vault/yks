@@ -1,4 +1,4 @@
-<!ELEMENT view (rule | def)*>
+<!ELEMENT view (rule|grant|def)+>
 
 
 <!ATTLIST view

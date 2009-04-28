@@ -8,6 +8,7 @@ define('Ex/yks', 'Exyks, Exupery style');
 
       // from this file path
   $class_path=realpath(dirname(__FILE__).'/..');
+  define('CLASS_PATH', $class_path);
   define('YKS_PATH', realpath("$class_path/.."));
 
   $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -28,10 +29,12 @@ include "$class_path/stds/classes.php";
 include "$class_path/zero_functions.php";
 include "$class_path/yks/yks.php";
 include "$class_path/exyks/exyks.php";
+include "$class_path/exyks/browser.php";
 
 
     //someday, this should end up in exyks::initialize()...
 
+$action=(string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 $screen_id=$_SERVER['HTTP_SCREEN_ID'];
 
 $tmp = (string)$config->site['default_mode'];
@@ -45,15 +48,17 @@ $screen_id = 10;
 define('JSX', $mode=="jsx");
 
 
+define('XSL_ENGINE', $engine);
 exyks::store('RENDER_MODE', JSX?"jsx":"full");
 exyks::store('RENDER_SIDE', ($mode=="html"?"server":"client")); //rbx is a render_side too
 
+if(IE6) exyks::store('RENDER_START', '<!DOCTYPE');
 
-exyks::store('HEADERS', array(
+exyks::$headers = array(
     'full-server'=>ROBOT?TYPE_XHTML:TYPE_HTML,
     'full-client'=>TYPE_XML,
     'jsx-client'=>TYPE_XML,
-));
+);
 
 exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->languages['keys']));
 define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
@@ -61,12 +66,13 @@ define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 $site_code = SITE_CODE;
 $site_url  = SITE_URL;
-$site_base = SITE_BASE;
 
 $verif_site = compact("site_code");
 $site_name  = "&site.$site_code;";
 
-$site_xsl =                     CACHE_URL."/xsl/{$engine}_client.xsl"; // relative
-exyks::store('XSL_PATH',        "$site_url/$site_xsl");
+
+$client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
+exyks::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
 exyks::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
+exyks::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
 

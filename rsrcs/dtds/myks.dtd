@@ -1,11 +1,8 @@
-<!ENTITY % MYKSEntities PUBLIC "-//YKS//MYKSEntities" "sql_entities.dtd">
-%MYKSEntities;
+<!ENTITY % MYKSElements   PUBLIC "-//YKS//MYKSElements"   "sql_elements.dtd">
 <!ENTITY % MYKSProcedures PUBLIC "-//YKS//MYKSProcedures" "sql_procedures.dtd">
-<!ENTITY % MYKSViews PUBLIC "-//YKS//MYKSViews" "sql_views.dtd">
-<!ENTITY % MYKSRules PUBLIC "-//YKS//MYKSRules" "sql_rules.dtd">
-<!ENTITY % MYKSTables PUBLIC "-//YKS//MYKSTables" "sql_tables.dtd">
-<!ENTITY % MYKSElements PUBLIC "-//YKS//MYKSElements" "mykse.dtd">
-<!ELEMENT myks (mykse|table|procedure|view)+>
+<!ENTITY % MYKSViews      PUBLIC "-//YKS//MYKSViews"      "sql_views.dtd">
+<!ENTITY % MYKSRules      PUBLIC "-//YKS//MYKSRules"      "sql_rules.dtd">
+<!ENTITY % MYKSTables     PUBLIC "-//YKS//MYKSTables"     "sql_tables.dtd">
 
 %MYKSElements;
 %MYKSRules;
@@ -13,3 +10,4 @@
 %MYKSProcedures;
 %MYKSViews;
 
+<!ELEMENT myks (mykse|table|procedure|view)+>

@@ -1,0 +1,56 @@
+<!ENTITY % Num "CDATA">
+
+<!ENTITY % IntSizes "(mini|small|int|big|giga|float|decimal)">
+
+<!ENTITY % null
+  "null  (null|not_null) 'not_null'"
+>
+<!ENTITY % block
+ "block CDATA	 #IMPLIED"
+>
+<!ELEMENT int (#PCDATA)>
+<!ATTLIST int
+  %null;
+  signed	(signed|unsigned)	'unsigned'
+  size		%IntSizes;	'small'
+>
+
+<!ELEMENT enum (val+)>
+<!ELEMENT val (#PCDATA)>
+<!ATTLIST enum
+  %null;
+  set	(set)	#IMPLIED
+>
+
+
+  
+<!ELEMENT string  (#PCDATA)>
+<!ATTLIST string
+  %null;
+  length	CDATA	"12" 
+>
+
+<!ELEMENT text (CDATA)*>
+<!ATTLIST text
+  %null;
+>
+
+
+<!ELEMENT mykse (mykse|text|string|enum|int)?>
+
+<!ATTLIST mykse
+  type  CDATA	#REQUIRED
+  birth	CDATA	#IMPLIED
+  default CDATA	#IMPLIED
+  %null;
+  %block;
+>
+
+<!ELEMENT grant EMPTY>
+<!ATTLIST grant
+  actions CDATA #IMPLIED
+  to CDATA #IMPLIED
+>
+
+
+

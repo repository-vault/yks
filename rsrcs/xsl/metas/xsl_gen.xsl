@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wxsl:stylesheet xmlns:wxsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0" xmlns:xhtml="http://www.w3.org/1999/xhtml"  xmlns:xsl="temp" xmlns:ewxsl="http://exslt.org/common">
+<wxsl:stylesheet xmlns:wxsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0"  xmlns:xsl="temp" xmlns:ewxsl="http://exslt.org/common">
 
 <wxsl:namespace-alias stylesheet-prefix="xsl" result-prefix="wxsl"/>
 

@@ -11,6 +11,7 @@ abstract class table_base {
   protected $keys_sql_def=array();
   protected $fields_sql_def=array();
 
+  private $privileges;
   protected $table_schema;
 
   protected $keys_name = array(        // $this->uname, $field, $type
@@ -26,9 +27,16 @@ abstract class table_base {
     $this->uname=sql::unquote($this->xml['name']);
     $this->table_shema =  (string) yks::$get->config->sql->links->db_link['db'];
     $this->keys_def=array();
+    $this->privileges  = new privileges($table_xml->grants, $this->uname, 'table');
   }
   
   function check(){
+
+    if(in_array($this->name, myks_gen::$tables_ghosts_views)) {
+        rbx::ok("-- Double sync from view $this->name, skipping");
+        return false;
+    }
+
     $this->xml_infos();
 
     $this->sql = sql::table_infos($this->name);
@@ -37,10 +45,10 @@ abstract class table_base {
     $this->sql_infos();
     if(!$this->modified())  return false;
 
-    //print_r(array_show_diff($this->fields_xml_def, $this->fields_sql_def));
-    //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def));
-    //print_r($this->fields_xml_def);print_r($this->fields_sql_def);die;
-    //print_r($this->keys_sql_def);print_r($this->keys_xml_def);die;
+
+    //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def));die;
+    //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def));die;
+    //print_r($this->privileges);die;
 
     $todo  = $this->update();
     if(!$todo) throw rbx::error("Error while looking for differences in $this->name");
@@ -49,7 +57,8 @@ abstract class table_base {
 
   function modified(){
     return $this->fields_xml_def != $this->fields_sql_def
-        || $this->keys_xml_def != $this->keys_sql_def;
+        || $this->keys_xml_def != $this->keys_sql_def
+        || $this->privileges->modified();
   }
 
 /*
@@ -57,6 +66,7 @@ abstract class table_base {
 */
 
   function sql_infos(){
+    $this->privileges->sql_infos();
     $this->fields_sql_def=table::table_fields($this->uname);
     $this->keys_sql_def=table::table_keys($this->uname, $this->table_shema);
   }
@@ -66,42 +76,43 @@ abstract class table_base {
 */
 
   function xml_infos(){
+    $this->privileges->xml_infos();
     foreach($this->xml->fields->field as $field_xml){
         $mykse=new mykse($field_xml,$this);
         $this->fields_xml_def[$mykse->field_def['Field']] = $mykse->field_def;
     }
   }
 
-  function key_add($type,$field,$refs=array()){$TYPE=strtoupper($type);
+  function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
     $key_name = sprintf($this->keys_name[$TYPE], $this->uname, $field, $type);
 
     if($TYPE=="PRIMARY"){
         $this->keys_xml_def[$key_name]['type']=$TYPE;
         $this->keys_xml_def[$key_name]['members'][]=$field;
-    }
-    elseif($TYPE=="UNIQUE"){
+    } elseif($TYPE=="UNIQUE"){
         $this->keys_xml_def[$key_name]['type']=$TYPE;
 
         $this->keys_xml_def[$key_name]['members']=&$this->tmp_key[$field];
         $this->tmp_key[$field][]=$field;
-    }
-    elseif($TYPE=="FOREIGN" && SQL_DRIVER=="pgsql"){    // je ne pense pas que les fk multi colonne n'entrent pas en conflit avec les uniques
+    } elseif($TYPE=="FOREIGN" && SQL_DRIVER=="pgsql"){
+
         $this->keys_xml_def[$key_name]['type']=$TYPE;
         $this->keys_xml_def[$key_name]['members']=&$this->tmp_key[$key_name];
         $this->tmp_key[$key_name][]=$field;
 
         $this->keys_xml_def[$key_name]=array_merge($this->keys_xml_def[$key_name],$refs);
-    }
-    else {
+    } else {
         $this->tmp_key[$type][]=$field;
     }
 
   }
 
   function update(){
+
     return array_merge(
         $this->alter_fields(),
-        $this->alter_keys()
+        $this->alter_keys(),
+        $this->privileges->alter_def()
     );
   }
 
@@ -110,34 +121,33 @@ abstract class table_base {
 
 
   static function table_keys($table_name, $table_schema){
-    
-    $where=array('table_name'=>$table_name,'table_schema'=>$table_schema);
-    sql::select("information_schema.table_constraints",$where,
-        'CONSTRAINT_CATALOG as constraint_catalog,
-        CONSTRAINT_SCHEMA as constraint_schema,
-        CONSTRAINT_NAME as constraint_name,
-        TABLE_SCHEMA as table_schema,
-        TABLE_NAME as table_name,
-        CONSTRAINT_TYPE as constraint_type');
+    $where = array('table_name'=>$table_name);
+    if(SQL_DRIVER!="pgsql") $where['table_schema']=$table_schema; //TODO, pgsql
 
-    $keys= sql::brute_fetch('constraint_name');$table_keys=array();$usage=array();$behavior=array();
+    $cols = 'CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME, TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_TYPE';
+    if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
+    sql::select("information_schema.table_constraints", $where, $cols);
+
+    $keys= sql::brute_fetch('constraint_name');$table_keys=array();
+    $keys= array_map('array_change_key_case', $keys);
+
+    $usages=array(); $behavior=array();
     $where['constraint_name']=array_keys($keys);
-    $where['table_schema'] = $table_schema;
 
     if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
     sql::select("information_schema.key_column_usage",$where,"constraint_name,column_name",$order);
     while($l=sql::fetch()) $table_keys[$l['constraint_name']]['members'][]=$l['column_name'];
             //une clée est basé sur au moins UNE colonne ( élimine les checks )
 
-    if(SQL_DRIVER=="pgsql"){
+    if(SQL_DRIVER=="pgsql"){ ///FOREIGN_KEYS
         sql::select("information_schema.constraint_column_usage",
             array('constraint_name'=>array_keys($table_keys)) );
         while($l=sql::fetch())
-            $usage[$l['constraint_name']]
-                ="{$l['table_name']}({$l['column_name']})"; //!compilation error 
+            $usages[$l['constraint_name']][$l['table_name']][]=$l['column_name'];
+                //="{$l['table_name']}({$l['column_name']})";
         sql::select("information_schema.referential_constraints",
             array('constraint_name'=>array_keys($table_keys)));
-        sql::brute_fetch('constraint_name');
+        $behavior=sql::brute_fetch('constraint_name');
     }
 
 
@@ -147,9 +157,15 @@ abstract class table_base {
 
         $constraint_infos['type']=$type=$types[$key['constraint_type']];
         if($type=="FOREIGN") {
-            $constraint_infos['update']=self::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
-            $constraint_infos['delete']=self::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
-            $constraint_infos['refs']=$usage[$constraint_name];
+
+            $usage_str = '';
+            list($usage_table, $usage_fields) = each($usages[$constraint_name]);
+            $usage_str = $usage_table.'('.join(',',$usage_fields).')';
+
+            $constraint_infos['table']=$usage_table;
+            $constraint_infos['update']=table::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
+            $constraint_infos['delete']=table::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
+            $constraint_infos['refs'] = $usage_str;
             $constraint_infos['defer']=bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
 
         }

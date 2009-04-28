@@ -48,15 +48,14 @@ class config  {
     define('ERROR_PAGE','/'.SITE_BASE.'/error');
     define('ERROR_404',"Location: /?".ERROR_PAGE.'//404');
     define('SESSION_NAME', crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
-    define('CACHE_URL','cache/'.FLAG_DOMAIN);
-    define('CACHE_PATH', PUBLIC_PATH.'/'.CACHE_URL);
+
+    define('CACHE_REL', 'cache/'.FLAG_DOMAIN);
+    define('CACHE_URL', SITE_URL.'/'.CACHE_REL);
+    define('CACHE_PATH', PUBLIC_PATH.'/'.CACHE_REL);
 
     define('ROOT_PATH', paths_merge(PUBLIC_PATH,$config->site['root_path'],".."));
     define('TMP_PATH', ROOT_PATH."/tmp");
     define('LIBRARIES_PATH', paths_merge(YKS_PATH, $config->site['libraries_path'], ".."));
-    define('RSRCS_PATH', YKS_PATH.'/rsrcs');
-    define('MYKS_PATH',paths_merge(ROOT_PATH, $config->data['myks_path'],"config/myks"));
-
 
     return $config;
   }

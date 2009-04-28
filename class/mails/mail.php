@@ -1,9 +1,9 @@
 <?
 
 
-include "$class_path/apis/mails/mime.php";
-include "$class_path/mails/mails.php";
-include "$class_path/apis/mails/mini_send.php";
+include CLASS_PATH."/apis/mails/mime.php";
+include CLASS_PATH."/mails/mails.php";
+include CLASS_PATH."/apis/mails/mini_send.php";
 
 class mail extends mime {
 

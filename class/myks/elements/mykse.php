@@ -36,16 +36,7 @@ abstract class mykse_base {
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth=true;
             if($this->field_def['Null']) $this->field_def['Null']=false; //pas de null dans le birth
-      } else { //clée etrangère ici ( le type de la colonne birth dans une table )
-
-          $ref=array(
-              "refs"=>sql::unquote($birth)."($this->type)", 
-              "update"=>(string)$field_xml['update'],
-              "delete"=>(string)$field_xml['delete'],
-              "defer"=>(string)$field_xml['defer'],
-          ); $this->table->key_add('foreign',$this->field_def["Field"],$ref );
-
-      }
+      } else  $this->fk($field_xml, $birth);
     }
 
     $this->get_def(); 
@@ -56,22 +47,25 @@ abstract class mykse_base {
 
 
     $birth=(string)$this->mykse_xml['birth'];
-    if($birth && $this->depth > 1){
-          $ref=array(
-              "refs"=>sql::unquote($birth)."($this->type)", 
-              "update"=>(string)$field_xml['update'],
-              "delete"=>(string)$field_xml['delete'],
-              "defer"=>(string)$field_xml['defer'],
-          ); $this->table->key_add('foreign',$this->field_def["Field"],$ref );
-    }
+    if($birth && $this->depth > 1) $this->fk($field_xml, $birth);
 
     if($field_xml['key'])
         $this->table->key_add("{$field_xml['key']}","{$this->field_def['Field']}");
 
   }
+  private function fk($field_xml, $birth){
+    $this->table->key_add('foreign', $this->field_def["Field"], array(
+        "table"    => $table=sql::unquote($birth),
+        "refs"     => "$table($this->type)", 
+        "update"   => (string)$field_xml['update'],
+        "delete"   => (string)$field_xml['delete'],
+        "defer"    => (string)$field_xml['defer'],
+    ));
+  }
 
   protected function resolve($type){
     $this->mykse_xml = myks_gen::$mykse_xml->$type;
+    $this->base_type = (string)$this->mykse_xml['type'];
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
         throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
 
@@ -84,8 +78,6 @@ abstract class mykse_base {
   }
 
   protected function get_def(){
-
-    $this->base_type=(string)$this->mykse_xml['type'];
     if($this->base_type=="int") $this->int_node();
     elseif($this->base_type=="string") $this->string_node();
     elseif($this->base_type=="enum") $this->enum_node();

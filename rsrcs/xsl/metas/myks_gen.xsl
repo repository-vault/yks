@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE xsl SYSTEM "../../dtds/sql_entities.dtd">
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ewxsl="http://exslt.org/common">
 <xsl:param name="root_xml" select="'mykse'"/>
 <xsl:output indent='yes'/>
@@ -25,7 +24,7 @@
 
 
 <xsl:template match="mykse">
-  <xsl:variable name="elem" select="&mykses;"/>
+  <xsl:variable name="elem" select="./node()[1]"/> <!-- first (and only) child -->
   <xsl:variable name="name"><xsl:value-of select="string(@type)"/></xsl:variable>
   <xsl:variable name="type"><xsl:value-of select="name($elem)"/></xsl:variable>
   <xsl:variable name="alike" select="/mykse[@type=$name]"/>
@@ -60,9 +59,15 @@
     <fields>
          <xsl:copy-of select="//table[@name=$name]/fields/*"/>
     </fields>
+
     <rules>
-    <xsl:copy-of select="//table[@name=$name]/rule"/>
+        <xsl:copy-of select="//table[@name=$name]/rule"/>
     </rules>
+
+    <grants>
+        <xsl:copy-of select="//table[@name=$name]/grant"/>
+    </grants>
+
   </table>
   </xsl:if>
 </xsl:template>
@@ -77,7 +82,10 @@
 
 <xsl:template match="view">
   <view><xsl:copy-of select="@*"/>
-      <xsl:copy-of select="*"/>
+      <xsl:copy-of select="def|rule"/>
+      <grants>
+        <xsl:copy-of select="grant"/>
+      </grants>
   </view>
 </xsl:template>
 

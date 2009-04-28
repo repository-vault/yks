@@ -24,7 +24,7 @@
 	<title><xsl:apply-templates/></title>
 </xsl:template>
 
-<xsl:template match="title"><img src="?/Yks/Scripts/Imgs/titles//{@theme};title|{.}" class="title_{@theme}" alt="{.}"><xsl:copy-of select="@*"/></img></xsl:template>
+<xsl:template match="title"><img src="?/Yks/Scripts/Imgs/titles//{@theme};title|{.}" class="title_{@theme} title" alt="{.}"><xsl:copy-of select="@*"/></img></xsl:template>
 
 
   <xsl:template match='empty'/>

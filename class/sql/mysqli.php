@@ -2,7 +2,7 @@
 /*  "Exyks MySQL" by Leurent F. (131)
     distributed under the terms of GNU General Public License - © 2005-2006-2007-2008
 */
-include "$class_path/sql/functions.php";
+include CLASS_PATH."/sql/functions.php";
 
 class sql {
    const FAMILY='mysql';

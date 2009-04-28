@@ -27,6 +27,15 @@ class table extends table_base {
   function xml_infos(){
     parent::xml_infos();
     $this->rules_xml_def = $this->rules->xml_infos();
+    foreach($this->keys_xml_def as $k=>&$key){
+        if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
+            continue;
+        //the key reference to a ghost table
+        unset($this->keys_xml_def[$k]);
+        rbx::ok("-- $k is a ghost reference, skipping");
+    }
+
+
   }
 
 
@@ -38,8 +47,7 @@ class table extends table_base {
 
   function update(){
     return array_merge(
-        $this->alter_fields(),
-        $this->alter_keys(),
+        parent::update(),
         $this->rules->alter_rules()
     );
   }
@@ -134,51 +142,6 @@ class table extends table_base {
 
     return $query;
   }
-
-
-
-
-
-/*
-    retourne la définition des clées d'une table formaté pour une comparaison avec keys_xml
-*/
-
- static function table_keys($table_name){
-
-    $where=array('table_name'=>$table_name);
-    sql::select("information_schema.table_constraints",$where);
-    $keys= sql::brute_fetch('constraint_name');$table_keys=array();$usage=array();$behavior=array();
-    $where['constraint_name']=array_keys($keys);
-    $order ="ORDER BY position_in_unique_constraint ASC";
-    sql::select("information_schema.key_column_usage",$where,"constraint_name,column_name",$order);
-    while($l=sql::fetch()) $table_keys[$l['constraint_name']]['members'][]=$l['column_name'];
-            //une clée est basé sur au moins UNE colonne ( élimine les checks )
-
-    sql::select("information_schema.constraint_column_usage",array('constraint_name'=>array_keys($table_keys)) );
-    while($l=sql::fetch()) $usage[$l['constraint_name']]="{$l['table_name']}({$l['column_name']})"; //!compilation error 
-
-    sql::select("information_schema.referential_constraints",
-          array('constraint_name'=>array_keys($table_keys)));
-    $behavior=sql::brute_fetch('constraint_name');
-
-
-    foreach($table_keys as $constraint_name=>&$constraint_infos){
-        $key=$keys[$constraint_name];
-        $types=array('PRIMARY KEY'=>'PRIMARY','FOREIGN KEY'=>'FOREIGN','UNIQUE'=>'UNIQUE','INDEX'=>'INDEX');
-
-        $constraint_infos['type']=$type=$types[$key['constraint_type']];
-        if($type=="FOREIGN") {
-            $constraint_infos['update']=self::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
-            $constraint_infos['delete']=self::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
-            $constraint_infos['refs']=$usage[$constraint_name];
-            $constraint_infos['defer']=bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
-
-        }
-    }
-
-    return $table_keys;
- }
-
 
 
 

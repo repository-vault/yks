@@ -17,7 +17,7 @@ $dest_path="test_trunk";
 
 while($toscan=array_keys($dir_toscan,1)){
 	foreach($toscan as $fold){
-		$str=file_get_cached("{$host}{$fold}");
+		$str=files::get_cached("{$host}{$fold}");
 		preg_match_all("#<a href=(['\"])(.*?)\\1#",$str,$out);
 
 		foreach((array)$out[2] as $href){
@@ -25,7 +25,7 @@ while($toscan=array_keys($dir_toscan,1)){
 			if($data['host'] && $data['host']!=$host) continue;
 
 			preg_match('#^((/?).*?/?)([^/]*)?$#',$href,$path);
-			$_fold= rp( ($path[2]=='/')?$path[1]:$fold.$path[1] ); $file=$path[3];
+			$_fold= files::rp( ($path[2]=='/')?$path[1]:$fold.$path[1] ); $file=$path[3];
 
 			if(substr($_fold,0,strlen($base_path))!=$base_path) continue;
 
@@ -36,7 +36,7 @@ while($toscan=array_keys($dir_toscan,1)){
 				$local_file=$local_path.$file;
 				if(!$file_generated[$_fold]){
 					$file_generated[$_fold]=true;
-					create_dir($local_path);
+					files::create_dir($local_path);
 				}
 
 				if(!$file_generated[$_file]){

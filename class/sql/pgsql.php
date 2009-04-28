@@ -25,9 +25,11 @@ class sql {
     }	self::$pfx['search'][]="#`(.*?)`#";
     self::$pfx['replace'][]="\"$1\"";
 
-    $serv=self::$servs->links->{$lnk=$lnk?$lnk:self::$link};
+    $lnk = $lnk?self::set_link($lnk):self::$link;
+    $serv=self::$servs->links->$lnk;
     if(!$serv['port'])$serv['port']= 5432;
     $sql_infos = "host='{$serv['host']}' port={$serv['port']} dbname='{$serv['db']}' user='{$serv['user']}' password='{$serv['pass']}'";
+
     self::$lnks[$lnk]=pg_connect($sql_infos);
     if(!self::$lnks[$lnk]) return self::error();
 
@@ -35,10 +37,8 @@ class sql {
   }
 
   static function &query($query,$lnk=false,$arows=false){
-
-
-    $serv=isset(self::$lnks[$lnk=$lnk?$lnk:self::$link])
-         ?self::$lnks[$lnk]:self::connect($lnk);
+    $lnk = $lnk?$lnk:self::$link;
+    $serv = isset(self::$lnks[$lnk])?self::$lnks[$lnk]:self::connect($lnk);
     if(!$serv) return false;
 
     if(sql::$transaction) self::$result = @pg_query($serv,$query=self::unfix($query)); 
@@ -65,11 +65,12 @@ class sql {
 
     //This function works the same way array_reindex does, please refer to the manual
   static function brute_fetch_depth(){
-    $result = array(); $cols = func_get_args(); 
+    $result = array(); $cols = func_get_args();
+    if($end = (end($cols)==false)) array_pop($cols);
     while(($l = self::fetch())) {
           $tmp = &$result;
           foreach($cols as $col) $tmp=&$tmp[$l[$col]];
-          $tmp = $l;
+          $tmp = $end?$l[$col]:$l;
     } return $result;
   }
 
@@ -198,7 +199,7 @@ class sql {
   static function truncate($table){ return sql::query("DELETE FROM `$table`"); }
 
   static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
-  static function set_link($lnk){ self::$link=$lnk; }
+  static function set_link($lnk){ return self::$link= (string)$lnk; }
   static function reset($res){ self::$result = $res; }
 
   static function table_infos($table_name){

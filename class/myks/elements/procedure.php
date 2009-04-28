@@ -1,13 +1,14 @@
 <?
 
+
 abstract class procedure_base {
   public $sql_def=array();
   public $xml_def=array();
 
   function __construct($proc_xml){
     $proc_name=(string)$proc_xml['name'];
-    $this->proc_xml=$proc_xml;
-    $this->proc_name=$proc_name;
+    $this->proc_xml  = $proc_xml;
+    $this->proc_name = sql::unquote($proc_name);
   }
 
   function check(){
@@ -30,7 +31,7 @@ abstract class procedure_base {
     $out  = $this->xml_def['setof']
             .' '.myks_gen::$type_resolver->convert($this->xml_def['type'],'out');
     $ret="CREATE OR REPLACE FUNCTION \"public\".\"{$this->proc_name}\" ($args) RETURNS $out AS\n\$body\$\n";
-    $ret.=$this->xml_def['def']."\n\$body\$\n";
+    $ret.= sql::unfix($this->xml_def['def'])."\n\$body\$\n";
     $ret.="LANGUAGE 'plpgsql' VOLATILE CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
 
     return $ret;
@@ -100,7 +101,7 @@ abstract class procedure_base {
 
   function xml_infos(){
     $data=array(
-        'name'=>(string)  $this->proc_xml['name'],
+        'name'=>(string)  $this->proc_name,
         'type'=>(string)  $this->proc_xml['type'],
         'setof'=>(string) $this->proc_xml['setof'],
 

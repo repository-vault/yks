@@ -77,6 +77,8 @@ abstract class _sql_base  implements ArrayAccess {
     return $res;
   }
 
+  function sql_delete(){ return sql::delete($this->sql_table, $this); }
+
   function _set($key, $value){
         //fonction temporaire, à refactoriser par update une fois _user correctement integré
     $this->data[$key] = $value;

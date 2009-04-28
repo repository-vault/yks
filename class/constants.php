@@ -35,10 +35,13 @@ define('TYPE_ZIP',"Content-Type: application/zip;");
 define('TYPE_JS',"Content-Type: application/x-javascript; charset=utf-8");
 define('TYPE_FILE', "Content-type: application/octet-stream");
 define('TYPE_PDF', "Content-type:application/pdf");
+define('TYPE_SWF', "Content-Type: application/x-shockwave-flash");
+
 define('TYPE_CSV',"Content-type: application/vnd.ms-excel");
 define('MIME_VERSION','MIME-Version: 1.0');
 define('HTTP_CACHED_FILE',"Last-Modified: Thu, 12 Apr 2007 19:31:20 GMT");
 define('SESS_TRACK_ERR', 'SESS_TRACK_ERR');
+define('HEADER_FILENAME_MASK', 'Content-disposition: form-data;name="filename";filename="%s"');
 
 	//XHTML stuffs
 define('XML_VERSION','<?xml version="1.0" encoding="utf-8"?>'.LF);
@@ -71,26 +74,9 @@ define('DATE_TXT', '$d &month_short_$n; $Y');
 
 
 define('DATE_MASK','d/m/Y');	//input date format (validation)
-define('FILE_MASK','#^[a-z_]+\.([a-z0-9_]{6,})\.([a-z_]{2,4})$#'); //upload file format
+define('FILE_MASK','#^[a-z0-9_]+\.([a-z0-9_]{6,})\.([a-z_]{2,4})$#'); //upload file format
 define('WHERE_MASK','`%2$s`=\'%1$s\'');    //Join masks
 define('INI_MASK','%2$s=%1$s');    //Join masks
+define('ATTR_MASK', '%2$s="%1$s"');    //Join masks
 
-
-$action=(string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
-
-
-
-include "engine_detection.php";
-
-define('XSL_ENGINE', $engine);
-
-
-$charsets=array(
-	'iso8859'=>array('latin1','latin1_general_ci'),
-	'utf-8'=>array('utf8','utf8_general_ci')
-);
-$collations=array(
-	'latin1_general_ci'=>'iso8859',
-	'utf8_general_ci'=>'utf-8'
-);
 

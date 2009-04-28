@@ -3,6 +3,7 @@
 class myks_gen {
   static $mykse_xml;
   static $type_resolver;
+  static public $tables_ghosts_views; // (tables can be ghosts of views)
 
   static $cols=array('Field','Type','Extra','Null','Default','Extra');
 
@@ -37,7 +38,7 @@ class myks_gen {
 
   static function sql_clean_def($def, $trim=";"){
     //specialchars_decode ne devrait pas être necessaire ( CDATA) ??
-    return trim(self::newline(specialchars_decode( (string)$def) ), $trim).$trim;
+    return sql::unfix(trim(self::newline(specialchars_decode( (string)$def) ), $trim).$trim);
   }
 
   static function newline($str){
@@ -62,10 +63,12 @@ function directory_recursive_sublink($dir,$dest){
     }
 }
 
-function array_show_diff($a1, $a2){
+function array_show_diff($a1, $a2, $a1n="obj 1", $a2n="obj 2"){
     $diff = array();
-    foreach($a1 as $k=>$v) if(!in_array($v, $a2)) $diff["a1_$k"] = $v;
-    foreach($a2 as $k=>$v) if(!in_array($v, $a1)) $diff["a2_$k"] = $v;
+    foreach(array($a1n=>array($a1,$a2), $a2n=>array($a2,$a1)) as $i=>$tmp)
+        foreach($tmp[0] as $k=>$v){
+            if($tmp[1][$k]!=$v) $diff["From $i :$k"] = $v;
+        }
     return $diff;
 }
 

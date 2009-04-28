@@ -8,7 +8,11 @@ abstract class view_base {
   public $sql_def = array();
   public $xml_def = array();
 
+
   private $_rules = array();
+  private $update_cascade = false;
+
+  private $privileges;
   private static $definition_mask = '';
   private static $definition_mask_str = '';
   private static $tmp_view_name='';
@@ -19,6 +23,7 @@ abstract class view_base {
     $this->view_xml = $view_xml;
     $this->view_name = $view_name;
     $this->view_uname = sql::unquote($view_name);
+    $this->privileges  = new privileges($view_xml->grants, $this->view_uname, 'view');
 
     $pad = str_repeat("=", 10); $crlf = "[\r\n]+";
     self::$definition_mask = "#$pad <definition\s+signature='([a-f0-9]+)'> $pad$crlf(.*?)$crlf$pad </definition> $pad$crlf?#s";
@@ -27,24 +32,46 @@ abstract class view_base {
 
   function check($force = false){
     $this->xml_infos();
+
+
     if(!$force) $this->sql_infos();
-    $same=$this->sql_def == $this->xml_def;
 
-    if($same) return false; //nothing to do
+    if(!$this->modified())  return false;
+    $todo = $this->update();
 
-    //print_r(array_keys(array_diff($this->sql_def,  $this->xml_def)));   print_r($this->xml_def);print_r($this->sql_def);die;
+    //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
+
+    if(!$todo) return rbx::error("-- Unable to look for differences in $$this->view_uname");
+
+    return array(sql::unfix(join(";\n", $todo)).';'.CRLF, $this->update_cascade);
+  }
+
+  function modified(){
+    return $this->sql_def != $this->xml_def
+        || $this->privileges->modified();
+  }
+
+  function update(){
+    return array_merge(
+        $this->alter_def(),
+        $this->privileges->alter_def()
+    );
+  }
+
+  function alter_def($force = false){
+    $todo = array();
+    if(!$force && ($this->sql_def == $this->xml_def)) return $todo;
+    $this->update_cascade = true;
+    if($force || $this->sql_def['name'])
+        $todo[] = "DROP VIEW IF EXISTS \"public\".\"{$this->view_uname}\" CASCADE";
+
     $signature = $this->current_signature();
 
-    $queries = array();
-    if($force || $this->sql_def['name'])
-        $queries[] = "DROP VIEW IF EXISTS \"public\".\"{$this->view_uname}\" CASCADE;";
-    
-    $queries = array_merge($queries, $this->build_view($this->view_uname));
+    $todo = array_merge($todo, $this->build_view($this->view_uname));
 
-    $queries[] = "COMMENT ON VIEW \"public\".\"{$this->view_uname}\" IS ".CRLF
-        . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature))."';";
-
-    return sql::unfix(join(CRLF.CRLF, $queries)).CRLF;
+    $todo[] = "COMMENT ON VIEW \"public\".\"{$this->view_uname}\" IS ".CRLF
+        . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature));
+    return $todo;
   }
 
 
@@ -66,7 +93,7 @@ abstract class view_base {
             ON $event
             TO \"$view_name\"
             $where
-            DO INSTEAD $definition;";
+            DO INSTEAD $definition";
     }
 
     return $queries;
@@ -76,7 +103,7 @@ abstract class view_base {
     $view_name = "ks_tmp_view_".crpt(_NOW,__CLASS__,5);
         //creating ghost temporary view
 
-    if(!sql::query($this->xml_def['def']))
+    if(!sql::query(rtrim($this->xml_def['def'],";")." LIMIT 1"))
         throw rbx::error("-- Unable to check signature for $this->view_name");
     
     foreach($this->build_view($view_name) as $query)
@@ -99,8 +126,9 @@ abstract class view_base {
   }
 
   function sql_infos(){
-    $row = self::get_sql_infos($this->view_uname,false,false,$this->_rules);
-
+    $this->privileges->sql_infos();
+    $row = self::get_sql_infos($this->view_uname, false, false, $this->_rules);
+   
     $this->sql_def = array(
         'name'=>$row['viewname'],
         'def'=> $row['base_definition'],
@@ -160,6 +188,7 @@ abstract class view_base {
   }
 
   function xml_infos() {
+    $this->privileges->xml_infos();
 
     $this->_rules = array();
     foreach($this->view_xml->rule as $rule) {
@@ -173,7 +202,7 @@ abstract class view_base {
 
     $this->xml_def = array(
         'name'=>$this->view_uname,
-        'def'=> sql::unfix(myks_gen::sql_clean_def($this->view_xml->def)),
+        'def'=> myks_gen::sql_clean_def($this->view_xml->def),
         'signature'=>true,
         'rules'=>count($this->_rules),
     );
