@@ -179,7 +179,8 @@ class sql {
   static function free($lnk=false){ mysqli_free_result($lnk=$lnk?$lnk:self::$result);$lnk=null; }
   static function truncate($table){ return sql::query("TRUNCATE `$table`"); }
   static function value(){ $arg=func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
-  static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
+  static function clean($str){ return is_numeric($str)?
+        $str:mysqli_escape_string(self::$lnks[$lnk?$lnk:self::$link],$str); }
   static function set_link($lnk){ self::$link=$lnk; }
 
   static function table_infos($table_name){ 
