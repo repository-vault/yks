@@ -37,25 +37,35 @@ class sess  {
 
   static function renew(){
     setcookie('user_id', false);
-    sess::$sess=array('users_tree'=>array(), 'session_id'=>self::$id);
-    sess::$_storage=array();
-    self::$renewed=true;
-    auth::update(USERS_ROOT);
+    sess::$sess     = array();
+    sess::$_storage = array();
+    self::$renewed  = true;
+    $sess_infos     = auth::valid_tree(USERS_ROOT);
+    if($sess_infos) sess::$sess = $sess_infos;
   }
+
   static function close(){ return session_write_close(); }
 
   static function status_check(){
     self::$connected=(self::$sess['user_id'] && self::$sess['user_id']!=USERS_ROOT);
   }
 
-  static function update($user_id, $force=false){
-    if(!auth::update($user_id, $force)) return false;
-    sess::load();
+  static function update($user_id, $skip_auth = false){
+    $sess_infos = auth::valid_tree($user_id, $skip_auth);
+    if(!$sess_infos) return false;
+    
+    self::load($sess_infos['user_id'], $sess_infos['users_tree']);
     return true;
   }
 
-  static function load(){
-    sess::$sess = new user(sess::$sess['user_id'], sess::$sess['users_tree']);
+  static function load($user_id, $users_tree){
+    sess::$sess     = new user($user_id, $users_tree);
+    sess::$_storage = array();
     self::status_check();
   }
-} 
+
+  static function reload(){
+    self::load(sess::$sess['user_id'], sess::$sess['users_tree']);
+  }
+
+}

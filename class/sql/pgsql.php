@@ -1,5 +1,5 @@
 <?
-include "functions.php";
+
 
 class sql {
    static public $queries=array();

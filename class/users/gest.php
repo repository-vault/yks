@@ -22,7 +22,7 @@ class user_gest {
         'user_name'=>"Utilisateur anonyme",
         //'auth_type'=>'auth_password',
         'user_type'=>'ks_users',
-        'user_acces'=>array(), //zone=rights
+        'user_access'=>array(), //zone=rights
     ),$def);
 
     if($def['user_login'] && !$def['auth_type'])
@@ -44,10 +44,10 @@ class user_gest {
     $data=array_filter(mykse_validate($def, $tables_xml->ks_users_addrs));
     if($data) sql::replace("ks_users_addrs", $data, compact('user_id') );
 
-    if(is_array($def['user_acces'])){
-        foreach($def['user_acces'] as $acces_zone=>$acces_lvl){
-            $acces_lvl = join(',',(array)$acces_lvl);
-            sql::insert("ks_users_acces", compact('user_id', 'acces_zone', 'acces_lvl'));
+    if(is_array($def['user_access'])){
+        foreach($def['user_access'] as $access_zone=>$access_lvl){
+            $access_lvl = join(',',(array)$access_lvl);
+            sql::insert("ks_users_access", compact('user_id', 'access_zone', 'access_lvl'));
         }
     }
     $data=mykse_validate($def, $tables_xml->ks_users_tree);

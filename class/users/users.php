@@ -76,10 +76,10 @@ class users  {
         sql::select("`ks_users_parents`($user_id) AS (parent_id INTEGER)");
         $res = array_reverse(sql::brute_fetch(false, 'parent_id')); $res[]= $user_id;
         return $res;
-    } else return get_parents($user_id,'ks_users_tree','user_id');
+    } else return sql_func::get_parents($user_id,'ks_users_tree','user_id');
   }
   static function get_children($user_id,$depth=-1){
-    return get_children($user_id,'ks_users_tree','user_id',$depth);}
+    return sql_func::get_children($user_id,'ks_users_tree','user_id',$depth);}
 
     //this implementation only works for postgres 
   static function get_children_infos($parent_id, $where=true, $cols=array()){

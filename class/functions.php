@@ -24,6 +24,7 @@ classes::register_class_paths(array(
     "dsp"             => CLASS_PATH."/dsp/display.php",
     "tpls"            => CLASS_PATH."/dsp/tpls.php",
     "sql"             => CLASS_PATH."/sql/".SQL_DRIVER.".php",
+    "sql_func"        => CLASS_PATH."/sql/functions.php",
     "yks_list"        => CLASS_PATH."/list/yks_list.php",
     "dtd"             => CLASS_PATH."/dom/dtds.php",
     "myks"            => CLASS_PATH."/myks/myks.php",

@@ -62,6 +62,9 @@ define('LIBXML_MYKS',LIBXML_YKS|LIBXML_DTDVALID);
 $var_safe='\$[A-Z]?[a-z0-9_]*';
 define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
+define("CONST_MASK", "#\[([A-Z_]+)\]#e");
+define("CONST_REPL", '$1');
+
 define("FUNC_MASK","#[a-z0-9_:]+\(.*?\)#e");
 
 

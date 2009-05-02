@@ -124,12 +124,12 @@ abstract class table_base {
     $where = array('table_name'=>$table_name);
     if(SQL_DRIVER!="pgsql") $where['table_schema']=$table_schema; //TODO, pgsql
 
-    $cols = 'CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME, TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_TYPE';
+    $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
     if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
     sql::select("information_schema.table_constraints", $where, $cols);
 
-    $keys= sql::brute_fetch('constraint_name');$table_keys=array();
-    $keys= array_map('array_change_key_case', $keys);
+    $keys = sql::brute_fetch('constraint_name');$table_keys=array();
+    $keys = array_map('array_change_key_case', $keys);
 
     $usages=array(); $behavior=array();
     $where['constraint_name']=array_keys($keys);

@@ -57,9 +57,15 @@ class yks
   }
 
   public function __get($key){ return $this->get($key);  }
+}
+
+if(PHP_SAPI != 'cli')
+    yks::init();
+else {
+    classes::activate();
+}
 
 
-} yks::init();
 
 
 

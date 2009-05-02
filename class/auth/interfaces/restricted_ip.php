@@ -8,7 +8,7 @@ class auth_restricted_ip {
   static function reload(){
 	sess::$sess['session_ip']=$_SERVER['REMOTE_ADDR'];
 	if(!AUTH_RESTRICTED_ID) return true;
-	return auth::update(self::verif());
+        //see auth_password here
   }
 
   static function verif($user_id=false){

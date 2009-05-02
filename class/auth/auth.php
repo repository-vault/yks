@@ -3,37 +3,38 @@
 
 class auth {
   static function limit($module_xml){
-    
+    // to refactor
+    die;
     global $config,$href,$action;
     $module=(string)$module_xml['name'];
     $module_root=$config->modules->$module;
 
     $limit=$module_xml->limit?$module_xml->limit:$module_root->limit;
 
-    $acces_zone=(string) ($limit['acces_zone']?$limit['acces_zone']:$module_root['code']);
+    $access_zone=(string) ($limit['access_zone']?$limit['access_zone']:$module_root['code']);
 
     if($href==ERROR_PAGE || !$limit)return true;
 
-    $acces_lvls=explode(",",(string)$limit['acces_lvl']);
-    foreach($acces_lvls as $acces_lvl){
-        $grant=auth::verif($acces_zone,$acces_lvl);
+    $access_lvls=explode(",",(string)$limit['access_lvl']);
+    foreach($access_lvls as $access_lvl){
+        $grant=auth::verif($access_zone, $access_lvl);
         if($grant) continue;
-        if($acces_lvl=="action"){
+        if($access_lvl=="action"){
             if(!$action)continue;$action='';
             rbx::error("&error.action_canceled;");
         } else abort(403);
     }return true;
   }
 
-  static function update($user_id, $force=false){
+    // return a couple (user_id, users_tree)
+  static function valid_tree($user_id, $skip_auth = false){
     if(!$user_id) return false;	//root_id=0 graou ?
     //get the tree above user_id, then check if current tree is compatible
     $asked_tree = users::get_parents($user_id);
-    $diff = array_intersect(sess::$sess['users_tree'], $asked_tree);
-    $users_tree = $force?$asked_tree:self::get_tree($diff, $asked_tree);
+    $diff = array_intersect((array) sess::$sess['users_tree'], $asked_tree);
+    $users_tree = $skip_auth ? $asked_tree : self::get_tree($diff, $asked_tree);
     if(!$users_tree) return false;
-    sess::$sess = compact('user_id', 'users_tree');
-    return true;
+    return compact('user_id', 'users_tree');
   }
 
   static function reloc_chk(){
@@ -49,21 +50,21 @@ class auth {
     return $grant;
   }
 
-  static function renew($users_tree=false){
-    if($users_tree===false)$users_tree=sess::$sess['users_tree'];
-    sql::select('ks_users_acces',array('user_id'=>$users_tree),'acces_zone, acces_lvl');
-    $acces=array();while(extract(sql::fetch()))
-        $acces[$acces_zone]=array_merge_numeric(
-            $acces[$acces_zone]?$acces[$acces_zone]:array(),
-            array_flip(array_filter(explode(',',"$acces_lvl")))
+  static function get_access($users_tree = false){
+    if($users_tree===false)$users_tree = (array)sess::$sess['users_tree'];
+    sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
+    $access = array();while(extract(sql::fetch()))
+        $access[$access_zone]=array_merge_numeric(
+            $access[$access_zone]?$access[$access_zone]:array(),
+            array_flip(array_filter(explode(',',"$access_lvl")))
         );
-    return $acces;
+    return $access;
   }
 
-  static function verif($acces_zones='',$lvl='acces',$die=false){
-    if(!is_array($acces_zones)) $acces_zones=array($acces_zones);
-    $base = sess::$sess['user_acces'];
-    foreach($acces_zones as $acces_zone) $base=$base[$acces_zone];
+  static function verif($access_zones='',$lvl='access',$die=false){
+    if(!is_array($access_zones)) $access_zones=array($access_zones);
+    $base = sess::$sess['user_access'];
+    foreach($access_zones as $access_zone) $base=$base[$access_zone];
     $valid=isset($base[$lvl]);
     if($die && !$valid)abort($die);
     return $valid;

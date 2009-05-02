@@ -37,8 +37,8 @@ class exyks_session {
         rbx::ok("&auth_success;");
     } catch(Exception $e){ rbx::error("&auth_failed;"); }
 
-    if(!isset(sess::$sess['user_acces'])) try {
-        sess::load();
+    if(!isset(sess::$sess['user_access'])) try {
+        sess::reload();
     } catch(Exception $e){ rbx::error("Unable to start user session."); }
 
 

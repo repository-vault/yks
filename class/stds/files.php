@@ -12,7 +12,7 @@ class files {
   const FIND_DEFAULT    = 0; //non recursive && no follow sym links
 
   public static function get_cached($url, $use_include=true, $context=null, $force=false){
-    $cached_file=sys_get_temp_dir()."/$hash";
+    $cached_file = sys_get_temp_dir()."/".md5("cache $url");
     if(!$force && file_exists($cached_file) && (_NOW-filemtime($cached_file)) < self::CACHE_DELAY)
         return file_get_contents($cached_file);
     $cache_contents = ltrim(file_get_contents($url, $use_include, $context), BOM);

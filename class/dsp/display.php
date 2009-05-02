@@ -154,8 +154,8 @@ class dsp{
   static function nav($tree,$id=false, $depth=0){
     $str="<ul ".($id?"id='$id'":'').">";
     foreach($tree as $link_key=>$link_infos){
-        if($link_infos['acces']
-             && !auth::verif(key($link_infos['acces']),current($link_infos['acces'])))
+        if($link_infos['access']
+             && !auth::verif(key($link_infos['access']),current($link_infos['access'])))
                 continue;
         $title=$link_infos['title'];
         $children=(bool)$link_infos['children'];

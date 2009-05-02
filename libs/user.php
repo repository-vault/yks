@@ -13,7 +13,7 @@ class user extends _user {
     parent::__construct($user_id);
     $this->update(array('user_connect'=>_NOW), "ks_users_profile");
 
-    $this->user_acces = auth::renew($this->users_tree);
+    $this->user_access = auth::get_access($this->users_tree);
   }
 
   function register($key, $table_name){
