@@ -1,0 +1,17 @@
+
+<!ELEMENT js (module+)>
+<!ELEMENT module (dep*)>
+<!ELEMENT dep EMPTY>
+
+
+<!ATTLIST module
+  key	 CDATA  #REQUIRED
+  mandatory (true|false) 'false'
+  class CDATA #IMPLIED
+  match CDATA #IMPLIED
+>
+
+<!ATTLIST dep
+  key	 CDATA  #REQUIRED
+  mode   (depend|before|after)  'depend'
+>
