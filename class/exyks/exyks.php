@@ -176,17 +176,22 @@ class exyks {
     exyks::bench('display_start'); 
     ob_start();
 
-    jsx::set("href","?".exyks::$href);
-    jsx::set("href_ks","?".exyks::$href_ks);
-    jsx::set("href_base","?$href_base");
-    jsx::set("ks_flag",FLAG_KS);
+
+    jsx::set(array(
+      "href"      => "?".exyks::$href,
+      "href_ks"   => "?".exyks::$href_ks,
+      "href_base" => "?$href_base",
+      "ks_flag"   => FLAG_KS
+    ));
 
     if(!JSX) {
-        jsx::set("xsl_engine",XSL_ENGINE);
-        jsx::set("site_code",SITE_CODE);
-        jsx::set("cache_path", CACHE_REL);
-        jsx::set("href_fold","?$href_fold");
-        jsx::set("screen_id",10);
+        jsx::set(array(
+          "xsl_engine" => XSL_ENGINE,
+          "site_code"  => SITE_CODE,
+          "cache_path" => CACHE_REL,
+          "href_fold"  => "?$href_fold",
+          "screen_id"  => 10
+        ));
 
         $meta = yks::$get->config->head->addChild("meta");
         list($header, $value) = explode(':', TYPE_HTML);
