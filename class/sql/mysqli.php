@@ -50,6 +50,12 @@ class sql {
     return $tmp?$tmp:array();
   }
 
+  public static function get_lnk($lnk = false){
+    $serv = self::$lnks[$lnk=$lnk?$lnk:self::$link];
+    if(!($serv||$serv=self::connect($lnk))) return false;
+    return $serv;
+  }
+
   static function brute_fetch($id=false,$val=false,$start=false,$by=false){
     $tmp=array();$c=0;$line=0;
     if($start)mysqli_data_seek(self::$result,$start);
@@ -177,9 +183,10 @@ class sql {
   static function auto_indx($lnk=false){ return mysqli_insert_id(self::$lnks[$lnk?$lnk:self::$link]); }
   static function free($lnk=false){ mysqli_free_result($lnk=$lnk?$lnk:self::$result);$lnk=null; }
   static function truncate($table){ return sql::query("TRUNCATE `$table`"); }
-  static function value(){ $arg=func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
-  static function clean($str){ return is_numeric($str)?
-        $str:mysqli_escape_string(self::$lnks[$lnk?$lnk:self::$link],$str); }
+  static function value(){
+    $arg = func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
+  static function clean($str){
+    return is_numeric($str)?$str:mysqli_escape_string(self::get_lnk(),$str); }
   static function set_link($lnk){ self::$link=$lnk; }
 
   static function table_infos($table_name){ 

@@ -1,6 +1,6 @@
 <?
 
-/*	"Yks config" by Leurent F. (131)
+/*  "Yks config" by Leurent F. (131)
     distributed under the terms of GNU General Public License - © 2007 
 */
 
