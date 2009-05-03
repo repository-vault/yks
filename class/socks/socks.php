@@ -135,7 +135,7 @@ class sock_lnk {
 
   function connect(){
 	$this->sock=fsockopen($this->enctype.$this->host,$this->port);
-	if(!$this->sock) die("Unable to connect $this->host:$this->port");
+	if(!$this->sock) die("Unable to connect '$this->host':$this->port");
   }
   function close(){ fclose($this->sock);$this->sock=null; }
 

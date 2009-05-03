@@ -28,6 +28,7 @@ classes::register_class_paths(array(
     "yks_list"        => CLASS_PATH."/list/yks_list.php",
     "dtd"             => CLASS_PATH."/dom/dtds.php",
     "myks"            => CLASS_PATH."/myks/myks.php",
+    "sock_lnk"        => CLASS_PATH."/socks/socks.php",
     "locales_fetcher" => CLASS_PATH."/stds/locales/fetcher.php",
     "exyks_session"   => CLASS_PATH."/exyks/session.php",
 ));
