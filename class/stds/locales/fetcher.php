@@ -31,7 +31,7 @@ class locales_fetcher {
     $config = yks::$get->config;
 
         //softly remove paths and flags from localization constants
-    $constants = retrieve_constants('#^(?!FLAG_).*(?<!_PATH|_MASK)$#', "&%s;");
+    $constants = retrieve_constants(CONST_LOCALES, "&%s;");
 
     $dyn_entities = array();
     if($config->dyn_entities)

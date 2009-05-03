@@ -64,6 +64,7 @@ define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
 define("CONST_MASK", "#\[([A-Z_]+)\]#e");
 define("CONST_REPL", '$1');
+define("CONST_LOCALES", '#^(?!FLAG_).*(?<!_PATH|_MASK)$#');
 
 define("FUNC_MASK","#[a-z0-9_:]+\(.*?\)#e");
 
