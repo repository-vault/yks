@@ -128,17 +128,12 @@ class users  {
     //done
   }
 
-}
-
-
-
-
 /*
     Check if a file the user upload is fine to be used
     Usage $file_infos = upload_check( upload_type, $_POST['myfile'] )
     returns compact('tmp_file', 'file_ext');
 */
-function upload_check($upload_type, $upload_file){
+  static function upload_check($upload_type, $upload_file){
     $tmp_path=users::get_tmp_path(sess::$sess['user_id']); //tmp upload dir
     $tmp_file = "$upload_type.$upload_file";
 
@@ -147,6 +142,15 @@ function upload_check($upload_type, $upload_file){
 
     $file_ext=file_ext($tmp_file);
     return compact('tmp_file','file_ext');
+  }
+
+}
+
+
+
+
+function upload_check($upload_type, $upload_file){
+  return users::upload_check($upload_type, $upload_file);
 }
 
 
