@@ -31,17 +31,6 @@
   <xsl:template match='null'><xsl:apply-templates select="node()"/></xsl:template>
   <xsl:template match='clear'><div class='clear line'>&#160;</div></xsl:template>
 
-  <xsl:template match="jsx">
-	<script type='text/javascript'>
-		<xsl:for-each select='@*'>
-			<xsl:choose>
-				<xsl:when test="starts-with(.,'{')"><xsl:value-of select="concat(name(),'=',.,';')"/></xsl:when>
-				<xsl:otherwise><xsl:value-of select="concat(name(),'=&#34;',.,'&#34;;')"/></xsl:otherwise>
-			</xsl:choose>
-		</xsl:for-each>
-	</script>
-  </xsl:template>
-
   <xsl:template match="domready">
     <xsl:variable name='id' select="concat('script_', count(ancestor::*), '_', count(preceding::*))"/>
     <script type='text/javascript' id='{$id}'>window.addEvent('<xsl:value-of select="@event"/>' || 'domready',function(){
@@ -59,9 +48,19 @@
 	<link type='text/css' rel='stylesheet'><xsl:copy-of select="@href|@media"/></link>
   </xsl:template>
 
-  <xsl:template match="scripts/js">
-	<script type='text/javascript'><xsl:copy-of select="@src|@defer"/>;</script>
-  </xsl:template>
+  <xsl:template match='scripts'>
+    <script type='text/javascript'>
+      <xsl:for-each select='@*'>
+        <xsl:choose>
+          <xsl:when test="starts-with(.,'{')"><xsl:value-of select="concat(name(),'=',.,';')"/></xsl:when>
+         <xsl:otherwise><xsl:value-of select="concat(name(),'=&#34;',.,'&#34;;')"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each>
+    </script>
 
+    <xsl:for-each select="js">
+	<script type='text/javascript'><xsl:copy-of select="@src|@defer"/>;</script>
+    </xsl:for-each>
+  </xsl:template>
 
 </xsl:stylesheet>

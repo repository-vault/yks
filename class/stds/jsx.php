@@ -36,7 +36,7 @@ class jsx {
     return jsx::translate($json);
   }
 
-  static function set($key,$val){ yks::$get->config->head->jsx[$key]=$val;  }
+  static function set($key,$val){ yks::$get->config->head->scripts[$key]=$val;  }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
   static function js_eval($msg) { rbx::msg(JSX_EVAL,"$msg;"); }
   static function walk($step){ rbx::msg("walk", floor(100*$step)); jsx::end();}
