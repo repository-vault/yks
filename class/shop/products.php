@@ -110,7 +110,7 @@ class products {
 }
 
  static function get_children($product_id,$depth=-1){
-    return get_children($product_id,'ks_shop_products_list','product_id',$depth);
+    return sql_func::get_children($product_id,'ks_shop_products_list','product_id',$depth);
  }
 
  static function get($tables, $type, $addr){

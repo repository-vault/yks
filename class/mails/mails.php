@@ -5,7 +5,7 @@ class mails {
 
 
   static function get_parts($part_id,$depth=-1){
-    $children = get_children($part_id,'ks_mails_parts','part_id',$depth,'parent_part');
+    $children = sql_func::get_children($part_id,'ks_mails_parts','part_id',$depth,'parent_part');
     return array_merge(array($part_id), $children);
   }
 
