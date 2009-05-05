@@ -50,7 +50,7 @@
 
   <xsl:template match='scripts'>
     <script type='text/javascript'>
-      <xsl:for-each select='@*'>
+      <xsl:for-each select='@*|//jsx/@*'>
         <xsl:choose>
           <xsl:when test="starts-with(.,'{')"><xsl:value-of select="concat(name(),'=',.,';')"/></xsl:when>
          <xsl:otherwise><xsl:value-of select="concat(name(),'=&#34;',.,'&#34;;')"/></xsl:otherwise>

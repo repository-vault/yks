@@ -82,6 +82,7 @@ class exyks {
 
         //head element creation
     if(!$config->head)          $config->addChild("head");
+    if(!$config->head->jsx)     $config->head->addChild("jsx");
     if(!$config->head->styles)  $config->head->addChild("styles");
     if(!$config->head->scripts) $config->head->addChild("scripts");
 

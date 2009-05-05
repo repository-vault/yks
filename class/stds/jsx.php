@@ -38,7 +38,7 @@ class jsx {
 
   static function set($key, $val=false){
     if(!is_array($key)) $key = array($key=>$val);
-    foreach($key as $k=>$v) yks::$get->config->head->scripts[$k] = $v;
+    foreach($key as $k=>$v) yks::$get->config->head->jsx[$k] = $v;
   }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
   static function js_eval($msg) { rbx::msg(JSX_EVAL,"$msg;"); }
