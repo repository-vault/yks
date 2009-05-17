@@ -20,6 +20,9 @@ function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
 
 function smtpsend($contents,$dests){
     $smtp_config = yks::$get->config->apis->smtp;
+    if(!$smtp_config)
+        return false;
+
     $smtp_sender = $smtp_config['sender'];
 
     $sock=fsockopen($smtp_config['host'], 25, $errno, $errstr, 20);

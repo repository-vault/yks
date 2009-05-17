@@ -7,12 +7,10 @@
 require CLASS_PATH."/stds/rbx.php";
 require CLASS_PATH."/stds/txt.php";
 require CLASS_PATH."/stds/jsx.php";
-require CLASS_PATH."/stds/renderer.php";
-require CLASS_PATH."/stds/locales/renderer.php";
 require CLASS_PATH."/stds/date.php";
 require CLASS_PATH."/stds/data.php";
-require CLASS_PATH."/myks/input.php";
 require CLASS_PATH."/stds/arrays.php";
+require CLASS_PATH."/myks/input.php";
 
     //register additionnal classes paths
 classes::register_class_paths(array(
@@ -22,15 +20,14 @@ classes::register_class_paths(array(
     "files"           => CLASS_PATH."/stds/files.php",
     "users"           => CLASS_PATH."/users/users.php",
     "dsp"             => CLASS_PATH."/dsp/display.php",
-    "tpls"            => CLASS_PATH."/dsp/tpls.php",
     "sql"             => CLASS_PATH."/sql/".SQL_DRIVER.".php",
     "sql_func"        => CLASS_PATH."/sql/functions.php",
     "yks_list"        => CLASS_PATH."/list/yks_list.php",
     "dtd"             => CLASS_PATH."/dom/dtds.php",
     "myks"            => CLASS_PATH."/myks/myks.php",
     "sock_lnk"        => CLASS_PATH."/socks/socks.php",
-    "locales_fetcher" => CLASS_PATH."/stds/locales/fetcher.php",
-    "exyks_session"   => CLASS_PATH."/exyks/session.php",
+    "exyks_paths"     => CLASS_PATH."/exyks/paths.php",
+    "tpls"            => CLASS_PATH."/exyks/tpls.php",
 ));
 
 function sys_end($generation_time,$display_time=0){

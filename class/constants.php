@@ -3,6 +3,7 @@
 	distributed under the terms of GNU General Public License - © 2007 
 */
 
+if(!defined('CLASS_PATH')) define('CLASS_PATH', dirname(__FILE__));
 
 	//Usefull constants
 define('LF',"\n");define('CRLF',"\r\n");

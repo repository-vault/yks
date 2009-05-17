@@ -70,7 +70,7 @@ abstract class view_base {
     $todo = array_merge($todo, $this->build_view($this->view_uname));
 
     $todo[] = "COMMENT ON VIEW \"public\".\"{$this->view_uname}\" IS ".CRLF
-        . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature));
+        . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature))."'";
     return $todo;
   }
 

@@ -41,7 +41,7 @@ class sql {
     $serv = isset(self::$lnks[$lnk])?self::$lnks[$lnk]:self::connect($lnk);
     if(!$serv) return false;
 
-    if(sql::$transaction) self::$result = @pg_query($serv,$query=self::unfix($query)); 
+    if(sql::$transaction) self::$result = pg_query($serv,$query=self::unfix($query)); 
     else self::$result = pg_query($serv,$query=self::unfix($query));  //i want to see errors
 
     if(self::$log)self::$queries[]=$query;
@@ -83,6 +83,10 @@ class sql {
     return $tmp;
   }
 
+  static function fetch_all(){
+    return pg_fetch_all_columns(self::$result);
+  }
+
   static function format($vals,$set=true){ $r='';
   $vals=array_map(array('sql','vals'),$vals);
   if($set) return "SET ".mask_join(',',$vals,'`%2$s`=%1$s');
@@ -101,9 +105,11 @@ class sql {
         WHERE $where ORDER BY $col ;");
   }
   static function vals($v){
-    return is_array($v) && (list($type,$val)=each($v))
-            ? ( $type==="sql" ? $val : '' )
-            : (is_null($v)?'NULL': "'".self::clean($v)."'");
+    if(is_array($v) && (list($type,$val)=each($v)))
+        return ( $type==="sql" ? $val : '' );
+    if(is_null($v)) return 'NULL';
+    if(is_numeric($v)) return $v;
+    return "'".self::clean($v)."'";
   }
   
  static function insert($table,$vals=false,$auto_indx=false,$keys=false){
@@ -126,8 +132,8 @@ class sql {
     return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where, $table).$extras,false,true);
   }
 
-  static function replace($table,$vals,$where=array(),$auto_indx=false){
-    $data=sql::row($table,$where);
+  static function replace($table, $vals, $where=array(), $auto_indx=false){
+    $data = sql::row($table,$where);
     if(!$data) return sql::insert($table,array_merge($vals,$where),$auto_indx);
     return sql::update($table,$vals,$where);
   }

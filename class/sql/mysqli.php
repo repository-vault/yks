@@ -75,6 +75,14 @@ class sql {
     } return $result;
   }
 
+  static function fetch_all(){
+    $res = array();
+    while($l=mysqli_fetch_row(self::$result)) $res[]=$l[0];
+    return $res;
+  }
+
+
+
   static function format($vals,$set=true){ $r='';
     $vals=array_map(array('sql','vals'),$vals);
     if($set) return "SET ".mask_join(',',$vals,'`%2$s`=%1$s');

@@ -41,8 +41,10 @@ class order extends _mykse {
   function get_products_list(){
     sql::select("ks_shop_orders_parts", $this);
     $products_list = sql::brute_fetch('product_id');
-    return $this->products_list = array_merge_numeric($products_list, 
-            products::get_infos_splat(array_keys($products_list)));
+    $basket = new products_list(array_keys($products_list));
+    $products_infos  = $basket->get_products_definition();
+
+    return $this->products_list = array_merge_numeric($products_list, $products_infos);
   }
     
 }

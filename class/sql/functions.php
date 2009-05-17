@@ -1,18 +1,27 @@
 <?
 
 class sql_func {
-  function get_children($key,$table,$field,$depth=-1,$parent="parent_id"){
-    if(!$key || $depth==0)return array(); if(!is_array($key))$key=array($key);
-    sql::select($table,array($parent=>$key),$field);
-    $list=sql::brute_fetch(false,$field);
-    return array_merge($list, self::get_children(array_diff($list,$key),$table,$field,$depth-1) );
+  static public function get_children($key, $table, $field, $depth=-1){
+    return self::get_tree($key,$table,$field,$depth, "parent_id");
   }
 
-  function get_parents($start,$table,$field){
-    $tree=array();
-    do{    $tree[]=$start; $l=sql::row($table,array($field=>$start),'parent_id');
-    }while( !in_array($start=$l['parent_id'],$tree) && $start);
+  static public function get_parents($key, $table, $field, $depth=-1, $parent = "parent_id"){
+    return array_unique(array_merge((array)$key,
+        self::get_tree($key, $table, $parent, $depth, $field)));
+  }
+
+  static public function get_parents_path($start, $table, $field){
+    $tree = array();
+    do{  $tree[]=$start; $l=sql::row($table,array($field=>$start),'parent_id');
+    } while( !in_array($start=$l['parent_id'],$tree) && $start);
     return array_reverse(array_filter($tree));
+  }
+
+  static public function get_tree($key, $table, $field, $depth, $parent) {
+    if(!$key || $depth==0)return array(); if(!is_array($key))$key=array($key);
+    sql::select($table,array($parent=>$key),$field);
+    $list = array_filter(sql::fetch_all());
+    return array_merge($list, self::get_tree(array_diff($list,$key),$table,$field,$depth-1,$parent) );
   }
 
 /**
@@ -30,12 +39,8 @@ class sql_func {
     need column : id, parent
     !! You can use this as an inverted recursive tree, invert parent && id
  */
-  function get_tree($query,$root=false){
-    sql::query($query); $tree=array();
-      while( extract(sql::fetch()) ){
-        if(!$tree[$id]) $tree[$id]=array();
-        if($parent!=$id) $tree[$parent][$id] = &$tree[$id];
-      } return $root?array($root=>$tree[$root]):$tree;
+  function make_tree_query($query, $root=false){ sql::query($query);
+    return make_tree(sql::brute_fetch('id', 'parent'), $root);
   }
 
 }

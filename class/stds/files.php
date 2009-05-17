@@ -20,6 +20,15 @@ class files {
     return $cache_contents;
   }
 
+  public static function save_as($file_path, $file_name, $content_type=false){
+    if(!$content_type) $content_type = "Content-type:text/".self::ext($file_name).";charset=UTF-8";
+    header($content_type);
+    $file_mask  = 'Content-disposition:filename="%s"';
+    header(sprintf($file_mask, $file_name));
+    readfile($file_path);
+    die;
+  }
+
   public static function rp($path){
     $out=array();$last=count($from=explode('/', $path))-1;
     foreach($from as $i=>$fold){

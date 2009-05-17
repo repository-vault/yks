@@ -7,14 +7,19 @@ class dsp{
 
 
   static function field_value($field_type,  $field_value){
-    if(renderer::register_mykse_renderer($field_type))
+    if(locales_processor::register_mykse_renderer($field_type))
         return "&$field_type.$field_value;";
     else return $field_value;
   }
 
-  static function field_input($field_type, $field_name, $field_value=false){
+  static function field_input($field_type, $field_name, $field_value=false, $batch_mode = false){
     $type_xml = yks::$get->types_xml->$field_type;
     if($birth_table_name = (string) $type_xml['birth']) {
+      $options = array('selected'=>$field_value, 'truncate'=>20);
+      $options_str = $batch_mode?"size='10' multiple='multiple'":"";
+      $default_str = $batch_mode?"":"&select.choose;";
+      if($batch_mode) $field_name.="[]";
+
       $birth_xml = yks::$get->tables_xml->$birth_table_name;
       $birth_fields = fields($birth_xml);
           //look for a "_name" field in birth table
@@ -22,8 +27,8 @@ class dsp{
       if($birth_fields[$birth_name]) { //!!We have a birth field description
           sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
           $birth_description = sql::brute_fetch($field_type, $birth_name);
-          $str = "<field title='$field_name'><select name='$field_name'>&select.choose;"
-              .dsp::dd($birth_description,array('selected'=>$field_value,'truncate'=>20))
+          $str = "<field title='$field_name'><select name='$field_name' $options_str>$default_str"
+              .dsp::dd($birth_description, $options)
               ."</select></field>";
           return $str;
       }
@@ -65,16 +70,7 @@ class dsp{
     return "<select name='$name' id='$name'><option value='$city'>$commune</option></select>";
    } else return "<input type='text' name='$name' id='$name' value='$city'/>";
   }
-  static function resolve($types_xml,$type, $types = array('enum','int','string','text','time')){
-    $mykse = $types_xml->$type;
-    if(in_array((string)$mykse['type'],$types)) return $mykse;
-    elseif(!$mykse) return array();
-    else return self::resolve($types_xml,$mykse['type'], $types);
-  }
-  static function resolve_enum($types_xml,$type){
-    $mykse = self::resolve($types_xml,$type);
-    return $mykse['type']!='enum'?array():vals($mykse);
-  }
+
 
   static function mailto($str, $subject=false){
     $to = specialchars_decode($str);
@@ -96,9 +92,11 @@ class dsp{
     $selected=$opts['selected']; if(!is_array($selected))$selected=array($selected);
     $mykse=$opts['mykse'];$col=$opts['col'];if(!$col)$col="value";
     if(!$data) $data = array();
-    $list=!is_array($data)?array_combine(
-            $list=self::resolve_enum(yks::$get->types_xml,$data),
-            array_mask($list,"&$data.%s;")):$data;
+    if(!is_array($data)){
+        $tmp = myks::resolve_base($data);
+        $list = $tmp['type']!='enum'?array():vals($tmp);
+        $list = array_combine($list, array_mask($list,"&$data.%s;"));
+    } else $list = $data;
 
     $options="";$pad=$opts['pad']?$opts['pad']:"&#160;&#160;";
     $truncate=$opts['truncate']?$opts['truncate']:50;

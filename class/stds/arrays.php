@@ -1,16 +1,11 @@
 <?
-function make_tree($splat, $root=false, $parent_col ="parent", $children_col=false){
-    $tree=array(); $tmp=array();
-    while( list($id, $v)=each($splat) ){ $parent = $v[$parent_col]?$v[$parent_col]:$id;
-        if(!$tmp[$id]) $tmp[$id]=$children_col?$v:array();
-        elseif($children_col) $tmp[$id]=array_merge($v,$tmp[$id]); 
-        if($parent==$id ) {
-            if(!$tree[$parent]) $tree[$parent] = &$tmp[$id];
-            continue;
-        }
-        if($children_col) $tree[$parent][$children_col][$id] = &$tmp[$id];
-        else $tree[$parent][$id] = &$tmp[$id];
-    } return $root?array($root=>$tmp[$root]):$tree;
+
+function make_tree($splat, $root=false){
+    $tree = array();
+    foreach($splat as $id=>$parent){
+        if(!$tree[$id]) $tree[$id]=array();
+        if($parent!=$id) $tree[$parent][$id] = &$tree[$id];
+    } return $root?array($root=>$tree[$root]):$tree;
 }
 
 function array_next_val($array,$val){ return array_step($array, $val, 1, false); }
@@ -39,7 +34,9 @@ function mask_join($glue,$array,$mask){
 
 
 function array_extract($array, $col, $clean=false){
-    $ret=array(); foreach($array as $k=>$v) $ret[$k]=$v[$col];
+    $ret=array();
+    if(is_array($col)) foreach($array as $k=>$v) $ret[$k] = array_sort($v, $col);
+    else foreach($array as $k=>$v) $ret[$k]=$v[$col];
     return $clean?array_filter(array_unique($ret)):$ret;
 }
 function array_get($array,$col){return $col?$array[$col]:$array; }
@@ -47,8 +44,8 @@ function array_get($array,$col){return $col?$array[$col]:$array; }
 function array_merge_numeric($a,$b, $depth="array_merge"){
   foreach($b as $k=>$v)$a[$k]=is_array($v)&&is_array($a[$k])?$depth($a[$k],$v):$v;return $a;
 }
-function attributes_to_assoc($x){$tmp=array(); //php 5.3 grrrr
-    foreach($x->attributes() as $k=>$v)$r[$k]=(string)$v;
+function attributes_to_assoc($x, $ns=null){$r=array(); //php 5.3 grrrr
+    foreach($x->attributes($ns) as $k=>$v)$r[$k]=(string)$v;
     return $r;
 }
 

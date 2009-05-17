@@ -76,10 +76,11 @@ class users  {
         sql::select("`ks_users_parents`($user_id) AS (parent_id INTEGER)");
         $res = array_reverse(sql::brute_fetch(false, 'parent_id')); $res[]= $user_id;
         return $res;
-    } else return sql_func::get_parents($user_id,'ks_users_tree','user_id');
+    } else return sql_func::get_parents_path($user_id,'ks_users_tree','user_id');
   }
   static function get_children($user_id,$depth=-1){
-    return sql_func::get_children($user_id,'ks_users_tree','user_id',$depth);}
+    return sql_func::get_children($user_id,'ks_users_tree','user_id',$depth);
+  }
 
     //this implementation only works for postgres 
   static function get_children_infos($parent_id, $where=true, $cols=array()){
@@ -108,6 +109,11 @@ class users  {
     $users_infos = users::get_infos($user_ids, $cols);$res=array();
     foreach($users_infos as $user_id=>$user_infos)$res["&$key.$user_id;"] = self::show($user_infos);
     return $res;
+  }
+
+  static function print_path($user_id){
+    $parents = is_array($user_id)?$user_id:array_merge(users::get_parents($user_id), array($user_id));
+    return mask_join(" &gt; ", array_extract(users::get_infos($parents), 'user_name'), "%s");
   }
 
   static function init(){
@@ -144,12 +150,4 @@ class users  {
   }
 
 }
-
-
-
-
-function upload_check($upload_type, $upload_file){
-  return users::upload_check($upload_type, $upload_file);
-}
-
 

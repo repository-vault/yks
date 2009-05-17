@@ -23,5 +23,18 @@ class myks {
   }
 
 
+  public static function resolve_base($type){
+    return self::resolve_to($type, array('enum','int','string','text','time'));
+  }
+
+  public static function resolve_to($type, $final_types){
+    static $types_xml = false; if(!$types_xml) $types_xml = yks::$get->types_xml;
+
+    $mykse = $types_xml->$type;
+    if(in_array((string)$mykse['type'], $final_types)) return $mykse;
+    elseif(!$mykse) return array();
+    else return self::resolve_to($mykse['type'], $final_types);
+  }
+
 
 }

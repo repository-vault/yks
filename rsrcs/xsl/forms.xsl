@@ -111,6 +111,7 @@
                 <xsl:attribute name='name'><xsl:value-of select='$name'/>[]</xsl:attribute>
             </xsl:if>
 
+            <xsl:if test="@null"><option value=''><xsl:value-of select="@null"/></option></xsl:if>
             <xsl:for-each select="$mykse/val">
                 <xsl:variable name="enum_val" select="string(.)"/>
                 <option value="{$enum_val}">

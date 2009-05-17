@@ -12,7 +12,6 @@ class exyks {
   static public $page_def = 'home';
   static public $href;
   static public $is_script = false;
-  static public $entities = array();
   static private $customs = array();
 
   static function bench($key) { return self::store("time_$key", microtime(true)); }
@@ -67,11 +66,13 @@ class exyks {
 
     include CLASS_PATH."/functions.php";
 
+    exyks_paths::init($config->paths);
+    exyks_paths::register("/Yks", EXYKS_PATH);
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
-    $parsed = self::parse_path($base_path);
+    $parsed = exyks_paths::parse($base_path);
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
     if(!self::$is_script) self::website_prepare($config);
     return $parsed;
@@ -93,73 +94,10 @@ class exyks {
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load_classic();
 
-    tpls::top("Yks/top.tpl");
-    tpls::bottom("Yks/bottom.tpl");
+    tpls::top("Yks/top");
+    tpls::bottom("Yks/bottom");
 
   }
-
-
-/*
-  Prepare the passed URL to be used in the whole yks layer
-    split & prepare args,  /Admin/Users//3123/Manage/Addrs//23/manage
-    return context = array( array(
-                $subs_fold  // path to the included file
-                $file,      // current node/leaf name
-                $args,      // args tuple for current node
-                $href_fold, // recombined path to current node
-                $href_base, // href_fold, with current args
-      , ... ) used as tuples in index.php.
-    )
-    //DONT CORRECT THIS TO SUPPORT &#160;, send proper %C2%A0 instead
-*/
-
-  static function parse_path($url){
-
-    self::$href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
-    preg_match_all("#/([^/]+)(?://([^/]*))?#", self::$href_ks, $url_tree, PREG_SET_ORDER);
-
-    if(!$url_tree) //FALLBACK si url = '/'
-         $url_tree= array(array(1=>ucfirst(SITE_CODE)));
-        //rajout systematique d'une feuille pour ne pas finir sur un noeud
-    $url_tree[] = array();
-
-    $result_path = array( array("","main") );
-    $subs_path = "subs";
-    $href_fold = "";
-    $href_base = "";
-    $value = strtok("|");
-
-    foreach($url_tree as $tmp){
-        list($node_name, $args_str) = array($tmp[1],$tmp[2]); 
-        $args = explode(';', "$args_str;;;;");
-
-            //sanitize all malicious attempts '/Admin/../config...'
-        if(preg_match("#[.]#",$node_name) || $node_name=="main")
-            return self::parse_path('/');
-            //on s'arrete si l'on est plus dans un noeud
-        if(!$node_name || !is_dir($subs_path.="/$node_name"))
-            break;
-
-        if($href_base)
-            $href_fold = $href_base; 
-        $result_path[] = array(
-                $subs_fold=substr($subs_path,4),
-                "main",
-                $args,
-                $href_fold.="/$node_name",
-                $href_base = $args_str?"$href_fold//$args_str":$href_fold //cosmetique
-        );
-    }
-    self::$href="$href_base/$node_name";
-        //si on a pas fini sur une feuille, utilisation de feuille par default
-    if(!$node_name)
-        $node_name = &self::$page_def;
-    $result_path[] = array($subs_fold, &$node_name, $args, $href_fold, $href_base);
-
-        /* $context, $href, $href_ks, $context_depths */
-    return array($result_path, self::$href, self::$href_ks, count($result_path) - 1, $value);
-  }
-
 
     //Ferme les subs : close session, shut SQL link down & co
   static function context_end(){
@@ -173,7 +111,9 @@ class exyks {
   }
 
   static function render_prepare($vars = array()){
-    extract(self::$entities = $vars); //!
+    extract($vars);
+    tpls::export($vars); //!
+
     exyks::bench('display_start'); 
     ob_start();
 
@@ -199,21 +139,21 @@ class exyks {
         $meta->addAttribute("http-equiv", $header); $meta->addAttribute("content", $value);
     }
 
-    if(!tpls::$body) tpls::body("$subs_file.tpl");
+    if(!tpls::$body) tpls::body($subs_file);
 
     if(JSX){
-        tpls::top('Yks/jsx_top.tpl', tpls::ERASE);
-        tpls::bottom('Yks/jsx_bottom.tpl',tpls::ERASE);
+        tpls::top('Yks/jsx_top', tpls::ERASE);
+        tpls::bottom('Yks/jsx_bottom',tpls::ERASE);
     }
 
-    tpls::top('Yks/xml_head.tpl', tpls::TOP);
+    tpls::top('Yks/xml_head', tpls::TOP);
   }
 
 
   static function render(){
 
     $str = ob_get_contents(); ob_end_clean();
-    $str = jsx::translate($str);
+    $str = locales_manager::translate($str);
 
     if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 

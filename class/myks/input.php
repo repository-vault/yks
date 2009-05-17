@@ -1,10 +1,5 @@
 <?
-function mykse_is_of_type($field_type, $of_type){
-  static $types_xml = false; if($types_xml===false)$types_xml = yks::$get->types_xml;
-  echo "$field_type";
-  return dsp::resolve($types_xml, $field_type, $of_type);
 
-}
 function mykse_validate($data,$filter_in){
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;

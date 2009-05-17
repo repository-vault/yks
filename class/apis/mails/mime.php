@@ -7,9 +7,10 @@ abstract class mime extends mail_base {
 
 
   function output_headers( $headers=array() ){
-
     $headers = array_filter(array_merge(array(
-        "Subject"     => self::header_encode(jsx::translate(specialchars_decode($this->subject))),
+        "Subject"     => self::header_encode(
+                            locales_manager::translate(
+                                specialchars_decode($this->subject))),
         "From"        => $this->from,
         "To"          => join(', ', $this->to),
         "CC"          => join(', ', $this->cc),

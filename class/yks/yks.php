@@ -20,7 +20,7 @@ class yks
 
 
     self::$get = new yks(); $paths = array();
-    $paths = array(YKS_PATH."/libs");
+    $paths = array(YKS_PATH."/libs", CLASS_PATH);
     if($config->include_path)
         foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
             $paths[] = paths_merge(ROOT_PATH, $path);

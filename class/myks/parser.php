@@ -11,16 +11,41 @@
 class myks_parser {
   private $xslt;
   private $myks_gen;
-  public $myks_path;
+  public $myks_paths;
   const myks_fpi = "-//YKS//MYKS";
+  private $myks_ns = array();
 
+
+  static function default_ns(){
+    return array(
+        'yks'   => EXYKS_PATH."/config/myks/yks",
+        'isos'  => EXYKS_PATH."/config/myks/isos",
+        'pgsql' => EXYKS_PATH."/config/myks/pgsql"
+    );
+  }
+  function resolve_path($path){
+    $mask = '#^myks://('.join('|',array_keys($this->myks_ns)).')#e';
+    $repl = '$this->myks_ns["$1"]';
+    $path = preg_replace($mask, $repl, $path);;
+    return paths_merge(ROOT_PATH, $path);
+  }
   function __construct($myks_config){
-    $this->myks_path = paths_merge(ROOT_PATH, $myks_config['path'], "config/myks");
-    $this->myks_gen = new DomDocument("1.0");
+    $tmp_ns = array();
+    //foreach($myks_config as ns
+    $this->myks_ns = array_merge(self::default_ns(), $tmp_ns);
+    $tmp_paths = array();
+    foreach($myks_config->myks_paths->path as $path)
+        $tmp_paths[]=$this->resolve_path($path['path']);
+    
+    $this->myks_paths = $tmp_paths;
+    $this->myks_gen   = new DomDocument("1.0");
 
-    $main_xml=$this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
-    //	$old_path=getcwd();chdir($this->myks_path);
-    $files = $this->myks_path?files::find($this->myks_path,'.*?\.xml$',files::FIND_FOLLOWLINK):array();
+    $main_xml = $this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
+
+    $files = array();
+    foreach($this->myks_paths as $path)
+        $files = array_merge($files, files::find($path,'.*?\.xml$'));
+
     $xsl_file = RSRCS_PATH."/xsl/metas/myks_gen.xsl";
     if(!is_file($xsl_file)) die("Unable to locate ressource myks_gen.xsl, please check rsrcs");
 
@@ -45,4 +70,5 @@ class myks_parser {
 
 
 }
+
 
