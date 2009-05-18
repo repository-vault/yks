@@ -1,0 +1,33 @@
+
+
+Element.Event
+
+        var events = this.retrieve('events', {}),bind=!$defined(bind) || bind;
+
+        defn = function(event){
+            event = new Event(event, self.getWindow());
+            if ((bind?condition.call(self, event):condition(self, event)) === false) event.stop();
+        };
+
+
+
+
+
+Drag.drag
+
+	if(0)this.value.now[z] -= (this.value.now[z] % this.options.grid[z]);
+	else {
+		var middle=this.value.now[z] % this.options.grid[z]
+		this.value.now[z]=Math.round(middle/this.options.grid[z])
+			*this.options.grid[z]+this.value.now[z]-middle;
+	}
+
+
+
+Slider.
+	toStep: function(position){
+		var step = (position + this.options.offset) * this.stepSize / this.full * this.steps;
+		var dec=step%this.stepSize;
+		return this.options.steps ?Math.round(dec/this.stepSize)*this.stepSize+step-dec: step;
+	},
+	
