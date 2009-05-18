@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="iso_3166_countries">
+    <fields>
+      <field type="country_code"/>
+      <field type="country_name"/>
+      <field type="country_code" name="alpha_3"/>
+      <field type="country_code_alpha2" name="alpha_2"/>
+    </fields>
+  </table>
+  <mykse type="country_name">
+    <string length="128"/>
+  </mykse>
+  <mykse type="country_code_alpha2" null="null">
+    <string length="2"/>
+  </mykse>
+  <mykse type="country_code" null="null" birth="iso_3166_countries">
+    <string length="3"/>
+  </mykse>
+</myks>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="max" type="int">
+    <param type="int"/>
+    <param type="int"/>
+    <def><![CDATA[
+BEGIN
+  IF($1 > $2 ) THEN return $1;  END IF;
+  return $2;
+END
+]]></def>
+  </procedure>
+  <procedure name="min" type="int">
+    <param type="bigint"/>
+    <param type="bigint"/>
+    <def><![CDATA[
+BEGIN
+  IF($1 < $2 ) THEN return $1;  END IF;
+  return $2;
+END
+]]></def>
+  </procedure>
+</myks>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_shop_categories_list">
+    <fields>
+      <field type="category_id"/>
+      <field type="category_parent" delete="cascade"/>
+    </fields>
+  </table>
+  <table name="ks_shop_products_categories">
+    <fields>
+      <field type="product_id" key="primary" delete="cascade"/>
+      <field type="category_id" key="primary" delete="cascade"/>
+    </fields>
+  </table>
+  <mykse type="category_id" birth="ks_shop_categories_list">
+    <string length="16"/>
+  </mykse>
+  <mykse type="category_parent" null="null">
+    <mykse type="category_id"/>
+  </mykse>
+</myks>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="unix_timestamp" type="int">
+    <def>
+BEGIN
+return CAST ( EXTRACT(EPOCH FROM now()) as INTEGER);
+END;
+</def>
+  </procedure>
+  <procedure name="unix_timestamp" type="int">
+    <param name="time_in" type="timestamptz"/>
+    <def>
+BEGIN
+return  (CASE WHEN time_in IS NULL THEN NULL ELSE MIN(CAST ( EXTRACT(EPOCH FROM time_in) as BIGINT),2147483647)  END);
+END;
+</def>
+  </procedure>
+</myks>

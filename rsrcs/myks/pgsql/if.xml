@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="if" type="int">
+    <param type="bool"/>
+    <param type="int"/>
+    <param type="int"/>
+    <def>
+BEGIN
+  return (CASE WHEN $1 THEN $2 ELSE $3 END);
+END;
+</def>
+  </procedure>
+  <procedure name="if" type="string">
+    <param type="bool"/>
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+BEGIN
+  return (CASE WHEN $1 THEN $2 ELSE $3 END);
+END;
+</def>
+  </procedure>
+</myks>

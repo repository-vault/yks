@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="iso_639_languages">
+    <fields>
+      <field type="lang_code"/>
+      <field type="title" name="lang_name"/>
+      <field type="lang_code" name="alpha_3"/>
+      <field type="lang_code_alpha2" name="alpha_2"/>
+    </fields>
+  </table>
+  <mykse type="lang_code" birth="iso_639_languages">
+    <string length="3"/>
+  </mykse>
+  <mykse type="lang_code_alpha2" null="null">
+    <string length="2"/>
+  </mykse>
+</myks>

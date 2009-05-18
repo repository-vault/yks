@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_users_list" block="yks">
+    <fields>
+      <field type="user_id"/>
+      <field type="auth_type"/>
+      <field type="user_type"/>
+    </fields>
+  </table>
+  <table name="ks_users_profile">
+    <fields>
+      <field type="user_id" key="primary" update="cascade" delete="cascade"/>
+      <field type="user_name"/>
+      <field type="user_lang"/>
+      <field type="user_mail"/>
+      <field type="now" name="user_create"/>
+      <field type="now" name="user_update"/>
+      <field type="now" name="user_connect" default="0"/>
+      <field type="user_flags"/>
+    </fields>
+  </table>
+  <mykse type="user_flags"  null="null">
+    <enum set="set">
+      <val>main</val>
+    </enum>
+  </mykse>
+  <mykse type="user_mail" default="''">
+    <mykse type="mail"/>
+  </mykse>
+  <table name="ks_users_tree">
+    <fields>
+      <field type="user_id" key="primary" update="cascade" delete="cascade"/>
+      <field type="user_id" name="parent_id" update="cascade" delete="cascade"/>
+    </fields>
+  </table>
+  <mykse type="user_id" birth="ks_users_list">
+    <int size="int"/>
+  </mykse>
+  <mykse type="user_lang" null="null">
+    <mykse type="lang_key"/>
+  </mykse>
+  <mykse type="user_registration">
+    <mykse type="time"/>
+  </mykse>
+  <mykse type="auth_type" null="null">
+    <enum>
+      <val>auth_password</val>
+    </enum>
+  </mykse>
+  <mykse type="user_name" default="''">
+    <string length="50"/>
+  </mykse>
+  <mykse type="user_type" default="'ks_users'">
+    <enum>
+      <val>ks_users</val>
+    </enum>
+  </mykse>
+</myks>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="find_in_set" type="int">
+    <param name="need" type="string"/>
+    <param name="list" type="string"/>
+    <def>
+BEGIN
+return  position(','||need||',' in ','||list||',');
+END;
+</def>
+  </procedure>
+  <procedure name="find_in_set" type="int">
+    <param name="need" type="int"/>
+    <param name="list" type="string"/>
+    <def>
+BEGIN
+return  position(','||need||',' in ','||list||',');
+END;
+</def>
+  </procedure>
+</myks>

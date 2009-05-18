@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="zks_autoincrement">
+    <fields>
+      <field type="table_meta" name="increment_key" key="primary"/>
+      <field type="table_meta" name="increment_table" key="primary"/>
+      <field type="increment_value"/>
+      <field type="increment_value" name="increment_lastval"/>
+    </fields>
+  </table>
+  <mykse type="table_meta">
+    <string length="128"/>
+  </mykse>
+  <mykse type="increment_value">
+    <int/>
+  </mykse>
+</myks>

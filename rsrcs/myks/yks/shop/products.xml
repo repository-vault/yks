@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_shop_products_list">
+    <fields>
+      <field type="product_id"/>
+      <field type="product_name"/>
+      <field type="product_parent" name="parent_id" delete="cascade"/>
+      <field type="product_owner" name="user_id"/>
+      <field type="product_ref"/>
+      <field type="product_price"/>
+      <field type="count" name="product_order"/>
+      <field type="product_descr"/>
+      <field type="product_descr_long"/>
+      <field type="product_status"/>
+      <field type="product_relation_type"/>
+    </fields>
+  </table>
+  <mykse type="product_id" birth="ks_shop_products_list">
+    <int/>
+  </mykse>
+  <mykse type="product_relation_type" null="null">
+    <enum>
+      <val>derivation</val>
+      <val>variation</val>
+    </enum>
+  </mykse>
+  <mykse type="product_descr_long" null="null">
+    <mykse type="product_descr"/>
+  </mykse>
+  <mykse type="product_parent" null="null">
+    <mykse type="product_id"/>
+  </mykse>
+  <mykse type="product_owner" null="null">
+    <mykse type="user_id"/>
+  </mykse>
+  <mykse type="product_name" null="null">
+    <string length="128"/>
+  </mykse>
+  <mykse type="product_ref" null="null">
+    <string length="20"/>
+  </mykse>
+  <mykse type="product_descr" null="null">
+    <text/>
+  </mykse>
+  <mykse type="product_price" null="null">
+    <mykse type="price"/>
+  </mykse>
+  <mykse type="product_status" default="'active'">
+    <enum>
+      <val>active</val>
+    </enum>
+  </mykse>
+  <mykse type="product_qty">
+    <int/>
+  </mykse>
+</myks>

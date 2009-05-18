@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_languages">
+    <fields>
+      <field type="lang_key"/>
+      <field type="country_code"/>
+      <field type="lang_code"/>
+      <field type="lang_key" name="lang_fallback"/>
+      <field type="title" name="lang_name"/>
+    </fields>
+  </table>
+  <mykse type="lang_key" birth="ks_languages" default="'en-us'">
+    <string length="5"/>
+  </mykse>
+</myks>

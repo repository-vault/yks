@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <mykse type="time" null="null">
+    <int size="big" signed="signed"/>
+  </mykse>
+  <mykse type="now" default="unix_timestamp()">
+    <mykse type="time"/>
+  </mykse>
+  <mykse type="date" null="null">
+    <mykse type="time"/>
+  </mykse>
+  <mykse type="myks_type" default="'myks_type'">
+    <enum>
+      <val>myks_type</val>
+    </enum>
+  </mykse>
+  <mykse type="sha1">
+    <string length="40"/>
+  </mykse>
+  <mykse type="base_id">
+    <int/>
+  </mykse>
+  <mykse type="ip">
+    <int size="giga"/>
+  </mykse>
+  <mykse type="price">
+    <int size="float"/>
+  </mykse>
+  <mykse type="count" null="null">
+    <int/>
+  </mykse>
+  <mykse type="bool">
+    <enum>
+      <val>true</val>
+      <val>false</val>
+    </enum>
+  </mykse>
+  <mykse type="boolean">
+    <mykse type="bool"/>
+  </mykse>
+  <mykse type="boolean">
+    <mykse type="bool"/>
+  </mykse>
+  <mykse type="url">
+    <string length="250"/>
+  </mykse>
+  <mykse type="mail" default="''">
+    <string length="250"/>
+  </mykse>
+  <mykse type="px">
+    <int size="small"/>
+  </mykse>
+  <mykse type="file_path">
+    <string length="250"/>
+  </mykse>
+  <mykse type="title" null="null">
+    <string length="128"/>
+  </mykse>
+  <mykse type="text" default="''">
+    <text/>
+  </mykse>
+</myks>

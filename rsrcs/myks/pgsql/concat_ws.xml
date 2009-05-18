@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="concat_ws" type="string">
+    <param type="string"/>
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+DECLARE
+separator VARCHAR;
+BEGIN
+   separator = $1;
+   IF (($2 IS NULL) OR ($3 IS NULL)) THEN
+      separator = '';
+   END IF;
+   return coalesce($2,'') || separator || coalesce($3,'');
+END
+</def>
+  </procedure>
+</myks>

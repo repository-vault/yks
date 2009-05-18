@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_mails_list">
+    <fields>
+      <field type="mail_id"/>
+      <field type="now" name="mail_create"/>
+      <field type="text" name="mail_descr"/>
+      <field type="mail_name"/>
+      <field type="mail_title"/>
+      <field type="part_id" name="mail_first_part" delete="set_null"/>
+      <field type="user_mail" name="mail_cc"/>
+    </fields>
+  </table>
+  <mykse type="mail_title">
+    <string length="255"/>
+  </mykse>
+  <mykse type="mail_name">
+    <string length="128"/>
+  </mykse>
+  <mykse type="mail_id" birth="ks_mails_list">
+    <int/>
+  </mykse>
+  <table name="ks_mails_parts">
+    <fields>
+      <field type="part_id"/>
+      <field type="mime_content_type" name="content-type"/>
+      <field type="part_id" name="parent_part" update="cascade" delete="cascade"/>
+      <field type="part_contents"/>
+    </fields>
+  </table>
+  <mykse type="mime_content_type" default="'text/plain'">
+    <enum>
+      <val>text/plain</val>
+      <val>text/html</val>
+      <val>multipart/alternative</val>
+      <val>multipart/mixed</val>
+    </enum>
+  </mykse>
+  <mykse type="part_id" birth="ks_mails_parts" null="null">
+    <int/>
+  </mykse>
+  <mykse type="part_contents" null="null">
+    <text/>
+  </mykse>
+</myks>

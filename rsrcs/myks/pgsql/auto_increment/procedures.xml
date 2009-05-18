@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="auto_increment" type="int">
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+DECLARE
+rec RECORD;
+value integer;
+BEGIN
+
+ SELECT * FROM zks_autoincrement WHERE increment_key=$1 AND increment_table=$2 INTO rec;
+
+IF(rec.increment_value  NOTNULL ) THEN
+	value = rec.increment_value+1;
+	 UPDATE zks_autoincrement SET increment_value=value, increment_lastval=value
+      WHERE increment_key=$1 AND increment_table=$2;
+ELSE
+	value=1;
+	INSERT INTO zks_autoincrement (increment_key,increment_table,increment_value,increment_lastval) 
+    VALUES($1,$2,value,value);
+END IF;
+
+RETURN value;
+
+END;
+</def>
+  </procedure>
+  <procedure name="auto_increment_retrieve" type="int">
+    <param type="string"/>
+    <def>
+DECLARE
+rec RECORD;
+BEGIN
+
+SELECT * INTO rec FROM zks_autoincrement WHERE increment_table = $1;
+RETURN rec.increment_lastval;
+
+END;
+</def>
+  </procedure>
+</myks>

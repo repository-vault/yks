@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="from_unix_timestamp" type="timestamp">
+    <param name="time_in" type="bigint"/>
+    <def>
+DECLARE 
+tmp TIMESTAMP;
+BEGIN
+SELECT TIMESTAMP WITH TIME ZONE 'epoch' + time_in * INTERVAL '1 second'  INTO tmp;
+RETURN tmp;
+END;
+</def>
+  </procedure>
+</myks>

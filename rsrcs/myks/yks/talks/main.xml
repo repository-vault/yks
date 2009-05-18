@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_talks_list">
+    <fields>
+      <field type="talk_id"/>
+      <field type="user_id" name="talk_author"/>
+      <field type="talk_date"/>
+      <field type="talk_title"/>
+      <field type="talk_text" name="talk_contents"/>
+      <field type="talk_text" name="talk_description"/>
+      <field name="talk_lang" type="lang_key" key="primary"/>
+      <field type="talk_flag"/>
+    </fields>
+  </table>
+  <table name="ks_talks_tree">
+    <fields>
+      <field type="talk_id" key="primary"/>
+      <field type="talk_id" name="parent_id"/>
+    </fields>
+  </table>
+  <mykse type="talk_id" birth="ks_talks_list">
+    <int/>
+  </mykse>
+  <mykse type="talk_flag" null="null">
+    <enum set="set">
+      <val>web</val>
+      <val>feel</val>
+      <val>kraland</val>
+    </enum>
+  </mykse>
+  <mykse type="talk_date" default="unix_timestamp()">
+    <mykse type="time"/>
+  </mykse>
+  <mykse type="talk_text" default="''">
+    <text/>
+  </mykse>
+  <mykse type="talk_title">
+    <string length="200"/>
+  </mykse>
+</myks>

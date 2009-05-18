@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_locale_values">
+    <fields>
+      <field type="item_key" key="primary"/>
+      <field type="lang_key" key="primary"/>
+      <field type="text" name="value"/>
+    </fields>
+  </table>
+  <mykse type="item_key">
+    <string length="128"/>
+  </mykse>
+</myks>

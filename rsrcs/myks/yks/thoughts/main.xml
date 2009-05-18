@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_toughts_list">
+    <fields>
+      <field type="thought_id"/>
+      <field type="user_id"/>
+      <field type="thought_msg"/>
+      <field type="thought_date"/>
+    </fields>
+  </table>
+  <mykse type="thought_id" birth="ks_toughts_list">
+    <int/>
+  </mykse>
+  <mykse type="thought_msg">
+    <string length="250"/>
+  </mykse>
+  <mykse type="thought_date">
+    <mykse type="time"/>
+  </mykse>
+</myks>
