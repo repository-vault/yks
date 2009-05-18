@@ -1,0 +1,16 @@
+.switch_container {
+    width:5000px;
+    height:1000px;
+}
+
+.switch_item {
+    float:left;
+}
+.switch_item.off {
+    display:none;
+}
+
+.switch_titles span {
+    font-weight:bold;
+    cursor:pointer;
+}

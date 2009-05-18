@@ -1,0 +1,19 @@
+.paginator a {
+    display:block;
+    float:left;
+    background-color:red;
+    text-align:center;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+.paginator {
+    display:block;
+    float:right;
+    border:1px solid black;
+    overflow:hidden;
+}
+
+.paginator div {
+    width:600px;
+}

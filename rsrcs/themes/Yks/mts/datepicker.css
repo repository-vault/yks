@@ -1,0 +1,44 @@
+.dp_container * {
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size:11px;
+	color:black;
+}
+
+input.input_time {
+	width:70px;
+	cursor:pointer;
+}
+.dp_container {
+	background-color:#CCCCCC;
+	position:absolute;
+	margin-top:20px;
+	height:0px;
+	width:165px;
+	padding:2px;
+	overflow:hidden;
+}
+
+.dp_cal thead span { display:block;float:right; }
+.dp_cal {
+	width:100%;
+	border-collapse:collapse;
+	background-color:white;
+}
+.dp_cal select { width:auto; }
+.dp_cal th { background-color:#eaeaea; border-bottom:1px solid black;}
+.dp_cal td { text-align:center;}
+.dp_cal td.day { cursor:pointer;}
+.dp_cal td.day:hover{ background-color:#eaeaea; }
+.dp_cal td.today { border:1px solid black;}
+.dp_cal td.current { background-color:#aeaeae;}
+
+
+.dp_cal .close  {
+	width:16px;
+	height:16px;
+	display:block;
+	float:right;
+	background-image:url(close);
+} 
+
+

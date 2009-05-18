@@ -1,0 +1,38 @@
+.wyzzie {
+    width:300px;;
+    height:300px;
+    background-color:white;
+}
+.rte_container {
+    width:100%;
+    clear:both;
+}
+.rte_container textarea, .rte_container iframe {
+    border:1px solid black;
+    width:100%;
+    clear:both;
+    background-color:white;
+}
+
+.rte_toolbar {
+    width:300px;
+    height:30px;
+}
+.rte_toolbar div {
+    display:block;
+    width:24px;
+    height:24px;
+    margin:2px;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    float:left;
+}
+
+.rte_toolbar .italic { background-image:url(imgs/italic.png); }
+.rte_toolbar .bold { background-image:url(imgs/bold.png); }
+.rte_toolbar .underline { background-image:url(imgs/underline.png); }
+.rte_toolbar .left { background-image:url(imgs/left.png); }
+.rte_toolbar .right { background-image:url(imgs/right.png); }
+.rte_toolbar .center { background-image:url(imgs/center.png); }
+.rte_toolbar .toggle { background-image:url(imgs/toggle.png); }
+

@@ -1,0 +1,21 @@
+.smileys_box {
+	position:absolute;
+	width:150px!important;
+	background-color:white;
+	padding:3px;
+	border:1px solid #eaeaea;
+	height:auto!important;
+
+}
+.smileys_box img {
+	cursor:move;
+	margin:1px;
+}
+.smileys_box .close {
+	float:right;
+	margin:5px;
+	cursor:pointer;
+}
+.smileys {
+	background:white url(/imgs/Kse/smileys/yks/1.png) no-repeat 3px 3px;
+}

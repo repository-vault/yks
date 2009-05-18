@@ -1,0 +1,10 @@
+.toggle_zone {
+    overflow:hidden;
+}
+.toggle_anchor {
+    cursor:pointer;
+    background-image:url(toggle_up.png);
+    background-position:right center;
+    background-repeat:no-repeat;
+}
+.toggle_zone.closed .toggle_anchor { background-image:url(toggle_down.png); }

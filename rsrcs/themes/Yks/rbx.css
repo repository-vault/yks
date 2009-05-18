@@ -1,0 +1,38 @@
+.rbx {
+    position:relative;
+    overflow:hidden;
+    height:0px;
+    display:none;
+}
+
+.rbx_error {
+    
+    background-image:url(bgs/red);
+    border:1px solid #eaeaea;
+    padding:5px;
+}
+
+.rbx_ok{
+    background-image:url(bgs/white);
+    border:1px solid #eaeaea;
+    color:black;
+    padding:5px;
+}
+
+.rbx_close {
+    width:16px;
+    height:16px;
+    background-image:url('icons/delete.png');
+    float:right;
+    cursor:pointer;
+}
+.rbx_ok .rbx_close {
+    background-image:url('icons/close_valid.png');
+}
+
+.rbx_loader {
+    background-image:url('icons/loader_131.gif');
+    border-top:1px solid black;
+    border-bottom:1px solid black;
+    height:10px;
+}

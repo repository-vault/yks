@@ -1,0 +1,22 @@
+.completer {
+    position:absolute;
+    background-color:#cacaca;
+    z-index:100;
+
+
+}
+
+.completer li {
+    padding:3px;
+    background-color:white;
+    margin:2px;
+    color:black;
+}
+
+.completer li:hover {
+    background-color:#eaeaea;
+}
+
+.completer li.focused {
+    background-color:#aeaeae;
+}

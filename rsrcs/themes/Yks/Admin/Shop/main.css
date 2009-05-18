@@ -1,0 +1,30 @@
+
+
+#products_list_tools {
+  float:left;
+  width:300px;
+}
+#products_list {
+  float:right;
+  width:700px;
+}
+
+#products_list_contents table {
+    width:100%;
+
+}
+
+
+#product_manage_contents textarea.wyzzie {
+    height:200px;
+    width:100%;
+}
+
+#product_manage_contents {
+    width:850px;
+}
+
+#product_manage_contents fieldset {
+    float:left;
+    width:350px;
+}

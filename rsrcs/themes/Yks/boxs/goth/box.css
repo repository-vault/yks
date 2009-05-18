@@ -1,0 +1,27 @@
+.goth_lu {background-image:url(lu);}
+.goth_ru {background-image:url(ru);}
+.goth_ld {background-image:url(ld);}
+.goth_rd {background-image:url(rd);}
+
+.goth_lm {background-image:url(lm);}
+.goth_rm {background-image:url(rm);}
+
+.goth_mu {background-image:url(mu);}
+.goth_md {background-image:url(md);}
+
+.goth_lm, .goth_rm {width:51px;}
+.goth_mu, .goth_md { height:51px;}
+
+.goth_mm { background-color:black; }
+
+.goth_caption { float:right; }
+.goth_mu { vertical-align:middle; }
+
+.goth_close { 
+	background-image:url(close); 
+	width:16px;
+	height:16px;
+	float:right;
+	display:block;
+	margin-left:5px;
+}
