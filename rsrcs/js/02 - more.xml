@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE js PUBLIC  "-//YKS//JS" "">
+<js>
+  <!--Effect to change any number of CSS properties of any number of Elements.-->
+  <module key="mt://mt.more/Fx/Fx.Elements" mandatory="true">
+    <dep key="mt://mt.core/Element/Element"/>
+    <dep key="mt://mt.core/Fx/Fx"/>
+  </module>
+  <!--Effect to smoothly scroll any element, including the window.-->
+  <module key="mt://mt.more/Fx/Fx.Scroll" class="Fx.Scroll">
+    <dep key="mt://mt.core/Element/Element"/>
+    <dep key="mt://mt.core/Fx/Fx"/>
+  </module>
+  <!--Effect to slide an element in and out of view.-->
+  <module key="mt://mt.more/Fx/Fx.Slide">
+    <dep key="mt://mt.core/Element/Element"/>
+    <dep key="mt://mt.core/Fx/Fx"/>
+  </module>
+  <!--The base Drag Class. Can be used to drag and resize Elements using mouse events.-->
+  <module key="mt://mt.more/Drag/Drag" class="Drag">
+    <dep key="mt://mt.core/Element/Element"/>
+  </module>
+  <!--A Drag extension that provides support for the constraining of draggables to containers and droppables.-->
+  <module key="mt://mt.more/Drag/Drag.Move" class="Drag.Move">
+    <dep key="mt://mt.more/Drag/Drag"/>
+  </module>
+  <!--Class for creating horizontal and vertical slider controls.-->
+  <module key="mt://mt.more/Interface/Slider" class="Slider">
+    <dep key="mt://mt.more/Drag/Drag"/>
+  </module>
+  <!--Provides methods to dynamically load JavaScript, CSS, and Image files into the document.-->
+  <module key="mt://mt.more/Utilities/Assets" mandatory="true">
+    <dep key="mt://mt.core/Element/Element"/>
+  </module>
+</js>

@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<config>
+
+<module key="mt://yks.libs/xhr" mandatory="true"/>
+<module key="mt://yks.libs/xslt" mandatory="true"/>
+<module key="mt://yks.libs/urls" mandatory="true"/>
+<module key="mt://yks.root/constants" mandatory="true">
+  <dep key="mt://mt.core/Native/String"/>
+</module>
+
+
+<module key="mt://yks/Doms" mandatory="true">
+  <dep key="mt://mt.core/Element/Element"/>
+  <dep key="mt://mt.core/Class/Class"/>
+</module>
+
+<module key="mt://yks/Jsx/Rbx" mandatory="true">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+<module key="mt://yks/Jsx/Jsx" mandatory="true">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+<!-- Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer -->
+<module key="mt://yks/Jsx/Forms" mandatory="true" class="Jsx.Form" match="'form.jsx_form'">
+  <dep key="mt://yks/Jsx/Jsx"/>
+</module>
+
+<!--Deal with uploaded stuffs-->
+<module key="mt://yks/Jsx/Uploader" mandatory="true" class="Uploader">
+  <dep key="mt://yks/Jsx/Jsx"/>
+</module>
+
+<!--Extend basic links and add support for [target] attribute, working with Boxes-->
+<module key="mt://yks/Jsx/Links" mandatory="true" class="Jsx.A" match="*[href]:not(.ext):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
+  <dep key="mt://yks/Jsx/Jsx"/>
+</module>
+
+<module key="mt://yks/Jsx/Screen" mandatory="true">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+<!-- Root of the Ex/Yks JS layer, defined a virtual container, act as an 'iframe'-->
+<module key="mt://yks/Jsx/Box" mandatory="true" class="Box" match="Doms.box_mask">
+  <dep key="mt://yks/Jsx/Screen"/>
+</module>
+
+
+
+<!--Extend a basic text input into a small but usefull calendar-->
+<module key="mt://yks/Utilities/DatePicker" class="DatePicker" match="input.input_time">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+<!--Provide a very light Rich Text Editor for editing html contents-->
+<module key="mt://yks/Utilities/Rte/Wyzzie" class="Wyzzie" match="textarea.wyzzie">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+<!--Autocompleter-->
+<module key="mt://yks/Utilities/Completer" class="Wyzzie" match="textarea.wyzzie">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+
+<!--Toggler is a very light Accordion like-->
+<module key="mt://yks/Interface/Toggler" class="Completer">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+
+<module key="mt://yks/Interface/ShowCase" mandatory="true">
+  <dep key="mt://yks/Doms"/>
+</module>
+<module key="mt://yks/Math/Matrix" mandatory="true">
+  <dep key="mt://yks/Doms"/>
+</module>
+
+
+
+</config>

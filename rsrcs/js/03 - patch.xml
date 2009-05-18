@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE js PUBLIC  "-//YKS//JS" "">
+<js>
+  <!-- This patch is loaded (because mandatory) when mt://mt.core/Utilities/Cookie is called -->
+  <module key="mt://yks.patchs/Utilities/Cookie" mandatory="true">
+    <dep key="mt://mt.core/Utilities/Cookie"/>
+  </module>
+  <module key="mt://yks.patchs/Core/Window" mandatory="true">
+    <dep key="mt://mt.core/Core/Browser"/>
+  </module>
+  <module key="mt://yks.patchs/Native/String" mandatory="true">
+    <dep key="mt://mt.core/Native/String"/>
+  </module>
+  <module key="mt://yks.patchs/Native/Number" mandatory="true">
+    <dep key="mt://mt.core/Native/Number"/>
+  </module>
+  <module key="mt://yks.patchs/Native/Hash" mandatory="true">
+    <dep key="mt://mt.core/Native/Hash"/>
+  </module>
+  <module key="mt://yks.patchs/Class/Class.extended" mandatory="true">
+    <dep key="mt://mt.core/Class/Class"/>
+  </module>
+  <module key="mt://yks.patchs/Element/Element" mandatory="true">
+    <dep key="mt://mt.core/Element/Element"/>
+  </module>
+  <module key="mt://yks.patchs/Utilities/Assets" mandatory="true">
+    <dep key="mt://mt.more/Utilities/Assets"/>
+  </module>
+  <module key="mt://yks.patchs/Interface/Style" mandatory="true">
+    <dep key="mt://mt.core/Element/Element"/>
+  </module>
+</js>
