@@ -1,0 +1,2 @@
+<?
+header(TYPE_TEXT);

@@ -1,0 +1,12 @@
+<?
+
+tpls::$nav[$href_fold]['children']["$href_fold/Products"]=array(
+        'href'=>"/?$href_fold/Products",
+        'title'=>'Produits',
+        'target'=>'_top',
+);
+
+
+if($href == "$href_fold/") reloc("/?$href_fold/Orders");
+
+tpls::css_add("&COMMONS_URL;/css/Yks/Admin/Shop/main.css");
