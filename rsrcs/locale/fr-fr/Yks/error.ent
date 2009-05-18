@@ -1,0 +1,11 @@
+<!ENTITY err_sql "Une erreur inconnue est survenue dans le moteur de données">
+
+<!ENTITY err_451 "Le site est temporairement indisponible en raison d'une activité de maintenance. Veuillez accepter toutes nos excuses pour la gêne occasionnée.">
+
+<!ENTITY err_452 "Impossible de localiser le webmaster">
+
+
+<!ENTITY err_404 "Impossible de trouver le fichier demandé">
+<!ENTITY err_403 "Vous n'avez pas les autorisations nécessaires">
+
+<!ENTITY error.action_canceled "Vous n'avez pas l'autorisation d'effectuer cette action. Pour vous authentifier, <span onclick='Jsx.open(login_page,error_box)'>Cliquez-ici</span>">

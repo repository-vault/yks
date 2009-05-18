@@ -1,0 +1,10 @@
+
+<!ENTITY user_profile.user_name "Name">
+<!ENTITY user_profile.user_lang "Language">
+<!ENTITY user_profile.user_mail "E-mail">
+<!ENTITY user_profile.auth_type "Authentification">
+<!ENTITY user_profile.user_pswd "Password">
+<!ENTITY user_profile.user_login "Login">
+<!ENTITY user_profile.user_create "Creation">
+<!ENTITY user_profile.user_update "Update">
+<!ENTITY user_profile.user_flags "Flags">

@@ -1,0 +1,2 @@
+<!ENTITY option.choose "-- Choisissez --">
+<!ENTITY select.choose "<option value=''>&option.choose;</option>">

@@ -1,0 +1,11 @@
+<!ENTITY err_sql "Une erreur SQL est survenue">
+
+<!ENTITY err_451 "The website is temporarily unavailable due to maintenance activity. We apologize for any inconvenience.">
+
+<!ENTITY err_452 "Unable to reach the webmaster">
+
+
+<!ENTITY err_404 "Unable to locate requested ressource">
+<!ENTITY err_403 "Restricted area">
+
+<!ENTITY error.action_canceled "Vous n'avez pas l'autorisation d'effectuer cette action. Pour vous authentifier, <span onclick='Jsx.open(login_page,error_box)'>Cliquez-ici</span>">
