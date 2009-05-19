@@ -15,7 +15,7 @@ class yks
 
     define('RSRCS_PATH', YKS_PATH.'/rsrcs');
     $config_file = CONFIG_PATH."/$host.xml";
-    if(!is_file($config_file)) yks::fatality(yks::FATALITY_CONFIG);
+    if(!is_file($config_file)) yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
     $GLOBALS['config'] = $config =  config::load($config_file);
 
 

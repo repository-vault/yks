@@ -9,6 +9,7 @@ class exyks_paths {
     Scan config file for paths definitions and register them
 */
   public static function init($paths){
+    if($paths)
     foreach($paths->path as $path){
         $paths = explode(':', $path['symbolic']);
         $dest  = constant($path['dest']);
