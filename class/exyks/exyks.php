@@ -67,7 +67,7 @@ class exyks {
     include CLASS_PATH."/functions.php";
 
     exyks_paths::init($config->paths);
-    exyks_paths::register("/Yks", EXYKS_PATH);
+    exyks_paths::register("/Yks", BASE_PATH);
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));

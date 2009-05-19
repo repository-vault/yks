@@ -5,7 +5,7 @@ $uid = $argv0;
 $compress = false;
 include "$class_path/dsp/js/loader.php";
 
-$JS_YKS_PATH = EXYKS_PATH.'/js/Yks';
+$JS_YKS_PATH = RSRCS_PATH.'/js/Yks';
 
 include "$JS_YKS_PATH/exts/mootools.php";
 include "$JS_YKS_PATH/exts/mootools-extended.php";

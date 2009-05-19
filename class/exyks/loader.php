@@ -10,6 +10,8 @@ define('Ex/yks', 'Exyks, Exupery style');
   $class_path=realpath(dirname(__FILE__).'/..');
   define('CLASS_PATH', $class_path);
   define('YKS_PATH', realpath("$class_path/.."));
+  define('EXYKS', YKS_PATH.'/index.php');
+  define('BASE_PATH', YKS_PATH.'/base');
 
   $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
     //remove www or relatives paths
@@ -18,7 +20,7 @@ define('Ex/yks', 'Exyks, Exupery style');
   define('PUBLIC_PATH', realpath($public_root));
 
     //Ex/yks specifics
-  define('EXYKS_PATH', dirname(realpath($_SERVER['SCRIPT_FILENAME'])));
+
   define('WWW_PATH', PUBLIC_PATH);
   define('CONFIG_PATH', dirname(WWW_PATH)."/config"); //one level up than www root
 

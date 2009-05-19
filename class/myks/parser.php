@@ -18,9 +18,9 @@ class myks_parser {
 
   static function default_ns(){
     return array(
-        'yks'   => EXYKS_PATH."/config/myks/yks",
-        'isos'  => EXYKS_PATH."/config/myks/isos",
-        'pgsql' => EXYKS_PATH."/config/myks/pgsql"
+        'yks'   => RSRCS_PATH."/myks/yks",
+        'isos'  => RSRCS_PATH."/myks/isos",
+        'pgsql' => RSRCS_PATH."/myks/pgsql"
     );
   }
   function resolve_path($path){

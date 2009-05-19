@@ -11,7 +11,7 @@ class locales_fetcher {
     $languages  = exyks::retrieve('LANGUAGES');
 
     $base = array_merge($base_ns, array(
-            'yks'   => EXYKS_PATH."/lang",
+            'yks'   => RSRCS_PATH."/locale",
             'here'  => './lang'
     ));
 
