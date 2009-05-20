@@ -40,7 +40,7 @@ class locales_fetcher {
     $languages        = exyks::retrieve('LANGUAGES');
 
     self::$locales_ns = self::default_ns(attributes_to_assoc($locales, self::prefix_ns));
-    $languages_order  = preg_split(VAL_SPLITTER, yks::$get->config->languages['order']);
+    $languages_order  = preg_split(VAL_SPLITTER, yks::$get->config->locales['order']);
     $languages_order  = array_intersect($languages_order, $languages);
 
     $tmp_paths = array();
@@ -50,7 +50,6 @@ class locales_fetcher {
             $tmp_paths[$lang_key][] = self::resolve_path(self::$locales_ns[$lang_key], $path['path']);
 
     } self::$locale_paths = $tmp_paths;
-
     $done = array();
     if(!$languages_order) return $done;
 

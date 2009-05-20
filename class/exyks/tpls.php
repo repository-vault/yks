@@ -25,8 +25,8 @@ class tpls {
     array_unshift(self::$bottom, self::tpl($href));
  }
     
- static function body($href) {
-    self::$body = self::tpl($href);
+ static function body($href, $raw=false) {
+    self::$body = $raw?$href:self::tpl($href);
  }
  static function page_def($subs_file){
     exyks::$page_def = $subs_file;

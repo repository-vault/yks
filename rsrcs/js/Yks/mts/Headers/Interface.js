@@ -9,6 +9,13 @@ Doms.loaders['[YKS]/Interface/ShowCase'] = {
 };
 
 
+Doms.loaders['[YKS]/Interface/Switcher'] = {
+    "class": "Switcher",
+    "match": false
+};
+
+
+
 
 Doms.loaders['[YKS]/Utilities/Imgs/Thumbnailer.avatar'] = {
     "class": "Thumbnailer",
