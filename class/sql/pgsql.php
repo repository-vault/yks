@@ -108,7 +108,8 @@ class sql {
     if(is_array($v) && (list($type,$val)=each($v)))
         return ( $type==="sql" ? $val : '' );
     if(is_null($v)) return 'NULL';
-    if(is_numeric($v)) return $v;
+    if(is_int($v)) return $v;
+    if(is_bool($v)) return $v?"TRUE":"FALSE";
     return "'".self::clean($v)."'";
   }
   

@@ -5,6 +5,7 @@ class locales_fetcher {
 
   const prefix_ns = "locales_prefix";
   static public $locale_paths;
+  static private $locale_tables;
   
   static private $locales_ns = array();
   static private function default_ns($base_ns){
@@ -48,8 +49,11 @@ class locales_fetcher {
         $lang_keys = $path['lang_key']?array((string)$path['lang_key']):$languages;
         foreach($lang_keys as $lang_key)
             $tmp_paths[$lang_key][] = self::resolve_path(self::$locales_ns[$lang_key], $path['path']);
-
     } self::$locale_paths = $tmp_paths;
+
+    if($locales->cache->sql) foreach($locales->cache->sql as $cache_def)
+        self::$locale_tables[] = $cache_def['table'];
+
     $done = array();
     if(!$languages_order) return $done;
 
@@ -63,17 +67,6 @@ class locales_fetcher {
   }
 
   private static function load_entities($lang_key, $entities=array()){ 
- 
-    $config = yks::$get->config;
-
-    $dyn_entities = array();
-    if($config->dyn_entities)
-      foreach($config->dyn_entities->children() as $entity_def){
-        if(strpos($entity_def['options'],"cachable")===false)continue;
-        $dyn_entities = array_merge($dyn_entities,
-            locales_renderer::render($entity_def->getName(), false, $lang_key));
-    }
-    $entities = array_merge($dyn_entities, $entities);
 
     $files = array();
     if(self::$locale_paths[$lang_key]) foreach(self::$locale_paths[$lang_key] as $path)
@@ -81,6 +74,9 @@ class locales_fetcher {
 
     foreach($files as $dtd_file)
         $entities = array_merge($entities, dtd::ent_get($dtd_file));
+
+    foreach(self::$locale_tables as $table_name)
+        $entities = array_merge($entities, locales_sql_scanner::scan_all($table_name, $lang_key));
 
     return $entities;
   }

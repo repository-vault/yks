@@ -5,8 +5,15 @@
   non trivial translations tables
 */
 
-class locales_renderer {
+class locales_sql_scanner {
   static private $locale_definition = array();
+
+  static function scan_all($table, $lang_key){
+    sql::select($table, compact('lang_key')); $entities = array();
+    $entity_key = "item_key"; $entity_col = "value";
+    while($l = sql::fetch()) $entities["&{$l[$entity_key]};"] = $l[$entity_col];
+    return $entities;
+  }
 
   static function render($vals, $entity_type, $lang){
     $entity_def = yks::$get->config->dyn_entities->$entity_type;

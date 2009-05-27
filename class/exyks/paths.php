@@ -3,30 +3,47 @@
 
 class exyks_paths {
 
+  const prefix_ns = "paths_prefix";
+  static private $paths_ns = array();
   private static $paths = array();
 
 /*
     Scan config file for paths definitions and register them
+    <paths xmlns:pf="paths_prefix" pf:admin="."
 */
-  public static function init($paths){
-    if($paths)
-    foreach($paths->path as $path){
-        $paths = explode(':', $path['symbolic']);
-        $dest  = constant($path['dest']);
-        if(!$dest) continue;
-        foreach($paths as $path_key)
+  public static function init($config){
+    if(!$config) return;
+
+    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), array(
+            'yks'   => BASE_PATH,
+            'here'  => ROOT_PATH,
+    ));
+
+    foreach($config->path as $path){
+        foreach(explode(':', $path['symbolic']) as $path_key) {
+            $dest = $path['base']?$path['base'].$path_key:$path['dest'];
             self::register($path_key, $dest);
+        }
     }
   }
+
 
 /*
     Register a "virual" path from any file starting with $path_key
 */
-  public static function register($path_key, $path_root){
-    self::$paths['subs'][$path_key]   = "$path_root/subs$path_key";
+  public static function register($path_key, $path){
+        //resolve
+    $mask = '#^path://('.join('|',array_keys(self::$paths_ns)).')#e';
+    $repl = 'self::$paths_ns["$1"]';
+    $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs'", $path));
+    $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls'", $path));
+
+    self::$paths['subs'][$path_key]   = $sub_path;
     tpls::$paths['search'][]  = "#^$path_key#";
-    tpls::$paths['replace'][] = "$path_root/tpls$path_key";
+    tpls::$paths['replace'][] = $tpl_path;
   }
+
+
 
   private static function resolve($subs_fold, $node_name, $subs_path){
     if($subs = self::$paths['subs']["$subs_fold/$node_name"]) {

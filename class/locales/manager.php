@@ -18,10 +18,9 @@ class locales_manager {
 
     define('USER_LANG', $user_lang);
 
-
     if(yks::$get->config->dyn_entities)
       foreach(yks::$get->config->dyn_entities->children() as $entity_def)
-        locales_processor::register($entity_def->getName(), array("locales_renderer", 'render'));
+        locales_processor::register($entity_def->getName(), array("locales_sql_scanner", 'render'));
   }
 
   public static function translate($str, $lang = USER_LANG){
