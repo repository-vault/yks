@@ -8,6 +8,9 @@ function make_tree($splat, $root=false){
     } return $root?array($root=>$tree[$root]):$tree;
 }
 
+    //return the first non empty value
+function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
+
 function array_next_val($array,$val){ return array_step($array, $val, 1, false); }
 function array_step($array,$val,$way=1,$loop=true){
     $tmp=array_search($val,$array)+$way;

@@ -4,7 +4,7 @@ abstract class _sql_base  implements ArrayAccess {
 
    protected $sql_table=false;
    protected $sql_key=false;
-   private $data;
+   protected $data; //do NOT access this, (need php 5.3 setAccessible)
 
   function __construct($from){
     if(!($this->sql_table && $this->sql_key))
@@ -13,6 +13,14 @@ abstract class _sql_base  implements ArrayAccess {
     if(is_array($from))
         $this->feed($from);
     else $this->from_id((int)$from);
+  }
+
+    //since reflection is not complete, it will not store private members
+  protected function sleep($excluded = array()){
+    $ref   = new ReflectionObject($this);
+    $props = $ref->getProperties(); $all=array();
+    foreach($props as $k) $all[] = $k->name;
+    return array_diff($all, $excluded);
   }
 
   function feed($data){

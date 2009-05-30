@@ -55,7 +55,7 @@ var Carousel = new Class({
 
   adopt:function(image, col, row, id){
     var screen_tmp = this.showcase.adopt(image, col, row);
-    this.fireEvent('adoption', screen_tmp, id);
+    this.fireEvent('adoption', [screen_tmp, id]);
 
   },
 
@@ -109,7 +109,7 @@ var Carousel = new Class({
             return this.nextdone(forward);
         this.dec += step;
         this.showcase.redraw(this.dec);
-    }.bind(this) ,100);
+    }.bind(this) ,10);
   },
 
   nextdone:function(forward){

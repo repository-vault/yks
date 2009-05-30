@@ -60,8 +60,10 @@
             <xsl:call-template name="box_attribute"/>
             <xsl:if test="@caption"><p class='title'><xsl:value-of select="@caption"/></p></xsl:if>
             <xsl:if test="not(./node())"><a href="{@src}"><xsl:value-of select="@src"/></a></xsl:if>
-            <xsl:if test="node()"><xsl:if test="@id"><div id="{@id}_contents"><xsl:apply-templates/>&#160;</div></xsl:if>
-            <xsl:if test="not(@id)"><xsl:apply-templates/></xsl:if></xsl:if>
+            <xsl:if test="node()">
+              <xsl:if test="@id"><div id="{@id}_contents"><xsl:apply-templates/></div></xsl:if>
+              <xsl:if test="not(@id)"><xsl:apply-templates/></xsl:if>
+            </xsl:if>
         </div>
     </xsl:otherwise>
 
