@@ -61,13 +61,19 @@ class auth {
     return $access;
   }
 
-  static function verif($access_zones='',$lvl='access',$die=false){
+  static function verif($access_zones='', $lvl='access', $die=false){     global $action;
+
     if(!is_array($access_zones)) $access_zones=array($access_zones);
     $base = sess::$sess['user_access'];
     foreach($access_zones as $access_zone) $base=$base[$access_zone];
-    $valid=isset($base[$lvl]);
-    if($die && !$valid)abort($die);
-    return $valid;
+    $valid = isset($base[$lvl]);
+    if(!$die || $valid) return $valid;
+
+    if($lvl == "action"){
+        if($action) rbx::error("&error.action_canceled;");
+        $action = '';
+    } else abort($die);
+
   }
 
   static function get_tree($final_tree, $asked_tree){

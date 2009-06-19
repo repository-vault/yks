@@ -62,7 +62,7 @@ exyks::$headers = array(
     'jsx-client'=>TYPE_XML,
 );
 
-exyks::store('LANGUAGES', preg_split("#[,\s]+#", $config->locales['keys']));
+exyks::store('LANGUAGES', preg_split(VAL_SPLITTER, $config->locales['keys']));
 define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 

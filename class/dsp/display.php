@@ -87,9 +87,9 @@ class dsp{
     $title = !$empty && $truncated!=$str?" title=\"$str\"":'';
     return "<{$element}{$title}>$truncated</$element_name>";
   }
-  static function dd($data,$opts=false){
+  static function dd($data, $opts=false){
     if(!is_array($opts))$opts=array('selected'=>array($opts));
-    $selected=$opts['selected']; if(!is_array($selected))$selected=array($selected);
+    $selected=$opts['selected']; if(!is_array($selected)) $selected=array($selected);
     $mykse=$opts['mykse'];$col=$opts['col'];if(!$col)$col="value";
     if(!$data) $data = array();
     if(!is_array($data)){
@@ -98,6 +98,7 @@ class dsp{
         $list = array_combine($list, array_mask($list,"&$data.%s;"));
     } else $list = $data;
 
+    $depth = (int)$opts['depth'];
     $options="";$pad=$opts['pad']?$opts['pad']:"&#160;&#160;";
     $truncate=$opts['truncate']?$opts['truncate']:50;
     foreach($list as $k=>$v){
@@ -107,7 +108,7 @@ class dsp{
         .($v['class']?"class='{$v['class']}' ":'')
         .($v['disabled']?"disabled='{$v['disabled']}' ":'')
         .($v['selected']||in_array($k,$selected)?'selected="selected" ':'')
-        .">".str_repeat($pad,(int)$v['depth'])
+        .">".str_repeat($pad,(int)$v['depth']+$depth)
             .($mykse?"&$mykse.$k;":truncate($v[$col],$truncate))
         ."</option>";
     } return $options;
