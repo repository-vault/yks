@@ -32,6 +32,7 @@ class yks
     if($details) error_log("[FATALITY] $details");
     header($render_mode=="jsx"?TYPE_XML:TYPE_HTML);
     $contents  = file_get_contents(RSRCS_PATH."/fatality/-top.html");
+    if(DEBUG) $contents .= "\r\n<!-- ".strtr($details,array("-->"=>"--"))."-->\r\n";
     $contents .= file_get_contents(RSRCS_PATH."/fatality/$fatality.html");
     $contents .= file_get_contents(RSRCS_PATH."/fatality/-bottom.html");
     die($contents);//finish him

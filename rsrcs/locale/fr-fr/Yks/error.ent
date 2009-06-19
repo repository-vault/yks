@@ -8,4 +8,4 @@
 <!ENTITY err_404 "Impossible de trouver le fichier demandé">
 <!ENTITY err_403 "Vous n'avez pas les autorisations nécessaires">
 
-<!ENTITY error.action_canceled "Vous n'avez pas l'autorisation d'effectuer cette action. Pour vous authentifier, <span onclick='Jsx.open(login_page,error_box)'>Cliquez-ici</span>">
+<!ENTITY error.action_canceled "Vous n'avez pas l'autorisation d'effectuer cette action.">

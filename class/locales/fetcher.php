@@ -1,11 +1,16 @@
 <?
+/*
+  Public : fetch_all() :
+    store in memory (data::load) for every language
+    all cachable entities 
+*/
 
 // xmlns:pf="locales_prefix" pf:here="./lang"
 class locales_fetcher {
 
   const prefix_ns = "locales_prefix";
   static public $locale_paths;
-  static private $locale_tables;
+  static private $locale_tables = array();
   
   static private $locales_ns = array();
   static private function default_ns($base_ns){
@@ -23,7 +28,7 @@ class locales_fetcher {
     return $paths;
   }
 
-  function resolve_path($ns, $path){
+  private  static function resolve_path($ns, $path){
     $mask = '#^locale://('.join('|',array_keys($ns)).')#e';
     $repl = '$ns["$1"]';
     $path = preg_replace($mask, $repl, $path);;

@@ -10,7 +10,6 @@ class locales_manager {
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $accept_hash = md5($base);
 
-    unset($_SESSION['langs'][$accept_hash]);
     if(!$user_lang = $_SESSION['langs'][$accept_hash]) {
         $user_lang =  self::find_best_lang($base, exyks::retrieve('LANGUAGES'));
         $_SESSION['langs'][$accept_hash] = $user_lang;
