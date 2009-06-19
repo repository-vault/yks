@@ -88,14 +88,21 @@ class exyks {
     if(!$config->head->scripts) $config->head->addChild("scripts");
 
     exyks_session::init_core();
-    security_manager::sanitize();
+    exyks_security::sanitize();
     locales_manager::init();
 
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load_classic();
 
-    tpls::top("Yks/top");
-    tpls::bottom("Yks/bottom");
+
+
+    if(JSX){
+        tpls::top('Yks/jsx_top', tpls::STD, "jsx");
+        tpls::bottom('Yks/jsx_bottom', tpls::STD, "jsx");
+    } else {
+        tpls::top("Yks/top");
+        tpls::bottom("Yks/bottom");
+    }
 
   }
 
@@ -141,12 +148,8 @@ class exyks {
 
     if(!tpls::$body) tpls::body($subs_file);
 
-    if(JSX){
-        tpls::top('Yks/jsx_top', tpls::ERASE);
-        tpls::bottom('Yks/jsx_bottom',tpls::ERASE);
-    }
 
-    tpls::top('Yks/xml_head', tpls::TOP);
+    tpls::top('Yks/xml_head', tpls::TOP, 'all');
   }
 
 
@@ -168,7 +171,7 @@ class exyks {
 
     if(true || self::$customs || $render_side=="server"){ // || optim XML
         $doc = exyks::load_xml($str);
-        if(!$doc) yks::fatality(yks::FATALITY_XML_SYNTAX, $render_mode);
+        if(!$doc) yks::fatality(yks::FATALITY_XML_SYNTAX, $str, $render_mode);
         exyks::parse($doc);
         if($render_side=="client") $str = $doc->saveXML();
     }
