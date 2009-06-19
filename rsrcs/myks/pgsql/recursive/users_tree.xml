@@ -3,39 +3,12 @@
 <myks>
   <procedure name="ks_users_tree" type="record" setof="setof">
     <param type="int"/>
-    <param type="int"/>
-    <def>
-DECLARE
- myrec record;
- myrec2 record;
- d INTEGER;
-BEGIN
- d := COALESCE($2, 1);
- 
-  FOR  myrec IN (SELECT  *, d as depth FROM `ks_users_tree` WHERE parent_id = $1) LOOP
-  	return NEXT myrec;
-    IF(myrec.user_id = $1) THEN
-    	continue;
-   END IF;
-    
-  	FOR  myrec2 IN  (SELECT * FROM `ks_users_tree`(myrec.user_id, d+ 1) AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER) )LOOP
-  		return NEXT myrec2;
-    END LOOP;
-
-  END LOOP;
-  
-  RETURN;
-END;
-</def>
-  </procedure>
-  <procedure name="ks_users_tree" type="record" setof="setof">
-    <param type="int"/>
     <def>
 DECLARE
 
 rec record;
 BEGIN
- FOR rec IN ( SELECT * FROM `ks_users_tree`($1, 0) AS func(user_id integer, parent_id integer, depth INTEGER) ) LOOP
+ FOR rec IN ( SELECT * FROM `ks_generic_tree`('ivs_users_tree', 'user_id', $1, 0) AS func(user_id integer, parent_id integer, depth INTEGER) ) LOOP
  
  RETURN NEXT rec;
  END LOOP;

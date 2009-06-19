@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="ks_generic_tree" type="record" setof="setof">
+    <param type="string"/>
+    <param type="string"/>
+    <param type="int"/>
+    <param type="int"/>
+    <def>
+DECLARE
+
+ myrec record;
+ myrec2 record;
+ d INTEGER;
+ query VARCHAR;
+BEGIN
+ d := COALESCE($4, 1);
+  query := ('SELECT ' || $2 || '::INTEGER as id, parent_id::INTEGER,  ' || d || '::INTEGER as depth FROM ' || $1 || ' WHERE parent_id = ' || $3 );
+  -- RAISE INFO '%', query;
+  
+  FOR  myrec IN EXECUTE query LOOP
+  	return NEXT myrec;
+    IF(myrec.id = $3) THEN
+    	continue;
+   END IF;
+    
+  	FOR  myrec2 IN  (SELECT * FROM ivs_generic_tree($1,$2, myrec.id, d+ 1) AS func(id INTEGER, parent INTEGER, depth INTEGER) )LOOP
+  		return NEXT myrec2;
+    END LOOP;
+
+  END LOOP;
+  
+  RETURN;
+END;
+</def>
+  </procedure>
+</myks>
