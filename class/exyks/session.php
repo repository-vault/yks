@@ -11,7 +11,6 @@ class exyks_session {
     classes::register_class_paths(array(
         "sess"                 => CLASS_PATH."/auth/sess.php",
         "auth"                 => CLASS_PATH."/auth/auth.php",
-        "security_manager"     => CLASS_PATH."/exyks/security_manager.php",
         "auth_password"        => CLASS_PATH."/auth/interfaces/password.php",
         "auth_restricted_ip"   => CLASS_PATH."/auth/interfaces/restricted_ip.php",
     ));
