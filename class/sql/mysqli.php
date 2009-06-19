@@ -181,6 +181,7 @@ class sql {
         sql::$transaction=false;return $error?rbx::error($error):false;
   }
   static function commit(){ sql::$transaction=false;}
+  static function query_raw($query){ return mysqli_query(self::$lnks[self::$link], $query); }
   static function limit_rows(){$tmp=sql::qrow("SELECT FOUND_ROWS() as tmp");return $tmp['tmp'];}
   static function unfix($str){ return preg_replace(self::$pfx['search'],self::$pfx['replace'],$str);}
   static function unquote($key){ return trim(sql::unfix("`$key`"),'`'); }

@@ -204,7 +204,7 @@ class sql {
   }
   static function free(&$lnk=null){ if($lnk=$lnk?$lnk:self::$result) pg_free_result($lnk);return $lnk=null; }
   static function truncate($table){ return sql::query("DELETE FROM `$table`"); }
-
+  static function query_raw($query){ return pg_query(self::$lnks[self::$link], $query); }
   static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
   static function set_link($lnk){ return self::$link= (string)$lnk; }
   static function reset($res){ self::$result = $res; }
