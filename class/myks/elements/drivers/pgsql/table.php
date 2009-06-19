@@ -8,25 +8,26 @@ class table extends table_base {
   static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
 
   private $rules; //rules only exists in this driver
-
+  private $privileges;
 
   function __construct($table_xml){
     parent::__construct($table_xml);
-    if($table_xml->rules->rule) {
-        rbx::ok("-- !! It seems $this->name has rules");
-    }
+
+    $this->privileges  = new privileges($table_xml->grants, $this->uname, 'table');
     $this->rules = new rules($table_xml->rules, $this);
   }
 
 
   function sql_infos(){
     parent::sql_infos();
-    $this->rules_sql_def = $this->rules->sql_infos();
+    $this->privileges->sql_infos();
+    $this->rules->sql_infos();
   }
 
   function xml_infos(){
     parent::xml_infos();
-    $this->rules_xml_def = $this->rules->xml_infos();
+    $this->rules->xml_infos();
+    $this->privileges->xml_infos();
     foreach($this->keys_xml_def as $k=>&$key){
         if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
             continue;
@@ -34,20 +35,20 @@ class table extends table_base {
         unset($this->keys_xml_def[$k]);
         rbx::ok("-- $k is a ghost reference, skipping");
     }
-
-
   }
 
 
   function modified(){
     return parent::modified()
-        || $this->rules_xml_def != $this->rules_sql_def;
+        || $this->privileges->modified()
+        || $this->rules->modified();
   }
 
 
   function update(){
     return array_merge(
         parent::update(),
+        $this->privileges->alter_def(),
         $this->rules->alter_rules()
     );
   }

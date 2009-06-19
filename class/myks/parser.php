@@ -23,7 +23,7 @@ class myks_parser {
         'pgsql' => RSRCS_PATH."/myks/pgsql"
     );
   }
-  function resolve_path($path){
+  private function resolve_path($path){
     $mask = '#^myks://('.join('|',array_keys($this->myks_ns)).')#e';
     $repl = '$this->myks_ns["$1"]';
     $path = preg_replace($mask, $repl, $path);;

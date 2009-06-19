@@ -11,7 +11,6 @@ abstract class table_base {
   protected $keys_sql_def=array();
   protected $fields_sql_def=array();
 
-  private $privileges;
   protected $table_schema;
 
   protected $keys_name = array(        // $this->uname, $field, $type
@@ -27,7 +26,6 @@ abstract class table_base {
     $this->uname=sql::unquote($this->xml['name']);
     $this->table_shema =  (string) yks::$get->config->sql->links->db_link['db'];
     $this->keys_def=array();
-    $this->privileges  = new privileges($table_xml->grants, $this->uname, 'table');
   }
   
   function check(){
@@ -52,13 +50,14 @@ abstract class table_base {
 
     $todo  = $this->update();
     if(!$todo) throw rbx::error("Error while looking for differences in $this->name");
-    return join(";\n",$todo).";\n";
+    $todo = array_map(array('sql', 'unfix'), $todo);
+    return $todo;
   }
 
   function modified(){
     return $this->fields_xml_def != $this->fields_sql_def
-        || $this->keys_xml_def != $this->keys_sql_def
-        || $this->privileges->modified();
+        || $this->keys_xml_def != $this->keys_sql_def;
+
   }
 
 /*
@@ -66,7 +65,6 @@ abstract class table_base {
 */
 
   function sql_infos(){
-    $this->privileges->sql_infos();
     $this->fields_sql_def=table::table_fields($this->uname);
     $this->keys_sql_def=table::table_keys($this->uname, $this->table_shema);
   }
@@ -76,7 +74,6 @@ abstract class table_base {
 */
 
   function xml_infos(){
-    $this->privileges->xml_infos();
     foreach($this->xml->fields->field as $field_xml){
         $mykse=new mykse($field_xml,$this);
         $this->fields_xml_def[$mykse->field_def['Field']] = $mykse->field_def;
@@ -111,8 +108,7 @@ abstract class table_base {
 
     return array_merge(
         $this->alter_fields(),
-        $this->alter_keys(),
-        $this->privileges->alter_def()
+        $this->alter_keys()
     );
   }
 

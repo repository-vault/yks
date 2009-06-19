@@ -1,29 +1,23 @@
 <?
-/*
-Les rules ne sont pas verifiées directement, mais via la md5 du ghost complété dans la definition de la vue
-_rules deviendra rules_list quand il sera complet ( instead)
-*/
+
+
 
 abstract class view_base {
   public $sql_def = array();
   public $xml_def = array();
 
 
-  private $_rules = array();
   private $update_cascade = false;
 
-  private $privileges;
   private static $definition_mask = '';
   private static $definition_mask_str = '';
   private static $tmp_view_name='';
-  const rule_nothing = 'NOTHING;';
 
   function __construct($view_xml){
     $view_name = (string) $view_xml['name'];
     $this->view_xml = $view_xml;
     $this->view_name = $view_name;
-    $this->view_uname = sql::unquote($view_name);
-    $this->privileges  = new privileges($view_xml->grants, $this->view_uname, 'view');
+    $this->name = $this->view_uname = sql::unquote($view_name);
 
     $pad = str_repeat("=", 10); $crlf = "[\r\n]+";
     self::$definition_mask = "#$pad <definition\s+signature='([a-f0-9]+)'> $pad$crlf(.*?)$crlf$pad </definition> $pad$crlf?#s";
@@ -41,21 +35,19 @@ abstract class view_base {
 
     //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
 
-    if(!$todo) return rbx::error("-- Unable to look for differences in $$this->view_uname");
+    if(!$todo)
+        throw rbx::error("-- Unable to look for differences in $$this->view_uname");
+    $todo = array_map(array('sql', 'unfix'), $todo);
 
-    return array(sql::unfix(join(";\n", $todo)).';'.CRLF, $this->update_cascade);
+    return array($todo, $this->update_cascade);
   }
 
   function modified(){
-    return $this->sql_def != $this->xml_def
-        || $this->privileges->modified();
+    return $this->sql_def != $this->xml_def;
   }
 
   function update(){
-    return array_merge(
-        $this->alter_def(),
-        $this->privileges->alter_def()
-    );
+    return $this->alter_def();
   }
 
   function alter_def($force = false){
@@ -66,38 +58,14 @@ abstract class view_base {
         $todo[] = "DROP VIEW IF EXISTS \"public\".\"{$this->view_uname}\" CASCADE";
 
     $signature = $this->current_signature();
-
-    $todo = array_merge($todo, $this->build_view($this->view_uname));
+    $todo []= "CREATE OR REPLACE VIEW  \"public\".\"$this->view_uname\" AS ".CRLF
+         . $this->xml_def['def'];
 
     $todo[] = "COMMENT ON VIEW \"public\".\"{$this->view_uname}\" IS ".CRLF
         . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature))."'";
     return $todo;
   }
 
-
-    // Retourne la liste des requetes à effectuer pour creer la vue courante 
-    // la premiere query retournée DOIT être CREATE VIEW // see current_signature shift
-  function build_view($view_name) {
-    $queries = array();
-    $queries[]= "CREATE OR REPLACE VIEW  \"public\".\"$view_name\" AS ".CRLF
-         . $this->xml_def['def'];
-
-    foreach($this->_rules as $rule_name=>$rule_infos){
-        $event = strtoupper($rule_infos['event']);
-        $where = $rule_infos['where']?"WHERE {$rule_infos['where']}":'';
-        $definition = (string) $rule_infos['definition'];
-        if(!$definition) $definition = self::rule_nothing;
-        $format = $definition==self::rule_nothing ? "%s":"(%s)";
-        $definition = sprintf($format, $definition);
-        $queries[]= "CREATE RULE \"$rule_name\" AS
-            ON $event
-            TO \"$view_name\"
-            $where
-            DO INSTEAD $definition";
-    }
-
-    return $queries;
-  }
 
   function current_signature(){
     $view_name = "ks_tmp_view_".crpt(_NOW,__CLASS__,5);
@@ -106,11 +74,11 @@ abstract class view_base {
     if(!sql::query(rtrim($this->xml_def['def'],";")." LIMIT 1"))
         throw rbx::error("-- Unable to check signature for $this->view_name");
     
-    foreach($this->build_view($view_name) as $query)
-        sql::query($query);
+    sql::query($query = "CREATE OR REPLACE VIEW  \"public\".\"$view_name\" AS ".CRLF
+         . $this->xml_def['def']);
 
         //retrieve signature from ghost
-    $infos = self::get_sql_infos($view_name, $this->xml_def['def'], $this->view_uname,$this->_rules);
+    $infos = self::get_sql_infos($view_name, $this->xml_def['def'], $this->view_uname);
 
         //kill ghost
     sql::query("DROP VIEW \"$view_name\" ");
@@ -126,18 +94,16 @@ abstract class view_base {
   }
 
   function sql_infos(){
-    $this->privileges->sql_infos();
-    $row = self::get_sql_infos($this->view_uname, false, false, $this->_rules);
+    $row = self::get_sql_infos($this->view_uname, false, false);
    
     $this->sql_def = array(
         'name'=>$row['viewname'],
         'def'=> $row['base_definition'],
         'signature'=> $row['base_signature'] == $row['signature'],
-        'rules'=> $row['rules'],
     );
   }
 
-  private static function get_sql_infos($view_name, $alternative_description=false, $original_name = false,$rules=array()){
+  private static function get_sql_infos($view_name, $alternative_description=false, $original_name = false){
     if(!$original_name) $original_name = $view_name;
 
     $query = "SELECT
@@ -161,50 +127,16 @@ abstract class view_base {
         $row['base_signature'] = (string)$out[1];
     }
 
-    foreach($rules as $rule_name=>$rule_infos)
-        $row['definition'].= $rule_infos['definition'].$rule_infos['event'];
-
-
-    $query = "SELECT
-        n.nspname AS schemaname,
-        c.relname AS viewname,
-        r.rulename as rulename,
-        pg_get_ruledef(r.oid) AS definition
-      FROM 
-        pg_rewrite AS r
-        LEFT JOIN pg_class AS c ON c.oid = r.ev_class
-        LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
-      WHERE (r.rulename <> '_RETURN' AND c.relname='$view_name')
-      ORDER BY r.rulename
-    "; sql::query($query); $rules = sql::brute_fetch('rulename', 'definition');
-
-
-    foreach($rules as $rule_name=>$rule_definition)
-        $row['definition'].= $rule_definition;
-
-    $row['rules'] = count($rules);
     $row['signature'] = self::calc_signature($view_name, $row, $original_name);
     return $row;
   }
 
   function xml_infos() {
-    $this->privileges->xml_infos();
-
-    $this->_rules = array();
-    foreach($this->view_xml->rule as $rule) {
-        $event = (string)$rule['on'];
-        $where = (string)$rule['where'];
-        $definition  = myks_gen::sql_clean_def($rule);
-        $hash = substr(md5($event.$definition),0,5);
-        $name = "{$this->view_uname}_{$event}_{$hash}";
-        $this->_rules[$name] = compact('name', 'definition', 'event', 'where'); //instead, where...
-    }
 
     $this->xml_def = array(
         'name'=>$this->view_uname,
         'def'=> myks_gen::sql_clean_def($this->view_xml->def),
         'signature'=>true,
-        'rules'=>count($this->_rules),
     );
   }
 }

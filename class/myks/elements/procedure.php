@@ -34,7 +34,7 @@ abstract class procedure_base {
     $ret.= sql::unfix($this->xml_def['def'])."\n\$body\$\n";
     $ret.="LANGUAGE 'plpgsql' VOLATILE CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
 
-    return $ret;
+    return array($ret);
   }
 
   /**
