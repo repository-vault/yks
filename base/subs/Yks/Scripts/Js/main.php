@@ -9,6 +9,8 @@ $JS_YKS_PATH = RSRCS_PATH.'/js/Yks';
 
 include "$JS_YKS_PATH/exts/mootools.php";
 include "$JS_YKS_PATH/exts/mootools-extended.php";
+include "$JS_YKS_PATH/exts/mootools-third.php";
+
 include "$JS_YKS_PATH/yks.php";
 if(DEBUG)
     $js_build_list["[YKS/ROOT]/tmp/trash/trace"] = true;

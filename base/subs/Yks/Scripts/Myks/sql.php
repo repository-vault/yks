@@ -1,5 +1,12 @@
 <?
 include_once "types.php";
+
+ define('END', ";\r\n");
+ define('APPLY_QUERIES', $sub0 == 'GO');
+
+if(!APPLY_QUERIES) rbx::ok("Apply queries is GO");
+
+
  rbx::title("Starting SQL driver ".SQL_DRIVER);
 
 $limit = $sub0;
@@ -16,6 +23,7 @@ $only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
     myks_gen::reset_types();
     $deps_views = array();
     myks_gen::$tables_ghosts_views = array_keys($views_list); //for table ghost exclusion
+    $queries = array();
 
  if(!$limit || $limit=='views') {
    rbx::title("Analysing views");
@@ -35,7 +43,8 @@ $only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
             continue;
         }
         rbx::ok("-- New definition for $name");
-        echo $res;
+        $queries = array_merge($queries, $res);
+        echo join(END, $res).END; flush();
         rbx::ok("-- end of definition");
 
         if($cascade) $deps_views[] = $name; //we worked on that view
@@ -58,7 +67,8 @@ $only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
         }
 
         rbx::ok("-- New definition for $name");
-        echo $res;
+        $queries = array_merge($queries, $res);
+        echo join(END, $res).END; flush();
         rbx::ok("-- end of definition");
    }
    rbx::line();
@@ -72,12 +82,18 @@ $only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
         $name=(string)$table_xml['name'];
         if($only_stuff && !preg_match($only_stuff, $name)) continue;
 
-        $res=myks_gen::table_check($table_xml);
+        $res = myks_gen::table_check($table_xml);
         if(!$res) {
             rbx::ok("-- Nothing to do in $name");
             continue;
         };
-        echo sql::unfix($res); flush();
+        $queries = array_merge($queries, $res);
+        echo join(END, $res).END; flush();
     }
     rbx::line();
  }
+
+if(APPLY_QUERIES) array_walk($queries, array('sql', 'query_raw'));
+
+
+//die("-".$queries);

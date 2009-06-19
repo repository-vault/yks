@@ -1,10 +1,11 @@
 <?
 
-
-
 $order_id = (int) $sub0;
 
 $order = new order($order_id);
+
+if(!in_array($order->distributor_id, $distributors_list))
+    abort(109);
 
 if(!$order->order_id)
     return rbx::error("Invalid order_id #$order_id");

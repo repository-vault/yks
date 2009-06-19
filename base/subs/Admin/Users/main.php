@@ -1,6 +1,6 @@
 <?
 
-auth::verif("admin","admin",403);
+auth::verif("yks", "admin", 403);
 
 $tables_xml = data::load("tables_xml");
 

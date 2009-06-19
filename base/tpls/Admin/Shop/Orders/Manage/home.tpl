@@ -1,7 +1,7 @@
 
 
 <box theme="&pref.dft;" caption="Manage order <?=$order_id?>" options=" reload">
-<p class="align_right"><a href="<?="?/Admin/Shop/Orders/list"?>">Retourner à la liste des commandes</a></p>
+<p class="align_right"><a href="/?&orders_list;">Retourner à la liste des commandes</a></p>
 
 
 <ks_form ks_action="order_manage"  >

@@ -6,13 +6,19 @@ $current_liste = sess::retrieve($sess_flag);
 include_once CLASS_PATH."/shop/orders.php";
 include_once CLASS_PATH."/shop/products_list.php";
 
+
+tpls::export(array('orders_list'=> "$href_fold/list"));
+
+
+
 if(!$current_liste) {
- 
-    $user_head = array(3072);
-    if(auth::verif('yks','admin')) $user_head = USERS_ROOT;
-    $users_list = users::get_children($user_head);
+
     $filters = array(
-        'filter_context'=> array('user_id'=>$users_list,'order_value!=0'),
+        'filter_context'=> array(
+            'distributor_id'=> $distributors_list,
+            //'user_id'=> users::get_children($user_visibility_roots),
+            'order_value!=0'
+        ),
     );
 
     $current_liste = new yks_list( "ks_shop_orders",  $filters);
