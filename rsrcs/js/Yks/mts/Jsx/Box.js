@@ -24,11 +24,11 @@ var Box = new Class({
 
     if(src) return Jsx.open(src, this.anchor.id, parent_box.anchor);
 
-    $$("div[class$='_close']")
+    $$("div.box_action[class$='_close']")
         .filter(function(el){return el.getParent(Doms.box_mask)==this.anchor;}.bind(this))
         .addEvent('click', this.close.bind(this));
 
-    $$("div[class$='_reload']")
+    $$("div.box_action[class$='_reload']")
         .filter(function(el){return el.getParent(Doms.box_mask)==this.anchor;}.bind(this))
         .addEvent('click', this.reload.bind(this));
 
