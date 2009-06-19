@@ -10,9 +10,14 @@ class products_list {
         //choppe les parents
     $products_list = sql_func::get_parents($products_list, "ks_shop_products_list", "product_id");
 
-        //et les enfants des parents
-    $products_list = array_merge($products_list,
-        sql_func::get_children($products_list, "ks_shop_products_list", "product_id"));
+        // et les enfants des parents - uniquement les variations
+        // (les declinaisons sont chargées en produits finis)
+    $verif_variations = array('product_relation_type'=>'variation');
+    $children_list = sql_func::get_children($products_list, "ks_shop_products_list",
+        "product_id", -1, $verif_variations); //-1 ? devrait être 1
+
+
+    $products_list = array_merge($products_list, $children_list);
 
     //maintenant qu'on a tt le monde, on dresse la liste des produits
 
@@ -73,6 +78,7 @@ class products_list {
              )) continue;
         $child = &$this->get_product_definition($child_id);
 
+        if($child['product_options'])
         foreach($child['product_options'] as $specification_key=>$specification_value) {
             $product_infos['product_declinaisons']['product_options']
                 [$specification_key][$specification_value] = &$child;

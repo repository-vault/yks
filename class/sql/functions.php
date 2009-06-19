@@ -1,13 +1,14 @@
 <?
 
 class sql_func {
-  static public function get_children($key, $table, $field, $depth=-1){
-    return self::get_tree($key,$table,$field,$depth, "parent_id");
+  static public function get_children($key, $table, $field, $depth=-1, $where = array()){
+    return self::get_tree($key,$table,$field,$depth, "parent_id", $where);
   }
 
-  static public function get_parents($key, $table, $field, $depth=-1, $parent = "parent_id"){
+  static public function get_parents($key, $table, $field, $depth=-1, $parent = "parent_id",
+        $where = array()){
     return array_unique(array_merge((array)$key,
-        self::get_tree($key, $table, $parent, $depth, $field)));
+        self::get_tree($key, $table, $parent, $depth, $field, $where)));
   }
 
   static public function get_parents_path($start, $table, $field){
@@ -17,9 +18,9 @@ class sql_func {
     return array_reverse(array_filter($tree));
   }
 
-  static public function get_tree($key, $table, $field, $depth, $parent) {
+  static public function get_tree($key, $table, $field, $depth, $parent, $where=array()) {
     if(!$key || $depth==0)return array(); if(!is_array($key))$key=array($key);
-    sql::select($table,array($parent=>$key),$field);
+    $where[$parent] = $key; sql::select($table, $where, $field);
     $list = array_filter(sql::fetch_all());
     return array_merge($list, self::get_tree(array_diff($list,$key),$table,$field,$depth-1,$parent) );
   }
@@ -37,11 +38,12 @@ class sql_func {
 
 /** Make a recursive tree based from a SQL query
     need column : id, parent
-    !! You can use this as an inverted recursive tree, invert parent && id
  */
-  function make_tree_query($query, $root=false){ sql::query($query);
-    return make_tree(sql::brute_fetch('id', 'parent'), $root);
+  function make_tree_query($query, $root=false, $inverted = false){ sql::query($query);
+    return make_tree(sql::brute_fetch('id', 'parent'), $root, $inverted);
   }
+
+
 
 }
 

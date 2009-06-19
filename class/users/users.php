@@ -35,8 +35,8 @@ class users  {
         $selected = $cols;
     } else { 
         foreach($cols as $col) if(self::$cols_def[$col]&& !$selected[$col]) {
-            $tables_used=array_merge($tables_used,self::$cols_def[$col]);
-            $selected[$col]=coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"),$col);
+            $tables_used    = array_merge($tables_used, self::$cols_def[$col]);
+            $selected[$col] = coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"),$col);
         }elseif(strpos($col," ")!==false) $selected[]=$col;
         $selected=join(',',$selected);
     }
@@ -84,9 +84,13 @@ class users  {
 
     //this implementation only works for postgres 
   static function get_children_infos($parent_id, $where=true, $cols=array()){
+    $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
+    $query_tree = is_array($parent_id)
+            ? "(".mask_join(" UNION ", $parent_id, " SELECT * FROM $mask_tree").") as tmp"
+            : sprintf($mask_tree, $parent_id);
     $query = "SELECT * FROM
-    `ks_users_tree`($parent_id) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)
-    LEFT JOIN `ks_users_list` USING(user_id) 
+        $query_tree    
+        LEFT JOIN `ks_users_list` USING(user_id) 
     ".sql::where($where);
     sql::query($query);
     $users_list = sql::brute_fetch('user_id');
@@ -124,13 +128,15 @@ class users  {
     foreach(self::$users_profiles as $k=>$table_name)
         if(!$tables_xml->$table_name)unset(self::$users_profiles[$k]);
 
-    $tables=array('ks_users_list','ks_users_tree','ks_auth_password');
-    foreach(array_merge(self::$users_profiles,$tables) as $table_name)
-        self::$cols_def=array_merge_recursive(self::$cols_def,
+    $tables = array_merge(self::$users_profiles,
+        array('ks_users_list','ks_users_tree','ks_auth_password') );
+    foreach($tables as $table_name)
+        self::$cols_def = array_merge_recursive(self::$cols_def,
             array_fill_keys(
                 vals($tables_xml->$table_name,'field'),
                 array($table_name)
             ));
+    self::$cols_def['user_id'] = array('ks_users_list');
     //done
   }
 

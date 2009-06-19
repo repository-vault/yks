@@ -1,12 +1,16 @@
 <?
 
-function make_tree($splat, $root=false){
+function make_tree($splat, $root=false, $inverted = false){
     $tree = array();
+    if(!$inverted) { $_parent = "parent"; $_id = "id"; }
+    else { $_parent = "id"; $_id = "parent"; }
+
     foreach($splat as $id=>$parent){
-        if(!$tree[$id]) $tree[$id]=array();
-        if($parent!=$id) $tree[$parent][$id] = &$tree[$id];
+        if(!$tree[$$_id]) $tree[$$_id]=array();
+        if($$_parent!=$$_id) $tree[$$_parent][$$_id] = &$tree[$$_id];
     } return $root?array($root=>$tree[$root]):$tree;
 }
+
 
     //return the first non empty value
 function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
