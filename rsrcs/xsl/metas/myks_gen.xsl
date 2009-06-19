@@ -48,47 +48,51 @@
 
 
 
-<xsl:template match="table">
-  <xsl:variable name="name"><xsl:value-of select="string(@name)"/></xsl:variable>
-  <xsl:if test="not(preceding-sibling::table[@name=$name])">
-  <table><xsl:copy-of select="@*"/>
-    <xsl:if test="//mykse[@birth=$name]">
- <xsl:attribute name="birth"><xsl:value-of select="//mykse[@birth=$name]/@type"/></xsl:attribute>
+  <xsl:template match="table">
+    <xsl:variable name="name"><xsl:value-of select="string(@name)"/></xsl:variable>
+
+    <xsl:if test="not(preceding-sibling::table[@name=$name])">
+      <table><xsl:copy-of select="@*"/>
+        <xsl:if test="//mykse[@birth=$name]">
+          <xsl:attribute name="birth"><xsl:value-of select="//mykse[@birth=$name]/@type"/></xsl:attribute>
+        </xsl:if>
+
+        <fields>
+          <xsl:copy-of select="//table[@name=$name]/fields/*"/>
+        </fields>
+
+        <rules>
+            <xsl:copy-of select="//table[@name=$name]/rule"/>
+        </rules>
+
+        <grants>
+            <xsl:copy-of select="//table[@name=$name]/grant"/>
+        </grants>
+      </table>
     </xsl:if>
-       
-    <fields>
-         <xsl:copy-of select="//table[@name=$name]/fields/*"/>
-    </fields>
-
-    <rules>
-        <xsl:copy-of select="//table[@name=$name]/rule"/>
-    </rules>
-
-    <grants>
-        <xsl:copy-of select="//table[@name=$name]/grant"/>
-    </grants>
-
-  </table>
-  </xsl:if>
-</xsl:template>
+  </xsl:template>
 
 
+  <xsl:template match="procedure">
+    <procedure>
+        <xsl:copy-of select="@*"/>
+        <xsl:copy-of select="*"/>
+    </procedure>
+  </xsl:template>
 
-<xsl:template match="procedure">
-  <procedure><xsl:copy-of select="@*"/>
-  <xsl:copy-of select="*"/>
-</procedure>
-</xsl:template>
+  <xsl:template match="view">
+      <view><xsl:copy-of select="@*"/>
 
-<xsl:template match="view">
-  <view><xsl:copy-of select="@*"/>
-      <xsl:copy-of select="def|rule"/>
+      <xsl:copy-of select="def"/>
+
+      <rules>
+        <xsl:copy-of select="rule"/>
+      </rules>
+
       <grants>
         <xsl:copy-of select="grant"/>
       </grants>
-  </view>
-</xsl:template>
-
-
+    </view>
+  </xsl:template>
 
 </xsl:stylesheet>

@@ -39,10 +39,10 @@
             </td>
             <td class='{$theme}_rm'>
             <xsl:if test="contains(@options,'close')">
-            <div class='{$theme}_close'>&#160;</div>
+            <div class='box_action {$theme}_close'>&#160;</div>
             </xsl:if>
             <xsl:if test="contains(@options,'reload')">
-            <div class='{$theme}_reload'>&#160;</div>
+            <div class='box_action {$theme}_reload'>&#160;</div>
             </xsl:if>
             <xsl:apply-templates select='rm/*'/>&#160;
             </td>
