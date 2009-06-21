@@ -1,7 +1,7 @@
 <?
 
 
-class XHTMLElement extends simpleXmlElement {
+class XHTMLElement extends SmartXML {
   function getElementById($id){
     return current($this->xpath("//*[@id='$id']"));
   }
