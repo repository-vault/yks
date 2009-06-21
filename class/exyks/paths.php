@@ -4,7 +4,10 @@
 class exyks_paths {
 
   const prefix_ns = "paths_prefix";
-  static private $paths_ns = array();
+  static private $paths_ns = array(
+    'yks'   => BASE_PATH,
+    'here'  => ROOT_PATH
+   );
   private static $paths = array();
 
 /*
@@ -13,12 +16,7 @@ class exyks_paths {
 */
   public static function init($config){
     if(!$config) return;
-
-    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), array(
-            'yks'   => BASE_PATH,
-            'here'  => ROOT_PATH,
-    ));
-
+    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), self::$paths_ns);
     foreach($config->path as $path){
         foreach(explode(':', $path['symbolic']) as $path_key) {
             $dest = $path['base']?$path['base'].$path_key:$path['dest'];
