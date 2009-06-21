@@ -31,13 +31,5 @@ class Forms {
     } return $queryString;
   }
 
-  public static function submit(Element $element, $sock){
-    $data = $element->toQueryString();
-print_r($data);
-die("WE ARE SUBMITING");
-
-    $sock->request($element['action'], array(), $data);
-    return $sock;
-  }
 
 }
