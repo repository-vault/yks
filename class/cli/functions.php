@@ -11,6 +11,11 @@ function password_prompt(){
     } return $password;
 }
 
+function text_prompt($prompt=false){
+    if($prompt) echo "$prompt : ";
+    return trim(fread(STDIN, 1024));
+}
+
 function load_constants_ini($file) { 
   $data = parse_ini_file ($file);
   foreach($data as $key=>$value){
