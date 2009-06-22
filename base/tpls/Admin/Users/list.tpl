@@ -34,12 +34,17 @@ Pages : <?=$pages?><br/>
 <?
 
 if($children_infos) foreach($children_infos as $user_id=>$user_infos){
+  $can_auth = (bool)($user_infos['auth_type']);
+
   $actions="";
   if(auth::verif("yks","admin"))
         $actions.="<div class='rbx_close' onclick='user_delete($user_id)'>&#160;</div>";
+
+  $auth = "lock_16".($can_auth?"":"_gray").".png";
+
   $links = "";
   $links .= "<a href='/?$href_fold//$user_id/Manage' target='user_infos'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/user1.png'/></a>";
-  $links .= "<a href='/?$href_fold//$user_id/Manage/access' target='user_access'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/lock_16.png'/></a>";
+  $links .= "<a href='/?$href_fold//$user_id/Manage/access' target='user_access'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/$auth'/></a>";
 
 echo <<<EOS
 <tr class='line_pair'>
@@ -51,7 +56,7 @@ echo <<<EOS
 	<td><input type='checkbox' name='users_id[{$user_id}]'/></td>
 </tr>
 EOS;
-} else echo "<tr><td colspan='2'>Aucun utilisateur à ce niveau</td></tr>";
+} else echo "<tfail>Aucun utilisateur à ce niveau</tfail>";
 ?>
 </tbody>
 </table>
