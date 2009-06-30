@@ -7,8 +7,9 @@ class view extends view_base  {
 
   function __construct($view_xml){
     parent::__construct($view_xml);
-    $this->rules = new rules($view_xml->rules, $this);
-    $this->privileges  = new privileges($view_xml->grants, $this->view_uname, 'view');
+
+    $this->rules      = new rules($view_xml->rules, $this->view_infos, 'view');
+    $this->privileges = new privileges($view_xml->grants, $this->view_infos, 'view');
   }
 
   function sql_infos(){
@@ -25,9 +26,10 @@ class view extends view_base  {
 
 
   function modified(){
-    return parent::modified()
-        || $this->privileges->modified()
-        || $this->rules->modified();
+    $res  = parent::modified();
+    $res |= $this->privileges->modified();
+    $res |= $this->rules->modified();
+    return $res;
   }
 
   function update(){

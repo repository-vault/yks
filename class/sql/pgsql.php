@@ -10,8 +10,7 @@ class sql {
    static public $log=true;
    static private $transaction=false;
    static private $pfx=array(
-          'search'=>array('#&&#'),
-          'replace'=>array('AND') // || is for concatenation !
+          '#&&#' => 'AND' // || is for concatenation !
    );
    static private $lnks=array();
 
@@ -19,11 +18,11 @@ class sql {
     if(!self::$servs) self::$servs=&yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
     if(self::$servs->prefixs)
-    foreach(self::$servs->prefixs->attributes() as $prefix=>$trans){
-        self::$pfx['search'][]="#`{$prefix}_([a-z0-9_-]+)`#";
-        self::$pfx['replace'][]="$trans$1";
-    }	self::$pfx['search'][]="#`(.*?)`#";
-    self::$pfx['replace'][]="\"$1\"";
+    foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
+        self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
+
+    self::$pfx["#`(.*?)`#"] = "\"$1\"";
+    self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
 
     $lnk = $lnk?self::set_link($lnk):self::$link;
     $serv=self::$servs->links->$lnk;
@@ -41,8 +40,9 @@ class sql {
     $serv = isset(self::$lnks[$lnk])?self::$lnks[$lnk]:self::connect($lnk);
     if(!$serv) return false;
 
-    if(sql::$transaction) self::$result = pg_query($serv,$query=self::unfix($query)); 
-    else self::$result = pg_query($serv,$query=self::unfix($query));  //i want to see errors
+    $query = self::unfix($query);
+    if(sql::$transaction) self::$result = pg_query($serv, $query); 
+    else self::$result = pg_query($serv, $query);  //i want to see errors
 
     if(self::$log)self::$queries[]=$query;
     if(self::$result===false) {
@@ -192,15 +192,15 @@ class sql {
     $query=preg_replace('#SELECT (.*?) FROM (.*?)(\s*(?:ORDER BY|LIMIT).*)$#is',"SELECT COUNT(*) as nb_line FROM $2",$query);$ret=sql::qrow($query);
     return $ret['nb_line'];
 }
-  static function unfix($str){ return preg_replace(self::$pfx['search'],self::$pfx['replace'],$str);}
-  static function unquote($key){ return trim(sql::unfix("`$key`"),'"'); }
+  static function unfix($str){return preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);}
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }
   static function value(){ $arg=func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
   static function rows($lnk=false){ return  pg_num_rows($lnk?$lnk:self::$result); }
   static function auto_indx($table){
-    return (int)current(sql::qrow("SELECT auto_increment_retrieve('`$table`')"));
+    $name = self::resolve($table);
+    return (int)current(sql::qrow("SELECT auto_increment_retrieve('{$name['name']}')"));
   }
   static function free(&$lnk=null){ if($lnk=$lnk?$lnk:self::$result) pg_free_result($lnk);return $lnk=null; }
   static function truncate($table){ return sql::query("DELETE FROM `$table`"); }
@@ -213,6 +213,15 @@ class sql {
     $where=array('table_schema'=>'public','table_name'=>sql::unquote($table_name));
     return sql::row("information_schema.tables",$where);
  }
+    // return an unquoted associative array of schema , name, safe name
+  static function resolve($name){
+    if(!$name) return array();
+    $tmp = explode('.', str_replace('"', '', sql::unfix("`$name`")) , 2);
+    $name = array_pop($tmp); $schema = $tmp[0]; if(!$schema) $schema = "public";
+    $safe = sprintf('"%s"."%s"', $schema, $name );
+    return compact('name', 'schema', 'safe');
+  }
+
 
 }
 

@@ -18,7 +18,7 @@ class mykse extends mykse_base {
 		'decimal'=>'float(10,5)',
 	);$type=$sizes[(string)$this->mykse_xml['size']];
 	if($this->birth)
-            $this->field_def["Default"]="auto_increment('{$this->type}','{$this->table->uname}')";
+            $this->field_def["Default"]="auto_increment('{$this->type}','{$this->table->table_name}')";
 	$this->field_def["Type"]=$type;
   }
 

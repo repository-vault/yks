@@ -3,17 +3,16 @@
 
 
 abstract class table_base {
-  public $name;
-  protected $xml;
-  protected $sql;
+
   protected $keys_xml_def=array();
   protected $fields_xml_def=array();
+
   protected $keys_sql_def=array();
   protected $fields_sql_def=array();
 
   protected $table_schema;
 
-  protected $keys_name = array(        // $this->uname, $field, $type
+  protected $keys_name = array(        // $this->table_name, $field, $type
     'PRIMARY'=>"%s_pkey", 
     'UNIQUE'=>"%s_%s_%s",
     'FOREIGN'=>"%s_%s_%s",
@@ -21,35 +20,38 @@ abstract class table_base {
 
 
   function __construct($table_xml){
-    $this->xml=$table_xml;
-    $this->name=$this->xml["name"];
-    $this->uname=sql::unquote($this->xml['name']);
-    $this->table_shema =  (string) yks::$get->config->sql->links->db_link['db'];
+    $this->xml = $table_xml;
+    $this->table_infos = sql::resolve( (string) $table_xml['name']);
+    $this->table_name            = $this->table_infos['name'];
+    $this->table_name_safe       = $this->table_infos['safe'];
+
+    $this->table_where = array(
+        'table_name'   => $this->table_name,
+        'table_schema' => $this->table_infos['schema']
+    );
+
     $this->keys_def=array();
   }
   
   function check(){
 
-    if(in_array($this->name, myks_gen::$tables_ghosts_views)) {
-        rbx::ok("-- Double sync from view $this->name, skipping");
+    if(in_array($this->table_name, myks_gen::$tables_ghosts_views)) {
+        rbx::ok("-- Double sync from view $this->table_name, skipping");
         return false;
     }
 
     $this->xml_infos();
+    $table_exists = $this->sql_infos();
+    if(!$table_exists) $todo = $this->create();
+    else {
+        if(!$this->modified())  return array();
 
-    $this->sql = sql::table_infos($this->name);
-    if(!$this->sql) return $this->create();
-
-    $this->sql_infos();
-    if(!$this->modified())  return false;
-
-
-    //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def));die;
-    //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def));die;
-    //print_r($this->privileges);die;
-
-    $todo  = $this->update();
-    if(!$todo) throw rbx::error("Error while looking for differences in $this->name");
+        //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def,"sql","xml"));die;
+        //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def,"sql","xml" ));die;
+        //print_r($this->privileges);die;
+        $todo  = $this->update();
+    }
+    if(!$todo) throw rbx::error("Error while looking for differences in $this->table_name");
     $todo = array_map(array('sql', 'unfix'), $todo);
     return $todo;
   }
@@ -60,13 +62,19 @@ abstract class table_base {
 
   }
 
+
 /*
     populate fields_sql_def and keys_sql_def definition based on the SQL structure
+    return (boolean) whereas this table already exists (alter mode) or not (create mode)
 */
 
-  function sql_infos(){
-    $this->fields_sql_def=table::table_fields($this->uname);
-    $this->keys_sql_def=table::table_keys($this->uname, $this->table_shema);
+  protected function sql_infos(){
+    $this->sql = sql::row("information_schema.tables", $this->table_where);
+
+    if(!$this->sql) return false;
+    $this->fields_sql_def = $this->table_fields();
+    $this->keys_sql_def   = $this->table_keys();
+    return true;
   }
 
 /*
@@ -81,7 +89,7 @@ abstract class table_base {
   }
 
   function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
-    $key_name = sprintf($this->keys_name[$TYPE], $this->uname, $field, $type);
+    $key_name = sprintf($this->keys_name[$TYPE], $this->table_name, $field, $type);
 
     if($TYPE=="PRIMARY"){
         $this->keys_xml_def[$key_name]['type']=$TYPE;
@@ -116,10 +124,8 @@ abstract class table_base {
   function alter_keys(){ return array(); }
 
 
-  static function table_keys($table_name, $table_schema){
-    $where = array('table_name'=>$table_name);
-    if(SQL_DRIVER!="pgsql") $where['table_schema']=$table_schema; //TODO, pgsql
-
+  protected function table_keys(){
+    $where = $this->table_where;
     $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
     if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
     sql::select("information_schema.table_constraints", $where, $cols);
@@ -131,7 +137,7 @@ abstract class table_base {
     $where['constraint_name']=array_keys($keys);
 
     if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
-    sql::select("information_schema.key_column_usage",$where,"constraint_name,column_name",$order);
+    sql::select("information_schema.key_column_usage", $where, "constraint_name,column_name", $order);
     while($l=sql::fetch()) $table_keys[$l['constraint_name']]['members'][]=$l['column_name'];
             //une clée est basé sur au moins UNE colonne ( élimine les checks )
 
@@ -139,7 +145,7 @@ abstract class table_base {
         sql::select("information_schema.constraint_column_usage",
             array('constraint_name'=>array_keys($table_keys)) );
         while($l=sql::fetch())
-            $usages[$l['constraint_name']][$l['table_name']][]=$l['column_name'];
+            $usages[$l['constraint_name']][$l['table_schema']][$l['table_name']][] = $l['column_name'];
                 //="{$l['table_name']}({$l['column_name']})";
         sql::select("information_schema.referential_constraints",
             array('constraint_name'=>array_keys($table_keys)));
@@ -153,16 +159,16 @@ abstract class table_base {
 
         $constraint_infos['type']=$type=$types[$key['constraint_type']];
         if($type=="FOREIGN") {
+ 
+            list($usage_schema, $usage_fields) = each($usages[$constraint_name]);
+            list($usage_table, $usage_fields)  = each($usage_fields);
 
-            $usage_str = '';
-            list($usage_table, $usage_fields) = each($usages[$constraint_name]);
-            $usage_str = $usage_table.'('.join(',',$usage_fields).')';
 
-            $constraint_infos['table']=$usage_table;
-            $constraint_infos['update']=table::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
-            $constraint_infos['delete']=table::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
-            $constraint_infos['refs'] = $usage_str;
-            $constraint_infos['defer']=bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
+            $constraint_infos['table']  = $usage_table;
+            $constraint_infos['update'] = table::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
+            $constraint_infos['delete'] = table::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
+            $constraint_infos['refs']   = table::build_ref($usage_schema, $usage_table, $usage_fields);
+            $constraint_infos['defer']  = bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
 
         }
     }
@@ -170,6 +176,15 @@ abstract class table_base {
     return $table_keys;
  }
 
+ public static function build_ref($table_schema, $table_name, $table_fields){
+    return compact('table_schema', 'table_name', 'table_fields');
+ }
+ public static function output_ref($ref){
+    return  sprintf('"%s"."%s"(%s)',
+        $ref['table_schema'],
+        $ref['table_name'],
+        join(',',$ref['table_fields']) );
+ }
 
 }
 

@@ -1,5 +1,6 @@
 <?
 
+include_once "elements/base.php";
 include_once "elements/mykse.php";
 include_once "elements/table.php";
 include_once "elements/view.php";

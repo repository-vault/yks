@@ -13,15 +13,17 @@ class table extends table_base {
   function __construct($table_xml){
     parent::__construct($table_xml);
 
-    $this->privileges  = new privileges($table_xml->grants, $this->uname, 'table');
-    $this->rules = new rules($table_xml->rules, $this);
+    $this->privileges  = new privileges($table_xml->grants, $this->table_infos, 'table');
+    $this->rules = new rules($table_xml->rules, $this->table_infos, 'table');
   }
 
 
   function sql_infos(){
-    parent::sql_infos();
+    $res = parent::sql_infos();
+    if(!$res) return $res;
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
+    return true;
   }
 
   function xml_infos(){
@@ -54,7 +56,7 @@ class table extends table_base {
   }
 
   function alter_fields() {
-    $table_alter = "ALTER TABLE `$this->name` ";
+    $table_alter = "ALTER TABLE $this->table_name_safe ";
     $todo = array();
     //fields sync
     foreach($this->fields_xml_def as $field_name=>$field_xml){
@@ -67,7 +69,7 @@ class table extends table_base {
             foreach($diff as $diff_type=>$new_value){
                 if($diff_type=="Null"){
                     if(!$new_value && !is_null($field_xml['Default']))
-                        $todo[] = "UPDATE `$this->name` "
+                        $todo[] = "UPDATE $this->table_name_safe "
                             ."SET `$field_name`={$field_xml['Default']} WHERE `$field_name` IS NULL";
                     $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                               .($new_value?"DROP NOT NULL":"SET NOT NULL");
@@ -84,7 +86,7 @@ class table extends table_base {
             if(!is_null($field_xml['Default'])){
                 $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                           ." SET DEFAULT {$field_xml['Default']}";
-                $todo[] = "UPDATE `$this->name` SET `$field_name`={$field_xml['Default']}";
+                $todo[] = "UPDATE $this->table_name_safe SET `$field_name`={$field_xml['Default']}";
             }
             $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                 .($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
@@ -97,7 +99,7 @@ class table extends table_base {
   }
 
   function alter_keys(){
-    $table_alter = "ALTER TABLE `$this->name` ";
+    $table_alter = "ALTER TABLE $this->table_name_safe ";
     $todo = array();
     if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
@@ -113,9 +115,9 @@ class table extends table_base {
     foreach($this->keys_xml_def as $key=>$def){
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->name}` $members";continue;}
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON $this->table_name_safe $members";continue;}
         elseif($type=="FOREIGN"){
-            $add.=" REFERENCES {$def['refs']} ";
+            $add.=" REFERENCES ".table::output_ref($def['refs'])." ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
             if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
             if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
@@ -125,23 +127,24 @@ class table extends table_base {
   }
 
   function create() {
-    $todo=array();
+    $todo  = array();
+    $parts = array();
 
     foreach($this->fields_xml_def as $field_name=>$field_xml)
-        $todo[]="`$field_name` {$field_xml['Type']}";
+        $parts[]="`$field_name` {$field_xml['Type']}";
 
 
     foreach($this->keys_xml_def as $key=>$def) {
         if($def['type']!="PRIMARY")continue;
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($def['type']=="INDEX")$todo_exts[]="CREATE INDEX $key ON `{$this->name}` $members";
-        else $todo[]=$add;
+        if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON $this->table_name_safe $members";
+        else $parts[]=$add;
     }
 
-    $query="CREATE TABLE `$this->name` (\n\t".join(",\n\t",$todo)."\n);\n";
-
-    return $query;
+    $query = "CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t", $parts)."\n);\n";
+    $todo  []= $query;
+    return $todo;
   }
 
 
@@ -151,10 +154,10 @@ class table extends table_base {
     retourne la définition des colonnes d'une table formaté pour une comparaison avec les tables_xml
 */
 
- static function table_fields($table_name){
+ protected function table_fields(){
     $strip_types = array("#::[a-z ]+#"=>"","#,\s+#"=>",");
-    $where=array('table_name'=>$table_name);
-    sql::select("information_schema.columns",$where);
+    
+    sql::select("information_schema.columns", $this->table_where);
     $columns=sql::brute_fetch('column_name');$table_cols=array();
 
 

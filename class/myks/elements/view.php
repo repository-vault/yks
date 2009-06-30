@@ -2,48 +2,38 @@
 
 
 
-abstract class view_base {
+abstract class view_base extends myks_base {
   public $sql_def = array();
   public $xml_def = array();
 
-
   private $update_cascade = false;
 
-  private static $definition_mask = '';
-  private static $definition_mask_str = '';
-  private static $tmp_view_name='';
-
   function __construct($view_xml){
-    $view_name = (string) $view_xml['name'];
     $this->view_xml = $view_xml;
-    $this->view_name = $view_name;
-    $this->name = $this->view_uname = sql::unquote($view_name);
-
-    $pad = str_repeat("=", 10); $crlf = "[\r\n]+";
-    self::$definition_mask = "#$pad <definition\s+signature='([a-f0-9]+)'> $pad$crlf(.*?)$crlf$pad </definition> $pad$crlf?#s";
-    self::$definition_mask_str = "$pad <definition signature='%2\$s'> $pad\r\n%1\$s\r\n$pad </definition> $pad\r\n";
+    $this->view_infos     = sql::resolve( (string) $view_xml['name'] );
+    $this->view_name      = $this->view_infos['name'];
+    $this->view_name_safe = $this->view_infos['safe'];
   }
 
   function check($force = false){
+    $this->sql_infos(); //self signature, sql first
     $this->xml_infos();
 
-
-    if(!$force) $this->sql_infos();
-
+    if($force) $this->sql_def = array();
     if(!$this->modified())  return false;
     $todo = $this->update();
 
     //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
-
     if(!$todo)
-        throw rbx::error("-- Unable to look for differences in $$this->view_uname");
-    $todo = array_map(array('sql', 'unfix'), $todo);
+        throw rbx::error("-- Unable to look for differences in $this->view_name");
 
+    $todo = array_map(array('sql', 'unfix'), $todo);
     return array($todo, $this->update_cascade);
   }
 
   function modified(){
-    return $this->sql_def != $this->xml_def;
+    $res = $this->sql_def != $this->xml_def;
+    return $res;
   }
 
   function update(){
@@ -55,88 +45,61 @@ abstract class view_base {
     if(!$force && ($this->sql_def == $this->xml_def)) return $todo;
     $this->update_cascade = true;
     if($force || $this->sql_def['name'])
-        $todo[] = "DROP VIEW IF EXISTS \"public\".\"{$this->view_uname}\" CASCADE";
+        $todo[] = "DROP VIEW IF EXISTS $this->view_name_safe CASCADE";
 
-    $signature = $this->current_signature();
-    $todo []= "CREATE OR REPLACE VIEW  \"public\".\"$this->view_uname\" AS ".CRLF
+    $todo []= "CREATE OR REPLACE VIEW  $this->view_name_safe AS ".CRLF
          . $this->xml_def['def'];
 
-    $todo[] = "COMMENT ON VIEW \"public\".\"{$this->view_uname}\" IS ".CRLF
-        . "E'".addslashes(sprintf(self::$definition_mask_str, $this->xml_def['def'], $signature))."'";
+
+    $todo []= $this->sign("VIEW", $this->view_name_safe, $this->xml_def['def'], $this->xml_def['signature'] );
     return $todo;
   }
 
 
-  function current_signature(){
-    $view_name = "ks_tmp_view_".crpt(_NOW,__CLASS__,5);
-        //creating ghost temporary view
-
-    if(!sql::query(rtrim($this->xml_def['def'],";")." LIMIT 1"))
-        throw rbx::error("-- Unable to check signature for $this->view_name");
-    
-    sql::query($query = "CREATE OR REPLACE VIEW  \"public\".\"$view_name\" AS ".CRLF
-         . $this->xml_def['def']);
-
-        //retrieve signature from ghost
-    $infos = self::get_sql_infos($view_name, $this->xml_def['def'], $this->view_uname);
-
-        //kill ghost
-    sql::query("DROP VIEW \"$view_name\" ");
-
-    if(!$infos['definition']) return; //TODO
-    return  $infos['signature'];
-  }
-
-  static function calc_signature($view_name, $view_infos, $base_name){
-    $definition = $view_infos['definition'];
-    $definition = str_replace($view_name, $base_name, $definition);
-    return crpt($definition.$view_infos['base_definition'],'FLAG_SQL',8);
-  }
-
-  function sql_infos(){
-    $row = self::get_sql_infos($this->view_uname, false, false);
-   
-    $this->sql_def = array(
-        'name'=>$row['viewname'],
-        'def'=> $row['base_definition'],
-        'signature'=> $row['base_signature'] == $row['signature'],
+  protected function calc_signature(){
+        //self checked signature
+    return $this->crpt(
+            $this->sql_def['compiled_definition'],
+            $this->xml_def['def']
     );
   }
 
-  private static function get_sql_infos($view_name, $alternative_description=false, $original_name = false){
-    if(!$original_name) $original_name = $view_name;
+  function sql_infos(){
+   $where = sql::where( array(
+        "c.relkind" => "v",
+        "c.relname" => $this->view_name,
+        "n.nspname" => $this->view_infos['schema']
+    ));
 
     $query = "SELECT
-        n.nspname AS schemaname,
-        c.relname AS viewname,
-        pg_get_viewdef(c.oid) AS definition,
-        d.description as description
+        n.nspname             AS schema_name,
+        c.relname             AS view_name,
+        pg_get_viewdef(c.oid) AS compiled_definition,
+        d.description         AS full_description
       FROM 
         pg_class AS c
         LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
         LEFT JOIN pg_description AS d ON c.relfilenode = d.objoid
-      WHERE (c.relkind = 'v' AND c.relname='$view_name' );
-    "; $row = sql::qrow($query);
+      $where;
+    "; $data = sql::qrow($query);
 
+    $sign = $this->parse_signature_contents($data['full_description']);
 
-    if($alternative_description)
-        $row['base_definition'] =  $alternative_description;
-    else {
-        preg_match(self::$definition_mask, $row['description'], $out);
-        $row['base_definition'] = myks_gen::sql_clean_def($out[2]);
-        $row['base_signature'] = (string)$out[1];
-    }
-
-    $row['signature'] = self::calc_signature($view_name, $row, $original_name);
-    return $row;
+    $this->sql_def = array(
+        'compiled_definition'=> $data['compiled_definition'],
+        'def'=> $sign['base_definition'],
+        'signature'=> $sign['signature'],
+    );
   }
+
 
   function xml_infos() {
 
     $this->xml_def = array(
-        'name'=>$this->view_uname,
+        'compiled_definition' => $this->sql_def['compiled_definition'],
         'def'=> myks_gen::sql_clean_def($this->view_xml->def),
-        'signature'=>true,
-    );
+     );
+    $this->xml_def['signature'] = $this->calc_signature();
+
   }
 }

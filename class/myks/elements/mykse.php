@@ -16,8 +16,8 @@ abstract class mykse_base {
 
   function  __construct($field_xml, $table){
 
-    $this->table=$table;
-    $this->type=$field_xml['type'];
+    $this->table = $table;
+    $this->type  = $field_xml['type'];
     $this->field_def=array(
         'Field'=>$field_xml->get_name(),
         'Extra'=>'',
@@ -29,9 +29,9 @@ abstract class mykse_base {
     // OU si le name dans le  birth est différent du type
     // depth==1 est ok
 
-    $birth=(string)$this->mykse_xml['birth'];
+    $birth = sql::resolve((string)$this->mykse_xml['birth']);
     if($birth){
-      if($birth==(string)$this->table->name
+      if($birth['name']==(string)$this->table->table_name
         && $this->depth==1 && $field_xml['type']==$this->field_def['Field']){
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth=true;
@@ -46,7 +46,7 @@ abstract class mykse_base {
         $this->field_def['Null'] = true;
 
 
-    $birth=(string)$this->mykse_xml['birth'];
+    $birth = sql::resolve((string)$this->mykse_xml['birth']);
     if($birth && $this->depth > 1) $this->fk($field_xml, $birth);
 
     if($field_xml['key'])
@@ -55,8 +55,8 @@ abstract class mykse_base {
   }
   private function fk($field_xml, $birth){
     $this->table->key_add('foreign', $this->field_def["Field"], array(
-        "table"    => $table=sql::unquote($birth),
-        "refs"     => "$table($this->type)", 
+        "table"    => $birth['name'],
+        "refs"     => table::build_ref($birth['schema'], $birth['name'], array($this->type)), 
         "update"   => (string)$field_xml['update'],
         "delete"   => (string)$field_xml['delete'],
         "defer"    => (string)$field_xml['defer'],

@@ -22,7 +22,10 @@ $only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
 
     myks_gen::reset_types();
     $deps_views = array();
-    myks_gen::$tables_ghosts_views = array_keys($views_list); //for table ghost exclusion
+    myks_gen::$tables_ghosts_views = array_extract(
+        array_map(array('sql', 'resolve'),
+            array_keys($views_list)),'name'); //for table ghost exclusion
+    
     $queries = array();
 
  if(!$limit || $limit=='views') {

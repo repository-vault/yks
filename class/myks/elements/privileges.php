@@ -10,6 +10,16 @@ class privileges {
   private $sql_def;
   private $xml_def;
 
+  function __construct($grants_xml, $element_infos, $element_type){
+    $this->element_type  = $element_type;
+
+    $this->element_infos = $element_infos;
+    $this->element_name  = $element_infos['name'];
+    $this->element_name_safe  = $element_infos['safe'];
+
+    $this->grants_xml = $grants_xml;
+  }
+
   static function declare_root_privileges($config){
     if(!$config) return; $privileges = array();
     foreach($config->grant_all as $grant){
@@ -18,11 +28,6 @@ class privileges {
     }self::$root_privileges = $privileges;
   }
 
-  function __construct($grants_xml, $element_name, $element_type){
-    $this->element_type = $element_type;
-    $this->element_name = $element_name;
-    $this->grants_xml = $grants_xml;
-  }
 
   function alter_def(){
     $todo = array();
@@ -35,10 +40,10 @@ class privileges {
         if($erase = array_diff($current, $def)) $drops[$to] = $erase;
         if(!($missing = array_diff($def, $current))) continue;
         $missing = join(',', $missing);
-        $todo[] = 'GRANT '.$missing.' ON "public"."'.$this->element_name.'" TO '.self::to($to);
+        $todo[] = "GRANT $missing ON $this->element_name_safe TO ".self::to($to);
     } foreach($drops as $to=>$def){
         $def = join(',', $def);
-        $todo[] = 'REVOKE '.$def.' ON "public"."'.$this->element_name.'" FROM  '.self::to($to);
+        $todo[] = "REVOKE $def ON $this->element_name_safe FROM  ".self::to($to);
     }
     return $todo;
 
