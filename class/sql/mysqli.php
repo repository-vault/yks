@@ -4,12 +4,12 @@
 */
 
 class sql {
-   const FAMILY='mysql';
+
    static public $queries=array();
    static private $link='db_link';
    static private $result;
    static public $servs=null;
-   static private $pfx=array('search'=>array(),'replace'=>array());
+   static private $pfx=array();
    static private $lnks=array();
    static private $transaction=false;
    static public $rows;
@@ -18,11 +18,11 @@ class sql {
   static function &connect($lnk=false){
     if(!self::$servs) self::$servs=&yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
-    if(self::$servs->prefixs) foreach(self::$servs->prefixs->attributes() as $prefix=>$trans){
-        self::$pfx['search'][]="#`{$prefix}_([a-z0-9_-]+)`#";
-        self::$pfx['replace'][]="`$trans$1`";
-    } //prefix initialisation
-
+    if(self::$servs->prefixs)
+    foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
+        self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
+    self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
+    
     $serv=self::$servs->links->{$lnk=$lnk?$lnk:self::$link};
     self::$lnks[$lnk]=@mysqli_connect($serv['host'],$serv['user'],$serv['pass'],$serv['db']);
     if(!self::$lnks[$lnk]) return self::error();
@@ -184,7 +184,6 @@ class sql {
   static function query_raw($query){ return mysqli_query(self::$lnks[self::$link], $query); }
   static function limit_rows(){$tmp=sql::qrow("SELECT FOUND_ROWS() as tmp");return $tmp['tmp'];}
   static function unfix($str){ return preg_replace(self::$pfx['search'],self::$pfx['replace'],$str);}
-  static function unquote($key){ return trim(sql::unfix("`$key`"),'`'); }
   static function in_join($field,$vals,$not=''){ return "`$field` $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }
@@ -208,4 +207,17 @@ class sql {
     sql::query("SHOW KEYS FROM `$table_name`");$keys=array();
     while($l=sql::fetch()) $keys[$l['Key_name']][$l['Column_name']]=$l; return $keys;
   }
+
+    // return an unquoted associative array of schema , name, safe name
+  static function resolve($name){
+
+    if(!$name) return array();
+    $tmp = explode('.', str_replace('`', '', sql::unfix("`$name`")) , 2);
+    $name = array_pop($tmp); $schema = $tmp[0];
+    if(!$schema) $schema = (string) self::$servs->links->{self::$link}['db'];
+    $safe = sprintf('`%s`.`%s`', $schema, $name );
+    return compact('name', 'schema', 'safe');
+  }
+
+
 }
