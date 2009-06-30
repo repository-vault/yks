@@ -9,7 +9,7 @@ class table extends table_base {
 
   protected $key_update=array("PRIMARY"=>"PRIMARY KEY", "UNIQUE"=>"UNIQUE ");
 
-  protected $keys_name = array(        // $this->uname, $field, $type
+  protected $keys_name = array(        // $this->table_name_safe, $field, $type
     'PRIMARY'=>"PRIMARY", 
     'UNIQUE'=>"%s_%s_%s",
   );
@@ -24,8 +24,7 @@ class table extends table_base {
 
   function alter_fields(){
     $todo = array();
-    $table_alter = "ALTER TABLE `$this->name` ";
-
+    $table_alter = "ALTER TABLE $this->table_name_safe ";
 
     foreach($this->fields_xml_def as $field_name=>$field_xml){
         $field_sql = $this->fields_sql_def[$field_name]; 
@@ -47,7 +46,7 @@ class table extends table_base {
 
   function alter_keys(){
     $todo = array();
-    $table_alter = "ALTER TABLE `$this->name` ";
+    $table_alter = "ALTER TABLE $this->table_name_safe ";
     if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
     foreach($this->keys_sql_def as $key=>$def){
@@ -61,7 +60,7 @@ class table extends table_base {
     foreach($this->keys_xml_def as $key=>$def){
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "ADD CONSTRAINT ".sprintf($this->key_mask[$type],$key)." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->name}` $members";continue;}
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON $this->table_name_safe $members";continue;}
         if($type=="FOREIGN"){
             $add.=" REFERENCES {$def['refs']} ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
@@ -76,14 +75,14 @@ class table extends table_base {
 
 
 
- static function table_fields($table_name){
+ function table_fields(){
 
-    sql::query("SHOW FULL COLUMNS FROM `$table_name`");
+    sql::query("SHOW FULL COLUMNS FROM $this->table_name_safe");
     $test = sql::brute_fetch('Field');
+
     $table_cols=array();
 
     foreach($test as $column_name=>$column){
-
         $data=array(
             'Extra'=>$column['Extra'],
             'Default'=>$column['Default']?"'{$column['Default']}'":$column['Default'],
@@ -112,7 +111,7 @@ class table extends table_base {
         $todo[]=$this->key_mask[$type]." (`".join('`,`',$def['members']).'`)';   
     }
 
-    $query="CREATE TABLE `$this->name` (\n\t".join(",\n\t",$todo)."\n)";
+    $query="CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t",$todo)."\n)";
     $query.=";\n";
     return $query;
     die($query);

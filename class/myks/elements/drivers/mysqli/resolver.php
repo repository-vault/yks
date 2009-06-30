@@ -1,3 +1,3 @@
 <?
 
-class resolver extends base_type_resolver { }
+class resolver extends base_type_resolver {}

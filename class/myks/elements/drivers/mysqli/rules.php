@@ -1,5 +1,3 @@
 <?
 
-class rules extends rules_base  {
-
-}
+class rules extends rules_base  {}
