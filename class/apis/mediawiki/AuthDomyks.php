@@ -17,6 +17,7 @@ class Auth_Domyks extends AuthPlugin {
 
   public function autoCreate(){ return true; }  // require pour que domyks prenne la main
   public function userExists( $user_name ) { return true;}  // stfu
+  public function strict() { return true;}
 
   public function authenticate($user_login, $user_pswd){
     try {

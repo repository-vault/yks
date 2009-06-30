@@ -34,7 +34,7 @@ class myks_parser {
     //foreach($myks_config as ns
     $this->myks_ns = array_merge(self::default_ns(), $tmp_ns);
     $tmp_paths = array();
-    foreach($myks_config->myks_paths->path as $path)
+    if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path)
         $tmp_paths[]=$this->resolve_path($path['path']);
     
     $this->myks_paths = $tmp_paths;

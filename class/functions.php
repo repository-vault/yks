@@ -93,9 +93,10 @@ function reloc($url) {
 }
 
 function abort($code) {
-    if(ERROR_PAGE==exyks::$href) return; //empeche les redirections en boucle
     $dest=ERROR_PAGE."//$code";
     if($code==404 && $dest==exyks::$href_ks) yks::fatality(yks::FATALITY_404);
+    if(ERROR_PAGE==exyks::$href) return; //empeche les redirections en boucle
+
     $_SESSION[SESS_TRACK_ERR]="/?".exyks::$href_ks;
 
     if(JSX){if($code!=403)rbx::error($code);
