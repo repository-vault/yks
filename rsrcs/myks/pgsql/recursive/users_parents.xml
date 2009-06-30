@@ -12,7 +12,7 @@ _user_id := $1;
 
 
 LOOP
-	SELECT parent_id  FROM `ks_users_tree`  WHERE "user_id" = _user_id LIMIT 1 INTO myrec;
+	SELECT parent_id  FROM `ks_users_tree`  WHERE `user_id` = _user_id LIMIT 1 INTO myrec;
     EXIT WHEN coalesce(myrec.parent_id, _user_id) = _user_id;
     return NEXT myrec;
     _user_id := myrec.parent_id;
