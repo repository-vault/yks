@@ -54,5 +54,5 @@ if($action=="get_field_def") try{
         throw rbx::error("Invalide type");
 
     jsx::$rbx=false;
-    tpls::body("$subs_fold/filter_value.tpl");
+    tpls::body("$subs_fold/filter_value");
 }catch(rbx $e){}
