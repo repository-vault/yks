@@ -15,7 +15,7 @@ while(extract(sql::fetch()))
 if($action=="access_save")try {
     foreach($access_zones as $access_zone=>$zone_infos){
         $set=array();
-        foreach(vals($types_xml->access_lvl) as $access_lvl){
+        foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl){
             if($_POST['access'][$access_zone][$access_lvl])$set[]=$access_lvl;
         }
 

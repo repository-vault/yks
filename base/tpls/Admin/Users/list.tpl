@@ -45,12 +45,14 @@ if($children_infos) foreach($children_infos as $user_id=>$user_infos){
   $links = "";
   $links .= "<a href='/?$href_fold//$user_id/Manage' target='user_infos'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/user1.png'/></a>";
   $links .= "<a href='/?$href_fold//$user_id/Manage/access' target='user_access'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/$auth'/></a>";
+  $user_name = $user_infos['user_name'];
+  if(!$user_name) $user_name = "&yks.users.unnamed; #$user_id";
 
 echo <<<EOS
 <tr class='line_pair'>
 	<td>$user_id</td>
         <td>$links</td>
-	<td><a href='/?$href_fold//$user_id/list'>{$user_infos['user_name']}</a></td>
+	<td><a href='/?$href_fold//$user_id/list'>$user_name</a></td>
 	<td>&user_type.{$user_infos['user_type']};</td>
 	<td>$actions</td>
 	<td><input type='checkbox' name='users_id[{$user_id}]'/></td>

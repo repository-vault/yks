@@ -36,6 +36,6 @@ if($action=="addr_manage" || $action=="addr_duplicate")try {
 
 
 if(!$addr_infos['addr_type'])
-    $addr_infos['addr_type']=(string)$types_xml->addr_type['default'];
+    $addr_infos['addr_type']=(string)yks::$get->types_xml->addr_type['default'];
 
 

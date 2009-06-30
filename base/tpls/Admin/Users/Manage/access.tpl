@@ -10,7 +10,7 @@ Vous êtes ici : <?=$parent_path?><br/>
   <tr class="line_head">
   <th style='width:200px'>Zone</th>
     <?
-    foreach(vals($types_xml->access_lvl) as $access_lvl)
+    foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl)
         echo "<th>&access_lvl.$access_lvl;</th>";
     ?>
   </tr>
@@ -32,7 +32,7 @@ foreach($access_zones as $access_zone=>$zone_info){
 
     $tmp="<tr class='line_pair'>
         <td class='center'>$access_zone</td>";
-    foreach(vals($types_xml->access_lvl) as $access_lvl){
+    foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl){
         $parent_value=isset($access[$access_zone][$access_lvl]);
         $readonly=$parent_value?" disabled='disabled'":'';
         $checked=$parent_value || isset($user_access[$access_zone][$access_lvl]);
