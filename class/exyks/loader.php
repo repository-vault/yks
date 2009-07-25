@@ -12,6 +12,7 @@ define('Ex/yks', 'Exyks, Exupery style');
   define('YKS_PATH', realpath("$class_path/.."));
   define('EXYKS', YKS_PATH.'/index.php');
   define('BASE_PATH', YKS_PATH.'/base');
+  define('LIBS_PATH', YKS_PATH.'/libs');
 
   $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
     //remove www or relatives paths

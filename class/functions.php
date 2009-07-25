@@ -68,7 +68,10 @@ function between($a,$min,$max){return $a>=$min && $a<=$max; }
 function is_not_null($a){return !is_null($a);}
 
 function preg_areplace($tmp, $str){ return preg_replace(array_keys($tmp),array_values($tmp),$str); }
-function preg_clean($filter, $str,$rem='^'){ return preg_replace("#[{$rem}{$filter}]#i",'',$str); }
+function preg_clean($filter, $str, $rem = true){
+    return preg_replace("#[".($rem?"^$filter":$filter)."]#i", '',$str);
+}
+
 function preg_list($mask, $str){ return preg_match($mask, $str, $out)?array_slice($out,1):array(); }
 function preg_reduce($mask, $str){ return reset(preg_list($mask, $str)); }
 

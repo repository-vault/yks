@@ -48,11 +48,11 @@ class tpls {
 
 
  static function export_list($render_mode = "full"){
-    return array_merge(
+    $list = array_merge(
             (array)tpls::$top[$render_mode],
             array(tpls::$body),
-            (array)tpls::$bottom[$render_mode]
-    );
+            (array)tpls::$bottom[$render_mode]); 
+    return $list;
  }
 
  static function body($href, $raw=false) {

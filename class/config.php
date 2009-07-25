@@ -13,9 +13,9 @@ class config  {
     return $key?($tmp[$key]?$tmp[$key]:$tmp->$key):$tmp;
   }
   static function retrieve($key){
-    $tmp = self::$config->$key;
+    $tmp = self::$config->$key; $file = (string) $tmp['file'];
     if(!$tmp) return simplexml_load_string("<$key/>");
-    return isset($tmp['file'])?simplexml_load_file($tmp['file']):$tmp;
+    return $file && file_exists($file)?simplexml_load_file($file):$tmp;
   }
 
   static function load($config_file){

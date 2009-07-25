@@ -4,22 +4,23 @@
 class exyks_paths {
 
   const prefix_ns = "paths_prefix";
-  static private $paths_ns = array(
-    'yks'   => BASE_PATH,
-    'here'  => ROOT_PATH
-   );
+  static private $paths_ns = array();
   private static $paths = array();
 
 /*
     Scan config file for paths definitions and register them
     <paths xmlns:pf="paths_prefix" pf:admin="."
 */
-  public static function init($config){
-    if(!$config) return;
-    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), self::$paths_ns);
+  public static function init(){
+    if(!($config = yks::$get->config->paths)) return;
+    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), array(
+        'yks'   => BASE_PATH,
+        'here'  => ROOT_PATH,
+        '3rd'   => YKS_PATH."/3rd",
+    ));
     foreach($config->path as $path){
         foreach(explode(':', $path['symbolic']) as $path_key) {
-            $dest = $path['base']?$path['base'].$path_key:$path['dest'];
+            $dest = $path['base']?$path['base']."/$path_key":$path['dest'];
             self::register($path_key, $dest);
         }
     }
@@ -31,10 +32,11 @@ class exyks_paths {
 */
   public static function register($path_key, $path){
         //resolve
-    $mask = '#^path://('.join('|',array_keys(self::$paths_ns)).')#e';
-    $repl = 'self::$paths_ns["$1"]';
-    $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs'", $path));
-    $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls'", $path));
+    $mask = '#^path://('.join('|',array_keys(self::$paths_ns)).')(.*?)(//|$)#ie'; //cooool
+
+    $repl = 'self::$paths_ns["$1"]."$2"';
+    $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs/'", $path));
+    $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls/'", $path));
 
     self::$paths['subs'][$path_key]   = $sub_path;
     tpls::$paths['search'][]  = "#^$path_key#";
@@ -82,7 +84,8 @@ class exyks_paths {
     $href_fold = "";
     $href_base = "";
 
-    $result_path[] = array($subs_path, $subs_fold, "main");
+    $zero_args = substr(exyks::$href_ks, 0,strcspn(exyks::$href_ks, "/"));
+    $result_path[] = array($subs_path, $subs_fold, "main", $zero_args);
 
     $value = strtok("|");
 
@@ -130,7 +133,8 @@ class exyks_paths {
 
 
         /* $context, $href, $href_ks, $context_depths */
-    return array($result_path, exyks::$href, exyks::$href_ks, count($result_path) - 1, $value);
+    $res = array($result_path, exyks::$href, exyks::$href_ks, count($result_path) - 1, $value);
+    return $res;
   }
 
 

@@ -9,23 +9,28 @@ class yks
   const FATALITY_CONFIG     = "config";
   const FATALITY_SITE_CLOSED     = "site_closed";
 
-  static function init(){
-    $host = strtolower($_SERVER['SERVER_NAME']);
-    if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
-
+  static function init($load_context = true){
     define('RSRCS_PATH', YKS_PATH.'/rsrcs');
-    $config_file = CONFIG_PATH."/$host.xml";
-    if(!is_file($config_file)) yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
-    $GLOBALS['config'] = $config =  config::load($config_file);
-
-
-    self::$get = new yks(); $paths = array();
     $paths = array(YKS_PATH."/libs", CLASS_PATH);
-    if($config->include_path)
-        foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
-            $paths[] = paths_merge(ROOT_PATH, $path);
+    $exts  = false;
+
+    if($load_context){
+        $host = strtolower($_SERVER['SERVER_NAME']);
+        if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
+
+        $config_file = CONFIG_PATH."/$host.xml";
+        if(!is_file($config_file)) yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
+        $GLOBALS['config'] = $config =  config::load($config_file);
+
+        self::$get = new yks();
+        if($config->include_path)
+            foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
+                $paths[] = paths_merge(ROOT_PATH, $path);
+        $exts = $config->include_path['exts'];
+    }
+
     classes::extend_include_path($paths);
-    classes::activate($config->include_path['exts']);
+    classes::activate($exts);
   }
 
   static function fatality($fatality, $details=false, $render_mode="html"){
@@ -60,12 +65,9 @@ class yks
   public function __get($key){ return $this->get($key);  }
 }
 
-if(PHP_SAPI != 'cli')
-    yks::init();
-else {
-    classes::activate();
-}
 
+$load_context = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'];
+yks::init($load_context);
 
 
 
