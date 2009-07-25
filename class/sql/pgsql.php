@@ -214,12 +214,12 @@ class sql {
     return sql::row("information_schema.tables",$where);
  }
     // return an unquoted associative array of schema , name, safe name
-  static function resolve($name){
-    if(!$name) return array();
-    $tmp = explode('.', str_replace('"', '', sql::unfix("`$name`")) , 2);
+  static function resolve($raw){
+    if(!$raw) return array();
+    $tmp = explode('.', str_replace('"', '', sql::unfix("`$raw`")) , 2);
     $name = array_pop($tmp); $schema = $tmp[0]; if(!$schema) $schema = "public";
     $safe = sprintf('"%s"."%s"', $schema, $name );
-    return compact('name', 'schema', 'safe');
+    return compact('name', 'schema', 'safe', 'raw');
   }
 
 

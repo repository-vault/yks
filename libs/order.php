@@ -9,15 +9,23 @@ class order extends _mykse {
   protected $sql_table = "ks_shop_orders";
   protected $sql_key = "order_id";
 
-  function update($data){
+  function update($data, $update_profile = true){
     $ret = true;
-    $final_update = $this->order_status != "done" 
+
+    $final_update = true 
+                && $this->order_status != "done" 
                 &&  $data['order_status'] == "done";
+
     sql::begin();
+ 
     if($final_update){
-        $this->close_products();
-        $ret = array('infos' => "Closing order, applying products specifications.");
+        if($update_profile){
+            $this->close_products();
+            $ret = array('infos' => "Closing order, applying products specifications.");
+        } else 
+            $ret = array('infos' => "Explicitly skipping products specifications attributions.");
     }
+
     if(!parent::update($data))
         throw sql::rollback("Error while processing order.");
     sql::commit();
@@ -25,6 +33,7 @@ class order extends _mykse {
 
   }
 
+ 
   function close_products(){
     foreach($this->products_list as $product_id=>$product_infos){
         $profile_key = $product_infos['product_options']['profile_key'];

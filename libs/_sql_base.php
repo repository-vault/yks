@@ -43,6 +43,7 @@ abstract class _sql_base  implements ArrayAccess {
   function from_id($key_id){
     $verif_base = array($this->sql_key => $key_id);
     $data = sql::row($this->sql_table, $verif_base);
+    if(!$data) throw new Exception("Invalid construction $key_id");
     $this->feed($data);
   }
 
