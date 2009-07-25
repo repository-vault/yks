@@ -142,7 +142,7 @@ class table extends table_base {
         else $parts[]=$add;
     }
 
-    $query = "CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t", $parts)."\n);\n";
+    $query = "CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t", $parts)."\n)";
     $todo  []= $query;
     return $todo;
   }

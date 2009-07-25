@@ -27,12 +27,16 @@ abstract class mykse_base {
 
     // faut faire tomber les key sur les types qui ne sont pas directs.. 
     // OU si le name dans le  birth est différent du type
+        // SAUF si on est sur une primary explicite
     // depth==1 est ok
 
     $birth = sql::resolve((string)$this->mykse_xml['birth']);
     if($birth){
+ 
       if($birth['name']==(string)$this->table->table_name
-        && $this->depth==1 && $field_xml['type']==$this->field_def['Field']){
+        && $this->depth==1
+        && ($field_xml['type']==$this->field_def['Field']
+            || $field_xml['key'] == "primary") ){
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth=true;
             if($this->field_def['Null']) $this->field_def['Null']=false; //pas de null dans le birth
@@ -54,9 +58,18 @@ abstract class mykse_base {
 
   }
   private function fk($field_xml, $birth){
+    $table_name = $birth['raw'];
+    $birth_xml  = yks::$get->tables_xml->$table_name;
+        //resolve distant table fields name
+
+    $fields = array_keys(fields($birth_xml, true), $this->type);
+
+        //this is complicated, see http://doc.exyks.org/wiki/Myks:External_references_resolutions
+    $fields = in_array($this->type, $fields)?array($this->type):array_slice($fields,0,1);
+
     $this->table->key_add('foreign', $this->field_def["Field"], array(
         "table"    => $birth['name'],
-        "refs"     => table::build_ref($birth['schema'], $birth['name'], array($this->type)), 
+        "refs"     => table::build_ref($birth['schema'], $birth['name'], $fields ), 
         "update"   => (string)$field_xml['update'],
         "delete"   => (string)$field_xml['delete'],
         "defer"    => (string)$field_xml['defer'],

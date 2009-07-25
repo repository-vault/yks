@@ -14,15 +14,22 @@ class myks_parser {
   public $myks_paths;
   const myks_fpi = "-//YKS//MYKS";
   private $myks_ns = array();
+  const prefix_ns = "myks_prefix";
 
 
-  static function default_ns(){
-    return array(
+
+  static function default_ns($base_ns){
+
+    return array_merge($base_ns, array(
         'yks'   => RSRCS_PATH."/myks/yks",
+        '3rd'   => YKS_PATH."/3rd",
         'isos'  => RSRCS_PATH."/myks/isos",
         'pgsql' => RSRCS_PATH."/myks/pgsql"
-    );
+    ));
   }
+
+
+
   private function resolve_path($path){
     $mask = '#^myks://('.join('|',array_keys($this->myks_ns)).')#e';
     $repl = '$this->myks_ns["$1"]';
@@ -32,11 +39,14 @@ class myks_parser {
   function __construct($myks_config){
     $tmp_ns = array();
     //foreach($myks_config as ns
-    $this->myks_ns = array_merge(self::default_ns(), $tmp_ns);
+
+
+    $this->myks_ns = self::default_ns(attributes_to_assoc($myks_config->myks_paths, self::prefix_ns));
+
     $tmp_paths = array();
     if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path)
         $tmp_paths[]=$this->resolve_path($path['path']);
-    
+
     $this->myks_paths = $tmp_paths;
     $this->myks_gen   = new DomDocument("1.0");
 

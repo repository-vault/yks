@@ -92,22 +92,22 @@ abstract class table_base {
     $key_name = sprintf($this->keys_name[$TYPE], $this->table_name, $field, $type);
 
     if($TYPE=="PRIMARY"){
-        $this->keys_xml_def[$key_name]['type']=$TYPE;
-        $this->keys_xml_def[$key_name]['members'][]=$field;
+        $this->keys_xml_def[$key_name]['type'] = $TYPE;
+        $this->keys_xml_def[$key_name]['members'][$field] = $field;
     } elseif($TYPE=="UNIQUE"){
-        $this->keys_xml_def[$key_name]['type']=$TYPE;
+        $this->keys_xml_def[$key_name]['type'] = $TYPE;
 
-        $this->keys_xml_def[$key_name]['members']=&$this->tmp_key[$field];
-        $this->tmp_key[$field][]=$field;
-    } elseif($TYPE=="FOREIGN" && SQL_DRIVER=="pgsql"){
+        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$field];
+        $this->tmp_key[$field][$field] = $field;
+    } elseif($TYPE == "FOREIGN" && SQL_DRIVER == "pgsql"){
 
-        $this->keys_xml_def[$key_name]['type']=$TYPE;
-        $this->keys_xml_def[$key_name]['members']=&$this->tmp_key[$key_name];
-        $this->tmp_key[$key_name][]=$field;
+        $this->keys_xml_def[$key_name]['type'] = $TYPE;
+        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$key_name];
+        $this->tmp_key[$key_name][$field] = $field;
 
         $this->keys_xml_def[$key_name]=array_merge($this->keys_xml_def[$key_name],$refs);
     } else {
-        $this->tmp_key[$type][]=$field;
+        $this->tmp_key[$type][$field]=$field;
     }
 
   }
@@ -138,7 +138,8 @@ abstract class table_base {
 
     if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
     sql::select("information_schema.key_column_usage", $where, "constraint_name,column_name", $order);
-    while($l=sql::fetch()) $table_keys[$l['constraint_name']]['members'][]=$l['column_name'];
+    while($l=sql::fetch())
+        $table_keys[$l['constraint_name']]['members'][$l['column_name']]=$l['column_name'];
             //une clée est basé sur au moins UNE colonne ( élimine les checks )
 
     if(SQL_DRIVER=="pgsql"){ ///FOREIGN_KEYS
@@ -179,6 +180,7 @@ abstract class table_base {
  public static function build_ref($table_schema, $table_name, $table_fields){
     return compact('table_schema', 'table_name', 'table_fields');
  }
+
  public static function output_ref($ref){
     return  sprintf('"%s"."%s"(%s)',
         $ref['table_schema'],
