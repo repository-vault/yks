@@ -66,8 +66,7 @@ class exyks {
 
     include CLASS_PATH."/functions.php";
 
-    exyks_paths::init($config->paths);
-    exyks_paths::register("/Yks", "path://yks/Yks");
+    exyks_paths::register("/Yks", "path://yks//Yks");
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
@@ -89,7 +88,6 @@ class exyks {
 
     exyks_session::init_core();
     exyks_security::sanitize();
-    locales_manager::init();
 
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load_classic();
@@ -129,7 +127,6 @@ class exyks {
       "href"      => "?".exyks::$href,
       "href_ks"   => "?".exyks::$href_ks,
       "href_base" => "?$href_base",
-      "ks_flag"   => FLAG_KS
     ));
 
     if(!JSX) {

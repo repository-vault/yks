@@ -14,7 +14,6 @@ class exyks_session {
         "auth_password"        => CLASS_PATH."/auth/interfaces/password.php",
         "auth_restricted_ip"   => CLASS_PATH."/auth/interfaces/restricted_ip.php",
     ));
-    sess::init();
   }
 
 
