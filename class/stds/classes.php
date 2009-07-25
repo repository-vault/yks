@@ -14,8 +14,10 @@ class classes {
   static function register_class_path($class_name, $file_path){
     self::$classes_paths[$class_name] = $file_path;
   }
-  static function register_class_paths($paths){
+
+  static function register_class_paths($paths, $load = false){
     self::$classes_paths = array_merge(self::$classes_paths, $paths);
+    if($load) array_walk(array_keys($paths), array(__CLASS__, 'autoload'));
   }
 
   static function autoload($class_name){
@@ -24,18 +26,31 @@ class classes {
          $file = self::$classes_paths[$class_name];
     else if(strpos($class_name, "_") )
         $file = strtr($class_name, array('_'=>'/') ).".php";
-    else return false; //leave it to the spl_autoload(); , yeap ?
+    else return ; //leave it to the spl_autoload(); , yeap ?
     include $file;
-    if(!class_exists($class_name))
-        die("Unable to load $class_name (in $file)");    
+    self::init($class_name);
   }
 
   static function activate($exts = false){
     if($exts) spl_autoload_extensions($exts);
-    spl_autoload_register();
-    spl_autoload_register(array(__CLASS__,"autoload"));
+
+    spl_autoload_register(array(__CLASS__, "autoload"));
+    spl_autoload_register(array(__CLASS__, "spl_autoload")); 
+
   }
 
+  private static function init($class_name){
+    if(!class_exists($class_name))
+        throw new Exception("Unable to load $class_name");
+    if(method_exists($class_name, "init"))
+        call_user_func(array($class_name, 'init'));
+  }
+
+  static function spl_autoload($class_name){
+    spl_autoload($class_name);
+    self::init($class_name);
+
+  }
 }
 
 
