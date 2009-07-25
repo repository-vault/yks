@@ -14,8 +14,7 @@ class sess  {
 
   static function flag_ks($connected = true){
     $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
-    define('FLAG_KS', crpt($id, FLAG_SESS, 10));
-    return FLAG_KS;
+    return crpt($id, FLAG_SESS, 10);
   }
   static function init(){
     if(sess::$id) return false;
@@ -26,8 +25,8 @@ class sess  {
     self::$id = session_id();
     self::$_storage = &$_SESSION['storage'];
     self::status_check();
-    self::flag_ks();
   }
+
   static function deco(){
     $_COOKIE['user_id'] = false;
     setcookie("user_pswd_".sess::$sess['user_id'],false);
