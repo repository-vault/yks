@@ -25,15 +25,4 @@ class Selectors {
   );
 }
 
-include "Selectors_Utils.php";
-include "Selectors_Getters.php";
-include "Selectors_Filters.php";
-include "Selectors_Pseudo.php";
-include "Forms.php";
-
-
-Element::__register("Forms");
-
-include "functions.php";
-
 
