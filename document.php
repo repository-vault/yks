@@ -8,7 +8,7 @@ class document extends native {
   function __construct($window, $dom, $charset = false){
     if($charset) $this->data['charset'] = $charset;
     $this->_win = $window;
-    $this->_dom = new ►DomElement◄($this, $dom);
+    $this->_dom = new domElement($this, $dom);
   }
 
 

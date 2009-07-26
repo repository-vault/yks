@@ -1,7 +1,7 @@
 <?
 
  //wrapper around simpleXMLElement
-class ►DomElement◄ extends __wrapper {
+class domElement extends __wrapper {
   protected $base_type = "Element";
   public $document;
 
