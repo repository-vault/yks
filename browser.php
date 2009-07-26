@@ -43,7 +43,6 @@ class browser {
     return $lnk;
   }
 
-        //sock_lnk is connection:Keep-alive, closing is a good thing
   function close(){
     $this->lnk->close();
   }
