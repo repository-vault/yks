@@ -1,15 +1,15 @@
 <?
 
-include "XHTMLElement.php";
-include "Element.php";
-include "Selector.php";
+include "xhtmlelement.php";
+include "element.php";
+include "selector.php";
 
 
-include "Selectors/Utils.php";
-include "Selectors/Getters.php";
-include "Selectors/Filters.php";
-include "Selectors/Pseudo.php";
-include "Forms.php";
+include "selectors/utils.php";
+include "selectors/getters.php";
+include "selectors/filters.php";
+include "selectors/pseudo.php";
+include "forms.php";
 
 
 Element::__register("Forms");
