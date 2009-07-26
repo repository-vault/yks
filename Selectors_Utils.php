@@ -37,16 +37,16 @@ class Selectors_Utils {
     return $parsed;
   }
 
-  static function parseSelector($selector){
+  static function parseSelector($selector_parts){
     $parsed = array(
         'classes'=> array(),
         'pseudos'=> array(),
         'attributes'=>array(),
     );
 
-    preg_match_all(Selectors::$RegExps['combined'], $selector, $ms,PREG_SET_ORDER);
-    foreach($ms as $m){ 
-        list($cn, $an, $ao, $av, $pn, $pa) = array($m[1], $m[2], $m[3], $m[5], $m[6], $m[7]);
+    foreach($selector_parts as $part){ 
+        extract($part);
+
         if($cn) {
             $parsed['classes'][] = $cn;
         } elseif($pn) {
@@ -61,6 +61,7 @@ class Selectors_Utils {
             );
         }
     }
+
 
     $parsed = array_filter($parsed);
     if(!$parsed) $parsed = null;
@@ -103,38 +104,77 @@ class Selectors_Utils {
 
 
 
+  static function tokenize($selector){
+
+    $full = array(
+        'separator'    => '(,)\s*',
+        'combinator'   => '([+>~\s])\s*(?=[a-zA-Z#.*:\[])',
+        'tag&id'       => '(\w+|\*)(?:#([\w-]+))?',
+        'class'        => '\.([\w-]+)',
+        'attribute'    => '\[([a-z0-9-]+)(?:([!*^$~|]?=)(?:"([^\"]*)"|\'([^\']*)\'|(.*?)))?\]',
+        'pseudo'       => ':([\w-]+)(?:\((?:"([^\"]*)"|\'([^\']*)\'|(.*?))\))',
+        //'end'|$)
+    ); $full = '/'.join('|', $full).'/';
+
+    preg_match_all($full, trim($selector), $tokens, PREG_SET_ORDER);
+    $depth = 0; $part_id= 0; $parts = array(); 
+    foreach($tokens as $m){
+        list($se, $cb, $tag, $id, $cn, $an, $ao, $av, $pn, $pa)
+            = array($m[1], $m[2], $m[3], $m[4], $m[5],
+                    $m[6], $m[7], pick($m[8], $m[9], $m[10]),
+                    $m[11], pick($m[12], $m[13], $m[14]));
+
+        if($se)
+            $part_id++;
+        elseif($cb)
+            $parts[$part_id][++$depth]['splitter'] = Selectors::$splitters[$cb];
+        else                 
+            $parts[$part_id][$depth]['members'][] = compact('tag','id','cn','an','ao','av','pn','pa');
+    }
+
+    return $parts;
+  }
+
   static function search($self, $expression, $local){
-    $depths = preg_split(Selectors::$RegExps['splitter'], trim($expression), -1, PREG_SPLIT_DELIM_CAPTURE);
+    $parts = self::tokenize($expression);
 
-    for($depth=0, $depths_nb=count($depths) ; $depth<=$depths_nb ; $depth+=2) {
-        $selector = $depths[$depth]; $splitter =  Selectors::$splitters[$depths[$depth-1]]; //PHP
-    
-        if(!$depth && preg_match(Selectors::$RegExps['quick'], $selector)) { //element rq
-            $items = $self->getElementsByTagName($selector);
-            continue;
-        }
-        list($tag, $id) = self::parseTagAndID($selector);
+    $results = array();
 
-        if($depth == 0) {
-            $items = self::getByTagAndId($self, $tag, $id);
+    foreach($parts as $depths){
+
+      $items = array();
+
+      foreach($depths as $depth=>$depth_infos){
+
+        $selector_parts = $depth_infos['members'];
+        $selector       = array_shift($selector_parts);
+
+        $tag = $selector['tag'];if(!$tag) $tag = '*';
+        $id  = $selector['id'];
+
+        if(!$depth) {
+          $items = self::getByTagAndId($self, $tag, $id);
         } else {
-            $uniques = array(); $found = array();
-            foreach($items as $item) $found = Selectors_Getters::$splitter($found, $item, $tag, $id, &$uniques);
-            $items  = $found;
+          $splitter = $depth_infos['splitter'];
+          $uniques = array(); $found = array();
+          foreach($items as $item)
+            $found = Selectors_Getters::$splitter($found, $item, $tag, $id, $uniques);
+          $items  = $found;
         }
 
-        $parsed = Selectors_Utils::parseSelector($selector);
+        $parsed = Selectors_Utils::parseSelector($selector_parts);
         if($parsed) {
             $filtered = array();
             foreach($items as $item)
                 if (Selectors_Utils::filter($item, $parsed, $local))
                     $filtered[] = $item;
             $items = $filtered;
-
         }
+      }
+      $results = array_merge($results, $items);
     }
 
-    return $items;
+    return $results;
   }
 
 
