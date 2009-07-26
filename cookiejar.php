@@ -23,8 +23,9 @@ class cookiejar {
   function store($cookie){
     $old_cookie = $this->find($cookie);
     if($old_cookie) $this->delete($old_cookie);
-    if(!$cookie->is_valid()) return;
+    if(!$cookie->is_valid()) return false;
     $this->cookies_list[] = $cookie;
+    return true;
     
   }
   function delete($cookie){

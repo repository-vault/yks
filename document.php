@@ -20,6 +20,10 @@ class document extends native {
     return $this->_win;
   }
 
+  function __call($method, $args){
+    return call_user_func_array(array($this->documentElement,$method), $args);
+  }
+
   function getElementById($id){
     return $this->documentElement->getElementById($id);
   }

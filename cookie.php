@@ -20,7 +20,6 @@ class cookie {
     $cookie_scheme = isset($extras['secure'])?"https":"http";
     $cookie_url    = "$cookie_scheme://{$host}{$extras['path']}";
     $this->url     = new url($cookie_url);
-
   }
 
   function __get($key){
@@ -30,16 +29,12 @@ class cookie {
     if(in_array($key, array('domain', 'sub', 'path')))
         return $this->url->$key;
 
-    if(in_array($key, array('is_expired', 'get_hash')))
-        return $this->$key();
-
     if(method_exists($this, $getter = "get_$key"))
         return $this->$getter();
   }
 
-
   function is_valid(){
-    return !($this->expire ||
+    return !($this->is_expired() ||
         in_array($this->value, array("deleted", "false", false)));
   }
 
@@ -57,13 +52,15 @@ class cookie {
     return $match;
   }
 
-  function get_hash($raw = false){
-    $hash  = "$this->name:{$this->url->scheme}://{$this->url->host}:{$this->$domain_restricted}";
-    return $hash;
+  function get_hash(){
+    $dot = ($this->$domain_restricted?"":".");
+    $str = "{$this->url->scheme}://{$this->name}@{$dot}{$this->url->host}";
+    return $str;
   }
 
   function __toString(){
-    return $this->get_hash(true);
+    $expire  = $this->expire?date('[d/m/Y H:i:s]', $this->expire):"[session]";
+    return "{$this->hash}/$expire";
   }
 
   public static function from_header($header_str, $extras, $url){

@@ -18,6 +18,8 @@ class domElementWrapper extends __wrapper {
     //if($data) $this->set($data);
     $this->document->window->submit($this, $data);    
   }
-
+  function click(){
+    $this->document->window->go((string) $this['href']);
+  }
 }
 
