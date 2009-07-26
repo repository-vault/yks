@@ -79,7 +79,6 @@ class sock   {
     $this->response = array();
     $this->response['raw']  = $head;
     $this->response['code'] = $code;
-    $this->response['headers'] = http::parse_headers($this->response['raw']);
     return $this->response['raw'];
   }
 

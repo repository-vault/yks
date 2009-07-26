@@ -1,5 +1,4 @@
 <?
-include "2616.php";
 
 class http {
   const LWSP='[\s]';
