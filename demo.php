@@ -12,9 +12,6 @@ include "selectors/pseudo.php";
 include "forms.php";
 
 
-Element::__register("Forms");
-
-
 include "functions.php";
 
 

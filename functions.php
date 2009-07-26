@@ -1,6 +1,10 @@
 <?
 
 
+Element::__register("Forms");
+
+
+
 if(!function_exists('preg_reduce')) {
   function preg_reduce($mask, $str){
     preg_match($mask,$str,$out);
