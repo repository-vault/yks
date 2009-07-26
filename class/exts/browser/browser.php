@@ -2,43 +2,62 @@
 
 class browser {
   public $document;
+  private $windows_list = array();
 
+  private $cookiejar;
   private $url;
   private $start_url;
   private $lnk;
 
-  function __construct($url){
-    $this->start_url = $url;
-    $this->lnk = new sock_lnk($url);
-    
+
+  function __construct(){
+    $this->cookiejar = new cookiejar();
+    $this->ua        = $this->forge_ua();
   }
+
+  function open($url){
+    $window = new window($this);
+    $window->go($url);
+
+    return $window;
+  }
+
+  function get_cookies($url){
+    return $this->cookiejar->retrieve($url);
+  }
+
+  function store_cookie($url, $cookie){
+
+    if(!$cookie->under_authority($url)){
+        print_r($cookie);
+        print_r($url);
+        die;
+    }
+        //throw new Exception("Cookie has no authority");
+
+    return $this->cookiejar->store($cookie);
+  }
+
+  function get_lnk($url){
+    $lnk = new xhr($this, $url);
+    return $lnk;
+  }
+
         //sock_lnk is connection:Keep-alive, closing is a good thing
   function close(){
     $this->lnk->close();
   }
 
-  function go($url, $method = 'GET', $data  = array()){
-    $this->url = $url;
-    $this->lnk->request($this->url, array('method'=>$method), $data);
+  function forge_ua(){
+    $ua = new stdClass();
+    $ua->name     = "Mozilla/5.0 (Windows) Gecko/20090715 Firefox/3.5.1";
+    $ua->language = "en-us,en;q=0.8,fr-fr;q=0.5,nl;q=0.3";
+    $ua->headers  = array(
+        'User-Agent'      => $ua->name,
+        'Accept-Language' => $ua->language,
+    );
+    return $ua;
 
-    $str = $this->lnk->receive();
-    return $this->parse_contents($str);
-  }
-
-  function parse_contents($str){
-    $this->document = simplexml_load_html($str);
-  }
-
-  function submit($form, $data = array()){
-    if(!$form)
-    if($data) $form->set($data);
-
-    $queryString = $form->toQueryString();
-
-    $action  = (string)$form['action'];
-    if(!$action) $action  = $this->url; //if outside browser= dead
-    $this->go($action, 'POST', $data);
   }
 
 }
-
