@@ -1,6 +1,6 @@
 <?
 
-class document extends native {
+class document extends __native {
   private $_dom;
   private $_win;
   protected $data; //charset

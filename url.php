@@ -1,6 +1,6 @@
 <?
 
-class url  extends native {
+class url  extends __native {
 
   function __construct($url){
     $this->data  = urls::parse($url);

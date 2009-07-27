@@ -1,6 +1,6 @@
 <?
 
-class window extends native {
+class window extends __native {
   private $browser;
   private $url;
   public $document;
