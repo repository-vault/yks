@@ -8,7 +8,7 @@ var Thumbnailer=new Class({
   limits:{w:20,h:20},
   clip:{xr:0,xl:0,yu:0,yd:0},
 
-  initialize:function(img,options){  if(Thumbnailer.extended(img)) return;
+  initialize:function(img, options){  if(Thumbnailer.extended(img)) return;
     this.options=options||{};
     this.img=img;
 
@@ -46,7 +46,7 @@ var Thumbnailer=new Class({
         this.container.addEvent('mouseup',function(event){
             this.resize_mode=this.move_mode=false;
             if($equal(this.old,this.clip))this.clear();
-            this.fireEvent('onChange',this.clip);
+            this.fireEvent('change',this.clip);
         }.bind(this));
         this.container.addEvent('mousemove',this.mask_move.bind(this));
         //this.mask_draw.delay(100,this);
@@ -56,7 +56,7 @@ var Thumbnailer=new Class({
 
   },
 
-  clear:function(){ this.clip={xr:0,xl:0,yu:0,yd:0};this.mask_draw(); },
+  clear:function(){ this.fireEvent('reset'); this.clip={xr:0,xl:0,yu:0,yd:0};this.mask_draw(); },
   calibrate:function(){ this.coords=this.container.getCoordinates(); },
   remove:function(){ $clear(this.interval); },
   
@@ -140,7 +140,13 @@ var Thumbnailer=new Class({
   mask_max:function(){
     this.clip.w=Math.min(this.coords.width,this.coords.height);
     this.clip.x=this.clip.y=Math.floor(this.clip.w/2);
-    
+  },
+
+  transform : function(el){
+    var tmp = el.getCoordinates(this.container);
+    this.clip={xr:tmp.right,xl:tmp.left,yu:tmp.top,yd:tmp.bottom};
+    this.mask_draw();
+    this.fireEvent('change',this.clip);
   }
 });
 

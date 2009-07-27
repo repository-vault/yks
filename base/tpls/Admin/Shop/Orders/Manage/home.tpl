@@ -14,6 +14,10 @@
     <?=dsp::dd("order_status",$order_dsp['order_status'])?>
 </select>
 </field>
+
+<field title="Mettre à jour le profil" type="bool" name="update_profile" value="true"/>
+
+
 <field type="text" name="order_comment" style="height:150px">
     <?=XML_EMPTY.$order_dsp['order_comment']?>
 </field>

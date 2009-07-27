@@ -6,7 +6,7 @@ if($action=="order_manage")try {
     $shop_orders_fields_tmp = array_intersect_key($shop_orders_fields, array_flip($only_fields));
     $data=mykse_validate($_POST, $shop_orders_fields_tmp);
 
-    $res = $order->update($data);
+    $res = $order->update($data, bool($_POST['update_profile']));
     if($res['infos']) rbx::ok($res['infos']);
 
     rbx::ok("Modifications enregistrées");

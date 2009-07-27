@@ -30,8 +30,13 @@
 
   <xsl:template match="field">
     <xsl:param name="birth"/>
+    <xsl:variable name="name">
+        <xsl:if test="@name"><xsl:value-of select="@name"/></xsl:if>
+        <xsl:if test="not(@name)"><xsl:value-of select="@type"/></xsl:if>
+    </xsl:variable>
     <field>
-      <xsl:if test="@key='primary' or @name=$birth or @type=$birth">
+    <!--  or @type=$birth -->
+      <xsl:if test="@key='primary' or $name=$birth">
         <xsl:attribute name="key">primary</xsl:attribute>
       </xsl:if>
       <xsl:choose>

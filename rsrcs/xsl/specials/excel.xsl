@@ -13,6 +13,10 @@
     tr {mso-height-source:auto;}
     th, col {mso-width-source:userset;}
     br {mso-data-placement:same-cell;}
+    td {
+      mso-number-format:"\@";
+      white-space:normal;
+    }
     <xsl:value-of select="//xls:style"/>
 </style>
 <xsl:comment><![CDATA[[if gte mso 9]>

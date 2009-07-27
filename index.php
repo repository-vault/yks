@@ -17,7 +17,7 @@ if(!defined('Ex/yks')) die("Ex/yks is not loaded");
   exyks::context_end();
 
 
-  exyks::render_prepare( compact('href_base', 'href_fold', 'subs_file', 'href') );
+  exyks::render_prepare( compact('href_base', 'href_fold', 'subs_file', 'href', 'href_ks') );
 
   $tpls_list = tpls::export_list(exyks::retrieve("RENDER_MODE"));
   foreach($tpls_list as $file)

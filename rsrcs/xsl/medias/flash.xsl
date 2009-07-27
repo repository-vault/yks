@@ -6,7 +6,8 @@
         <param name="movie" value="{@src}"/>
         <param name="quality" value="high" />
         <xsl:if test="@vars"><param name="FlashVars" value="{@vars}"/></xsl:if>
-        <p><a href='http://www.macromedia.com/go/getflashplayer'>Get macromedia</a></p>
+        <xsl:if test="node()"><xsl:apply-templates/></xsl:if>
+        <xsl:if test="not(node())"><p><a href='http://www.macromedia.com/go/getflashplayer'>Get macromedia</a></p></xsl:if>
     </object>
   </xsl:template>
 </xsl:stylesheet>

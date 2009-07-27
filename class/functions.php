@@ -14,7 +14,9 @@ require CLASS_PATH."/myks/input.php";
 
     //register additionnal classes paths
 classes::register_class_paths(array(
-    "native"          => LIBS_PATH."/natives/native.php",
+    "__native"        => LIBS_PATH."/natives/__native.php",
+    "__wrapper"       => LIBS_PATH."/natives/__wrapper.php",
+
     "mail"            => CLASS_PATH."/mails/mail.php",
     "xsl"             => CLASS_PATH."/xsl/xsl.php",
     "xml"             => CLASS_PATH."/stds/xml.php",

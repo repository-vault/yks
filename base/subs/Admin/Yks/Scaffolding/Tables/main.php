@@ -19,7 +19,7 @@ $table_name = array_shift($args);
 
 
 $initial_criteria = array_filter($args);
-if(!$initial_criteria) $initial_criteria= true;
+if(!$initial_criteria) $initial_criteria= array("true");
 else {
     parse_str(join("&", $initial_criteria), $initial_criteria);
     $initial_criteria = input_deep($initial_criteria);
@@ -36,6 +36,7 @@ $table_fields  = fields($table_xml);
     //ordering table_fields and put primary_keys at first
 $table_fields = array_sort($table_fields,
     array_unique(array_merge($table_keys, array_keys($table_fields))));
+
 
 $multi_depth_criteria = (bool)array_filter((array) $initial_criteria, 'is_array');
 
