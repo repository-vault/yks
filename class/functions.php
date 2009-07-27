@@ -28,7 +28,7 @@ classes::register_class_paths(array(
     "yks_list"        => CLASS_PATH."/list/yks_list.php",
     "dtd"             => CLASS_PATH."/dom/dtds.php",
     "myks"            => CLASS_PATH."/myks/myks.php",
-    "sock_lnk"        => CLASS_PATH."/socks/socks.php",
+    "http"            => CLASS_PATH."/exts/http/http.php",
     "exyks_paths"     => CLASS_PATH."/exyks/paths.php",
     "tpls"            => CLASS_PATH."/exyks/tpls.php",
 ));
