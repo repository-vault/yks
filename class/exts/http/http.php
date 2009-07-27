@@ -21,4 +21,32 @@ class http {
     return $headers;
   }
 
+
+
+  public static function ping_url($url, $timeout = 3){
+    $url_infos = parse_url($url);
+
+    $host = $url_infos['host'];
+    $path = $url_infos['path'].'?'.$url_infos['query'];
+    $fp = fsockopen($host, 80, $null, $null, $timeout);
+    if (!$fp) throw new Exception("Unable to open");
+    $query = array("GET $path HTTP/1.0");
+    $query []= "Host: $host";
+    $query []= "Connection: close";
+    $query []= "";
+    $query []= "";
+    $query  = join(CRLF, $query);
+
+    fwrite($fp, $query);
+    stream_set_timeout($fp, $timeout);
+    list($headers, $contents) = explode(CRLF.CRLF, stream_get_contents($fp), 2);
+    $info = stream_get_meta_data($fp);
+    fclose($fp);
+
+    if ($info['timed_out']) 
+        throw new Exception("Request timed out");
+
+    return $contents;
+  }
+
 }
