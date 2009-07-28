@@ -25,7 +25,7 @@ class Selectors_Filters {
     if(!$operator || $value == null ) return true;
     switch($operator) {
       case '=' : return ($result == $value );
-      case '*=': return (strpos($result, $value) != false);
+      case '*=': return (strpos($result, $value) !== false);
       case '^=': return (substr($result,0,strlen($value)) == $value);
       case '$=': return (substr($result,-strlen($value)) == $value);
       case '!=': return ($result != $value);
