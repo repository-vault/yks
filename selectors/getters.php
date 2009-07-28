@@ -17,7 +17,7 @@ class Selectors_Getters {
   }
 
   static function direct_sibling($found, $self, $tag, $id, &$uniques) { // '+'
-    $siblings = $self->getParent()->children(); $next=false;
+    $siblings = ($parent=$self->getParent())?$parent->children():array(); $next=false;
     foreach($siblings as $sibling){
         if(!$next && ( ($next = $sibling == $self) || true )) continue;
         $self = $sibling;

@@ -109,16 +109,17 @@ class Selectors_Utils {
     $full = array(
         'separator'    => '(,)\s*',
         'combinator'   => '([+>~\s])\s*(?=[a-zA-Z#.*:\[])',
-        'tag&id'       => '(\w+|\*)(?:#([\w-]+))?',
+        'tag&id'       => '(\w+|\*)?(?:#([\w-]+))?',
         'class'        => '\.([\w-]+)',
         'attribute'    => '\[([a-z0-9-]+)(?:([!*^$~|]?=)(?:"([^\"]*)"|\'([^\']*)\'|(.*?)))?\]',
-        'pseudo'       => ':([\w-]+)(?:\((?:"([^\"]*)"|\'([^\']*)\'|(.*?))\))',
+        'pseudo'       => ':([\w-]+)(?:\((?:"([^\"]*)"|\'([^\']*)\'|(.*?))\))?',
         //'end'|$)
     ); $full = '/'.join('|', $full).'/';
 
     preg_match_all($full, trim($selector), $tokens, PREG_SET_ORDER);
     $depth = 0; $part_id= 0; $parts = array(); 
     foreach($tokens as $m){
+        if(!$m[0])continue;
         list($se, $cb, $tag, $id, $cn, $an, $ao, $av, $pn, $pa)
             = array($m[1], $m[2], $m[3], $m[4], $m[5],
                     $m[6], $m[7], pick($m[8], $m[9], $m[10]),
@@ -147,7 +148,9 @@ class Selectors_Utils {
       foreach($depths as $depth=>$depth_infos){
 
         $selector_parts = $depth_infos['members'];
-        $selector       = array_shift($selector_parts);
+        if($selector_parts[0]['tag']||$selector_parts[0]['id'])
+            $selector       = array_shift($selector_parts);
+        else $selector = array();
 
         $tag = $selector['tag'];if(!$tag) $tag = '*';
         $id  = $selector['id'];
@@ -162,7 +165,7 @@ class Selectors_Utils {
           $items  = $found;
         }
 
-        $parsed = Selectors_Utils::parseSelector($selector_parts);
+        $parsed = self::parseSelector($selector_parts);
         if($parsed) {
             $filtered = array();
             foreach($items as $item)
