@@ -29,8 +29,8 @@ class Selectors_Filters {
       case '^=': return (substr($result,0,strlen($value)) == $value);
       case '$=': return (substr($result,-strlen($value)) == $value);
       case '!=': return ($result != $value);
-      case '~=': return (strpos(" $result ", " $value ") != false);
-      case '|=': return (strpos("-$result-", "-$value-") != false);
+      case '~=': return (strpos(" $result ", " $value ") !== false);
+      case '|=': return (strpos("-$result-", "-$value-") !== false);
     }
     return false;
   }
