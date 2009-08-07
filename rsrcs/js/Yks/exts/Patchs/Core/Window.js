@@ -14,8 +14,8 @@ Window.implement({
     return $defined(b)?tmp.set(b):tmp;
   },
 
-  $N: function(a){
-    return $E('*[name="'+a+'"]');
+  $N: function(a, filter){
+    return $E('*[name="'+a+'"]', filter);
   },
 
   $take:function(obj, path){

@@ -8,7 +8,11 @@ Element.implement({
   effect: function(property,options){
     return new Fx.Tween(this,$merge(options,{property:property}));
   },
-  
+
+  getInputs:function(arg, nocash){
+    return this.getElements('input[type!=image], textarea, select', nocash);
+  },
+
   effects: function(options){
     return new Fx.Morph(this,options||{});
   },
@@ -21,7 +25,7 @@ Element.implement({
     
   toQueryString: function(){
     var queryString = [];
-    this.getElements('input[type!=image], select, textarea', true).each(function(el){
+    this.getInputs(false, true).each(function(el){
       if (!el.name || el.disabled) return;
       var tmp, value = (el.tagName.toLowerCase() == 'select')
         ? ( (tmp = Element.getSelected(el).map( function(opt){ return opt.value;} ))

@@ -40,6 +40,7 @@ $js_build_list = array_merge( $js_build_list, array(
     '[MT]/Drag/Drag'                 => false,
     '[MT]/Drag/Drag.Move'            => false,
     '[MT]/Plugins/Scroller'          => false,
+    '[MT]/Interface/Accordion'       => false,
 
     '[MT]/Utilities/Assets'          => true,
 

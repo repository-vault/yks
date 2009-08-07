@@ -12,6 +12,13 @@ Doms.loaders['[MT]/Drag/Drag.Move'] = {
     "deps" : ["[MT]/Drag/Drag"]
 };
 
+Doms.loaders['[MT]/Interface/Accordion'] = {
+    "class": "Accordion",
+    "match": false,
+    "patch": ["[PATCH]/Interface/Accordion"]
+};
+
+
 Doms.loaders['[MT]/Utilities/Cookie'] = {
     "class": "Cookie",
     "match": false,
