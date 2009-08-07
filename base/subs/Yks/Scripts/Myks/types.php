@@ -27,14 +27,11 @@
     if(!$types_xml instanceof SimpleXMLElement) die("Unable to load types_xml");
 
 
-    rbx::ok("Scanning mykses in ".count($myks_gen->myks_paths)." path(s)");
+    rbx::box("Scanning : mykses paths", $myks_gen->myks_paths);
 
         //before export ? after ? i don't know is it's very usefull
     if(!$types_xml->myks_type) {
         rbx::warn("Unable to locate type : 'myks_type', skipping");
-    } else {
-        foreach($types_xml->children() as $type=>$tmp)
-            if($type!="myks_type")$types_xml->myks_type->addChild("val",$type);
     }
 
     rbx::line();

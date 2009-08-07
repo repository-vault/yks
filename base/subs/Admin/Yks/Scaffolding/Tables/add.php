@@ -1,5 +1,9 @@
 <?
 
+
+        //there is NO WAY birth field are altered/inserted, just ignore them
+$table_fields = array_diff_key($table_fields, $birth_field);
+
 $batch_mode = (bool)$sub0;
 if($action=="add")try{
     

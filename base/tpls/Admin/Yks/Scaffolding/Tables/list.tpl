@@ -22,7 +22,7 @@ if($data) foreach($data as $line){
     $actions = "";
 
     $uid = "";
-    foreach($table_keys as $key_name)
+    foreach($table_keys as $key_name=>$key_type)
         $uid[$key_name] = $line[$key_name];
     $do = json_encode(array('ks_action'=>'delete', 'uid'=>$uid));
 
