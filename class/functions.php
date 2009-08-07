@@ -119,8 +119,9 @@ function str_evaluate($str, $vars = array()){  extract($vars);
     return $str;
 }
 
-function retrieve_constants($mask = "#.*?#", $format="{%s}"){
-    $tmp = get_defined_constants (true); $tmp = $tmp['user']; $constants = array();
+function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
+    $tmp = call_user_func_array("get_defined_constants", $useronly?array(true):array());
+    $tmp = $useronly?$tmp['user']:$tmp;  $constants = array();
     foreach($tmp as $name=>$val)
         if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;
     return $constants;

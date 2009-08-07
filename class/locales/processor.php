@@ -17,19 +17,20 @@ class locales_processor {
     self::$entities_renderer[$type] = array($callback, array_slice(func_get_args(),2)); }
   public static function defined($entity_type){ return isset(self::$entities_renderer[$entity_type]); }
 
-  public static function register_std_renderer($entity_type, $entity_table, $entity_col){
-    self::$entities_std_definition[$entity_type] = compact('entity_table', 'entity_col');
+  public static function register_std_renderer($entity_type, $entity_table, $entity_col, $entity_key = false){
+    if(!$entity_key) $entity_key = $entity_type;
+    self::$entities_std_definition[$entity_type] = compact('entity_table', 'entity_key', 'entity_col');
     self::register($entity_type, array(__CLASS__, 'std_entity_renderer'));
   }
-  public static function register_mykse_renderer($myks_type){
+  public static function register_mykse_renderer($myks_type, $birth_key=false, $birth_name=false){
     if( self::defined($myks_type)) return true; //nothing to do
     $type_xml = yks::$get->types_xml->$myks_type;
     if(!$birth_table_name = (string) $type_xml['birth']) return;
     $birth_fields = fields( yks::$get->tables_xml->$birth_table_name);
     //look for a "_name" field in birth table
-    $birth_name = reset(preg_split('#_id|_key$#', $myks_type))."_name";
+    $birth_name = $birth_name?$birth_name:reset(preg_split('#_id|_key$#', $myks_type))."_name";
     if(!$birth_fields[$birth_name]) return; // no explicit field founded, abort
-    self::register_std_renderer($myks_type, $birth_table_name, $birth_name);
+    self::register_std_renderer($myks_type, $birth_table_name, $birth_name, $birth_key);
     return true;
   }
 
@@ -63,11 +64,11 @@ class locales_processor {
   private static function std_entity_renderer($entities_vals, $entity_type){
     $entity_def = self::$entities_std_definition[$entity_type];
     if(!$entity_def) return false; //Undefined std entity definition
-    $verif_entities = array($entity_type=>$entities_vals);
-    $cols = "$entity_type, {$entity_def['entity_col']}";
-    sql::select($entity_def['entity_table'], $verif_entities, $cols);
-    $entities = array(); $entity_col = $entity_def['entity_col'];
-    while($l= sql::fetch()) $entities["&$entity_type.{$l[$entity_type]};"] = $l[$entity_col];
+    extract($entity_def);
+    $verif_entities = array($entity_key => $entities_vals);
+    sql::select($entity_table, $verif_entities, "$entity_key, $entity_col");
+    $entities = array();
+    while($l= sql::fetch()) $entities["&$entity_type.{$l[$entity_key]};"] = $l[$entity_col];
     return $entities;
   }
 

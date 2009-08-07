@@ -9,7 +9,7 @@ class yks
   const FATALITY_CONFIG     = "config";
   const FATALITY_SITE_CLOSED     = "site_closed";
 
-  static function init($load_context = true){
+  static function init($load_context = true, $call_init = true){
     define('RSRCS_PATH', YKS_PATH.'/rsrcs');
     $paths = array(YKS_PATH."/libs", CLASS_PATH);
     $exts  = false;
@@ -27,10 +27,11 @@ class yks
             foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
                 $paths[] = paths_merge(ROOT_PATH, $path);
         $exts = $config->include_path['exts'];
+        $call_init = $config->include_path['call_init']!='false';
     }
 
     classes::extend_include_path($paths);
-    classes::activate($exts);
+    classes::activate($exts, $call_init);
   }
 
   static function fatality($fatality, $details=false, $render_mode="html"){
@@ -67,7 +68,7 @@ class yks
 
 
 $load_context = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'];
-yks::init($load_context);
+yks::init($load_context, true);
 
 
 

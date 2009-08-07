@@ -1,5 +1,5 @@
 <?
-/** rbx result boxes && walker by 131 2008
+/** rbx result boxes && walker by 131 2009
 */
 
 
@@ -14,17 +14,33 @@ class rbx extends Exception {
   static $flag=false;
   function __construct($zone,$msg,$jsx=0){ self::msg($zone,$this->message = $msg,$jsx); }
 
-  static function msg($zone,$msg,$jsx=0){
+  static function msg($zone, $msg, $jsx=0){
     if(!is_string($msg))$msg=trim(strtr(print_r($msg,1),array("\r"=>'',"\n"=>'')));
     self::$rbx[$zone].=(self::$rbx[$zone]?' ':'').$msg;
     if($jsx!==0)jsx::$rbx=$jsx;
     if(self::$output_mode!=1) return;
-    self::$rbx['log'].="$zone : $msg\n";$count =count($lines=explode("\n",$msg));
+    self::$rbx['log'].="$zone : $msg\n";
     $pad_len = RBX_PAD-2-strlen($zone);
-    foreach($lines as $k=>$msg){
-      $end = (($count-1)==$k)?$zone:($k?'║':'╗'); //'╝'
-      echo $msg.str_repeat(' ',max(0,$pad_len-mb_strlen($msg) )).": $end\n";
-    }
+    echo $msg.str_repeat(' ',max(0,$pad_len-mb_strlen($msg) )).": $zone\n";
+  }
+
+  static function box($title, $msg){
+    if(!is_string($msg)) $msg = print_r($msg, 1);
+    $lines = explode("\n", trim($msg));
+    $pad_len = max(array_map('strlen', $lines))+1;
+
+    echo self::pad(" $title ", $pad_len, "═", STR_PAD_BOTH, "╔%s╗\n");
+    foreach($lines as $line)
+        echo self::pad($line, $pad_len, " ", STR_PAD_RIGHT, "║%s║\n");
+    echo self::pad('', $pad_len, "═", STR_PAD_BOTH, "╚%s╝\n");
+  }
+
+  static function pad($title, $pad_len = RBX_PAD, $pad = '-', $MODE=STR_PAD_BOTH, $mask='%s'){
+    $title_len = mb_strlen($title);
+    $left = $MODE==STR_PAD_BOTH?floor(($pad_len - $title_len)/2):"";
+    return sprintf($mask, 
+            str_repeat($pad, $left) . $title . str_repeat($pad, $pad_len - $title_len - $left));
+
   }
 
   static function delay(){ $_SESSION['rbx']=rbx::$rbx;rbx::$rbx=array(); }

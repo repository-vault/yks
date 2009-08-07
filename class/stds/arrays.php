@@ -8,7 +8,7 @@ function make_tree($splat, $root=false, $inverted = false){
     foreach($splat as $id=>$parent){
         if(!$tree[$$_id]) $tree[$$_id]=array();
         if($$_parent!=$$_id) $tree[$$_parent][$$_id] = &$tree[$$_id];
-    } return $root?array($root=>$tree[$root]):$tree;
+    } return $root!==false?array($root=>$tree[$root]):$tree;
 }
 
 
@@ -43,6 +43,7 @@ function mask_join($glue,$array,$mask){
 function array_extract($array, $col, $clean=false){
     $ret=array();
     if(is_array($col)) foreach($array as $k=>$v) $ret[$k] = array_sort($v, $col);
+    elseif($array instanceof simplexmlelement) foreach($array as $k=>$v) $ret[] = (string)$v[$col];
     else foreach($array as $k=>$v) $ret[$k]=$v[$col];
     return $clean?array_filter(array_unique($ret)):$ret;
 }
