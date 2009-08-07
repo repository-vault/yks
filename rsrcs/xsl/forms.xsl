@@ -44,7 +44,7 @@
 
   <xsl:variable name="elem"><xsl:if test="$depth=0">p</xsl:if><xsl:if test="$depth!=0">null</xsl:if></xsl:variable>
   <xsl:element name="{$elem}">
-        <xsl:if test="$depth=0"><xsl:copy-of select="@id"/></xsl:if>
+        <xsl:if test="$depth=0"><xsl:copy-of select="@id|@class"/></xsl:if>
 
   <xsl:if test="$depth=0 and @title"><span><xsl:value-of select="@title"/> : </span></xsl:if>
 

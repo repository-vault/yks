@@ -3,7 +3,7 @@
 <myks>
   <table name="ks_locale_values">
     <fields>
-      <field type="item_key" key="primary"/>
+      <field type="item_key" key="primary" delete="cascade"/>
       <field type="lang_key" key="primary"/>
       <field type="text" name="value"/>
     </fields>

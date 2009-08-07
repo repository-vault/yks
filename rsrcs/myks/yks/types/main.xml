@@ -11,9 +11,7 @@
     <mykse type="time"/>
   </mykse>
   <mykse type="myks_type" default="'myks_type'">
-    <enum>
-      <val>myks_type</val>
-    </enum>
+    <string length="128"/>
   </mykse>
   <mykse type="sha1">
     <string length="40"/>
