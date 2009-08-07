@@ -5,6 +5,11 @@ class domElementWrapper extends __wrapper {
   protected $base_type = "Element";
   public $document;
 
+
+  static function init(){
+    Element::__register("Forms");
+  }
+
   function __construct(document $document, $dom){
     $this->document   = $document;
     parent::__construct($dom);

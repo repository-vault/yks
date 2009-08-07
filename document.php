@@ -24,10 +24,6 @@ class document extends __native {
     return call_user_func_array(array($this->documentElement,$method), $args);
   }
 
-  function getElementById($id){
-    return $this->documentElement->getElementById($id);
-  }
-
   function get_charset(){
     $res = $this->head->getElement('meta[http-equiv="Content-Type"]');
     $res = header::parse_extras($res['content']);

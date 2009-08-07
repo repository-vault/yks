@@ -41,7 +41,7 @@ class window extends __native {
  
     $charset = strtolower($content_type->extras['charset']);
 
-    $this->document = new document($this, simplexml_load_html($str, $charset) );
+    $this->document = new document($this, dom::simplexml_load_html($str, $charset) );
 
     if(!$charset){
         $this->get_charset();
