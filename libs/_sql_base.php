@@ -12,6 +12,8 @@ abstract class _sql_base  implements ArrayAccess {
 
     if(is_array($from))
         $this->feed($from);
+    elseif(is_string($from))
+        $this->from_id($from);
     else $this->from_id((int)$from);
   }
 

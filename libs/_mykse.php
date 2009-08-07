@@ -4,12 +4,18 @@
 class _mykse extends _sql_base {
   function __construct($from){
     $manager = $this->manager;
+
+
     parent::__construct($from);
   }
 
-  function get_fields(){
+  function get_table_xml() {
     $table_name  = $this->sql_table; 
-    return $this->fields = fields(yks::$get->tables_xml->$table_name);
+    return $this->table_xml = yks::$get->tables_xml->$table_name;
+  }
+
+  function get_fields($keys = false){
+    return fields($this->table_xml, $keys);
   }
 
   function format_output(){
