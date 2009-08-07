@@ -10,6 +10,7 @@ include "selectors/getters.php";
 include "selectors/filters.php";
 include "selectors/pseudo.php";
 include "forms.php";
+include "dom.php";
 
 
 include "./functions.php";
