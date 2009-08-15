@@ -17,6 +17,21 @@ class highlight_xml {
     return $highlighter->parse($str);
   }
 
+
+  function indent($str){
+
+    if(!extension_loaded('tidy'))
+        return $str;
+
+    $config = array(
+        'indent'     => true,
+        'output-xml' => true,
+        'input-xml'  => true,
+    );
+    return (string) tidy_parse_string($str, $config, 'UTF8');
+  }
+
+
   function parse($str){
     preg_match_all("#<\?.*?\?>#", $str, $out); $pis = $out[0];$i=0;
     $str = preg_replace("#<\?.*?\?>#e", '"[¤".$i++."¤]"', $str);

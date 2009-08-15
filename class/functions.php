@@ -31,6 +31,7 @@ classes::register_class_paths(array(
     "http"            => CLASS_PATH."/exts/http/http.php",
     "exyks_paths"     => CLASS_PATH."/exyks/paths.php",
     "tpls"            => CLASS_PATH."/exyks/tpls.php",
+    "highlight_xml"   => CLASS_PATH."/dsp/code_format/highlight_xml.php",
 ));
 
 function sys_end($generation_time,$display_time=0){
