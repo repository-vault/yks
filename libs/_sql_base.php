@@ -5,6 +5,7 @@ abstract class _sql_base  implements ArrayAccess {
    protected $sql_table=false;
    protected $sql_key=false;
    protected $data; //do NOT access this, (need php 5.3 setAccessible)
+   protected $manager = false;
 
   function __construct($from){
     if(!($this->sql_table && $this->sql_key))
