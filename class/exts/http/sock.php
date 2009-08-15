@@ -127,11 +127,15 @@ class sock   {
   }
 
   protected function connect(){
-    $this->lnk = fsockopen($this->enctype.$this->host,$this->port);
-    if(!$this->lnk) die("Unable to connect '$this->host':$this->port");
+    $this->lnk = @fsockopen($this->enctype.$this->host,$this->port);
+    if(!$this->lnk) 
+        throw new Exception("Unable to connect '$this->host':$this->port");
   }
 
-  protected function close(){ fclose($this->lnk);$this->lnk=null; }
+  protected function close(){ 
+    if($this->lnk) fclose($this->lnk);
+    $this->lnk=null;
+  }
 
 }
 

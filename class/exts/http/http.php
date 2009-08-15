@@ -4,6 +4,11 @@ class http {
   const LWSP='[\s]';
   static $headers_multiple = array('Set-Cookie');
 
+
+  static function init(){
+    classes::extend_include_path(CLASS_PATH."/exts/http");
+  }
+
   static function parse_headers($headers_str){
     $headers_str = preg_replace('#'.CRLF.self::LWSP.'+#',' ',$headers_str);
     $headers = array();
@@ -28,7 +33,7 @@ class http {
 
     $host = $url_infos['host'];
     $path = $url_infos['path'].'?'.$url_infos['query'];
-    $fp = fsockopen($host, 80, $null, $null, $timeout);
+    $fp = @fsockopen($host, 80, $null, $null, $timeout);
     if (!$fp) throw new Exception("Unable to open");
     $query = array("GET $path HTTP/1.0");
     $query []= "Host: $host";
