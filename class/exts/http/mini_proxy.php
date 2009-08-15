@@ -5,6 +5,7 @@ function mini_proxy($src_url,
     $forwarded_headers = array('content-length', 'content-type') ) {
 
  $src = fopen($src_url, 'r');
+
  if(!$src) return false;
  $out = fopen('php://output', 'w');
  $metas = stream_get_meta_data($src);
@@ -18,5 +19,6 @@ function mini_proxy($src_url,
         header($header_str);
  }
  stream_copy_to_stream($src, $out);
-
+ return true;
 }
+

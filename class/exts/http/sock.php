@@ -6,6 +6,7 @@ class sock   {
   protected $port;
   protected $enctype;
   public static $trace = false;
+  public $response;
 
   private $metas = array(
     'user-agent' => "Mozilla/5.0 (Windows;) Gecko/2008092417 Firefox/3.0.3",
@@ -16,7 +17,9 @@ class sock   {
     $this->port = $port;
     $this->enctype = $enctype;
   }
-
+  function __destruct(){
+    $this->close();
+  }
 
   function request($url, $method = 'GET', $data = '', $extra_headers = array() ){
     if(!$this->lnk) $this->connect();

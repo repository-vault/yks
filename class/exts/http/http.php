@@ -49,4 +49,18 @@ class http {
     return $contents;
   }
 
+
+  public static function head($src_url){
+    $url = new url($src_url);
+
+    $port    = $url->is_ssl?443:80;
+    $enctype = $url->is_ssl?'ssl://':'';
+
+    $lnk = new sock($url->host, $port, $enctype);
+    $lnk->request($url->http_query, "HEAD");
+    $response = $lnk->response; unset($lnk);
+    $response['headers'] = self::parse_headers($response['raw']);
+    return $response;
+  }
+
 }
