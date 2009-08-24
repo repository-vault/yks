@@ -1,9 +1,11 @@
 <?
 
 
+define('TRANSPARENT_LVL',127);
+
+
+
 /* Applies a 10px glow from $img_mask */
-
-
 function imageglow($img_back, $img_mask, $color){
     if(!function_exists('imagefilter')) return;
     $img_back = imageduplicate($img_back);
