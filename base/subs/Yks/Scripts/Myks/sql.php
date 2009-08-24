@@ -2,7 +2,7 @@
 include_once "types.php";
 
  define('END', ";\r\n");
- define('APPLY_QUERIES', $sub0 == 'GO');
+ define('APPLY_QUERIES', $argv0 == 'GO');
 
 if(!APPLY_QUERIES) rbx::ok("Apply queries is GO");
 
