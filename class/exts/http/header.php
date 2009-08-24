@@ -30,5 +30,10 @@ class header {
   function __toString(){
     return $this->value;
   }
+  function __get($key){
+    if($key=='raw')
+        return "$this->name: {$this}";
+
+  }
 }
 
