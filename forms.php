@@ -19,9 +19,10 @@ class Forms {
         if(!$el['name'] || $el['disabled']) continue;
         if(strtolower($el->getName()) == 'select') $value = array_extract($el->getSelected(), "value");
         elseif(strtolower($el->getName()) == 'textarea') $value = $el->get("innerHTML");
-        elseif(in_array($el['type'], array('radio', 'checkbox')) && !$el['checked'])
-            $value = $el['value']?$el['value']:"on";
-        else $value = (string) $el['value'];
+        elseif(in_array($el['type'], array('radio', 'checkbox')) ) {
+            if(!$el['checked']) continue;
+            $value =  (string) ($el['value']?$el['value']:"on");
+        } else $value = (string) $el['value'];
 
         $queryString [(string) $el['name']]  = $value;
     } return $queryString;
