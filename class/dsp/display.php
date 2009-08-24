@@ -162,11 +162,16 @@ class dsp{
         $target=$link_infos['target']?"target=\"{$link_infos['target']}\"":'';
         $class=$children?"class='parent'":'';
         $str.="<li $class>";
-        if($theme=$link_infos['theme'])
-            $title="<title theme='{$theme}_".($current?'on':'off')."'>$title</title>";
-        $href=$link_infos['href']?"href='{$link_infos['href']}'":'';
-        $class=$current?"class='current'":'';
-        $str.="<a $class $target $href>$title</a>";
+        $href  = $link_infos['href']?"href='{$link_infos['href']}'":'';
+        $class = $current?"class='current'":'';
+
+        if($theme=$link_infos['theme']){
+            if($current) $theme .= ":on";
+            $element = $href ? "button" : "title";
+            $effects = $link_infos['effects']?"effects=\"{$link_infos['effects']}\"":"";
+            $str.="<$element $target $effects $href theme='{$theme}'>$title</$element>";
+        } else $str.="<a $class $target $href>$title</a>";
+
         if($children) $str.=self::nav($link_infos['children'],false,$depth+1)."";
        $str.="</li>";
     }
