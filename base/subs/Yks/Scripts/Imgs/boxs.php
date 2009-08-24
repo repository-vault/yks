@@ -1,6 +1,8 @@
 <?
 
-include_once "$class_path/stds/files.php";
+include_once CLASS_PATH."/imgs/functions.php";
+include_once CLASS_PATH."/imgs/imgs.php";
+include_once CLASS_PATH."/stds/files.php";
 
 $out_path="css/".SITE_BASE."/boxs";
 

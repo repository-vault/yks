@@ -2,6 +2,10 @@
 header(HTTP_CACHED_FILE);
 
 
+include_once CLASS_PATH."/imgs/functions.php";
+include_once CLASS_PATH."/imgs/imgs.php";
+
+
 $color=hexdec($sub0);
 $alpha=(int) $sub1;
 
@@ -18,4 +22,3 @@ header(TYPE_PNG);
 imagepng($img);
 imagedestroy($img);
 die;
-?>
