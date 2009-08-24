@@ -21,6 +21,12 @@ class table extends table_base {
   function sql_infos(){
     $res = parent::sql_infos();
     if(!$res) return $res;
+
+    foreach($this->keys_sql_def as $k=>&$key)
+        if($this->ghost_keys[$k])
+            unset($this->keys_sql_def[$k]);
+
+
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
     return true;
@@ -34,6 +40,8 @@ class table extends table_base {
         if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
             continue;
         //the key reference to a ghost table
+
+        $this->ghost_keys[$k] = true;
         unset($this->keys_xml_def[$k]);
         rbx::ok("-- $k is a ghost reference, skipping");
     }

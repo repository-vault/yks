@@ -44,7 +44,8 @@ abstract class view_base extends myks_base {
     $todo = array();
     if(!$force && ($this->sql_def == $this->xml_def)) return $todo;
     $this->update_cascade = true;
-    if($force || $this->sql_def['name'])
+
+    if($force || $this->sql_def['compiled_definition'])
         $todo[] = "DROP VIEW IF EXISTS $this->view_name_safe CASCADE";
 
     $todo []= "CREATE OR REPLACE VIEW  $this->view_name_safe AS ".CRLF

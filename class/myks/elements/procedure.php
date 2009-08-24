@@ -16,8 +16,11 @@ abstract class procedure_base {
   function check(){
     $this->xml_infos(); $this->sql_infos();  //xml need to be parsed at first
 
-    $same = array_diff($this->xml_def,$this->sql_def);
-    if(!$same) return false;
+
+    //print_r($this->xml_def);print_r($this->sql_def);
+    $same = $this->xml_def == $this->sql_def;
+
+    if($same) return false;
 
     //usefull for debug
     //print_r(array_show_diff($this->xml_def, $this->sql_def, 'xml', 'sql'));//sql::$queries);die;
@@ -36,27 +39,40 @@ abstract class procedure_base {
     return array($ret);
   }
 
-  /**
-      retourne le 'specific name' de la procedure dans les tables information shema en se basant sur une signature approximative ( pourrait être completé )
-      Case coverage : 90%
-  **/
 
   function specific_name(){
-    $params_nb= count($this->xml_def['params']);
+
+    $params_types = array();
+
+    foreach($this->xml_def['params'] as $param)
+        $params_types[] = myks_gen::$type_resolver->convert($param['type'], 'search');
+
+    //concat_comma(information_schema.parameters.ordinal_position)
+
+    $having = array();
+    $having  []= "COUNT(parameters.specific_name) = ".count($params_types);
+    if(count($params_types)>1)
+        $having  []= " concat_comma(parameters.data_type) = '".join(', ',$params_types)."'";
+
     $data_type = myks_gen::$type_resolver->convert($this->xml_def['type'],'search');
-    $query = "SELECT specific_name
+    $query = "SELECT
+            specific_name
         FROM
           information_schema.routines
-          LEFT JOIN information_schema.parameters USING(specific_name)
+          LEFT JOIN (
+              SELECT *
+                FROM 
+                information_schema.parameters
+                ORDER BY ordinal_position DESC
+          ) AS parameters USING(specific_name)
+
         WHERE
           routine_name='{$this->proc_name}'
             AND  routine_schema='{$this->proc_infos['schema']}'
             AND  information_schema.routines.data_type='$data_type'
         GROUP BY specific_name
-        HAVING
-            COUNT(information_schema.parameters.specific_name)=$params_nb
-    "; return current(sql::qrow($query)); 
-
+        HAVING ".join(' AND ', $having);
+    return current(sql::qrow($query)); 
   }
 
   function sql_infos(){

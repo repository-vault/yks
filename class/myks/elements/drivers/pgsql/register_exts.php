@@ -7,7 +7,7 @@
       '"trigger"'=>'trigger', //vraiment ridicule postgres :/
       'integer'=>'int',
       'character varying'=>'string',
-      'timestamptz'=>'timestamptz',
+      'timestamp with time zone'=>'timestamptz',
       'timestamp without time zone'=>'timestamp', //information_schema.routines.data_type
       'bigint'=>'bigint',
       'record'=>'record',
