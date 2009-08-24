@@ -1,6 +1,10 @@
 <?
 
 
+define('GRAY_LVL',127);
+define('COLOR_GRAY', coloralpha(GRAY_LVL, GRAY_LVL, GRAY_LVL));
+
+
 function coloralpha($r=255,$g=255,$b=255,$alpha=0){ return ($alpha<<24)+($r<<16)+($g<<8)+$b; }
 function colorget($c){
 	return coloralpha((int)$c['red'],(int)$c['green'],(int)$c['blue'],(int)$c['alpha']);

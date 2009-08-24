@@ -1,5 +1,6 @@
 <?
 
+
 /** Create a new image, respecting alpha channels */
 function imagecreatetruealpha($w,$h){
 	$img=imagecreatetruecolor($w,$h);
@@ -95,6 +96,17 @@ function imagerotation(&$img,$angle){
 	imagesavealpha($img,true);
 }
 
+function imagescale($img, $width = false, $height = false){
+    $img_w = imagesx($img); $img_h = imagesy($img);
+    $new_w = $width?$width:$img_w; 
+    $new_h = $height?$height:$img_h;
+    $new = imagecreatetruealpha($new_w, $new_h);
+    for($x=0;$x<=$new_w;$x+=$img_w) 
+        imagecopyresampled($new, $img, $x, 0, 0, 0, $img_w, $img_h, $img_w, $img_h);
+    return $new;
+
+
+}
 
 
 /** function for w000ting purposes **/
