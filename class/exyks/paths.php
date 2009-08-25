@@ -12,13 +12,14 @@ class exyks_paths {
     <paths xmlns:pf="paths_prefix" pf:admin="."
 */
   public static function init(){
-    if(!($config = yks::$get->config->paths)) return;
-    self::$paths_ns = array_merge( attributes_to_assoc($config, self::prefix_ns), array(
+    $config = yks::$get->config->paths;
+    $prefixes = $config ? attributes_to_assoc($config, self::prefix_ns) : array();
+    self::$paths_ns = array_merge($prefixes, array(
         'yks'   => BASE_PATH,
         'here'  => ROOT_PATH,
         '3rd'   => YKS_PATH."/3rd",
     ));
-    foreach($config->path as $path){
+    if($config) foreach($config->path as $path){
         foreach(explode(':', $path['symbolic']) as $path_key) {
             $dest = $path['base']?$path['base']."/$path_key":$path['dest'];
             self::register($path_key, $dest);
