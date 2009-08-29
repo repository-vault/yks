@@ -16,6 +16,9 @@
   <mykse type="sha1">
     <string length="40"/>
   </mykse>
+  <mykse type="md5">
+    <string length="32"/>
+  </mykse>
   <mykse type="base_id">
     <int/>
   </mykse>

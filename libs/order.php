@@ -26,7 +26,7 @@ class order extends _mykse {
             $ret = array('infos' => "Explicitly skipping products specifications attributions.");
     }
 
-    if(!parent::update($data))
+    if(!parent::sql_update($data))
         throw sql::rollback("Error while processing order.");
     sql::commit();
     return $ret;

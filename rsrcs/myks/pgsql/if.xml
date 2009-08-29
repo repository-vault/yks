@@ -21,4 +21,14 @@ BEGIN
 END;
 </def>
   </procedure>
+  <procedure name="if" type="bool">
+    <param type="bool"/>
+    <param type="bool"/>
+    <param type="bool"/>
+    <def>
+BEGIN
+  return (CASE WHEN $1 THEN $2 ELSE $3 END);
+END;
+</def>
+  </procedure>
 </myks>

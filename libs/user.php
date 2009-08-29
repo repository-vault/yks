@@ -11,7 +11,7 @@ class user extends _user {
   function __construct($user_id, $auth_tree){
     $this->users_tree = $auth_tree;
     parent::__construct($user_id);
-    $this->update(array('user_connect'=>_NOW), "ks_users_profile");
+    $this->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
 
     $this->user_access = auth::get_access($this->users_tree);
   }
