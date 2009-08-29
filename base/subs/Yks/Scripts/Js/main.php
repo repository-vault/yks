@@ -19,9 +19,7 @@ $js_build_list["[YKS/ROOT]/loader"] = true;
 
 if($uid) header(HTTP_CACHED_FILE);
 
-if($action == "load_js" || $uid) try {
-    $uid = $uid?$uid:$_POST['uid'];
-
+if($uid) try {
     $build_list = Js::dynload($uid, $js_build_list,  $JS_YKS_PATH);
     if(!$build_list)
         throw rbx::error("Invalid script request");

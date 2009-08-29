@@ -35,8 +35,8 @@ var Doms = {
     for(var uid in this.loaders) {
         var infos = this.loaders[uid];
         if(infos['class'] != name)continue;
-        var args = {uid:uid, ks_action:'load_js'}, url ='/?/Yks/Scripts/Js';
-        http_lnk({method:'post', async:false},url , args, $exec);
+        var url ='/?/Yks/Scripts/Js|'+uid;
+        http_lnk({method:'get', async:false},url , '', $exec);
 
         var tmp = $take(window, name.split('.'));
         if(!tmp) return false;
