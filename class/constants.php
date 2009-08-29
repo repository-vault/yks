@@ -13,13 +13,6 @@ define('_UDAY',floor(_NOW/86400));
 
 	//Engine detection
 
-
-define('XSL_DOCUMENT',1);
-define('XSL_NODE_SET',2);
-define('XSL_ROBOT',3);
-define('XSL_SERVER', XSL_NODE_SET);
-
-
 define('BOM', pack('C*',239,187,191));
 define('VAL_SPLITTER', '#\s*[;,]\s*#');
 

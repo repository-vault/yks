@@ -2,8 +2,6 @@
 
 while(@ob_end_clean());
 
-
-
 exyks::$page_def = "_all"; //tpls is not loaded
 
 define('XML_CACHE_PATH', CACHE_PATH."/xml");
@@ -35,42 +33,10 @@ try {
 }
 
 
-$xml_filename   = RSRCS_PATH."/xsl/root.xsl";        //meta XSL source
-$xsl_filename   = RSRCS_PATH."/xsl/metas/xsl_gen.xsl";     //meta XSL stylesheet
-$mykse_filename = XML_CACHE_PATH."/myks.xml";
+$xml_filename    = RSRCS_PATH."/xsl/root.xsl";        //meta XSL source
+$xsl_filename    = RSRCS_PATH."/xsl/metas/xsl_gen.xsl";     //meta XSL stylesheet
+$mykse_file_path = XML_CACHE_PATH."/myks.xml";
+$mykse_file_url  = "$site_url/".ltrim(end(explode(WWW_PATH, $mykse_file_path,2)),"/");    //W00t
 
-
-$mykse_file_url = "$site_url/".ltrim(end(explode(WWW_PATH, $mykse_filename,2)),"/");    //W00t
-
-$browsers_engine=array(
-
-    'trident' => array(
-        'external_mode'=>XSL_DOCUMENT,
-        'mykse_url'=>$mykse_file_url
-    ),
-
-    'gecko' => array(
-        'external_mode'=>XSL_DOCUMENT,
-        'mykse_url'=>$mykse_file_url
-    ),
-
-    'webkit' => array(
-        'external_mode'=>XSL_NODE_SET,
-        'mykse_url'=>$mykse_filename,
-    ),
-
-    'presto' => array(
-        'external_mode'=>XSL_NODE_SET,
-        'mykse_url'=>$mykse_filename,
-    ),
-
-);
-
-$server_side = array(
-    'external_mode'=>XSL_NODE_SET,
-    'mykse_url'=>$mykse_filename,
-);
-
-
-
-
+$browsers_engine = array( 'trident', 'gecko', 'webkit', 'presto');
+$rendering_sides = array( 'server', 'client');

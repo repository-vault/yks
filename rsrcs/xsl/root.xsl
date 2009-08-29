@@ -9,7 +9,8 @@
   <xsl:import href="toggle.xsl"/>
   <xsl:import href="medias/flash.xsl"/>
   <xsl:import href="medias/video.xsl"/>
-  <xsl:output method="xml" cdata-section-elements="cdata script" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" "/>
+  <xsl:output method="xml" cdata-section-elements="cdata" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" " mxsl-mode="trident"/>
+  <xsl:output method="xml" cdata-section-elements="cdata script" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" " mxsl-mode="webkit,gecko,presto"/>
   <xsl:variable name="jsx" select="/*/@jsx"/>
   <xsl:template match="/">
     <xsl:apply-templates/>

@@ -12,8 +12,8 @@
     $views_xml      = simplexml_import_dom($myks_gen->out("view"));
 
 
-    $types_xml->asXML($mykse_filename);	// export
-    rbx::ok("Myks types $mykse_filename updated");
+    $types_xml->asXML($mykse_file_path);	// export
+    rbx::ok("Myks types $mykse_file_path updated");
 
         //only for APC update (!!$tables_xml is not simplexml, but field )
     $types_xml=data::reload("types_xml"); 
