@@ -100,7 +100,7 @@ class mime_part {
         }
     } else {
         $this->apply_context();
-        $str.=mime::encoding_encode($this->contents, $this->transfer_encoding);
+        $str .= rfc_2047::encoding_encode($this->contents, $this->transfer_encoding);
     } return $str;
   }
 

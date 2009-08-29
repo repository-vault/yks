@@ -88,6 +88,23 @@ class files {
         if(is_file($tmp = "$path/$file")) return $tmp;
     return false;
   }
+
+  public static function download($file, $filename = false, $mime_type = false ){
+    // It will be called downloaded.pdf
+
+    if($mime_type) header("Content-type: $mime_type");
+    $filename = $filename ? $filename : basename($file);
+
+    $mask     = 'Content-Disposition: attachment; filename="%s"';
+    $filename = utf8_decode($filename);
+    // $filename = rfc_2047::header_encode($filename); ie crap
+    header(sprintf($mask, $filename));
+
+    readfile($file);
+    die;
+
+  }
+
 }
 
 
