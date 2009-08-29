@@ -20,12 +20,12 @@
       <field type="user_flags"/>
     </fields>
   </table>
-  <mykse type="user_flags"  null="null">
+  <mykse type="user_flags" null="null">
     <enum set="set">
       <val>main</val>
     </enum>
   </mykse>
-  <mykse type="user_mail" default="''">
+  <mykse type="user_mail" null="null">
     <mykse type="mail"/>
   </mykse>
   <table name="ks_users_tree">

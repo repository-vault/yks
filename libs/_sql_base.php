@@ -43,6 +43,11 @@ abstract class _sql_base  implements ArrayAccess {
     return array($key=> $this->$key);
   }
 
+  public function batch(){
+    $key = $this->sql_key;
+    return array($this->$key => $this);
+  }
+
   function from_id($key_id){
     $verif_base = array($this->sql_key => $key_id);
     $data = sql::row($this->sql_table, $verif_base);
