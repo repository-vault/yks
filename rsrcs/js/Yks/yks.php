@@ -27,11 +27,11 @@ $js_build_list = array_merge( $js_build_list, array(
     
     '[YKS]/Headers/Yks'      => true,
     '[YKS]/Headers/Mootools' => true,
-    '[YKS]/Headers/Interface' => true,
+    '[YKS]/Headers/Interfaces' => true,
 
-    '[YKS]/Headers/Interface' => true,
 
     '[YKS]/Interface/ShowCase' => false,
+    '[YKS]/Interface/Title' => true,
 
     '[YKS]/Math/Matrix'    =>false,
 

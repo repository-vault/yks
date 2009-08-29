@@ -24,12 +24,6 @@ Doms.loaders['[YKS]/Jsx/Links'] = {
 };
 
 
-Doms.loaders['[YKS]/Interface/Toggler'] = {
-    'class': 'Toggler',
-    'match': 'div.toggle_zone',
-    'descr': "Toggler is a very light Accordion like"
-};
-
 Doms.loaders['[YKS]/Utilities/DatePicker'] = {
     'class': 'DatePicker',
     'match': 'input.input_time',
