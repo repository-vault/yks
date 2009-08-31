@@ -33,7 +33,7 @@ classes::register_class_paths(array(
     "tpls"            => CLASS_PATH."/exyks/tpls.php",
     "highlight_xml"   => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "rfc_2047"        => CLASS_PATH."/apis/net/2047.php",
-
+    "win32_service"   => CLASS_PATH."/cli/win32_service.php",
 ));
 
 function sys_end($generation_time,$display_time=0){
