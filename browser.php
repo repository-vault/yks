@@ -8,7 +8,7 @@ class browser {
   private $url;
   private $start_url;
   private $lnk;
-
+  const sess_key = 'BROWSING_SESSION';
 
   function __construct(){
     $this->cookiejar = new cookiejar();
@@ -21,6 +21,28 @@ class browser {
 
     return $window;
   }
+
+
+  function session_clean($session_key = browser::sess_key){
+    $file = "$session_key.srz";
+    unlink($file);
+  }
+
+  function session_save($session_key = browser::sess_key){
+    $srz = serialize($this->cookiejar);
+    $file = "$session_key.srz";
+
+    file_put_contents($file, $srz);
+  }
+  function session_load($session_key = browser::sess_key){
+    $file = "$session_key.srz";
+    if(!is_file($file)) return false;
+    $data = file_get_contents($file);
+    $data = unserialize($data);
+    $this->cookiejar = $data;
+    return true;
+  }
+
 
   function get_cookies($url){
     return $this->cookiejar->retrieve($url);
