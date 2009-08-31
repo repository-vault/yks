@@ -1,4 +1,5 @@
 <?
+// http://doc.exyks.org/wiki/Source:cli/win32_service
 
 abstract class win32_service {
   var $run_last_time;
