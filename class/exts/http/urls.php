@@ -44,11 +44,5 @@ class urls {
     return $url->merge(new url($url2));
   }
 
-  public static function paths_merge($path_root, $path){
-    if(!$path) return $path_root;
-    if(substr($path,0,1)=="/") return files::rp($path);
-    $path_root = substr($path_root, 0, strrpos ( $path_root, "/"));
-    return files::rp("$path_root/$path");
-}
 
 }

@@ -17,7 +17,7 @@ class exyks_paths {
     self::$paths_ns = array_merge($prefixes, array(
         'yks'   => BASE_PATH,
         'here'  => ROOT_PATH,
-        '3rd'   => YKS_PATH."/3rd",
+        '3rd'   => THRD_PATH,
     ));
     if($config) foreach($config->path as $path){
         foreach(explode(':', $path['symbolic']) as $path_key) {

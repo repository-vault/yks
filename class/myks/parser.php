@@ -22,7 +22,7 @@ class myks_parser {
 
     return array_merge($base_ns, array(
         'yks'   => RSRCS_PATH."/myks/yks",
-        '3rd'   => YKS_PATH."/3rd",
+        '3rd'   => THRD_PATH,
         'isos'  => RSRCS_PATH."/myks/isos",
         'pgsql' => RSRCS_PATH."/myks/pgsql"
     ));

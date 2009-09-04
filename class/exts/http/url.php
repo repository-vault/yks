@@ -15,7 +15,7 @@ class url  extends __native {
     if($url->host && $this->host != $url->host) return $url;
     if($url->scheme && $this->scheme  != $url->scheme) return $url;
 
-    $path = urls::paths_merge($this->path, $url->path);
+    $path = files::paths_merge($this->path, $url->path);
     $merge = array_filter(array(
         'host'=>$this->host,
         'scheme'=>$this->scheme,

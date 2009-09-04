@@ -20,15 +20,6 @@ class files {
     return $cache_contents;
   }
 
-  public static function save_as($file_path, $file_name, $content_type=false){
-    if(!$content_type) $content_type = "Content-type:text/".self::ext($file_name).";charset=UTF-8";
-    header($content_type);
-    $file_mask  = 'Content-disposition:filename="%s"';
-    header(sprintf($file_mask, $file_name));
-    readfile($file_path);
-    die;
-  }
-
   public static function rp($path){
     $out=array();$last=count($from=explode('/', $path))-1;
     foreach($from as $i=>$fold){
@@ -90,9 +81,12 @@ class files {
   }
 
   public static function download($file, $filename = false, $mime_type = false ){
-    // It will be called downloaded.pdf
 
-    if($mime_type) header("Content-type: $mime_type");
+    if($mime_type)
+        header($mime_type===true
+            ? "Content-Type: text/".self::ext($filename).";charset=UTF-8"
+            : "Content-Type: ".end(explode(':', $mime_type,2))); //last part
+
     $filename = $filename ? $filename : basename($file);
 
     $mask     = 'Content-Disposition: attachment; filename="%s"';
@@ -104,6 +98,14 @@ class files {
     die;
 
   }
+
+  public static function paths_merge($path_root, $path){
+    if(!$path) return $path_root;
+    if(substr($path,0,1)=="/") return files::rp($path);
+    $path_root = substr($path_root, 0, strrpos ( $path_root, "/"));
+    return files::rp("$path_root/$path");
+  }
+
 
 }
 
