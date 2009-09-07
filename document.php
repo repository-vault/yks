@@ -30,6 +30,13 @@ class document extends __native {
     return $res['charset'];
   }
 
+  function get_reloc(){
+    $res = $this->head->getElement('meta[http-equiv="refresh"]');
+    if(!$res) return false;
+    $res = header::parse_extras($res['content']);
+    return $res['url'];
+  }
+
   function get_body(){
     return $this->documentElement->getElement("body");
   }

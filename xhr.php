@@ -16,7 +16,7 @@ class xhr extends sock {
     if($key=="url") return $this->url;
   }
 
-  function execute($query){
+  function execute(request $query){
     $this->request($query->url->http_query, $query->method, $query->data, $query->headers);
   }
 
@@ -45,7 +45,6 @@ class xhr extends sock {
 
     if(in_array($this->response['code'], array(302,301) ) )
         $this->follow_redirect();
-
   }
 
 
