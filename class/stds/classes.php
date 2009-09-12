@@ -6,8 +6,10 @@ class classes {
   static $call_init = false;
 
   static function extend_include_path($paths) {
-    $paths =  is_array($paths)?$paths:func_get_args();
-    array_unshift($paths, get_include_path());
+    $new_paths      = is_array($paths)?$paths:func_get_args();
+    $current_paths  = explode(PATH_SEPARATOR, get_include_path());
+    $paths          = array_merge($current_paths, $new_paths);
+    $paths          = array_filter(array_unique($paths));
     set_include_path( join(PATH_SEPARATOR, $paths) );
     return get_include_path();
   }
