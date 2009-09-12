@@ -21,10 +21,11 @@ class header {
     return new header($name, $value, $extras, $str);
   }
 
-  static function parse_extras($str){
+  static function parse_extras($str, $normalize = true){
     $params=array();
     preg_match_all('#;\s*([a-z0-9-]+)(?:=((["\'])[^\\3]*?\\3|[^;]+))?#i',$str,$out,PREG_SET_ORDER);
     foreach($out as $data) $params[$data[1]]=trim($data[2],$data[3]);
+    if($normalize) $params = array_change_key_case($params, CASE_LOWER);
     return $params;
   }
   function __toString(){

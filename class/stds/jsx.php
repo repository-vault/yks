@@ -1,18 +1,27 @@
 <?
 //if( 0&& DEBUG && preg_match_all('#&[\#a-z0-9\._]*?[^;a-z0-9\._]#',$str,$out))
 
-define('JSX_EVAL','jsx_eval');
-define('JSX_PLACE','place');
-define('JSX_MODAL','modal');
-define('JSX_PARENT_RELOAD',"this.getBox().opener.reload();");
-define('JSX_PARENT_CLOSE',"this.getBox().opener.close();");
-define('JSX_RELOAD',"this.getBox().reload();");
-define('JSX_CLOSE',"this.getBox().close();");
-define('JSX_WALK_INIT', "jsx.rbx.loader(0);");
-define('JSX_WALKER', "jsx.rbx.loader();");
+
+define('JSX_PLACE',         jsx::PLACE);
+define('JSX_MODAL',         jsx::MODAL);
+define('JSX_PARENT_RELOAD', jsx::PARENT_RELOAD);
+define('JSX_PARENT_CLOSE',  jsx::PARENT_CLOSE);
+define('JSX_RELOAD',        jsx::RELOAD);
+define('JSX_CLOSE',         jsx::CLOSE);
+define('JSX_WALK_INIT',     jsx::WALK_INIT);
+define('JSX_WALKER',        jsx::WALKER);
 
 
 class jsx {
+  const JS_EVAL         = 'jsx_eval';
+  const PLACE           = 'place';
+  const MODAL           = 'modal';
+  const PARENT_RELOAD   = 'this.getBox().opener.reload();';
+  const PARENT_CLOSE    = 'this.getBox().opener.close();';
+  const RELOAD          = 'this.getBox().reload();';
+  const CLOSE           = 'this.getBox().close();';
+  const WALK_INIT       = 'jsx.rbx.loader(0);';
+  const WALKER          = 'jsx.rbx.loader();';
 
   static public $rbx=false; //only rbx mode
   static function end($var=false, $force_array=false){
@@ -22,7 +31,10 @@ class jsx {
   }
   static function encode($var){
     if(!$var) return "{}";
-    if($eval=$var[JSX_EVAL]){unset($var[JSX_EVAL]);$eval=JSX_EVAL.':function(jsx){'.$eval.'}';}
+    if($eval = $var[jsx::JS_EVAL]){
+        unset($var[jsx::JS_EVAL]);
+        $eval = jsx::JS_EVAL.':function(jsx){'.$eval.'}';
+    }
 
     $json=str_replace(array('<\/','\/>'),array('</','/>'),json_encode($var));
     if($eval){if($var)$json=substr($json,0,-1).",$eval}"; else $json='{'.$eval.'}';}
@@ -39,7 +51,7 @@ class jsx {
     foreach($key as $k=>$v) yks::$get->config->head->jsx[$k] = $v;
   }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
-  static function js_eval($msg) { rbx::msg(JSX_EVAL,"$msg;"); }
+  static function js_eval($msg) { rbx::msg(jsx::JS_EVAL,"$msg;"); }
   static function walk($step){ rbx::msg("walk", floor(100*$step)); jsx::end();}
 
 

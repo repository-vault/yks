@@ -81,6 +81,16 @@ function array_filter_deep($array,$sort_by,$val){
 }
 
 
+
+function array_merge_deep($array0, $array1){
+    foreach($array1 as $k=>$v){
+        $array0[$k] = is_array($v) ? array_merge_deep($array0[$k], $v) : $v;
+
+    }
+    return $array0;
+
+}
+
   // Find documentation in the manual
 function array_reindex($array,$cols=array()){
     $res=array();if(!is_array($cols))$cols=array($cols);

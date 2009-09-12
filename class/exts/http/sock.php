@@ -30,6 +30,7 @@ class sock   {
     fputs($this->lnk, $query);
     $response = $this->fetch_response();
     if(self::$trace){
+        echo CRLF.str_repeat('-', 60).CRLF.$url.CRLF;
         print_r($query);
         print_r($response);
     }
@@ -94,11 +95,14 @@ class sock   {
     $chunked = (string) $this->response['headers']['Transfer-Encoding'] == "chunked";
 
     $body='';
-    set_time_limit(8); 
+    $time_limit = 20;
+    set_time_limit($time_limit); 
     if($file_size){
         stream_set_blocking($this->lnk, 0);
         while(strlen($body)<$file_size-1 ){
-            if(!$tmp=fgets($this->lnk,1024)) continue; $body.=$tmp;
+            if(!$tmp=fgets($this->lnk, 1024)) continue; $body.=$tmp;
+
+            set_time_limit($time_limit ); 
             if($bfilter && preg_match($filter,$body,$ret))return true;
             if(strlen($body)>=$file_size-1) return $body;
         } $this->end_headers(); return $body;
