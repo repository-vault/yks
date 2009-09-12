@@ -15,6 +15,10 @@
 .float_none {float:none;}
 
 .clear {clear:both; }
+
+.clear_right { clear:right; }
+.clear_left { clear:left; }
+
 .clear.line {font-size:0px;}
 .hidden {display:none; }
 .center {margin-left:auto;margin-right:auto;}
