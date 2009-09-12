@@ -13,6 +13,11 @@ class Forms {
     return $element->xpath("option[selected]");
   }
 
+  public static function set(Element $form, $selector, $value){
+    $element = $form->getElement($selector);
+    $element['value'] = $value;
+  }
+
   public static function toQueryString(Element $element){
     $queryString  = array();
     foreach($element->getElements("input[type!=file], select, textarea") as $el){

@@ -2,8 +2,13 @@
 
 
 class XHTMLElement extends SmartXML {
+
+  function xpathElement($query, $where = "current") { //where could be [current]|end
+    return $where($this->xpath($query));
+  }
+
   function getElementById($id){
-    return current($this->xpath("//*[@id='$id']"));
+    return $this->xpathElement("//*[@id='$id']");
   }
 
   function getElementsByTagName($tag){
@@ -12,13 +17,13 @@ class XHTMLElement extends SmartXML {
   }
 
   function getParent($tag=false){
-    return end($this->xpath($tag?"ancestor::$tag":".."));
+    return $this->xpathElement($tag?"ancestor::$tag":"..", "end");
   }
   function nextSibling(){
-    return current($this->xpath("following-sibling::*"));
+    return $this->xpathElement("following-sibling::*");
   }
   function previousSibling(){
-    return end($this->xpath("preceding-sibling::*"));
+    return $this->xpathElement("preceding-sibling::*", "end");
   }
 }
 
