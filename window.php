@@ -12,7 +12,7 @@ class window extends __native {
 
   function go($url, $method = 'GET', $data  = array(), $enctype =false) {
 
-    $url = ($url instanceof url)?$url:new url($url);
+    $url = url::from($url);
     if(is_null($this->url))
         $this->url = $url;
     else {

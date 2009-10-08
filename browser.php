@@ -65,6 +65,23 @@ class browser {
     return $lnk;
   }
 
+  function download($url){
+
+    $url = url::from($url);
+
+    if(!$url->is_browsable)
+        throw new Exception("Invalid url");
+
+    $lnk = $this->get_lnk($url);
+    $query = new request($url, "GET");
+    $lnk->execute($query);
+
+        //if($lnk->url != $this->url)//has been redirected
+        //    $this->url = $lnk->url;
+
+    return  $lnk->receive();
+  }
+
   function close(){
     $this->lnk->close();
   }
