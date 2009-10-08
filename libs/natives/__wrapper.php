@@ -12,8 +12,16 @@ abstract class __wrapper implements ArrayAccess {
   }
 
   protected function  ¤($base){
+        //level zero extension
     if(is_object($base) && $base instanceof $this->base_type)
         return $this->__extend($base);
+
+        //level one (array) extension
+    if(is_array($base))
+        foreach($base as &$tmp)
+            if(is_object($tmp) && $tmp instanceof $this->base_type)
+                $tmp = $this->__extend($tmp);
+
     return $base;
   }
 
