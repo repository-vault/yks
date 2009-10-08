@@ -45,7 +45,7 @@ class url  extends __native {
   }
 
   function get_hash($full = false){
-    if(!$this->scheme || !$this->host) return false;
+    if(!$this->scheme || !$this->host) return "##!!invalid partial url ##";
     $str = "{$this->scheme}://{$this->host}";
     $str .=$this->path;
     if($full){

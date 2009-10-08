@@ -24,7 +24,7 @@ class sock   {
   function request($url, $method = 'GET', $data = '', $extra_headers = array() ){
     if(!$this->lnk) $this->connect();
 
-    set_time_limit(3); stream_set_timeout($this->lnk, 3);
+    stream_set_timeout($this->lnk, 3);
 
     $query = $this->forge_query($url, $method, $data, $extra_headers);
     fputs($this->lnk, $query);
@@ -75,9 +75,16 @@ class sock   {
 
 
   private function fetch_response(){
-    $try=0; do { $head="";
-        while(($tmp = fgets($this->lnk))!="\r\n") $head.=$tmp;
-        preg_match("#HTTP/... ([0-9]{3}) #", $head, $out); $code=(int)$out[1];
+    $try=0; do {
+        $head="";
+        $start_time = time();
+        while(($tmp = fgets($this->lnk))!="\r\n") {
+            $head.=$tmp;
+            if(time() - $start_time > 3)
+                throw new Exception("Too much time for receiving headers");
+        }
+        preg_match("#HTTP/... ([0-9]{3}) #", $head, $out);
+        $code=(int)$out[1];
     } while((!$code) && ($try++<10));
 
     $this->response = array();
