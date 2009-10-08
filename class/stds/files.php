@@ -1,6 +1,6 @@
 <?
 /*	"Exyks files functions" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - Â© 2007 
+    distributed under the terms of GNU General Public License - © 2007 
 */
 
 
@@ -107,6 +107,57 @@ class files {
   }
 
 
-}
+    //creer une archive et en retourne le path
+  public static function archive($files_list, $options =  array() ){
 
+    if(!extension_loaded("zip")) dl("zip.so");
+
+    $zip = new ZipArchive();
+
+
+    $tmp_file = tempnam(sys_get_temp_dir(), "zip-").".zip";
+    $zip->open($tmp_file, ZIPARCHIVE::CREATE);
+
+    $base_dir   = $options['base_dir'];
+    $extra_path = $options['extra_path'];
+    foreach($files_list as $file_path) {
+        if($base_dir) $file_path = files::paths_merge("$base_dir/", $file_path);
+        $file_archive_path = basename($file_path);
+        if($extra_path) $file_archive_path = $extra_path."/".$file_archive_path;
+
+        $file_archive_path = charset_map::Utf8StringDecode($file_archive_path, charset_map::$_toUtfMap);
+        $zip->addFile($file_path, $file_archive_path);
+
+    }
+
+    $zip->close();
+
+    //self::file_edit_bit($tmp_file, true, 4+2, 11);
+
+    return $tmp_file;
+  }
+
+  public static function file_edit_bit($file, $value, $byte_start = 0, $bit = 0){
+    $str = file_get_contents($file);
+    $str = self::edit_bit($str, $value, $byte_start, $bit);
+    file_put_contents($file, $str);
+  }
+    //edite le bit (pour 1 ou 0)
+  public static function edit_bit($str, $value, $byte_start =0, $bit=0) {
+    $bytes_before = $byte_start + floor($bit/8); $bit = $bit%8; //8-
+    $mask = 1<<$bit;
+
+    $before = substr($str, 0, $bytes_before);
+    $after  = substr($str, $bytes_before + 1);
+
+    $chr = ord(substr($str, $bytes_before, 1));
+    if(!$value) $chr &= (255 - $mask);
+    else $chr |= $mask;
+
+    $chr = chr($chr);
+    return $before.$chr.$after;
+
+  }
+
+}
 
