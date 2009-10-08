@@ -23,7 +23,7 @@ function gray($c){
     return  floor(((($c>>16)&0xFF) + (($c>>8)&0xFF) + ($c&0xFF))/3);
 }
 
-function alphablend($color,$bg=255){
+function alphablend($color, $bg=255){
     return min(floor((($color['alpha'])/127)*$bg+((127-$color['alpha'])/127)*$color['red']),255);
     
 }
@@ -44,6 +44,17 @@ function colorfusion($dest,$mask){
         'blue'=> (int)($na?($aa*$mask['blue']+(1-$aa)*$ab*$dest['blue'])/$na:0),
     );
 }
+
+ /* return the color 'value' (from 0 to 1), based on gray level & considering alpha
+    use this for setting alpha level :   (1-colorvalue($color))*127;
+    or for setting a gray level :        colorvalue($color) * 255
+ */
+function colorvalue($color){
+    $color = colordec($color);
+    $color_level = (255-colorgray($color))/255;
+    return ((127-$color['alpha'])/127)*$color_level;
+}
+
 
 /*
     There is no one "correct" conversion from RGB to grayscale, since it depends on the sensitivity response curve of your detector to light as a function of wavelength. A common one in use is:
