@@ -112,8 +112,8 @@ class table extends table_base {
     }
 
     $query="CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t",$todo)."\n)";
-    $query.=";\n";
-    return $query;
+
+    return array($query);
     die($query);
 
     $description=(string)$this->xml->description;
