@@ -7,6 +7,9 @@ class url  extends __native {
     if(!$url) $this->empty = true;
   }
 
+  static function from($url){
+    return ($url instanceof url)?$url:new url($url);
+  }
 
   function merge($url){
     if($url->empty) return $this;

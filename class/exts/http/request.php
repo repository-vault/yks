@@ -14,7 +14,7 @@ class request {
   );
 
 
-  function __construct($url, $method, $data_raw, $enctype = false){
+  function __construct($url, $method, $data_raw = false, $enctype = false){
     $this->url = $url;
     $this->method = $method;
     $this->data = '';
@@ -31,8 +31,8 @@ class request {
     if(!$encoding)
         throw new Exception("Unknow data enctype");
 
-    $this->data = $this->$encoding($data_raw);
-        $this->encoding = $encoding;
+    if($data_raw) $this->data = $this->$encoding($data_raw);
+    $this->encoding = $encoding;
   }
 
 
