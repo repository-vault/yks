@@ -2,13 +2,55 @@
 
 class window extends __native {
   private $browser;
-  private $url;
+  public $url;
   public $document;
+
 
   function __construct($browser){
     $this->browser = $browser;
 
   }
+
+
+  function extract_url($from){
+
+    if($from instanceof domElementWrapper){
+        $tagname = $from->getName();
+        if($tagname == "img") {
+            $url = new url((string)$from['src']);
+        }
+        //if(!$url->is_browsable)
+        //    $url = $from->document->window->url->merge($url);
+
+    } else {
+        $url  = $from;
+    }
+
+    $url = url::from($url);
+
+    if(!$url->is_browsable)
+        $url = $this->url->merge($url);
+
+    return $url;
+  }
+
+  function download($from, $to = false){
+    $url = self::extract_url($from);
+
+        //HERE
+    $lnk = $this->browser->get_lnk($url);
+
+    $headers = array();
+    if($this->referer) $headers["Referer"] = (string)$this->referer;
+
+    $query = new request($url, "GET");
+    $query->addHeaders($headers);
+    $lnk->execute($query);
+
+    $str = $lnk->receive();
+    return $to ? file_put_contents($to, $str) : $str;
+  }
+
 
   function go($url, $method = 'GET', $data  = array(), $enctype =false) {
 

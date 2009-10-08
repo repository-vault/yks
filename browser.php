@@ -68,8 +68,8 @@ class browser {
     return $lnk;
   }
 
-  function download($url){
 
+  function download($from, $to = false){
     $url = url::from($url);
 
     if(!$url->is_browsable)
@@ -79,10 +79,8 @@ class browser {
     $query = new request($url, "GET");
     $lnk->execute($query);
 
-        //if($lnk->url != $this->url)//has been redirected
-        //    $this->url = $lnk->url;
-
-    return  $lnk->receive();
+    $str = $lnk->receive();
+    return $to ? file_put_contents($to, $str) : $str;
   }
 
   function close(){
