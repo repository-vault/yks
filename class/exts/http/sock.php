@@ -103,13 +103,17 @@ class sock   {
 
     $body='';
     $time_limit = 20;
-    set_time_limit($time_limit); 
+    $start_time = time();
+ 
     if($file_size){
         stream_set_blocking($this->lnk, 0);
         while(strlen($body)<$file_size-1 ){
+            if(time() - $start_time > $time_limit)
+                throw new Exception("Too much time for receiving content block");
+
             if(!$tmp=fgets($this->lnk, 1024)) continue; $body.=$tmp;
 
-            set_time_limit($time_limit ); 
+            $start_time = time(); 
             if($bfilter && preg_match($filter,$body,$ret))return true;
             if(strlen($body)>=$file_size-1) return $body;
         } $this->end_headers(); return $body;
