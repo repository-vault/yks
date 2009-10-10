@@ -1,19 +1,11 @@
 <?
 
 function password_prompt(){
-    if(stripos($_SERVER['OS'],'windows')!==false) {
-        $pwObj = new Com('ScriptPW.Password');
-        $password = $pwObj->getPassword();
-    } else {
-        system('stty -echo');
-        $password = trim(fgets(STDIN));
-        system('stty echo');
-    } return $password;
+  throw new Exception("Depreceated ".__FUNCTION__." please use cli::");
 }
 
 function text_prompt($prompt=false){
-    if($prompt) echo "$prompt : ";
-    return trim(fread(STDIN, 1024));
+  throw new Exception("Depreceated ".__FUNCTION__." please use cli::");
 }
 
 function load_constants_ini($file) { 
