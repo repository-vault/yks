@@ -23,7 +23,7 @@ class rbx extends Exception {
     if(self::$output_mode!=1) return;
     self::$rbx['log'].="$zone : $msg".LF;
 
-    echo self::pad($msg, self::pad, ' ', STR_PAD_RIGHT, "%s: $zone").LF;
+    echo self::pad($msg, ' ', STR_PAD_RIGHT, "%s: $zone").LF;
   }
 
   static function box($title, $msg){
@@ -37,20 +37,19 @@ class rbx extends Exception {
     }
 
     for($a=0; $a<count($args); $a+=2) {
-      echo self::pad(" {$args[$a]} ", $pad_len, "═", STR_PAD_BOTH, $a?"╠%s╣":"╔%s╗").LF;
+      echo self::pad(" {$args[$a]} ", "═", STR_PAD_BOTH, $a?"╠%s╣":"╔%s╗", $pad_len).LF;
       foreach($args[$a+1] as $line)
-          echo self::pad($line, $pad_len, " ", STR_PAD_RIGHT, "║%s║").LF;
+          echo self::pad($line, " ", STR_PAD_RIGHT, "║%s║", $pad_len).LF;
     }
 
-    echo self::pad('', $pad_len, "═", STR_PAD_BOTH, "╚%s╝").LF;
+    echo self::pad('', "═", STR_PAD_BOTH, "╚%s╝", $pad_len).LF;
   }
 
-  static function pad($title, $pad_len = self::pad, $pad = '-', $MODE = STR_PAD_BOTH, $mask = '%s'){
+  private static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = self::pad){
     $pad_len -= mb_strlen(sprintf($mask, $title));
     $left = ($MODE==STR_PAD_BOTH) ? floor($pad_len/2) : 0;
     return sprintf($mask, 
             str_repeat($pad, $left) . $title . str_repeat($pad, $pad_len - $left));
-
   }
 
   static function delay(){ $_SESSION['rbx']=rbx::$rbx;rbx::$rbx=array(); }
@@ -63,28 +62,25 @@ class rbx extends Exception {
   }
   static function ok($msg,$jsx=0){ return new self("ok",$msg,$jsx); }
 
-  static function title($title){
-    $title=" $title ";$len=strlen($title);$left=floor((self::pad-$len)/2);
-    $pad=str_repeat("-",$left).$title.str_repeat("-",self::pad-$len-$left);
-    echo $pad."\n";
-  }
-  static function line(){ echo str_repeat("-",self::pad)."\n\n"; }
+  static function title($title){ echo self::pad(" $title ").LF; }
+  static function line(){ echo self::pad().LF.LF; }
 
   static function init($max,$flag=false){
     self::$max=$max;
     if(self::$flag=$flag) data::store(self::$flag,0,600);
-    if(self::$output_mode)echo "[";
+    if(self::$output_mode) echo self::pad('', ' ', STR_PAD_RIGHT, '[%s]');
     return self::$pos=0;
   }
   static function walk($step){
-    $current = round(self::$max?($step/self::$max):1,3);
-    $step = floor($current*self::pad);
+    $current = round(  self::$max ? ($step/self::$max) : 1,3);
+    $step = floor($current* (self::pad-2) );
     $old = self::$pos; self::$pos= $step;
     if($step == $old) return $current;
     if(self::$flag) return data::store(self::$flag, $current, 600);
 
     if(!self::$output_mode) return;
-    echo str_repeat("=",$step - $old).($step==self::pad?"]\n":'');flush();
+    echo "\r".self::pad(str_repeat("─",$step), ' ', STR_PAD_RIGHT, "[%s]"); flush();
+    if($current == 1) echo LF;
   }
   function __toString(){ return $this->message; }
   static function end(){ if(self::$pos!=self::pad) self::walk(self::$max); }
