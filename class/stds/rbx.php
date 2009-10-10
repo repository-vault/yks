@@ -21,27 +21,35 @@ class rbx extends Exception {
     self::$rbx[$zone].=(self::$rbx[$zone]?' ':'').$msg;
     if($jsx!==0)jsx::$rbx=$jsx;
     if(self::$output_mode!=1) return;
-    self::$rbx['log'].="$zone : $msg\n";
-    $pad_len = self::pad-2-strlen($zone);
-    echo $msg.str_repeat(' ',max(0,$pad_len-mb_strlen($msg) )).": $zone\n";
+    self::$rbx['log'].="$zone : $msg".LF;
+
+    echo self::pad($msg, self::pad, ' ', STR_PAD_RIGHT, "%s: $zone").LF;
   }
 
   static function box($title, $msg){
-    if(!is_string($msg)) $msg = print_r($msg, 1);
-    $lines = explode("\n", trim($msg));
-    $pad_len = max(self::pad, max(array_map('strlen', $lines))+1);
+    $args = func_get_args(); $pad_len = self::pad;
 
-    echo self::pad(" $title ", $pad_len, "═", STR_PAD_BOTH, "╔%s╗\n");
-    foreach($lines as $line)
-        echo self::pad($line, $pad_len, " ", STR_PAD_RIGHT, "║%s║\n");
-    echo self::pad('', $pad_len, "═", STR_PAD_BOTH, "╚%s╝\n");
+    for($a=1;$a<count($args);$a+=2) {
+      $msg= &$args[$a];
+      if(!is_string($msg)) $msg = print_r($msg, 1);
+      $msg = explode("\n", trim($msg));
+      $pad_len = max($pad_len, max(array_map('strlen', $msg))+1);
+    }
+
+    for($a=0; $a<count($args); $a+=2) {
+      echo self::pad(" {$args[$a]} ", $pad_len, "═", STR_PAD_BOTH, $a?"╠%s╣":"╔%s╗").LF;
+      foreach($args[$a+1] as $line)
+          echo self::pad($line, $pad_len, " ", STR_PAD_RIGHT, "║%s║").LF;
+    }
+
+    echo self::pad('', $pad_len, "═", STR_PAD_BOTH, "╚%s╝").LF;
   }
 
-  static function pad($title, $pad_len = self::pad, $pad = '-', $MODE=STR_PAD_BOTH, $mask='%s'){
-    $title_len = mb_strlen($title);
-    $left = $MODE==STR_PAD_BOTH?floor(($pad_len - $title_len)/2):"";
+  static function pad($title, $pad_len = self::pad, $pad = '-', $MODE = STR_PAD_BOTH, $mask = '%s'){
+    $pad_len -= mb_strlen(sprintf($mask, $title));
+    $left = ($MODE==STR_PAD_BOTH) ? floor($pad_len/2) : 0;
     return sprintf($mask, 
-            str_repeat($pad, $left) . $title . str_repeat($pad, $pad_len - $title_len - $left));
+            str_repeat($pad, $left) . $title . str_repeat($pad, $pad_len - $left));
 
   }
 
