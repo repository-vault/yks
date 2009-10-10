@@ -69,7 +69,7 @@ class browser {
   }
 
 
-  function download($from, $to = false){
+  function download($url, $to = false){
     $url = url::from($url);
 
     if(!$url->is_browsable)
