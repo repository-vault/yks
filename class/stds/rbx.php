@@ -33,7 +33,7 @@ class rbx extends Exception {
       $msg= &$args[$a];
       if(!is_string($msg)) $msg = print_r($msg, 1);
       $msg = explode("\n", trim($msg));
-      $pad_len = max($pad_len, max(array_map('strlen', $msg))+1);
+      $pad_len = max($pad_len, max(array_map('strlen', $msg))+2); //2 chars enclosure
     }
 
     for($a=0; $a<count($args); $a+=2) {
@@ -49,7 +49,7 @@ class rbx extends Exception {
     $pad_len -= mb_strlen(sprintf($mask, $title));
     $left = ($MODE==STR_PAD_BOTH) ? floor($pad_len/2) : 0;
     return sprintf($mask, 
-            str_repeat($pad, $left) . $title . str_repeat($pad, $pad_len - $left));
+            str_repeat($pad, max($left,0)) . $title . str_repeat($pad, max($pad_len - $left,0)));
   }
 
   static function delay(){ $_SESSION['rbx']=rbx::$rbx;rbx::$rbx=array(); }
