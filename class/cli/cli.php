@@ -1,8 +1,28 @@
 <?
 
 class cli {
+  const OS_UNIX = 1;
+  const OS_WINDOWS = 2;
+  private static $OS = null;
 
   const pad = 70;
+
+  public static function init(){
+
+    $win = stripos($_SERVER['OS'],'windows')!==false;
+    self::$OS = $win ? self::OS_WINDOWS : OS_LINUX;
+
+      //transcoding UTF-8 to IBM codepage
+    if(self::$OS & self::OS_WINDOWS)
+      ob_start(array('cli', 'console_out'), 2);
+
+  }
+
+
+  static function console_out($str){
+    return charset_map::Utf8StringDecode($str, charset_map::$_toUtfMap);
+  }
+
 
   public static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = self::pad){
     $pad_len -= mb_strlen(sprintf($mask, $title));
@@ -33,7 +53,7 @@ class cli {
 
 
   public static function password_prompt(){
-    if(stripos($_SERVER['OS'],'windows')!==false) {
+    if(self::$OS & self::OS_WINDOWS) {
         $pwObj = new Com('ScriptPW.Password');
         $password = $pwObj->getPassword();
     } else {
