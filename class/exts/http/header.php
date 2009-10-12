@@ -33,7 +33,7 @@ class header {
   }
   function __get($key){
     if($key=='raw')
-        return "$this->name: {$this}";
+        return $this->raw;
 
   }
 }
