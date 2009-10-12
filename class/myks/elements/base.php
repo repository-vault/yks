@@ -30,5 +30,5 @@ abstract class myks_base {
     return crpt(join('', $args),'FLAG_SQL',8);
   }
 
-  protected abstract function calc_signature();
+  protected function calc_signature(){}
 }

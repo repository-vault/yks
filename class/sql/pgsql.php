@@ -104,6 +104,8 @@ class sql {
         $col = IF((@pos:=@pos+1)=@down, @pos+1,IF(@pos=@down+1,@down,@pos))
         WHERE $where ORDER BY $col ;");
   }
+
+    //format values
   static function vals($v){
     if(is_array($v) && (list($type,$val)=each($v)))
         return ( $type==="sql" ? $val : '' );
@@ -111,6 +113,18 @@ class sql {
     if(is_int($v)) return $v;
     if(is_bool($v)) return $v?"TRUE":"FALSE";
     return "'".self::clean($v)."'";
+  }
+    //format conditions
+  static function conds($k, $v){
+    if(is_array($v)) {
+        list($type,$val) = each($v);
+        if($type === "sql") return "$k $val";
+        return $v ? sql::in_join($k,$v) : "FALSE";
+    }
+    if(is_string($v)) return "$k='$v'";
+    if(is_int($v))    return "$k=$v";
+    if(is_null($v))   return "$k IS NULL";
+    if(is_bool($v))   return $v?"$k":"!$k";
   }
   
  static function insert($table,$vals=false,$auto_indx=false,$keys=false){
@@ -158,10 +172,7 @@ class sql {
     $slice=array_filter(array_keys($cond),'is_numeric');
     $conds=array_intersect_key($cond,array_flip($slice));
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
-       $conds[]= is_array($v)
-           ?((list($type,$val)=each($v)) && $type==='sql'?
-               " $k $val": ($v?sql::in_join($k,$v):"FALSE") )
-           :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
+       $conds[]= sql::conds($k, $v);
     return $conds?"WHERE ".join(" $mode ",$conds):'';
   }
 

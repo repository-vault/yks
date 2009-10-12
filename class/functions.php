@@ -34,6 +34,7 @@ classes::register_class_paths(array(
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "win32_service"       => CLASS_PATH."/cli/win32_service.php",
+    "sync_sql"            => CLASS_PATH."/cli/sync_sql.php",
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/cli/interactive_runner.php",

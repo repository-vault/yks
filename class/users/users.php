@@ -109,6 +109,15 @@ class users  {
         <img src='$avatar' alt='avatar'/>{$user_infos['user_name']}
     </div>";
   }
+
+  static function mailto($user){
+    $args = func_get_args();
+    $mailto = array();
+    foreach($args as $user)
+        $mailto[] = mailto_escape("{$user['user_name']} <{$user['user_mail']}>");
+    return 'mailto:' . join('; ', $mailto);
+  }
+
   static function infos_renderer($user_ids, $key, $lang, $cols=array('user_name','user_avatar')){
     $users_infos = users::get_infos($user_ids, $cols);$res=array();
     foreach($users_infos as $user_id=>$user_infos)$res["&$key.$user_id;"] = self::show($user_infos);

@@ -77,4 +77,5 @@ define('WHERE_MASK','`%2$s`=\'%1$s\'');    //Join masks
 define('INI_MASK','%2$s=%1$s');    //Join masks
 define('ATTR_MASK', '%2$s="%1$s"');    //Join masks
 
+define('MASK_INVALID_ENTITIES', "#&(?!lt;|gt;|\#[0-9]+;|quot;|amp;)#");
 

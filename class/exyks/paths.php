@@ -40,8 +40,7 @@ class exyks_paths {
     $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls/'", $path));
 
     self::$paths['subs'][$path_key]   = $sub_path;
-    tpls::$paths['search'][]  = "#^$path_key#";
-    tpls::$paths['replace'][] = $tpl_path;
+    tpls::add_resolver($path_key, $tpl_path);
   }
 
 

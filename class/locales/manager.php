@@ -4,7 +4,7 @@
 */
 
 class locales_manager {
-  const MASK_INVALID_ENTITIES = "#&(?!lt;|gt;|\#[0-9]+;|quot;|amp;)#";
+
 
   public static function init(){
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
@@ -31,9 +31,9 @@ class locales_manager {
     
     if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang);
 
-    if(preg_match(self::MASK_INVALID_ENTITIES, $str)) {
+    if(preg_match(MASK_INVALID_ENTITIES, $str)) {
         error_log("There are invalid entities in your document");
-        $str = preg_replace(self::MASK_INVALID_ENTITIES,'&amp;',$str);
+        $str = preg_replace(MASK_INVALID_ENTITIES,'&amp;',$str);
         if(preg_match("#<!\[CDATA\[(?s:.*?)\]\]>#",$str,$out)){
           $str= str_replace($out[0], str_replace("&amp;",'&',$out[0]),$str );
         }

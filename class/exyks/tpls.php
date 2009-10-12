@@ -10,7 +10,9 @@ class tpls {
  static private $top=array();
  static private $bottom=array();
  static $body=false; //if!tpls::$body
- static $paths = array('search'=>array(), 'replace'=>array());
+
+ static private $paths = array('search'=>array(), 'replace'=>array());
+
  static public $entities = array();
  static private $cmds = array(
     'top'    => array(
@@ -95,6 +97,19 @@ class tpls {
 
     return $tmp == $tpl?ROOT_PATH."/tpls$tpl":$tmp;
   }
+
+
+ static public function add_resolver($key, $path){
+        //reaggregate paths
+    if(self::$paths['search']) {
+        $paths = array_combine(self::$paths['search'], self::$paths['replace']);
+        $paths["#^$key#"] = $path;
+        krsort($paths);
+    } else $paths = array("#^$key#" => $path);
+
+    self::$paths['search']  = array_keys($paths);
+    self::$paths['replace'] = array_values($paths);
+ }
 
 
  static function nav($tree){

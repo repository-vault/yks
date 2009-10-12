@@ -33,7 +33,6 @@ var Box = new Class({
         .addEvent('click', this.reload.bind(this));
 
     if(!this.fly) return;
-
     this.size = anchor.getSize();
 
     var screen_size = getSize(), scroll_top = getScroll();
@@ -52,12 +51,14 @@ var Box = new Class({
         //!!!
     if(!anchor.makeDraggable && Browser.Engine.trident){ anchor.$family = false; $(anchor); }
 
-    anchor.makeDraggable({handle:$E("*[class$='_u']",anchor).addClass('dragged')});
+    var drag_anchor = $E("*[class$='_u']",anchor);
+    if(drag_anchor) anchor.makeDraggable({handle:drag_anchor.addClass('dragged')});
     anchor.addEvent('click', this.focus.bind(this) );
 
     this.focus();
 
     var modal = options.modal || this.anchor.hasClass('modal') ;
+
     if(options.modal_box) this.modal_box = options.modal_box;
     else if(modal) this.modal_box = Screen.modaler();
   },

@@ -5,7 +5,7 @@ abstract class rules_base extends myks_base {
   private $rules_xml = null;
   protected $sql_def = array();
   protected $xml_def = array();
-  private $signatures = array();
+
 
   const rule_nothing = 'NOTHING';
 
@@ -23,12 +23,10 @@ abstract class rules_base extends myks_base {
   }
 
   function alter_rules(){
-    if($this->xml_def == $this->sql_def) return array();
-
 
     $todo = array();
     foreach($this->xml_def  as $rule_name=>$rule_infos){
-        if($this->sql_def[$rule_name] == $rule_infos) continue;
+        if($this->sql_def[$rule_name]['signature'] == $rule_infos['signature']) continue;
         //print_r($this->sql_def[$rule_name]);print_r($rule_infos);die;
 
         $event = strtoupper($rule_infos['event']);
@@ -50,7 +48,11 @@ abstract class rules_base extends myks_base {
 
   function modified(){
     //print_r($this->signatures['xml']);print_r($this->signatures['sql']);die;
-    return $this->signatures['xml'] != $this->signatures['sql'];
+   $signatures_xml = array_extract($this->xml_def, 'signature');
+   $signatures_sql = array_extract($this->sql_def, 'signature');
+
+
+    return $signatures_xml != $signatures_sql;
   }
 
   function sql_infos(){
@@ -81,26 +83,14 @@ abstract class rules_base extends myks_base {
             'definition'=>rtrim($sign['base_definition'],";"),
             'event'=>$rule['rule_event'],
             'signature'=> $sign['signature'],
-            'where'=>'',
+            'where'=>'', //where is post-compiled
         );
      } $this->sql_def = $rules;
     }
-    $this->signatures['sql'] = array_extract($this->sql_def, 'signature');
+
   }
 
 
-  protected function calc_signature(){
-    $signatures = array();
-    foreach($this->xml_def as $rule_name=>$rule_infos){
-        $signature =  $this->crpt(
-            $rule_infos['compiled_definition'],
-            $rule_infos['definition']);
-
-        $this->xml_def[$rule_name]['signature'] =  $signature;
-        $signatures[$rule_name] = $signature;
-    }
-    return $signatures;
-  } 
 
 
   function xml_infos() {
@@ -121,15 +111,18 @@ abstract class rules_base extends myks_base {
       $rule_name = "{$this->element_name}_{$event}_{$hash}";
 
       $compiled_definition = $this->sql_def[$rule_name]['compiled_definition'];
+      $signature = $this->crpt($compiled_definition, $definition);
 
       $this->xml_def[$rule_name] = compact(
           'compiled_definition',
           'definition',
           'event',
-          'where'
+          'where',
+          'signature'
       );
+      
     }
-    $this->signatures['xml'] =  $this->calc_signature();
+
 
   }
 

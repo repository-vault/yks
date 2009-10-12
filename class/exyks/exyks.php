@@ -150,9 +150,8 @@ class exyks {
   }
 
 
-  static function render(){
+  static function render($str){
 
-    $str = ob_get_contents(); ob_end_clean();
     $str = locales_manager::translate($str);
 
     if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
@@ -174,7 +173,7 @@ class exyks {
     }
     
     if($render_side == "client"){
-        if(!is_file($xsl_client))
+        if($xsl_client && !is_file($xsl_client))
             yks::fatality(yks::FATALITY_XSL_404, "xsl file is missing : $xsl_client",  $render_mode);
         die($str);
     }
