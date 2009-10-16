@@ -16,21 +16,34 @@ Jsx.A = new Class({
     var url = Urls.parse(this.anchor.get('href',true));
     if(url.domain!=site_domain) return false;
     var target = this.anchor.get('target',true) || this.box.box_name;
-    if(target=='::new') target = Screen.get_lambda_box();
+    if(target=='::new')   target = Screen.get_lambda_box();
+    if(target=='::modal'){
+        target = Screen.get_lambda_box();
+        this.setOptions({box:{modal:true,fly:true}});
+    }
+
     this.setOptions({
         url:url.full,
         method:'get',
         target:target,
-        target_base:target,
+
         lang:this.anchor.getAttribute("xml:lang") || false
     }); return true;
   },
   click:function(event){ event.stop();
-    if(!$defined(this.xtd)) this.xtd=this.extended();
+    if(!$defined(this.xtd)) this.xtd = this.extended();
+
+    if(this.base_options) {
+        this.setOptions(this.base_options);
+        this.base_options = false;
+    }
+
     if(event.alt){
+        this.base_options = this.options;
         var target = this.options.target+'_modal';
         this.setOptions({box:{modal:true,fly:true},target:target});
-    } else this.setOptions({box:false,target:this.options.target_base});
+    } 
+
     if(this.xtd) this.fire(); 
   }
 });
