@@ -8,6 +8,7 @@ class cli {
   const pad = 70;
 
   public static function init(){
+    if(!classes::init_need(__CLASS__)) return;
 
     $win = stripos($_SERVER['OS'],'windows')!==false;
     self::$OS = $win ? self::OS_WINDOWS : OS_LINUX;
@@ -23,6 +24,9 @@ class cli {
     return charset_map::Utf8StringDecode($str, charset_map::$_toUtfMap);
   }
 
+  static function console_in($str){
+    return charset_map::Utf8StringEncode($str, charset_map::$_toUtfMap);
+  }
 
   public static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = self::pad){
     $pad_len -= mb_strlen(sprintf($mask, $title));
@@ -63,11 +67,54 @@ class cli {
     } return $password;
   }
 
-  public static function text_prompt($prompt=false){
+  public static function text_prompt($prompt=false, &$args = null){
     if($prompt) echo "$prompt : ";
-    return trim(fread(STDIN, 1024));
+
+    $data_str = "";
+    do {
+        $line =  fread(STDIN, 1024);
+
+        if(preg_match("#[\x01-\x1F]\r?\n$#", $line, $out)) {
+            $control = ord($out[0]);
+            $line = substr($line, 0, -strlen($out[0]));
+        } else $control = false;
+
+        if(self::$OS & self::OS_WINDOWS) 
+            $line = self::console_in($line);
+
+        $data_str .= $line;
+        $args = self::parse_args(trim($data_str), $complete);
+    } while( ! ($complete || in_array($control, array(26))) );
+
+    if($control == 26) $args = array();
+    return trim($data_str);
   }
 
+/**
+* @param int control return the control key (if present) of the last input
+*/
+  public static function parse_args($str, &$complete = null) {
+    $mask      = "#(\s+)|([^\s\"']+)|\"([^\"]*)\"|'([^']*)'#s";
+
+    $args = array(); $need_value = true; $digest = "";
+    preg_match_all($mask, $str, $out, PREG_SET_ORDER);
+
+    foreach($out as $part_id => $step){
+        list($sep, $value) = array($step[1]!='', pick($step[2], $step[3], $step[4]));
+        $digest .= $step[0];
+
+        if($digest != substr($str,0, strlen($digest)) )
+            break;
+
+            //check "value"/separator alternance
+        if($sep) { $need_value = true; continue; }
+        if(!$need_value) break; $need_value = false;
+
+        $args[] = $value;
+    }
+    $complete = ($digest == $str);
+    return $args;
+  }
 
   function exec($cmd){
     $WshShell = new COM("WScript.Shell");
