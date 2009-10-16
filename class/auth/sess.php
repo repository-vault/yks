@@ -17,6 +17,8 @@ class sess  {
     return crpt($id, FLAG_SESS, 10);
   }
   static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     if(sess::$id) return false;
     session_name(SESSION_NAME);
     session_set_cookie_params (0, "/", SITE_DOMAIN, false, true);

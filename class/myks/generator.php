@@ -8,6 +8,8 @@ class myks_gen {
   static $cols=array('Field','Type','Extra','Null','Default','Extra');
 
   static function init($mykse_xml){
+    if(!classes::init_need(__CLASS__)) return;
+
     self::$mykse_xml=$mykse_xml;
   }
     //between each type of analyse, the type resolver have to be reset

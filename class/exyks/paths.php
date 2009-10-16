@@ -12,6 +12,8 @@ class exyks_paths {
     <paths xmlns:pf="paths_prefix" pf:admin="."
 */
   public static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     $config = yks::$get->config->paths;
     $prefixes = $config ? attributes_to_assoc($config, self::prefix_ns) : array();
     self::$paths_ns = array_merge($prefixes, array(

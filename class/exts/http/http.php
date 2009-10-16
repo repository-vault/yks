@@ -6,6 +6,8 @@ class http {
 
 
   static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     classes::extend_include_path(CLASS_PATH."/exts/http");
   }
 

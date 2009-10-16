@@ -7,7 +7,11 @@ class interactive_runner {
 
   private $command_pipe;
 
+  static function init(){
+    if(!classes::init_need(__CLASS__)) return;
 
+    classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
+  }
 
   private function __construct($obj){
     $this->obj = $obj;
@@ -78,17 +82,14 @@ class interactive_runner {
     eval($args);
   }
  
-  private function command_parse($command_str) {
-      $command_str = trim($command_str);
-
-      $command = preg_split("#\s+#", $command_str, 2);
-      list($command_key, $args) = $command;
+  private function command_parse($command_args) {
+      $command_key     = array_shift($command_args);
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
         if(in_array($command_key, $command_infos['aliases']))
           $command_resolve[] = $command_hash;
 
-      if(!$command_str)
+      if(!$command_key)
         throw new Exception("No command");
 
       if(!$command_resolve)
@@ -99,7 +100,7 @@ class interactive_runner {
 
       $command_hash     = $command_resolve[0];
       $command_callback = $this->commands_list[$command_hash]['callback'];
-      $command_args = preg_split("#\s+#", $args); //!
+
       return array($command_callback, $command_args);
   }
 
@@ -127,8 +128,9 @@ class interactive_runner {
     while(is_null($this->command_pipe)){ 
 
       try {
-        $command_str = cli::text_prompt('$'.$this->className);
-        list($command_callback, $command_args) = $this->command_parse($command_str);
+        $command_split = array();
+        cli::text_prompt('$'.$this->className, $command_split);
+        list($command_callback, $command_args) = $this->command_parse($command_split);
         
       } catch(Exception $e){ continue; }
 

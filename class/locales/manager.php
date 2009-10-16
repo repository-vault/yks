@@ -7,6 +7,8 @@ class locales_manager {
 
 
   public static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $accept_hash = md5($base);
 

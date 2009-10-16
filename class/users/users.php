@@ -130,6 +130,8 @@ class users  {
   }
 
   static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     $users_type=vals(yks::$get->types_xml->user_type);
     self::$users_profiles=array_mask($users_type,'%s_profile');
 

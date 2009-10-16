@@ -38,6 +38,7 @@ classes::register_class_paths(array(
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/cli/interactive_runner.php",
+    "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
 ));
 
 function sys_end($generation_time,$display_time=0){

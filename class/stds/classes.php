@@ -2,8 +2,9 @@
 
 
 class classes {
-  static $classes_paths=array();
-  static $call_init = false;
+  static $classes_paths   = array();
+  static $call_init       = false;
+  static private $inited_classes  = array();
 
   static function extend_include_path($paths) {
     $new_paths      = is_array($paths)?$paths:func_get_args();
@@ -16,6 +17,13 @@ class classes {
 
   static function register_class_path($class_name, $file_path){
     self::$classes_paths[$class_name] = $file_path;
+  }
+
+  static function init_need($class_name){
+    if(isset(self::$inited_classes[$class_name]))
+        return false;
+    self::$inited_classes[$class_name] = true;
+    return true;
   }
 
   static function register_class_paths($paths, $load = false){

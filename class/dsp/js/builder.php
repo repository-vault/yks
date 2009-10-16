@@ -8,6 +8,8 @@ class js_builder {
   static $build_order = array();
 
   static function init($js_namespaces){
+    if(!classes::init_need(__CLASS__)) return;
+
     self::$js_namespaces = $js_namespaces;
     xml::register_fpi(self::js_fpi, RSRCS_PATH."/dtds/js.dtd", "js");
 

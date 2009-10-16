@@ -5,6 +5,8 @@ class exyks_security {
   private static $flag_ks;
 
   static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
     self::$flag_ks = sess::flag_ks();
     jsx::set('ks_flag', self::$flag_ks);
   }

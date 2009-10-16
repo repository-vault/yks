@@ -9,6 +9,7 @@ class dsp_titles {
   private static $fonts_paths;
 
   static function init(){
+    if(!classes::init_need(__CLASS__)) return;
 
     self::$themes_config = config::retrieve("themes");
     if(!self::$themes_config) die("Unable to load theme config");
