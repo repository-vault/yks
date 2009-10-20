@@ -28,13 +28,5 @@ $cols = array();
 sql::reset($res);
 $data = sql::brute_fetch();
 
-if($export){
-    header(sprintf(HEADER_FILENAME_MASK, $config->head->title.".xls"));
-    exyks::$headers["excel-server"] = TYPE_CSV;
-    exyks::store('XSL_SERVER_PATH', RSRCS_PATH."/xsl/specials/excel.xsl");
-    exyks::store('RENDER_SIDE', 'server');
-    exyks::store('RENDER_MODE', 'excel');
-    exyks::store('RENDER_START', '<html');
-
-}
-
+if($export)
+    exyks_renderer_excel::process();

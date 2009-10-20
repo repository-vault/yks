@@ -1,5 +1,5 @@
 var Screen = {
-  screen_id:screen_id,
+  screen_id:10,
 
   panel:false,	//panel box
   box_zImax:90,
