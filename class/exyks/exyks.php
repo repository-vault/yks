@@ -14,6 +14,44 @@ class exyks {
   static public $is_script = false;
   static private $customs = array();
 
+  static function init(){
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
+
+    global $action, $config;
+
+    $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
+
+    $tmp = (string)$config->site['default_mode'];
+    define('DEFAULT_MODE', $tmp?$tmp:"xml");
+    $default = ROBOT||IPOD ? "html" : DEFAULT_MODE;
+    $mode =  isset($_SERVER['HTTP_SCREEN_ID']) || isset($_POST['jsx']) ?  "jsx" : $default;
+    define('JSX', $mode == "jsx");
+
+        include CLASS_PATH."/exyks/browser.php"; //define $engine
+    define('XSL_ENGINE', $engine);
+
+    self::store('RENDER_MODE', JSX?"jsx":"full");
+    self::store('RENDER_SIDE', ($mode=="html"?"server":"client")); //rbx is a render_side too
+
+    if(IE6) exyks::store('RENDER_START', '<!DOCTYPE');
+
+    self::$headers = array(
+        'full-server'=>ROBOT?TYPE_XHTML:TYPE_HTML,
+        'full-client'=>TYPE_XML,
+        'jsx-client'=>TYPE_XML,
+    );
+
+    exyks::store('LANGUAGES', preg_split(VAL_SPLITTER, $config->locales['keys']));
+    define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
+
+
+    $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
+    exyks::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
+    exyks::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
+    exyks::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
+  }
+
+
   static function bench($key) { return self::store("time_$key", microtime(true)); }
   static function tick($key,$now=false) {
     return ($now?self::bench($now):microtime(true)) - self::retrieve("time_$key");
