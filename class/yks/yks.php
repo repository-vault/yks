@@ -10,8 +10,9 @@ class yks
   const FATALITY_SITE_CLOSED     = "site_closed";
 
   static function init($load_context = true, $call_init = true){
-    define('RSRCS_PATH', YKS_PATH.'/rsrcs');
-    $paths = array(YKS_PATH."/libs", CLASS_PATH);
+    classes::register_class_path("exyks", CLASS_PATH."/exyks/exyks.php");
+
+    $paths = array(LIBS_PATH, CLASS_PATH);
     $exts  = false;
 
     if($load_context){
@@ -26,8 +27,8 @@ class yks
         if($config->include_path)
             foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
                 $paths[] = paths_merge(ROOT_PATH, $path);
-        $exts = $config->include_path['exts'];
-        $call_init = $config->include_path['call_init']!='false';
+        $exts = (string) $config->include_path['exts'];
+        $call_init = ((string)$config->include_path['call_init']) != 'false';
     }
 
     classes::extend_include_path($paths);
@@ -36,6 +37,7 @@ class yks
 
   static function fatality($fatality, $details=false, $render_mode="html"){
     if($details) error_log("[FATALITY] $details");
+    if(PHP_SAPI == "cli")die;
     header($render_mode=="jsx"?TYPE_XML:TYPE_HTML);
     $contents  = file_get_contents(RSRCS_PATH."/fatality/-top.html");
     if(DEBUG) $contents .= "\r\n<!-- ".strtr($details,array("-->"=>"--"))."-->\r\n";
@@ -65,10 +67,6 @@ class yks
 
   public function __get($key){ return $this->get($key);  }
 }
-
-
-$load_context = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'];
-yks::init($load_context, true);
 
 
 

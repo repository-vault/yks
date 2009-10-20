@@ -4,28 +4,50 @@
 */
 
 
-define('Yks', 'A cloudy tool');
+define('Ex/yks', 'A cloudy tool');
 
-      // from this file path
-  $class_path=realpath(dirname(__FILE__).'/..');
-  define('CLASS_PATH', $class_path);
-  define('YKS_PATH', realpath("$class_path/.."));
-  define('LIBS_PATH', YKS_PATH.'/libs');
 
-  $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
-    //remove www or relatives paths
-  if($rel=ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
-    $public_root = substr($public_root, 0, -strlen($rel)-1);
-  define('PUBLIC_PATH', realpath($public_root));
+  if(PHP_SAPI == 'cli')
+    define('PUBLIC_PATH', '.');
 
-    //Yks specifics
-  define('ROOT_PATH', PUBLIC_PATH); //ROOT_PATH wont be overriden
+      //first thing first, where am i
+  if(!defined('PUBLIC_PATH')) {
+    $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
+        //remove relatives paths
+    if($rel = ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
+      $public_root = substr($public_root, 0, -strlen($rel)-1);
+    define('PUBLIC_PATH', realpath($public_root));
+  }
+
+
+  $class_path  = realpath(dirname(__FILE__).'/..');
+
+
+  define('WWW_PATH',    PUBLIC_PATH);
+  define('ROOT_PATH',   dirname(WWW_PATH));
   define('CONFIG_PATH', realpath(ROOT_PATH."/config")); 
+  define('CLASS_PATH',  $class_path);
+  define('YKS_PATH',    realpath("$class_path/.."));
 
+  define('BASE_PATH',    YKS_PATH.'/base');
+  define('LIBS_PATH',    YKS_PATH.'/libs');
+  define('THRD_PATH',    YKS_PATH.'/3rd');
+  define('RSRCS_PATH',   YKS_PATH.'/rsrcs');
+  define('CLTOOLS_PATH', YKS_PATH.'/cltools');
+
+  define('EXYKS',        YKS_PATH.'/index.php');
 
 include "$class_path/constants.php";
 include "$class_path/config.php";
 include "$class_path/stds/classes.php";
 include "$class_path/zero_functions.php";
 include "$class_path/yks/yks.php";
+
+
+
+$load_context = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'] || defined('yks/cli');
+yks::init($load_context, true);
+
+
+
 

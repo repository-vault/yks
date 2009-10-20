@@ -17,6 +17,8 @@ classes::register_class_paths(array(
     "__native"            => LIBS_PATH."/natives/__native.php",
     "__wrapper"           => LIBS_PATH."/natives/__wrapper.php",
 
+    "exyks"               => CLASS_PATH."/exyks/exyks.php",
+
     "mail"                => CLASS_PATH."/mails/mail.php",
     "xsl"                 => CLASS_PATH."/xsl/xsl.php",
     "xml"                 => CLASS_PATH."/stds/xml.php",
@@ -34,12 +36,24 @@ classes::register_class_paths(array(
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "win32_service"       => CLASS_PATH."/cli/win32_service.php",
+
     "sync_sql"            => CLASS_PATH."/cli/sync_sql.php",
+    "myks_parser"         => CLASS_PATH."/myks/parser.php",
+    "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
+
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/cli/interactive_runner.php",
     "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
+
 ));
+
+classes::register_class_paths(array(
+    "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
+    "myks_runner"         => CLTOOLS_PATH."/myks_runner.php",
+    "sql_runner"          => CLTOOLS_PATH."/sql_runner.php",
+));
+
 
 function sys_end($generation_time,$display_time=0){
     return sprintf("\n<!-- powerdé by exyks in - subs : %0-5Fs - tpls : %0-5Fs %s-->",
