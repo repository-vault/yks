@@ -41,7 +41,7 @@ class Element extends XHTMLElement {
     }elseif($key=="html") {
         return $this->asXML();
     }elseif($key=="innerHTML") {
-        return preg_reduce("#^[^>]+>(.*?)<[^<^]+$#s", $this->asXML());
+        return innerHTML($this->asXML());
     }else {
         return (string)$this[$key];
 

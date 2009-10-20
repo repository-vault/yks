@@ -17,6 +17,9 @@ if(!function_exists('pick')) {
     function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
 }
 
+if(!function_exists('innerHTML')) {
+    function innerHTML($str){ return preg_reduce("#^[^>]+>(.*?)<[^<^]+$#s", $str); }
+}
 
 function simplexml_load_url($url){
     $str = file_get_contents($url);
