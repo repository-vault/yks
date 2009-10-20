@@ -10,7 +10,7 @@ class Forms {
   }
 
   public static function getSelected(Element $element){
-    return $element->xpath("option[selected]");
+    return $element->getElements("option[selected=selected]:not([disabled=disabled])");
   }
 
   public static function set(Element $form, $selector, $value){
@@ -21,9 +21,12 @@ class Forms {
   public static function toQueryString(Element $element){
     $queryString  = array();
     foreach($element->getElements("input[type!=file], select, textarea") as $el){
-        if(!$el['name'] || $el['disabled']) continue;
-        if(strtolower($el->getName()) == 'select') $value = array_extract($el->getSelected(), "value");
-        elseif(strtolower($el->getName()) == 'textarea') $value = $el->get("innerHTML");
+        if(!$el['name'] || $el->match("[disabled=disabled]") ) continue;
+        if(strtolower($el->getName()) == 'select') {
+            $values = $el->getSelected();
+            foreach($values as &$v) $v=(string)$v['value'];
+            $value = $el->match("[multiple=multiple]") ?  $values : $v;
+        } elseif(strtolower($el->getName()) == 'textarea') $value = $el->get("innerHTML");
         elseif(in_array($el['type'], array('radio', 'checkbox')) ) {
             if(!$el['checked']) continue;
             $value =  (string) ($el['value']?$el['value']:"on");
