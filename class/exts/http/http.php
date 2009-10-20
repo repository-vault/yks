@@ -30,12 +30,14 @@ class http {
 
 
 
-  public static function ping_url($url, $timeout = 3){
+  public static function ping_url($url, $timeout = 3, $ip = false){
     $url_infos = parse_url($url);
 
-    $host = $url_infos['host'];
-    $path = $url_infos['path'].'?'.$url_infos['query'];
-    $fp = @fsockopen($host, 80, $null, $null, $timeout);
+    $host     = $url_infos['host'];
+    $host_ip  = $ip ? $ip : $host;
+    $path     = $url_infos['path'].'?'.$url_infos['query'];
+
+    $fp = @fsockopen($host_ip, 80, $null, $null, $timeout);
     if (!$fp) throw new Exception("Unable to open");
     $query = array("GET $path HTTP/1.0");
     $query []= "Host: $host";

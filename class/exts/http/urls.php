@@ -14,7 +14,7 @@ class urls {
   }
 
   static function init(){
-    if(!classes::init_need(__CLASS__)) return;
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
     if(!self::$tlds)
         self::$tlds = include("tlds.php");
