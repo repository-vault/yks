@@ -8,7 +8,7 @@ if(!$title_text) $title_text = "Default title";
 
 $titles_cache_path = CACHE_PATH."/imgs/titles";
 
-$hash     = md5("$theme_name, $title_text, $site_code, $is_title");
+$hash     = md5("$theme_name, $title_text, ".SITE_CODE.", $is_title");
 $img_path = "$titles_cache_path/$hash.png";
 
 
