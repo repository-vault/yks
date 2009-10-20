@@ -7,16 +7,18 @@
 define('Ex/yks', 'A cloudy tool');
 
 
-  if(PHP_SAPI == 'cli')
-    define('PUBLIC_PATH', '.');
 
       //first thing first, where am i
   if(!defined('PUBLIC_PATH')) {
-    $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
-        //remove relatives paths
-    if($rel = ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
-      $public_root = substr($public_root, 0, -strlen($rel)-1);
-    define('PUBLIC_PATH', realpath($public_root));
+    if(PHP_SAPI == 'cli') {
+        define('PUBLIC_PATH', '.');
+    } else {
+        $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
+            //remove relatives paths
+        if($rel = ltrim(dirname($_SERVER['SCRIPT_NAME']),'\/'))
+          $public_root = substr($public_root, 0, -strlen($rel)-1);
+        define('PUBLIC_PATH', realpath($public_root));
+    }
   }
 
 

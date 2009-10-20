@@ -19,6 +19,7 @@ class sql_runner {
     include_once CLASS_PATH."/myks/elements.php";
     include_once CLASS_PATH."/myks/generator.php";
 
+
     define('END', ";\r\n");
 
         // static config load
@@ -26,6 +27,8 @@ class sql_runner {
 
     $privileges = self::$myks_config->privileges;
     privileges::declare_root_privileges($privileges);
+
+    rbx::title("Configuring sql environnement");
 
         // sql link establishment
     try {
