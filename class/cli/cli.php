@@ -7,8 +7,8 @@ class cli {
 
   const pad = 70;
 
-  public static function init(){
-    if(!classes::init_need(__CLASS__)) return;
+  static function init(){
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
     $win = stripos($_SERVER['OS'],'windows')!==false;
     self::$OS = $win ? self::OS_WINDOWS : OS_LINUX;
@@ -43,7 +43,7 @@ class cli {
       $msg= &$args[$a];
       if(!is_string($msg)) $msg = print_r($msg, 1);
       $msg = explode("\n", trim($msg));
-      $pad_len = max($pad_len, max(array_map('strlen', $msg))+2); //2 chars enclosure
+      $pad_len = max($pad_len, max(array_map('mb_strlen', $msg))+2); //2 chars enclosure
     }
 
     for($a=0; $a<count($args); $a+=2) {

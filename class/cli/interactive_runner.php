@@ -22,8 +22,8 @@ class interactive_runner {
 
     $this->reflection_scan("runner", $this); //register runners own commands
 
-    $this->command_aliases("runner", "help", array("?") );
-    $this->command_aliases("runner", "quit", array("q") );
+    $this->command_aliases("runner", "help", "?");
+    $this->command_aliases("runner", "quit", "q");
 
     $this->help();
 
@@ -36,12 +36,19 @@ class interactive_runner {
     foreach($this->commands_list as $command_hash=>$command) {
 
       $str = "{$command['command_key']} ";
-      $aliases  = array_diff($command['aliases'], array($command['command_key'], $command_hash));
+      $parametred_aliases = array_filter($command['aliases']);
+
+      $aliases  = array_keys(array_diff_key($command['aliases'], $parametred_aliases));
+      $aliases  = array_diff($aliases, array($command['command_key'], $command_hash));
       if($aliases) $str.= "(".join(', ', $aliases).") ";
 
       if($command['usage']['params'])
         $str .= join(' ', array_keys($command['usage']['params']));
       $msgs[$command['command_ns']][] = $str;
+
+      foreach($parametred_aliases as $alias_name=>$args)
+        $msgs[$command['command_ns']][] = "$alias_name (={$command['command_key']} ".join(" ", $args).")";
+
     }
 
     $rbx_msgs = array();
@@ -54,14 +61,19 @@ class interactive_runner {
     call_user_func_array(array('rbx', 'box'), $rbx_msgs);
   }
 
-  private function command_aliases($command_ns, $command_key, $aliases){
+  private function command_aliases($command_ns, $command_key){
     $command_hash = "$command_ns::$command_key";
     if(!isset($this->commands_list[$command_hash]))
       return false;
-    $this->commands_list[$command_hash]['aliases'] = array_merge(
-        $this->commands_list[$command_hash]['aliases'],
-        !is_array($aliases) ? array($aliases) : $aliases
-    );
+
+    $aliases_list = &$this->commands_list[$command_hash]['aliases'];
+    $aliases = func_get_args(); $aliases = array_slice($aliases, 2);
+
+    foreach($aliases as $alias){
+        if(!is_array($alias)) $alias = array($alias=>false);
+        $aliases_list = array_merge($aliases_list, $alias);
+    }
+
     return true;
   }
 
@@ -72,8 +84,10 @@ class interactive_runner {
       'command_key' => $command_key,
       'usage'       => $usage,
       'callback'    => $callback,
-      'aliases'     => array($command_key, $command_hash)
+      'aliases'     => array(),
     );
+
+    $this->command_aliases($command_ns, $command_key, $command_key, $command_hash);
   }
 
   function php($cmd){
@@ -83,25 +97,46 @@ class interactive_runner {
   }
  
   private function command_parse($command_args) {
-      $command_key     = array_shift($command_args);
+      $command_prompt  = array_shift($command_args);
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
-        if(in_array($command_key, $command_infos['aliases']))
+        if(isset($command_infos['aliases'][$command_prompt]))
           $command_resolve[] = $command_hash;
 
-      if(!$command_key)
+      if(!$command_prompt)
         throw new Exception("No command");
 
       if(!$command_resolve)
-        throw rbx::error("Invalid command key '$command_key'");
+        throw rbx::error("Invalid command key '$command_prompt'");
 
       if(count($command_resolve) > 1)
-        throw rbx::error("Too many results for command '$command_key', please specify ns");
+        throw rbx::error("Too many results for command '$command_prompt', please specify ns");
 
-      $command_hash     = $command_resolve[0];
-      $command_callback = $this->commands_list[$command_hash]['callback'];
+      $command_hash      = $command_resolve[0];
+      $command_infos     = $this->commands_list[$command_hash];
+      $alias_args        = $command_infos['aliases'][$command_prompt];
 
-      return array($command_callback, $command_args);
+      if(is_array($alias_args))
+          $command_args  = array_merge($alias_args, $command_args);
+
+      $command_args_mask = $command_infos['usage']['params'];
+
+      $param_id = 0; $missing = array();
+      foreach($command_args_mask as $param_name=>$param_infos){
+        $param_in = $command_args[$param_id++];
+        if(!$param_in && !$param_infos['optional'])
+            $missing[] = $param_name;
+      }
+
+      if($missing) {
+
+        foreach($missing as $param_name) {
+            $param_value = cli::text_prompt("\${$this->className}[{$param_name}]");
+            $command_args[] = trim($param_value);
+        }
+      }
+
+      return array($command_infos['callback'], $command_args);
   }
 
   function quit(){
@@ -149,31 +184,54 @@ class interactive_runner {
 
 
   private function reflection_scan($command_ns, $object){
-    $reflect = new ReflectionObject($object);
-    $methods = $reflect->getMethods();
+    $reflect   = new ReflectionObject($object);
 
-    foreach($methods as $method) {
-      $is_command = $method->isPublic()
-                    && !$method->isStatic()
-                    && !$method->isConstructor();
-      if(!$is_command)
+    $methods   = $reflect->getMethods();
+    $className = $reflect->getName();
+
+    foreach($methods as $method) { $method_name = $method->getName();
+
+      $is_command = false;
+      $callback   = null;
+      if($method->isPublic()
+          && !$method->isStatic()
+          && !$method->isConstructor()) {
+        $callback = array($object, $method_name);
+      } elseif($method->isPublic()
+          && $method->isStatic()
+          && $method_name != "init"){
+        $callback = array($className, $method_name);
+      } else {
         continue;
+      }
 
-      $usage = array();
+      $command_key = $method_name;
+      $usage = array('params'=>array());
       $params = $method->getParameters();
-
       $doc = doc_parser::parse($method->getDocComment());
 
       foreach($params as $param)
-        $usage['params'][$param->getName()] = array();
+        $usage['params'][$param->getName()] = array(); //!
 
-      $command_key = $method_name = $method->getName();
+      $this->command_register($command_ns, $command_key, $callback, $usage);
 
-      $this->command_register($command_ns, $command_key, array($object, $method_name), $usage);
+      if($doc['args']['alias']) {
+        $aliases = array_fill_keys($doc['args']['alias']['computed'], false);
+        $this->command_aliases($command_ns, $command_key, $aliases);
+      }
 
-      if($doc['args']['alias']) $this->command_aliases($command_ns, $command_key,  $doc['args']['alias']['computed']);
     }
 
+      //aliases with args
+    $doc = doc_parser::parse($reflect->getDocComment());
+    $aliases = $doc['args']['command_alias'];
+    if($aliases) foreach($aliases['values'] as $args) {
+        $alias_name  = array_shift($args);
+        $command_key = array_shift($args);
+        if(!( $alias_name && $command_key)) continue;
+        $this->command_aliases($command_ns, $command_key, array($alias_name=>$args) );
+    }
+    
   }
 
   public static function start($obj){
