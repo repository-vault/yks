@@ -7,6 +7,8 @@ class domElementWrapper extends __wrapper {
 
 
   static function init(){
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
+
     Element::__register("Forms");
   }
 
