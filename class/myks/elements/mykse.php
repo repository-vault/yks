@@ -59,7 +59,7 @@ abstract class mykse_base {
   }
   private function fk($field_xml, $birth){
     $table_name = $birth['raw'];
-    $birth_xml  = yks::$get->tables_xml->$table_name;
+    $birth_xml  = myks_gen::$tables_xml->$table_name;
         //resolve distant table fields name
 
     $fields = array_keys(fields($birth_xml, true), $this->type);

@@ -1,16 +1,19 @@
 <?
 
 class myks_gen {
-  static $mykse_xml;
+  static public $mykse_xml;
+  static public $tables_xml;
+
   static $type_resolver;
   static public $tables_ghosts_views; // (tables can be ghosts of views)
 
   static $cols=array('Field','Type','Extra','Null','Default','Extra');
 
-  static function init($mykse_xml){
+  static function init($mykse_xml, $tables_xml){
     if(!classes::init_need(__CLASS__)) return;
 
-    self::$mykse_xml=$mykse_xml;
+    self::$mykse_xml  = $mykse_xml;
+    self::$tables_xml = $tables_xml;
   }
     //between each type of analyse, the type resolver have to be reset
   static function reset_types(){
