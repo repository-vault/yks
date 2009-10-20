@@ -1,5 +1,7 @@
 <?
 
+//ex/yks xsl cache
+
 class xsl_cache {
   private $doc;
   private $xsl;

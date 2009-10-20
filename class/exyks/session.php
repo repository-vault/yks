@@ -46,11 +46,10 @@ class exyks_session {
     }
 
         //last piece of trash code ?
-    global $user_id, $verif_user, $user_sess, $screen_id;
+    global $user_id, $verif_user, $user_sess;
     $user_id=sess::$sess['user_id'];
     $verif_user=compact('user_id');
     $user_sess=sess::$sess;
-    $screen_id=10;
   }
 
 }

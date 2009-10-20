@@ -1,6 +1,6 @@
 <?
 /*	"Exyks files functions" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2007 
+    distributed under the terms of GNU General Public License - Â© 2007 
 */
 
 
@@ -42,11 +42,11 @@ class files {
   }
 
   public static function create_dir($dir){
-    if($dir && !is_dir( $dir=rtrim($dir, DIRECTORY_SEPARATOR) ) ) {
-        self::create_dir(substr($dir,0,strrpos($dir, DIRECTORY_SEPARATOR)));
-        $res = mkdir($dir);
+
+    if($dir && !is_dir( $dir) ) {
+        $old = umask(0);$res = mkdir($dir, octdec("777") ,true); umask($old); 
         if(!$res) throw new Exception("Unable to create directory $dir");
-    }return $dir;
+    } return $dir;
   }
 
   public static function delete_dir($dir, $rm_root=true, $depth=0){
