@@ -7,8 +7,26 @@ class js_builder {
   static $files_list = array();
   static $build_order = array();
 
-  static function init($js_namespaces){
-    if(!classes::init_need(__CLASS__)) return;
+  static function init(){
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
+
+$js_config = config::retrieve("js");
+
+
+    //parse js_namespaces from configuration file
+$js_namespaces = array();
+foreach($js_config->js_namespaces->ns as $ns){
+    $path = preg_replace(CONST_MASK, CONST_REPL, $ns['path']);
+    $fpi = (string) $ns['fpi'];
+    $js_namespaces[$fpi] = $path;
+}
+$js_headers_path = paths_merge(ROOT_PATH, $js_config["headers_path"], "config/js");
+
+if(!is_dir($js_headers_path))
+    throw rbx::error("Invalid js headers path");
+
+include "$class_path/dsp/js/builder.php";
+
 
     self::$js_namespaces = $js_namespaces;
     xml::register_fpi(self::js_fpi, RSRCS_PATH."/dtds/js.dtd", "js");
