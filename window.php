@@ -106,9 +106,15 @@ class window extends __native {
     $enctype = (string)$form['enctype'];
     $data = array_merge($form->toQueryString(), $data);
 
-    $action  = (string)$form['action'];
-    if(!$action) $action  = $this->url;
-    $this->go($action, "POST", $data, $enctype );
+    $action  = $form['action'] ? new url((string) $form['action']) : $this->url;
+    $method  = pick_in(strtoupper($form['method']), "GET", array("GET", "POST"));
+
+    if($method == 'GET' && $data) {
+        $action->set_query(http_build_query($data, null, '&'));
+        $data = false;
+    }
+
+    $this->go($action, $method, $data, $enctype );
   }
 
 

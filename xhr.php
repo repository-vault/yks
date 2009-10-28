@@ -1,5 +1,7 @@
 <?
 
+// xhr, sock derivation to wrap $browser specs (and nothing more)
+
 class xhr extends sock {
   private $browser;
   private $url;
