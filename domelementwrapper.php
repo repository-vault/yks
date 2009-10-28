@@ -1,4 +1,4 @@
-<?
+<?php
 
  //wrapper around simpleXMLElement
 class domElementWrapper extends __wrapper {

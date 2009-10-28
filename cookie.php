@@ -1,4 +1,5 @@
-<?
+<?php
+
     //http://www.ietf.org/rfc/rfc2109.txt
 
 class cookie {

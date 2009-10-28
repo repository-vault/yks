@@ -1,4 +1,4 @@
-<?
+<?php
 
 class window extends __native {
   private $browser;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 // xhr, sock derivation to wrap $browser specs (and nothing more)
 
