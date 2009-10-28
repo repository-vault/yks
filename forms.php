@@ -18,19 +18,27 @@ class Forms {
     $element['value'] = $value;
   }
 
+    //mix over ./Element/Element.js, Patchs/Element/Element.js, 
   public static function toQueryString(Element $element){
     $queryString  = array();
-    foreach($element->getElements("input[type!=file], select, textarea") as $el){
+    foreach($element->getElements("input, select, textarea") as $el){ //[type!=file], input[type!=submit], input[type!=image]
+        $tag = strtolower($el->getName());
         if(!$el['name'] || $el->match("[disabled=disabled]") ) continue;
-        if(strtolower($el->getName()) == 'select') {
+        if($tag == 'select') {
             $values = $el->getSelected();
             foreach($values as &$v) $v=(string)$v['value'];
             $value = $el->match("[multiple=multiple]") ?  $values : $v;
-        } elseif(strtolower($el->getName()) == 'textarea') $value = $el->get("innerHTML");
-        elseif(in_array($el['type'], array('radio', 'checkbox')) ) {
-            if(!$el['checked']) continue;
-            $value =  (string) ($el['value']?$el['value']:"on");
-        } else $value = (string) $el['value'];
+        } elseif($tag == 'textarea') {
+            $value = $el->get("innerHTML");
+        } elseif($tag == "input") {
+            $type = strtolower($el['type']);
+            if(in_array($type, array('file', 'submit', 'image')))
+                continue;
+            if(in_array($type, array('radio', 'checkbox')) ) {
+                if(!$el['checked']) continue;
+                $value =  (string) ($el['value']?$el['value']:"on");
+            } else $value = (string) $el['value'];
+        } else continue;
 
         $queryString [(string) $el['name']]  = $value;
     } return $queryString;
