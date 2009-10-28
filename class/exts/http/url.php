@@ -1,6 +1,7 @@
 <?
 
 class url  extends __native {
+  protected $_accessibles = array('query');
 
   function __construct($url){
     $this->data  = urls::parse($url);

@@ -41,12 +41,12 @@ class request {
   }
 
   function url_encode($data){
-    $data = http_build_query($data, null, '&');
+    $str = http_build_query($data, null, '&');
     $this->headers  = array(
         'Content-Type'  => 'application/x-www-form-urlencoded',
-        'Content-Length' => strlen($data),
+        'Content-Length' => strlen($str),
     );
-    return $data;
+    return $str;
 
   }
 
