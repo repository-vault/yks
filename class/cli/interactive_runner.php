@@ -23,7 +23,7 @@ class interactive_runner {
     $this->reflection_scan("runner", $this); //register runners own commands
 
     $this->command_aliases("runner", "help", "?");
-    $this->command_aliases("runner", "quit", "q");
+    $this->command_aliases("runner", "quit", "q", "exit");
 
     $this->help();
 

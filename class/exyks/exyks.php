@@ -65,13 +65,7 @@ class exyks {
     return isset(self::$_storage[$key])?self::$_storage[$key]:$fallback;
   }
 
-  static function load_xml($str){
-    $doc = new DOMDocument('1.0','UTF-8');
-    $doc->formatOutput = false;
-    $doc->preserveWhiteSpace= false;
-    $tmp = $doc->loadXML($str, LIBXML_YKS);
-    return $tmp?$doc:false;
-  }
+
 
   static function register($tagName, $callback){
     self::$customs[$tagName] = $callback;
@@ -204,7 +198,7 @@ class exyks {
     header("Cache-Control: no-cache");
 
     if(true || self::$customs || $render_side=="server"){ // || optim XML
-        $doc = exyks::load_xml($str);
+        $doc = xml::load_string($str);
         if(!$doc) yks::fatality(yks::FATALITY_XML_SYNTAX, $str, $render_mode);
         exyks::parse($doc);
         if($render_side=="client") $str = $doc->saveXML();

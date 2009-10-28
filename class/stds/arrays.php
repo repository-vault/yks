@@ -15,6 +15,17 @@ function make_tree($splat, $root=false, $inverted = false){
     //return the first non empty value
 function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
 
+    //return the first non empty valid value (last arg is a list of possibles values)
+function pick_in(){
+    $args = func_get_args();
+
+    $possibles = array_pop($args);
+    $value = reset(array_filter($args));
+    return in_array($value, $possibles) ? $value : reset($possibles);
+}
+
+function pick_between($i, $min, $max) { return  min(max($min, (int) $i), $max); }
+
 function array_next_val($array,$val){ return array_step($array, $val, 1, false); }
 function array_step($array,$val,$way=1,$loop=true){
     $tmp=array_search($val,$array)+$way;

@@ -20,7 +20,7 @@ classes::register_class_paths(array(
     "exyks"               => CLASS_PATH."/exyks/exyks.php",
 
     "mail"                => CLASS_PATH."/mails/mail.php",
-    "xsl"                 => CLASS_PATH."/xsl/xsl.php",
+    "xsl"                 => CLASS_PATH."/stds/xsl.php",
     "xml"                 => CLASS_PATH."/stds/xml.php",
     "files"               => CLASS_PATH."/stds/files.php",
     "users"               => CLASS_PATH."/users/users.php",
@@ -37,7 +37,7 @@ classes::register_class_paths(array(
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "win32_service"       => CLASS_PATH."/cli/win32_service.php",
 
-    "sync_sql"            => CLASS_PATH."/cli/sync_sql.php",
+    "sync_sql"            => CLASS_PATH."/sql/tools/sync_sql.php",
     "myks_parser"         => CLASS_PATH."/myks/parser.php",
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 

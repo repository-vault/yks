@@ -48,6 +48,9 @@ class myks_runner {
     $this->manage_sql();
   }
 
+  function sql(){
+    interactive_runner::start(new sql_runner());
+  }
 
   function manage_sql(){
     $sql = new sql_runner();

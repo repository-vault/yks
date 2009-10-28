@@ -41,7 +41,9 @@ class myks_parser {
     //foreach($myks_config as ns
 
 
-    $this->myks_ns = self::default_ns(attributes_to_assoc($myks_config->myks_paths, self::prefix_ns));
+    $ns  = array();
+    if($myks_config->myks_paths) $ns = attributes_to_assoc($myks_config->myks_paths, self::prefix_ns);
+    $this->myks_ns = self::default_ns($ns);
 
     $tmp_paths = array();
     if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path)

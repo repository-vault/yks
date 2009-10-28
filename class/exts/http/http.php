@@ -38,7 +38,7 @@ class http {
     $path     = $url_infos['path'].'?'.$url_infos['query'];
 
     $fp = @fsockopen($host_ip, 80, $null, $null, $timeout);
-    if (!$fp) throw new Exception("Unable to open");
+    if (!$fp) throw new Exception("Unable to connect to host '$host'");
     $query = array("GET $path HTTP/1.0");
     $query []= "Host: $host";
     $query []= "Connection: close";
