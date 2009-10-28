@@ -5,7 +5,7 @@
 * @command_alias up sync up
 * @command_alias down sync down
 */
-class sync_sql {
+class sql_sync {
   const file_export_safe_size = 1024;
   const file_export_name      = "sync_data.tmp.sql";
 

@@ -37,7 +37,6 @@ classes::register_class_paths(array(
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "win32_service"       => CLASS_PATH."/cli/win32_service.php",
 
-    "sync_sql"            => CLASS_PATH."/sql/tools/sync_sql.php",
     "myks_parser"         => CLASS_PATH."/myks/parser.php",
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 
@@ -51,7 +50,8 @@ classes::register_class_paths(array(
 classes::register_class_paths(array(
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
     "myks_runner"         => CLTOOLS_PATH."/myks_runner.php",
-    "sql_runner"          => CLTOOLS_PATH."/sql_runner.php",
+    "sql_runner"          => CLTOOLS_PATH."/sql/runner.php",
+    "sql_sync"            => CLTOOLS_PATH."/sql/sync.php",
 ));
 
 
