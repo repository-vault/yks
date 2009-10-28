@@ -35,18 +35,16 @@ class Element extends XHTMLElement {
   }
 
   function get($key){
-    if($key=="text") {
-        $str = "";
+    if($key=="tag")
+        return strtolower($this->getName());
+    if($key=="text")
         return dom_import_simplexml($this)->textContent;
-    }elseif($key=="html") {
+    elseif($key=="html")
         return $this->asXML();
-    }elseif($key=="innerHTML") {
+    elseif($key=="innerHTML")
         return innerHTML($this->asXML());
-    }else {
-        return (string)$this[$key];
 
-    }
-
+    return (string)$this[$key];
   }
 }
 

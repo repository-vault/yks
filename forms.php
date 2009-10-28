@@ -8,6 +8,9 @@ class Forms {
     $path = "//form[descendant::input[@type='submit'][@value='$submit']]";
     return current($element->xpath($path));
   }
+  public static function getSubmit(Element $element, $submit){
+    return $element->getElement("input[type=submit][value='$submit']");
+  }
 
   public static function getSelected(Element $element){
     return $element->getElements("option[selected=selected]:not([disabled=disabled])");
@@ -22,7 +25,7 @@ class Forms {
   public static function toQueryString(Element $element){
     $queryString  = array();
     foreach($element->getElements("input, select, textarea") as $el){ //[type!=file], input[type!=submit], input[type!=image]
-        $tag = strtolower($el->getName());
+        $tag = $el->get("tag");
         if(!$el['name'] || $el->match("[disabled=disabled]") ) continue;
         if($tag == 'select') {
             $values = $el->getSelected();
