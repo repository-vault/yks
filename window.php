@@ -102,7 +102,15 @@ class window extends __native {
     return $this->document->charset;
   }
 
-  function submit($form, $data=array()){
+  function submit($element, $data=array()){
+
+    $tag = $element->get("tag");
+    if($tag == "input") {
+        $form = $element->getParent("form");
+        $data[(string)$element['name']] = (string)$element['value'];
+    } else $form = $element;
+
+
     $enctype = (string)$form['enctype'];
     $data = array_merge($form->toQueryString(), $data);
 
