@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 define('GRAY_LVL',127);

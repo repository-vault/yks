@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class mime_part {

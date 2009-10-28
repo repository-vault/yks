@@ -1,4 +1,4 @@
-<?
+<?php
 
 class adsense {
   static function sql_report(){

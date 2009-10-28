@@ -1,4 +1,4 @@
-<?
+<?php
 
 class tpls {
  const REPLACE = 1;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 //cf doc in the manual
 function mini_proxy($src_url,

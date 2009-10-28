@@ -1,4 +1,4 @@
-<?
+<?php
 // bases functions, i'm naked without it
 
 function crpt($msg,$flag,$len=40) {

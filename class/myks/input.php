@@ -1,4 +1,4 @@
-<?
+<?php
 
 function mykse_validate($data,$filter_in){
     $types_xml = yks::$get->types_xml;

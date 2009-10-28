@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class table_sync {

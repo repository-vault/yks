@@ -1,4 +1,4 @@
-<?
+<?php
 
 class finances {
   static function analyse(){

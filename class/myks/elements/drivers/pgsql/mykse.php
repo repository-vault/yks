@@ -1,4 +1,4 @@
-<?
+<?php
 
   /**	Myks_gen by 131 for Exyks distributed under GPL V2
 	this class export the basic field SQL definition from a myks_xml structure

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*  "Yks session manager" by Leurent F. - 131 (131.php@cloudyks.org)
     distributed under the terms of GNU General Public License - © 2008

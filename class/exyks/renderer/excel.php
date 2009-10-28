@@ -1,4 +1,4 @@
-<?
+<?php
 
 class exyks_renderer_excel {
 

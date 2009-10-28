@@ -1,4 +1,4 @@
-<?
+<?php
 
 class interactive_runner {
   private $obj;

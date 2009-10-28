@@ -1,4 +1,4 @@
-<?
+<?php
 
 function coalesce($cols,$alias=false){
  return count($cols)==1?$cols[0]:("COALESCE(".join(',',$cols).")".($alias?" AS $alias":''));}

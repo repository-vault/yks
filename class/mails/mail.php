@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 include CLASS_PATH."/apis/mails/mime.php";

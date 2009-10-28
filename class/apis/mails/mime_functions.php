@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 if(!function_exists('mime_content_type')) {

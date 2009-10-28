@@ -1,4 +1,5 @@
-<?
+<?php
+
 //Hi, I'm sock, i'm as smart as an oyster
 
 class sock   {

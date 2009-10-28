@@ -1,4 +1,4 @@
-<?
+<?php
 
 //ex/yks xsl cache
 

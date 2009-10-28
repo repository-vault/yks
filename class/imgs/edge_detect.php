@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 function detect_zones($img, $color){

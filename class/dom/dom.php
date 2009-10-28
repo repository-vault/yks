@@ -1,4 +1,5 @@
-<?
+<?php
+
 /*	"Exyks DOM" by Leurent F. (131) for IMACUS
 	distributed under the terms of GNU General Public License - © 2007 
 */

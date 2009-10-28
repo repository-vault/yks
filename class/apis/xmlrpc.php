@@ -1,4 +1,5 @@
-<?
+<?php
+
 //working draft
 
 class rpc {

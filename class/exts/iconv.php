@@ -1,4 +1,4 @@
-<?
+<?php
 
 //This emulate iconv functions 
 // !!!! REQUIRE ext mb_string

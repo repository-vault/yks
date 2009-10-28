@@ -1,4 +1,4 @@
-<?
+<?php
 
 class yks_list {
   public $href;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class myks_gen {
   static public $mykse_xml;

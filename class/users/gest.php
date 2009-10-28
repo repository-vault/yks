@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
   Users factory, need a full description of wanted user

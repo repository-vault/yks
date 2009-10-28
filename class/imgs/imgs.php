@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 /** Create a new image, respecting alpha channels */

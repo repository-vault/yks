@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class base_type_resolver {
   protected $trans;

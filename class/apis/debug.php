@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 $backtrace_errors=array();

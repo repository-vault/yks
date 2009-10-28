@@ -1,4 +1,4 @@
-<?
+<?php
 
 function password_prompt(){
   throw new Exception("Depreceated ".__FUNCTION__." please use cli::");

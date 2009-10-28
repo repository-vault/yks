@@ -1,4 +1,4 @@
-<?
+<?php
 
 class rfc_2047 {
 

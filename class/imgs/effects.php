@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 define('TRANSPARENT_LVL',127);

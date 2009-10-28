@@ -1,4 +1,4 @@
-<?
+<?php
 
 class yks_runner {
 

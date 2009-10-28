@@ -1,4 +1,5 @@
-<?
+<?php
+
     //extending ArrayObject should have worked, but it break session storage
 abstract class _sql_base  implements ArrayAccess {
 

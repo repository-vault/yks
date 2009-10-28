@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
     Exyks No myks Parser, by 131

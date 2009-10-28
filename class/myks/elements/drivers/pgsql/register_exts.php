@@ -1,4 +1,4 @@
-<?
+<?php
 
  //manual declaration of types, dont bother cleaning this
 

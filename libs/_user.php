@@ -1,4 +1,4 @@
-<?
+<?php
 
 class _user extends _sql_base {
   const sql_table = 'ks_users_list';

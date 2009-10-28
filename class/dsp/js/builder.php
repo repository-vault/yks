@@ -1,4 +1,4 @@
-<?
+<?php
 
 class js_builder {
   static private $js_namespaces =array();

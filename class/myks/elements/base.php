@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class myks_base {
   const PAD = '==========';

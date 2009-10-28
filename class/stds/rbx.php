@@ -1,4 +1,5 @@
-<?
+<?php
+
 /** rbx result boxes && walker by 131 2009
 */
 

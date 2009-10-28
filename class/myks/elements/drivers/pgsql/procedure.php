@@ -1,4 +1,4 @@
-<?
+<?php
 
 class procedure extends procedure_base {
   function __construct($proc_xml){

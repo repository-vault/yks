@@ -1,4 +1,4 @@
-<?
+<?php
 
 class privileges {
   private static $root_privileges = array();

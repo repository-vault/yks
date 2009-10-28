@@ -1,7 +1,7 @@
-<?
+<?php
 
 /*
-    Tld level fetcher - by François Leurent - mozilla.exyks.org,
+    Tld level fetcher - by FranÃ§ois Leurent - mozilla.exyks.org,
     returns an associative Hash of mozilla discovered tld and the level they belong to
     that's the simpliest base to start a domain validator
 
@@ -34,4 +34,4 @@ foreach($list as $tld){
     $tlds[$tld] = $lvl;
 }
 $var = str_replace(' ', '', var_export($tlds, true));
-file_put_contents($to_file, "<?return $var;");
+file_put_contents($to_file, "<?php\r\nreturn $var;");

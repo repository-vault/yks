@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 abstract class procedure_base {

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class highlight_xml {
   private $parser;

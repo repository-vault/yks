@@ -1,4 +1,4 @@
-<?
+<?php
 
 include_once "elements/base.php";
 include_once "elements/mykse.php";

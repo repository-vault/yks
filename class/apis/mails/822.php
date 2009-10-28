@@ -1,4 +1,4 @@
-<?
+<?php
 
 define('EXT_MBSTRING',extension_loaded('mbstring'));
 

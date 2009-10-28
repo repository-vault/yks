@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 abstract class constraints_base extends myks_base {

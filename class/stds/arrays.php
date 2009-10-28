@@ -1,4 +1,4 @@
-<?
+<?php
 
 function make_tree($splat, $root=false, $inverted = false){
     $tree = array();

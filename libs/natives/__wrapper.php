@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class __wrapper implements ArrayAccess {
   private $__base;

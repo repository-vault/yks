@@ -1,4 +1,4 @@
-<?
+<?php
 
 class sql_func {
   static public function get_children($key, $table, $field, $depth=-1, $where = array()){

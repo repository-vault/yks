@@ -1,4 +1,4 @@
-<?
+<?php
 
 define('DTD_XHTML', RSRCS_PATH."/dtds/xhtml1-strict.dtd");
 

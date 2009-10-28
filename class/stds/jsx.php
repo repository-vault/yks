@@ -1,4 +1,5 @@
-<?
+<?php
+
 //if( 0&& DEBUG && preg_match_all('#&[\#a-z0-9\._]*?[^;a-z0-9\._]#',$str,$out))
 
 

@@ -1,4 +1,5 @@
-<?
+<?php
+
 /*	"Exyks display" by Leurent F. (131)
     distributed under the terms of GNU General Public License - © 2007 
 */
@@ -141,7 +142,7 @@ class dsp{
     static $rs=false; if(!$rs) $rs=array(
             date('z/Y',_NOW)=>'&date.today;',
             date('z/Y',_NOW-86400)=>'&date.yesterday;');
-    list($d,$m,$n,$Y,$H,$i,$s,$z,$N)=explode(',',date("d,m,n,Y,H,i,s,z,N",$date));
+    list($d,$m,$n,$Y,$H,$i,$s,$z,$N,$O)=explode(',',date("d,m,n,Y,H,i,s,z,N,O",$date));
     if($z<79 or $z>354)$a=4; elseif($z<172)$a=1; elseif($z<265)$a=2;else $a=3; //a = season
     if('0/1970'=="$z/$Y") return "&date.0;";
     if($date==2147483647) return "&date.never;";

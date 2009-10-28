@@ -1,4 +1,4 @@
-<?
+<?php
 
 class http {
   const LWSP='[\s]';

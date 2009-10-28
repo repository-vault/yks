@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
 * @command_alias types   httpd_tunnel manage_types

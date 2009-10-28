@@ -1,4 +1,4 @@
-<?
+<?php
 
 class doc_parser {
 

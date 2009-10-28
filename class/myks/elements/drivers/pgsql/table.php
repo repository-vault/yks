@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class table extends table_base {

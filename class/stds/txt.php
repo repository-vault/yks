@@ -1,4 +1,5 @@
-<?
+<?php
+
 function truncate($str,$len=10){return preg_replace('#&[^;]*?$#m','…',mb_strimwidth($str,0,$len,'…'));}
 function unicode_decode($str){return preg_replace('#\\\u([0-9a-f]{4})#e',"unicode_value('\\1')",$str);}
 function unicode_value($code) {

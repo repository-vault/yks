@@ -1,4 +1,4 @@
-<?
+<?php
 
 class url  extends __native {
   protected $_accessibles = array('query');

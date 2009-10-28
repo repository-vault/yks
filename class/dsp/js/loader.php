@@ -1,4 +1,5 @@
-<?
+<?php
+
 include_once CLASS_PATH."/stds/files.php";
 define("YUI_COMPRESSOR","yuicompressor-2.2.4");
 define("JAVA_PATH", ($tmp=$config->apis->java['bin_path'])?$tmp:"java");

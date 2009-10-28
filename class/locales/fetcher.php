@@ -1,4 +1,5 @@
-<?
+<?php
+
 /*
   Public : fetch_all() :
     store in memory (data::load) for every language

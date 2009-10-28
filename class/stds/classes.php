@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class classes {
@@ -32,6 +32,8 @@ class classes {
   }
 
   static function autoload($class_name){
+    if(!$class_name) return false;
+
     $class_name = strtolower($class_name);
     if(isset(self::$classes_paths[$class_name]))
          $file = self::$classes_paths[$class_name];
@@ -52,6 +54,8 @@ class classes {
   }
 
   private static function init($class_name){
+    if(!$class_name) return false;
+
     if(!class_exists($class_name))
         throw new Exception("Unable to load $class_name");
     if(!self::$call_init)

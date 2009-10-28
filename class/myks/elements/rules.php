@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 abstract class rules_base extends myks_base {

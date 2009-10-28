@@ -1,4 +1,5 @@
-<?
+<?php
+
 /*
   Entity scanner for special dyn_entities configuration directive
   dyn_entities accept (relative) complex configuration an might be used for 

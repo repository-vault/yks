@@ -1,4 +1,4 @@
-<?
+<?php
 
 function rise_xml($tree){
     $str ='';

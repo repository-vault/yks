@@ -1,4 +1,4 @@
-<?
+<?php
 
 $svn_url="http://svn.mootools.net/trunk/Source/";
 

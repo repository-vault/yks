@@ -1,4 +1,5 @@
-<?
+<?php
+
 /*
 Compress CSS rules
 */

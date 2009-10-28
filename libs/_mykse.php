@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class _mykse extends _sql_base {

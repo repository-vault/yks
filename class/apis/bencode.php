@@ -1,4 +1,4 @@
-<?
+<?php
 
 // Bencode - decode by 131, rosk :]
 

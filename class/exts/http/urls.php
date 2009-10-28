@@ -1,4 +1,4 @@
-<?
+<?php
 
 class urls {
   private static $tlds = false;

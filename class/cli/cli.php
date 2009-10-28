@@ -1,4 +1,4 @@
-<?
+<?php
 
 class cli {
   const OS_UNIX = 1;

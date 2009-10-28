@@ -1,4 +1,4 @@
-<?
+<?php
  
 
 class Auth_Domyks extends AuthPlugin {

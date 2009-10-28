@@ -1,4 +1,5 @@
-<?
+<?php
+
 include_once CLASS_PATH."/mails/mail_base.php";
 include_once CLASS_PATH."/apis/mails/mime_part.php";
 include_once CLASS_PATH."/apis/mails/mime_functions.php";

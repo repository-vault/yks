@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class mail_base {
   public $vars_list;

@@ -1,4 +1,5 @@
-<?return array(
+<?php
+return array(
 'ac'=>1,
 'com.ac'=>2,
 'edu.ac'=>2,
