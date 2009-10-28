@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Selectors_Filters {
 

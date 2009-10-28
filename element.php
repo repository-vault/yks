@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Element extends XHTMLElement {
 

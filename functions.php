@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 Element::__register("Forms");

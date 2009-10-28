@@ -1,4 +1,5 @@
-<?
+<?php
+
 include "smartxml.php";
 include "xhtmlelement.php";
 include "element.php";

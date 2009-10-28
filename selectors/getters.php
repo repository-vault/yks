@@ -1,4 +1,5 @@
-<?
+<?php
+
 class Selectors_Getters {
 
   static function descendant($found, $self, $tag, $id, &$uniques){ // ' '

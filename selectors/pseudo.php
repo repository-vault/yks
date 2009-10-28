@@ -1,4 +1,5 @@
-<?
+<?php
+
 class Selectors_Pseudo {
 
   static function resolve($name, $fallback=false){
