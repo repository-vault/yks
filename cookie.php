@@ -4,13 +4,13 @@
 
 class cookie {
   private $name;
-  private $value;
+  public $value;
 
   private $url;
   private $expire;
   private $domain_restricted;
 
-  function __construct($name, $value, $host, $extras){
+  function __construct($name, $value, $host, $extras = ''){
     $this->name  = $name;
     $this->value = $value;
 
