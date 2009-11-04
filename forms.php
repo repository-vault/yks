@@ -35,7 +35,7 @@ class Forms {
             $value = $el->get("innerHTML");
         } elseif($tag == "input") {
             $type = strtolower($el['type']);
-            if(in_array($type, array('file', 'submit', 'image')))
+            if(in_array($type, array('file', 'submit', 'image', 'button')))
                 continue;
             if(in_array($type, array('radio', 'checkbox')) ) {
                 if(!$el['checked']) continue;
