@@ -55,24 +55,27 @@ class window extends __native {
   function go($url, $method = 'GET', $data  = array(), $enctype =false) {
 
     $url = url::from($url);
+    $old_referer = null;
+
     if(is_null($this->url))
         $this->url = $url;
     else {
-        $this->referer = $this->url;
+        $old_referer = $this->url;
         $this->url = $this->url->merge($url); //history HERE
     }
     if(!$this->url->is_browsable)
         throw new Exception("Invalid url");
 
-
+    $this->referer = $this->url;
     $lnk = $this->browser->get_lnk($this->url);
 
     $headers = array();
-    if($this->referer) $headers["Referer"] = (string)$this->referer;
+    if($old_referer)
+        $headers["Referer"] = (string)$old_referer;
 
-        $query = new request($this->url, $method, $data, $enctype );
-        $query->addHeaders($headers);
-        $lnk->execute($query);
+    $query = new request($this->url, $method, $data, $enctype );
+    $query->addHeaders($headers);
+    $lnk->execute($query);
 
     $content_type = $lnk->response['headers']['Content-Type'];
         //could abort 
