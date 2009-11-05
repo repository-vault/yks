@@ -194,7 +194,7 @@ class myks_runner {
 *  Open a http lnk on itself, and search for a ping file
 *  Check whenever cli is able to talk to httpd
 */
-  private static function http_auto_check() {
+  public static function http_auto_check() {
     self::cache_dir_check();
 
     $ping_file = CACHE_PATH."/ping";
@@ -203,7 +203,7 @@ class myks_runner {
     $res = file_put_contents($ping_file, $rnd);
     if(!$res)
         throw new Exception("Make sure cache directory '".CACHE_PATH."' is world writable");
-
+ 
     $http_contents = self::wget_dnsless($ping_url);
     unlink($ping_file);
 

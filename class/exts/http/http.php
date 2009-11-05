@@ -8,7 +8,13 @@ class http {
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    classes::extend_include_path(CLASS_PATH."/exts/http");
+    classes::register_class_paths(array(
+        'header'  => CLASS_PATH."/exts/http/header.php",
+        'request' => CLASS_PATH."/exts/http/request.php",
+        'sock'    => CLASS_PATH."/exts/http/sock.php",
+        'url'     => CLASS_PATH."/exts/http/url.php",
+        'urls'    => CLASS_PATH."/exts/http/urls.php",
+    ));
   }
 
   static function parse_headers($headers_str){

@@ -108,6 +108,38 @@ class files {
   }
 
 
+    //stat() equivalent on distant (and resolved) or local paths
+    //return false on error
+  public static function dstat($path){
+    $parsed_url = parse_url($path);
+    $is_local_path  = !isset($parsed_url['host']);
+    if($is_local_path)
+        return stat($path);
+
+    $http_sucess   = array(200);
+    $http_redirect = array(302, 301);
+    while(true) {
+        $res = http::head($path);
+        //redirect here
+
+        if(in_array($res['code'], $http_sucess)) break;
+        elseif(in_array($res['code'], $http_redirect)) {
+            $path = die("hERE");
+            continue;
+        }
+        return false;   
+    }
+
+    $size  = $res['headers']['Content-Length']->value;
+    $mtime = $res['headers']['Last-Modified']->value;
+    $mtime = $mtime?strtotime($mtime):0;
+
+    $data = compact('size', 'mtime');
+
+    return $data;
+  }
+
+
     //creer une archive et en retourne le path
   public static function archive($files_list, $options =  array() ){
 

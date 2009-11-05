@@ -19,6 +19,11 @@ class cli {
 
   }
 
+  static function trace($msg) {
+    $args = func_get_args();
+    if(count($args) > 1) echo vsprintf(array_shift($args), $args).LF;
+    else echo $msg.LF;
+  }
 
   static function console_out($str){
     return charset_map::Utf8StringDecode($str, charset_map::$_toUtfMap);
