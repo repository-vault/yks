@@ -55,6 +55,12 @@ class window extends __native {
   function go($url, $method = 'GET', $data  = array(), $enctype =false) {
 
     $url = url::from($url);
+
+    if($method == 'GET' && $data) {
+        $url->set_query(http_build_query($data, null, '&'));
+        $data = false;
+    }
+
     $old_referer = null;
 
     if(is_null($this->url))
@@ -119,11 +125,6 @@ class window extends __native {
 
     $action  = $form['action'] ? new url((string) $form['action']) : $this->url;
     $method  = pick_in(strtoupper($form['method']), "GET", array("GET", "POST"));
-
-    if($method == 'GET' && $data) {
-        $action->set_query(http_build_query($data, null, '&'));
-        $data = false;
-    }
 
     $this->go($action, $method, $data, $enctype );
   }
