@@ -2,6 +2,10 @@
 
 class dom {
 
+  static function init(){
+    classes::extend_include_path(CLASS_PATH."/exts/selectors");
+  }
+
   static function simplexml_load_html($str, $charset = "utf-8", $class="Element"){
 
     $str = self::html_prepare_utf8($str, $charset);
@@ -25,7 +29,10 @@ class dom {
     return $res;
   }
 
-
+  static function simplexml_load_uri($uri){
+    $contents = file_get_contents($uri);
+    return self::simplexml_load_html($contents);
+  }
 
 /*
   dom::LoadHTML behave wrong when charset != utf-8

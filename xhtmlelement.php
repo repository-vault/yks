@@ -8,7 +8,7 @@ class XHTMLElement extends SmartXML {
   }
 
   function getElementById($id){
-    return $this->xpathElement("//*[@id='$id']");
+    return $this->xpathElement("descendant-or-self::*[@id='$id']");
   }
 
   function getElementsByTagName($tag){
