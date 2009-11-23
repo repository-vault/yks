@@ -1,4 +1,4 @@
-<?=XML_VERSION?>
+<?=XML_HEAD?>
 <rss version="2.0">
 <channel>
     <title><?=$config->head->title?></title>
