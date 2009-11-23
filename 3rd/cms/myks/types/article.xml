@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_cms_nodes_article">
+    <fields>
+      <field type="node_id"/>
+      <field type="lang_key"/>
+      <field type="text" name="node_contents"/>
+      <field type="title" name="node_title"/>
+    </fields>
+  </table>
+</myks>

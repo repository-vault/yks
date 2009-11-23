@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_cms_nodes_list">
+    <fields>
+      <field type="node_id"/>
+      <field type="node_type"/>
+      <field type="node_id" name="parent_id"/>
+      <field type="title" name="node_key"/>
+      <field type="count" name="node_order"/>
+    </fields>
+  </table>
+  <table name="ks_cms_nodes_log">
+    <fields>
+      <field type="node_id"/>
+      <field type="now" name="node_date"/>
+      <field type="text" name="node_state"/>
+    </fields>
+  </table>
+  <mykse type="node_id" birth="ks_cms_nodes_list" null="null">
+    <int/>
+  </mykse>
+  <mykse type="node_type">
+    <enum>
+      <val>link</val>
+      <val>container</val>
+      <val>article</val>
+      <val>template</val>
+    </enum>
+  </mykse>
+</myks>

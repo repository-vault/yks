@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_cms_nodes_link">
+    <fields>
+      <field type="node_id"/>
+      <field type="node_id" name="link_dest_node"/>
+      <field type="url" name="link_dest_href"/>
+      <field type="title" name="link_target"/>
+      <field type="title" name="link_reverse"/>
+    </fields>
+  </table>
+</myks>
