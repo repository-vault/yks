@@ -23,7 +23,6 @@ var Jsx = new Class({
   fire:function(chain){
     this.options.headers = {'Screen-Id':Screen.screen_id};
     if(this.options.target) this.options.headers['Content-Target'] = this.options.target;
-    if(this.options.lang) this.options.headers['Accept-Language'] = this.options.lang;
     http_lnk(this.options, this.options.url, this.options.data, function(ret){
 
     if(!!($type(ret)=="document" || ret.xml)) {

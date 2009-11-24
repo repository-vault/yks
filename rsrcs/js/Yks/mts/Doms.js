@@ -6,16 +6,22 @@ var Doms = {
   scan: function(context){
     var infos;
     context = $(context || window.document.documentElement);
+
     for(var uid in this.loaders) { infos = this.loaders[uid];
         if(!infos.match) continue;
+
         context.getElements(infos.match).each(
           function(el){ this.instanciate(infos['class'], el);}.bind(this));
-    } var focus = context.getElement('.autofocus'); if(focus) focus.focus();
+    }
+
+    var focus = context.getElement('.autofocus');
+    if(focus) focus.focus();
   },
   
   instanciate: function(klass){
     var args = Array.slice(arguments, 1);
-    if($type(klass)=='class')
+
+    if($type(klass)=='class' || $type(klass)=='function' )
         return new klass(args[0], args[1], args[2]);
 
     if($type(klass)=='string' && Doms.autoload(klass) )
@@ -28,6 +34,10 @@ var Doms = {
     if($type(klass)=='string' && ( window[klass] || Doms.autoload(klass)) )
         return window[klass];
     //throw
+  },
+
+  register:function(mask, klass){
+    Doms.loaders['inline_class://' + mask] = {'class': klass, match: mask };
   },
   
   autoload: function(name) {

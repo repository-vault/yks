@@ -13,6 +13,8 @@
 .noia0_lu, .noia0_ru { height:19px;max-height:19px;}
 .noia0_md { height:13px;}
 
+.noia0_u, .noia0_d { line-height:0px; }
+
 .noia0_mm {
 	background-image:url('/?/Yks/Imgs/bgs//7eb1da/13');
 	background-image:url('mm');
