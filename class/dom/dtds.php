@@ -24,7 +24,7 @@ class dtd {
 
   function __construct($dtd_file) {
 		// see http://bugs.php.net/bug.php?id=40956&edit=1
-	$tmp=XML_VERSION."<!DOCTYPE tmp [ <!ENTITY % tmp SYSTEM '$dtd_file'> %tmp; ]><tmp/>";
+	$tmp=XML_HEAD."<!DOCTYPE tmp [ <!ENTITY % tmp SYSTEM '$dtd_file'> %tmp; ]><tmp/>";
 	$doc=new DOMDocument("1.0"); $doc->loadXML($tmp,LIBXML_YKS);
 	$str=$doc->doctype->internalSubset;unset($doc);$tmp='';
 	while( preg_match_all(self::$INTERNALS_MASK, $str, $out) && $tmp!=$str)
@@ -57,4 +57,3 @@ class dtd {
   static function ent_add($src,$ent,$str){ $dtd=new dtd($src);$dtd->entities[$ent]=$str;$dtd->save();}
 }
 
-?>

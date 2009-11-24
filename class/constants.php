@@ -39,7 +39,8 @@ define('SESS_TRACK_ERR', 'SESS_TRACK_ERR');
 define('HEADER_FILENAME_MASK', 'Content-disposition: form-data;name="filename";filename="%s"');
 
     //XHTML stuffs
-define('XML_VERSION','<?xml version="1.0" encoding="utf-8"?>'.LF);
+define('XML_HEAD','<?xml version="1.0" encoding="utf-8"?>'.LF);
+define('XML_VERSION', XML_HEAD);
 define('XML_DOCTYPE','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "">'.LF);
 define('XML_EMPTY', '<![CDATA[]]>');
 
@@ -60,7 +61,6 @@ define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
 define("CONST_MASK", "#\[([A-Z_]+)\]#e");
 define("CONST_REPL", '$1');
-define("CONST_LOCALES", '#^(?!FLAG_).*(?<!_PATH|_MASK)$#');
 
 define("FUNC_MASK","#[a-z0-9_:]+\(.*?\)#e");
 

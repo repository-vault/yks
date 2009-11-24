@@ -6,7 +6,8 @@ class interactive_runner {
   private $commands_list;
 
   private $command_pipe;
-
+  private $file;
+  
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
@@ -14,6 +15,9 @@ class interactive_runner {
   }
 
   private function __construct($obj){
+
+    $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
+
     $this->obj = $obj;
     $this->className = get_class($this->obj);
 
@@ -22,14 +26,13 @@ class interactive_runner {
 
     $this->reflection_scan("runner", $this); //register runners own commands
 
-    $this->command_aliases("runner", "help", "?");
-    $this->command_aliases("runner", "quit", "q", "exit");
-
     $this->help();
-
   }
 
 
+/**
+* @alias ?
+*/
   function help(){
     $msgs = array();
 
@@ -139,6 +142,10 @@ class interactive_runner {
       return array($command_infos['callback'], $command_args);
   }
 
+/**
+* @alias q
+* @alias exit
+*/
   function quit(){
     $this->command_pipe = SIGTERM;
     rbx::ok("Quit");
@@ -174,7 +181,9 @@ class interactive_runner {
         call_user_func_array($command_callback, $command_args);
       } catch(Exception $e){
         echo CRLF;
-        rbx::box("!! Uncatched exception !!", $e->getMessage(), "trace", $e->getTraceAsString());
+        $msg = $e->getTraceAsString();
+        $msg = strtr($msg, array(YKS_PATH=>'yks', getcwd().DIRECTORY_SEPARATOR => ''));
+        cli::box("!! Uncatched exception !!", $e->getMessage(), "trace", $msg, array('trim'));
         continue;
       }
 
@@ -215,22 +224,14 @@ class interactive_runner {
 
       $this->command_register($command_ns, $command_key, $callback, $usage);
 
-      if($doc['args']['alias']) {
-        $aliases = array_fill_keys($doc['args']['alias']['computed'], false);
-        $this->command_aliases($command_ns, $command_key, $aliases);
+      if($aliases = $doc['args']['alias']['values']) foreach($aliases as $args) {
+        $alias_name  = array_shift($args);
+        if(!( $alias_name && $command_key)) continue;
+        $this->command_aliases($command_ns, $command_key, array($alias_name=>$args) );
       }
 
     }
 
-      //aliases with args
-    $doc = doc_parser::parse($reflect->getDocComment());
-    $aliases = $doc['args']['command_alias'];
-    if($aliases) foreach($aliases['values'] as $args) {
-        $alias_name  = array_shift($args);
-        $command_key = array_shift($args);
-        if(!( $alias_name && $command_key)) continue;
-        $this->command_aliases($command_ns, $command_key, array($alias_name=>$args) );
-    }
     
   }
 

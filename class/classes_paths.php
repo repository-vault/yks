@@ -27,6 +27,7 @@ classes::register_class_paths(array(
     "tpls"                => CLASS_PATH."/exyks/tpls.php",
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
+    "json_parser"         => CLASS_PATH."/apis/json_parser.php",
     "win32_service"       => CLASS_PATH."/cli/win32_service.php",
 
     "myks_parser"         => CLASS_PATH."/myks/parser.php",
@@ -38,7 +39,7 @@ classes::register_class_paths(array(
     "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
 
 
-
+    "dom"                 => CLASS_PATH."/exts/selectors/dom.php",
 
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
