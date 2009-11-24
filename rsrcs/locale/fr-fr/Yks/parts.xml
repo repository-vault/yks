@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="fr-fr">
+<!-- Rights & user management -->
+  <item key="access_lvl.access">Accès</item>
+  <item key="access_lvl.action">Action</item>
+  <item key="access_lvl.admin">Admin</item>
+<!-- Errors -->
+  <item key="err_sql">Une erreur inconnue est survenue dans le moteur de données</item>
+  <item key="err_451">Le site est temporairement indisponible en raison d'une activité de maintenance. Veuillez accepter toutes nos excuses pour la gêne occasionnée.</item>
+  <item key="err_452">Impossible de contacter le webmaster</item>
+  <item key="err_404">Impossible de trouver le fichier demandé</item>
+  <item key="err_403">Vous n'avez pas les autorisations nécessaires</item>
+  <item key="error.action_canceled">Vous n'avez pas l'autorisation d'effectuer cette action.</item>
+<!-- Format -->
+  <item key="DATE_DAY"><![CDATA[&day_$N; $d &month_$n; $Y]]></item>
+<!-- auth -->
+  <item key="auth_failed">Identification impossible</item>
+  <item key="auth_success">Identification réussie</item>
+  <item key="auth_deco">Vous êtes deconnecté</item>
+  <item key="action.deco">Se déconnecter</item>
+  <item key="auth_type.auth_password">Authentification par mot de passe</item>
+  <item key="restreint_access">Zone à accès restreint</item>
+  <item key="action.login">Se connecter</item>
+  <item key="your_login">Login</item>
+  <item key="your_pswd">Password</item>
+  <item key="your_email">E-mail</item>
+<!-- Bug -->
+  <item key="bug_explain"><![CDATA[Please report every abnormal behavior you might encounter on the <a href='&SITE_URL;'>&SITE_URL;</a> website. At the same time, do not hesitate to tell us suggestions if you have some.]]></item>
+<!-- Date -->
+  <item key="date.today">Aujourd'hui</item>
+  <item key="date.yesterday">Hier</item>
+  <item key="date.0">Date inconnue</item>
+  <item key="date.never">Jamais</item>
+<!-- days -->
+  <item key="day_1">Lundi</item>
+  <item key="day_2">Mardi</item>
+  <item key="day_3">Mercredi</item>
+  <item key="day_4">Jeudi</item>
+  <item key="day_5">Vendredi</item>
+  <item key="day_6">Samedi</item>
+  <item key="day_7">Dimanche</item>
+  <item key="day_short_1">Lun</item>
+  <item key="day_short_2">Mar</item>
+  <item key="day_short_3">Mer</item>
+  <item key="day_short_4">Jeu</item>
+  <item key="day_short_5">Ven</item>
+  <item key="day_short_6">Sam</item>
+  <item key="day_short_7">Dim</item>
+<!-- months -->
+  <item key="month_1">Janvier</item>
+  <item key="month_2">Février</item>
+  <item key="month_3">Mars</item>
+  <item key="month_4">Avril</item>
+  <item key="month_5">Mai</item>
+  <item key="month_6">Juin</item>
+  <item key="month_7">Juillet</item>
+  <item key="month_8">Août</item>
+  <item key="month_9">Septembre</item>
+  <item key="month_10">Octobre</item>
+  <item key="month_11">Novembre</item>
+  <item key="month_12">Décembre</item>
+  <item key="month_short_1">Jan</item>
+  <item key="month_short_2">Fev</item>
+  <item key="month_short_3">Mars</item>
+  <item key="month_short_4">Avr</item>
+  <item key="month_short_5">Mai</item>
+  <item key="month_short_6">Juin</item>
+  <item key="month_short_7">Juil</item>
+  <item key="month_short_8">Aout</item>
+  <item key="month_short_9">Sept</item>
+  <item key="month_short_10">Oct</item>
+  <item key="month_short_11">Nov</item>
+  <item key="month_short_12">Dec</item>
+<!-- icons -->
+  <item key="icon.trash"><![CDATA[&COMMONS_URL;/css/Yks/icons/trash.png]]></item>
+<!-- mykse -->
+  <item key="bool.true">Oui</item>
+  <item key="bool.false">Non</item>
+  <item key="boolean.true"><![CDATA[&bool.true;]]></item>
+  <item key="boolean.false"><![CDATA[&bool.false;]]></item>
+  <item key="bool.t"><![CDATA[&bool.true;]]></item>
+  <item key="bool.f"><![CDATA[&bool.false;]]></item>
+  <item key="option.choose">-- Choisissez --</item>
+  <item key="select.choose"><![CDATA[<option value=''>&option.choose;</option>]]></item>
+<!-- Users & addrs -->
+  <item key="addr_field.country_code">Pays</item>
+  <item key="addr_field.addr_gender">Genre</item>
+  <item key="addr_field.addr_field1">Adresse</item>
+  <item key="addr_field.addr_field2">Adresse (suite)</item>
+  <item key="addr_field.addr_zipcode">Code Postal</item>
+  <item key="addr_field.addr_state">Departement</item>
+  <item key="addr_field.addr_phone">N° tél.</item>
+  <item key="addr_field.addr_fax">N° fax</item>
+  <item key="addr_field.addr_gsm">N° mobile</item>
+  <item key="addr_field.addr_firstname">Prénom</item>
+  <item key="addr_field.addr_lastname">Nom</item>
+  <item key="addr_field.addr_company">Société</item>
+  <item key="addr_field.addr_mail">E-mail</item>
+  <item key="addr_gender.Mme">Madame</item>
+  <item key="addr_gender.Mlle">Mademoiselle</item>
+  <item key="addr_gender.M">Monsieur</item>
+  <item key="addr_type.billing">Coordonnées de facturation</item>
+  <item key="addr_type.delivery">Coordonnées de livraison</item>
+  <item key="addr_type.main">Coordonnées principales</item>
+  <item key="user_type.ks_users">Compte utilisateur</item>
+  <item key="addr_mail.intro">Monsieur</item>
+  <item key="user_profile.user_name">Nom</item>
+  <item key="user_profile.user_lang">Langue</item>
+  <item key="user_profile.user_mail">E-mail</item>
+  <item key="user_profile.auth_type">Mode de connexion</item>
+  <item key="user_profile.user_pswd">Mot de passe</item>
+  <item key="user_profile.user_login">Login</item>
+<!-- rte/wyswyg -->
+  <item key="wysiwyg.valid_exts">formats admis</item>
+  <item key="wysiwyg.file_attach">Envoyer un fichier</item>
+  <item key="wysiwyg.file_name">Fichier</item>
+  <item key="action.upload_tmp">Envoyer</item>
+</locale>

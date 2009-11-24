@@ -1,9 +1,0 @@
-<!ENTITY bool.true "Yes">
-<!ENTITY bool.false "No">
-
-<!ENTITY bool.t "&bool.true;">
-<!ENTITY bool.f "&bool.false;">
-
-
-<!ENTITY boolean.true "Yes">
-<!ENTITY boolean.false "No">

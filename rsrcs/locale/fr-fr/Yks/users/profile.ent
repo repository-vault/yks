@@ -1,7 +1,0 @@
-
-<!ENTITY user_profile.user_name "Nom">
-<!ENTITY user_profile.user_lang "Langue">
-<!ENTITY user_profile.user_mail "E-mail">
-<!ENTITY user_profile.auth_type "Mode de connexion">
-<!ENTITY user_profile.user_pswd "Mot de passe">
-<!ENTITY user_profile.user_login "Login">
