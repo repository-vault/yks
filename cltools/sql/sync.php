@@ -1,10 +1,7 @@
 <?php
 
 
-/**
-* @command_alias up sync up
-* @command_alias down sync down
-*/
+
 class sql_sync {
   const file_export_safe_size = 1024;
   const file_export_name      = "sync_data.tmp.sql";
@@ -23,7 +20,10 @@ class sql_sync {
     if(is_file($this->tmp_file)) unlink($this->tmp_file);
   }
 
-        //controler
+/**  controler
+* @alias up up
+* @alias down down
+*/
   function sync($way){
     if($way == 'up') list($from, $to) = $this->coords;
     else            list($to, $from) = $this->coords;

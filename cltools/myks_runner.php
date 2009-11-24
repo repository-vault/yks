@@ -1,9 +1,6 @@
 <?php
 
-/**
-* @command_alias types   httpd_tunnel manage_types
-* @command_alias locales httpd_tunnel manage_locales
-*/
+
 class myks_runner {
 
   var $xml_filename;
@@ -52,11 +49,13 @@ class myks_runner {
     interactive_runner::start(new sql_runner());
   }
 
-  function manage_sql(){
-    $sql = new sql_runner();
-    $sql->scan_views();
-    $sql->scan_procedures();
-    $sql->scan_tables();
+  function manage_sql($run_queries = false){
+    try {
+        $sql = new sql_runner();
+        $sql->go($run_queries);
+    } catch(Exception $e){
+        rbx::error("Sql management failure");
+    }
   }
 
 
@@ -90,6 +89,8 @@ class myks_runner {
 
 /**
 * cli tunneling for APC related features
+* @alias types   manage_types
+* @alias locales manage_locales
 */
   function httpd_tunnel($command){
     self::http_auto_check(); //check self http lookup

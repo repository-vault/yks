@@ -18,7 +18,8 @@ class sql_runner {
 
     include_once CLASS_PATH."/myks/elements.php";
     include_once CLASS_PATH."/myks/generator.php";
-
+    classes::register_class_path("pgsql_auto_inc_sync",
+        CLASS_PATH."/myks/elements/drivers/pgsql/misc/auto_inc_sync.php");
 
     define('END', ";\r\n");
 
@@ -56,7 +57,7 @@ class sql_runner {
     rbx::title("Starting SQL driver ".SQL_DRIVER);
 
     $myks_parser          = new myks_parser(self::$myks_config);
-    cli::box("Scanning : mykses paths", $myks_parser->myks_paths);
+    cli::box("Scanning : mykses paths", '● '.join(LF.'● ', $myks_parser->myks_paths));
 
     $types_xml            = $myks_parser->out("mykse");
     $tables_xml           = $myks_parser->out("table");
@@ -80,21 +81,40 @@ class sql_runner {
 
     myks_gen::init($this->types_xml, $tables_xml);
 
-    $this->views_list = $this->dependencies_ordering();
+    $this->views_list = $this->dependencies_scanner();
 
+        //there is no need for tables_ghosts_views to be in myks_gen..
     myks_gen::$tables_ghosts_views = array_extract(
         array_map(array('sql', 'resolve'),
             array_keys($this->views_list)),'name'); //for table ghost exclusion
 
     $this->queries = array();
-
-    //if(APPLY_QUERIES) array_walk($this->queries, array('sql', 'query_raw'));
   }
 
+  function go($run_queries = false){
+    $this->scan_views();
+    $this->scan_procedures();
+    $this->scan_tables();
+    if($run_queries) $this->run_queries();
+  }
 
-  function scan_views(){
+  function run_queries(){
+    if(!$this->queries) {
+        rbx::ok("-- No queries to execute");
+        return;
+    }
+
+    cli::trace("-- Running %d queries", count($this->queries));
+    array_walk($this->queries, array('sql', 'query_raw'));
+
+    $this->queries = array(); 
+    rbx::ok("-- Queries done & reset");
+  }
+
+  function scan_views($run_queries = false){
     myks_gen::reset_types();
     rbx::title("Analysing views");
+    $this->dependencies_ordering();
 
 
     $deps_views = array();
@@ -121,13 +141,15 @@ class sql_runner {
 
         if($cascade) $deps_views[] = $name; //we worked on that view
 
-   }
-   rbx::line();
+    }
+
+    rbx::line();
+    if($run_queries) $this->run_queries();
   }
 
     
 
-  function scan_procedures(){
+  function scan_procedures($run_queries = false){
     myks_gen::reset_types();
     rbx::title("Analysing stored procedures");
     foreach($this->procedures_xml->procedure as $procedure_xml){
@@ -144,11 +166,16 @@ class sql_runner {
         $this->queries = array_merge($this->queries, $res);
         echo join(END, $res).END; flush();
         rbx::ok("-- end of definition");
-   }
-   rbx::line();
+    }
+
+    rbx::line();
+    if($run_queries) $this->run_queries();
  }
 
-  function scan_tables(){
+  function scan_tables($run_queries = false){
+    if(SQL_DRIVER == "pgsql")
+        pgsql_auto_inc_sync::doit($this->tables_xml, $this->types_xml);
+
     myks_gen::reset_types();
     rbx::title("Analysing database structure");
 
@@ -164,11 +191,13 @@ class sql_runner {
         $this->queries = array_merge($this->queries, $res);
         echo join(END, $res).END; flush();
     }
+
     rbx::line();
+    if($run_queries) $this->run_queries();
  }
 
 
-  private function dependencies_ordering(){
+  private function dependencies_scanner(){
     rbx::ok("Step 1 : scanning dependencies");
 
     $search     = "#`([a-z0-9_-]+)`#i";
@@ -185,11 +214,23 @@ class sql_runner {
         $views_list[$view_name]['dependencies'] = $dependencies;
     }
 
+    return $views_list;
+   }
+
+//sort the list of all views according to internal dependencies (void)
+   private function dependencies_ordering(){
+
+    $dependencies = array_filter(array_extract($this->views_list, 'dependencies'));
+    if(!$dependencies)
+        return;
+
+    foreach($dependencies as &$d) $d = '    ◦'.join(LF.'    ◦', $d);
+    cli::box("Dependencies are", mask_join(LF,$dependencies, "● %2\$s\n%1\$s"));
     rbx::ok("Step 2 : building recursive tree");
 
     $build_list = array();
 
-    foreach($views_list as $view_name=>$view_infos){
+    foreach($this->views_list as $view_name=>$view_infos){
 	$dependencies = $view_infos['dependencies'];
 	unset($view_infos['dependencies']);
 
@@ -211,8 +252,7 @@ class sql_runner {
 
     arsort($build_depth);
 
-    $views_list = array_sort($views_list,array_keys($build_depth));
-    return $views_list;
+    $this->views_list = array_sort($this->views_list,array_keys($build_depth));
   }
 
   private static function scan_depth($infos, &$build_depth, $depth=0,$path=array()){
