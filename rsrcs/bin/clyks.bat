@@ -1,0 +1,1 @@
+@php -r "include 'yks/cl.php';" %*
