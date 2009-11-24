@@ -9,31 +9,39 @@ class yks
   const FATALITY_CONFIG     = "config";
   const FATALITY_SITE_CLOSED     = "site_closed";
 
-  static function init($load_context = true, $call_init = true){
-    classes::register_class_path("exyks", CLASS_PATH."/exyks/exyks.php");
+  static function init($load_config = true){
+    classes::register_class_path("config", CLASS_PATH."/config.php");
+    classes::register_class_path("exyks",  CLASS_PATH."/exyks/exyks.php");
 
-    $paths = array(LIBS_PATH, CLASS_PATH);
-    $exts  = false;
+    classes::call_init(true);
+    classes::extend_include_path(LIBS_PATH, CLASS_PATH);
+    classes::activate();
+    if($load_config) self::load_config(SERVER_NAME);
+  }
 
-    if($load_context){
-        $host = strtolower($_SERVER['SERVER_NAME']);
-        if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
+  public static function load_config($host = SERVER_NAME){
 
-        $config_file = CONFIG_PATH."/$host.xml";
-        if(!is_file($config_file)) yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
-        $GLOBALS['config'] = $config =  config::load($config_file);
+    if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
 
-        self::$get = new yks();
-        if($config->include_path)
-            foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
-                $paths[] = paths_merge(ROOT_PATH, $path);
-        $exts = (string) $config->include_path['exts'];
-        $call_init = ((string)$config->include_path['call_init']) != 'false';
-    }
+    $config_file = CONFIG_PATH."/$host.xml";
+
+    if(!is_file($config_file))
+        yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
+    $GLOBALS['config'] = $config =  config::load($config_file);
+
+    self::$get = new yks();
+    $paths = array();
+    if($config->include_path)
+        foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
+            $paths[] = paths_merge(ROOT_PATH, $path);
+    $exts = (string) $config->include_path['exts'];
+    $call_init = ((string)$config->include_path['call_init']) != 'false';
 
     classes::extend_include_path($paths);
-    classes::activate($exts, $call_init);
+    classes::activate($exts); //it's okay to activate again, autoload seems to be smart enough
+    classes::call_init($call_init);
   }
+
 
   static function fatality($fatality, $details=false, $render_mode="html"){
     if($details) error_log("[FATALITY] $details");

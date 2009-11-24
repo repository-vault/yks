@@ -38,17 +38,17 @@ define('Ex/yks', 'A cloudy tool');
   define('CLTOOLS_PATH', YKS_PATH.'/cltools');
 
   define('EXYKS',        YKS_PATH.'/index.php');
+  define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
 
 include "$class_path/constants.php";
-include "$class_path/config.php";
 include "$class_path/stds/classes.php";
 include "$class_path/zero_functions.php";
 include "$class_path/yks/yks.php";
 
 
+$load_config = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'] || defined('yks/cli');
 
-$load_context = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'] || defined('yks/cli');
-yks::init($load_context, true);
+yks::init($load_config);
 
 
 

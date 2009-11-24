@@ -4,7 +4,17 @@
 class xml {
   private static $dtds_paths = array();
 
-  static function load_file($file_path, $FPI){
+
+  static function load_file($file_path, $FLAGS = LIBXML_YKS, $FPI = false){
+    if(!$FPI) {
+        $doc = new DOMDocument('1.0','UTF-8');
+        $doc->formatOutput = false;
+        $doc->preserveWhiteSpace= false;
+        $tmp = $doc->load($file_path, $FLAGS);
+        return $tmp?$doc:false;
+    }
+
+
     $fpi = self::$dtds_paths[$FPI];
     if(!$fpi) throw new Exception("Unknow fpi");
 

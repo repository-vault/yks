@@ -19,12 +19,12 @@ class locales_fetcher {
 
     $base = array_merge($base_ns, array(
             'yks'   => RSRCS_PATH."/locale",
-            'here'  => './lang'
+            'here'  => './locale'
     ));
 
     foreach($languages as $lang_key)
         foreach($base as $ns=>$path)
-            $paths[$lang_key][$ns] = "$path/$lang_key";
+            $paths[$lang_key][$ns] = "$path"; ///$lang_key
 
     return $paths;
   }
@@ -42,7 +42,8 @@ class locales_fetcher {
     return false; // data::reload will fetch it, finally
   }
 
-  public static function fetch_all($trace=false){
+  public static function fetch_all(){
+
     $locales          = config::retrieve("locales");
     $languages        = exyks::retrieve('LANGUAGES');
 
@@ -57,11 +58,12 @@ class locales_fetcher {
             $tmp_paths[$lang_key][] = self::resolve_path(self::$locales_ns[$lang_key], $path['path']);
     } self::$locale_paths = $tmp_paths;
 
+
     if($locales->cache->sql) foreach($locales->cache->sql as $cache_def)
         self::$locale_tables[] = $cache_def['table'];
 
     $done = array();
-    data::store("entities", $done); //fallback no lang
+    data::store("entities_en-us", $done); //fallback no lang (en-us)
     if(!$languages_order) return $done;
 
     $entities = array();
@@ -77,15 +79,30 @@ class locales_fetcher {
 
     $files = array();
     if(self::$locale_paths[$lang_key]) foreach(self::$locale_paths[$lang_key] as $path)
-        $files = array_merge($files, files::find($path,'\.ent$',files::FIND_FOLLOWLINK));
+        $files = array_merge($files, files::find($path,'\.xml$',files::FIND_FOLLOWLINK));
 
-    foreach($files as $dtd_file)
-        $entities = array_merge($entities, dtd::ent_get($dtd_file));
+    foreach($files as $file)
+        $entities = array_merge($entities, self::ent_get($file, $lang_key));
 
     foreach(self::$locale_tables as $table_name)
         $entities = array_merge($entities, locales_sql_scanner::scan_all($table_name, $lang_key));
 
     return $entities;
+  }
+
+  private static function ent_get($xml_file, $lang_key){
+    $items = array();
+    $xml = simplexml_load_file($xml_file);
+    if(!$xml) return $items;
+    $attributes = attributes_to_assoc($xml, "xml", true);
+    if($lang_key != $attributes['lang'])
+        return $items;
+
+    foreach($xml->item as $item) {
+        $key = (string)$item['key'];
+        $items["&$key;"] = (string)$item;
+    }
+    return $items;
   }
 
 }

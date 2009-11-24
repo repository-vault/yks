@@ -84,7 +84,7 @@ class files {
   public static function download($file, $filename = false, $mime_type = false ){
 
     if($mime_type)
-        header($mime_type===true
+        header($mime_type===true //auto-detection
             ? "Content-Type: text/".self::ext($filename).";charset=UTF-8"
             : "Content-Type: ".end(explode(':', $mime_type,2))); //last part
 
@@ -139,6 +139,8 @@ class files {
     return $data;
   }
 
+  public static function tmppath($ext= 'tmp') {return tempnam(sys_get_temp_dir(), "$ext-").".$ext"; }
+
 
     //creer une archive et en retourne le path
   public static function archive($files_list, $options =  array() ){
@@ -148,7 +150,7 @@ class files {
     $zip = new ZipArchive();
 
 
-    $tmp_file = tempnam(sys_get_temp_dir(), "zip-").".zip";
+    $tmp_file = self::tmppath("zip");
     $zip->open($tmp_file, ZIPARCHIVE::CREATE);
 
     $base_dir   = $options['base_dir'];

@@ -11,7 +11,8 @@ class exyks {
   static public $href_ks;
   static public $page_def = 'home';
   static public $href;
-  static public $is_script = false;
+
+  static private $is_script = false;
   static private $customs = array();
 
   static function init(){
@@ -23,11 +24,13 @@ class exyks {
 
     $tmp = (string)$config->site['default_mode'];
     define('DEFAULT_MODE', $tmp?$tmp:"xml");
+
+    include CLASS_PATH."/exyks/browser.php"; //define $engine
+
     $default = ROBOT||IPOD ? "html" : DEFAULT_MODE;
     $mode =  isset($_SERVER['HTTP_SCREEN_ID']) || isset($_POST['jsx']) ?  "jsx" : $default;
     define('JSX', $mode == "jsx");
 
-        include CLASS_PATH."/exyks/browser.php"; //define $engine
     define('XSL_ENGINE', $engine);
 
     self::store('RENDER_MODE', JSX?"jsx":"full");
@@ -41,14 +44,14 @@ class exyks {
         'jsx-client'=>TYPE_XML,
     );
 
-    exyks::store('LANGUAGES', preg_split(VAL_SPLITTER, $config->locales['keys']));
+    self::store('LANGUAGES', preg_split(VAL_SPLITTER, $config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 
     $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
-    exyks::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
-    exyks::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
-    exyks::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
+    self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
+    self::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
+    self::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
   }
 
 
@@ -88,7 +91,7 @@ class exyks {
   }
 
     //website initialisation
-  static function context_prepare($base_path){
+  static function context_prepare($query_path){
     $config  = yks::$get->config;
 
     define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
@@ -103,10 +106,13 @@ class exyks {
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
-    $parsed = exyks_paths::parse($base_path);
+    $parsed_paths = exyks_paths::parse($query_path);
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
-    if(!self::$is_script) self::website_prepare($config);
-    return $parsed;
+
+    if(self::$is_script) array_shift($parsed_paths[0]);
+    else self::website_prepare($config);
+
+    return $parsed_paths;
   }
 
   static function website_prepare($config){
@@ -120,6 +126,7 @@ class exyks {
 
     exyks_session::init_core();
     exyks_security::sanitize();
+    locales_manager::init();
 
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load_classic();

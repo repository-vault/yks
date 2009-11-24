@@ -162,7 +162,8 @@ class dsp{
         $current=(substr(exyks::$href,0,strlen($link_key))==$link_key);
         $target=$link_infos['target']?"target=\"{$link_infos['target']}\"":'';
         $class=$children?"class='parent'":'';
-        $str.="<li $class>";
+        $id = isset($link_infos['id'])? "id='{$link_infos['id']}'":'';
+        $str.="<li $class $id>";
         $href  = $link_infos['href']?"href='{$link_infos['href']}'":'';
         $class = $current?"class='current'":'';
 

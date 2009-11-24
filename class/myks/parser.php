@@ -45,11 +45,16 @@ class myks_parser {
     if($myks_config->myks_paths) $ns = attributes_to_assoc($myks_config->myks_paths, self::prefix_ns);
     $this->myks_ns = self::default_ns($ns);
 
-    $tmp_paths = array();
-    if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path)
-        $tmp_paths[]=$this->resolve_path($path['path']);
+    $this->myks_paths = array();
+    if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path) {
+        $path = $this->resolve_path($path['path']);
+        if(!is_dir($path)) {
+            rbx::error("$path is not a directory, skipping");
+            continue;
+        }
+        $this->myks_paths[] = $path;
+    }
 
-    $this->myks_paths = $tmp_paths;
     $this->myks_gen   = new DomDocument("1.0");
 
     $main_xml = $this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
@@ -66,7 +71,7 @@ class myks_parser {
 
     foreach($files as $xml_file){
         try {
-            $doc = xml::load_file($xml_file, self::myks_fpi);
+            $doc = xml::load_file($xml_file, LIBXML_MYKS, self::myks_fpi);
         } catch(Exception $e){ rbx::error("$xml_file n'est pas valide"); continue; }
         $tmp_node = $this->myks_gen->importNode($doc->documentElement, true);
         $main_xml->appendChild($tmp_node);

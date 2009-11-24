@@ -3,8 +3,9 @@
 
 class classes {
   static $classes_paths   = array();
-  static $call_init       = false;
-  static private $inited_classes  = array();
+
+  private static $_call_init      = false;
+  private static $inited_classes  = array();
 
   static function extend_include_path($paths) {
     $new_paths      = is_array($paths)?$paths:func_get_args();
@@ -26,6 +27,10 @@ class classes {
     return true;
   }
 
+  static function call_init($status){
+    self::$_call_init = (bool) $status;
+  }
+
   static function register_class_paths($paths, $load = false){
     self::$classes_paths = array_merge(self::$classes_paths, $paths);
     if($load) array_walk(array_keys($paths), array(__CLASS__, 'autoload'));
@@ -44,9 +49,8 @@ class classes {
     self::init($class_name);
   }
 
-  static function activate($exts = false, $call_init = false){
+  static function activate($exts = false){
     if($exts) spl_autoload_extensions($exts);
-    if($call_init) self::$call_init = $call_init;
 
     spl_autoload_register(array(__CLASS__, "autoload"));
     spl_autoload_register(array(__CLASS__, "spl_autoload")); 
@@ -58,9 +62,13 @@ class classes {
 
     if(!class_exists($class_name))
         throw new Exception("Unable to load $class_name");
-    if(!self::$call_init)
+
+    if(!self::$_call_init)
         return;
-    
+
+    if(isset(self::$inited_classes[$class_name])) 
+        return;
+
     if(method_exists($class_name, "init"))
         call_user_func(array($class_name, 'init'));
   }

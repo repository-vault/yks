@@ -12,7 +12,7 @@ function xhtml_check_syntax($str,&$err=null,$doctype="XHTML"){
 
 	$doc=new DOMDocument('1.0','utf-8');
 	libxml_use_internal_errors(true);$old_error=error_reporting(0);
-	$str=XML_VERSION."<!DOCTYPE html SYSTEM '".DTD_XHTML."'>\n"
+	$str=XML_HEAD."<!DOCTYPE html SYSTEM '".DTD_XHTML."'>\n"
 		."<html xmlns='".XHTML."'><head><title>Test</title></head>
 		<body><div>$str</div></body>
 	</html>";

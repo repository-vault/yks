@@ -44,7 +44,7 @@ abstract class procedure_base {
 
     $params_types = array();
 
-    foreach($this->xml_def['params'] as $param)
+    if($this->xml_def['params']) foreach($this->xml_def['params'] as $param)
         $params_types[] = myks_gen::$type_resolver->convert($param['type'], 'search');
 
     //concat_comma(information_schema.parameters.ordinal_position)

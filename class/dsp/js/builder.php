@@ -78,7 +78,7 @@ print_r($build_list);
   private static function parse_header($file){
     $files_list = array();
     try {
-        $res = simplexml_import_dom(xml::load_file($file, self::js_fpi));
+        $res = simplexml_import_dom(xml::load_file($file, LIBXML_YKS, self::js_fpi));
     } catch(Exception $e){ rbx::error("Error parsing ".basename($file).", skipping"); }
 
     foreach($res->module as $module){

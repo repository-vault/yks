@@ -5,19 +5,22 @@
 */
 
 class locales_manager {
-
+  const CONST_LOCALES_MASK = '#^(?!FLAG_).*(?<!_PATH|_MASK)$#';
 
   public static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-    $accept_hash = md5($base);
 
-    if(!$user_lang = $_SESSION['langs'][$accept_hash]) {
+    $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    $current_hash = md5($base);
+
+    if($_SESSION['langs']['current_hash'] != $current_hash) {
+        $_SESSION['langs']['current_hash'] = $current_hash;
         $user_lang =  self::find_best_lang($base, exyks::retrieve('LANGUAGES'));
-        $_SESSION['langs'][$accept_hash] = $user_lang;
+        $_SESSION['langs']['current'] = $user_lang;
     }
 
+    $user_lang = $_SESSION['langs']['current'];
     define('USER_LANG', $user_lang);
 
     if(yks::$get->config->dyn_entities)
@@ -26,12 +29,15 @@ class locales_manager {
   }
 
   public static function translate($str, $lang = USER_LANG){
+
+    $entities = yks::$get->get("entities", $lang);
+    if(!$entities) $entities = array();
     $entities = array_merge(
-        yks::$get->get("entities", $lang),
-        retrieve_constants(CONST_LOCALES, "&%s;")
+        $entities,
+        retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
     ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
     if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
-    
+
     if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang);
 
     if(preg_match(MASK_INVALID_ENTITIES, $str)) {
