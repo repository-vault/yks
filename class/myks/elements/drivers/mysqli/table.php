@@ -9,7 +9,7 @@ class table extends table_base {
 
   protected $key_update=array("PRIMARY"=>"PRIMARY KEY", "UNIQUE"=>"UNIQUE ");
 
-  protected $keys_name = array(        // $this->table_name_safe, $field, $type
+  protected $keys_name = array(        // $field, $type
     'PRIMARY'=>"PRIMARY", 
     'UNIQUE'=>"%s_%s_%s",
   );
@@ -24,7 +24,8 @@ class table extends table_base {
 
   function alter_fields(){
     $todo = array();
-    $table_alter = "ALTER TABLE $this->table_name_safe ";
+    $table_alter = "ALTER TABLE `$this->table_name` ";
+
 
     foreach($this->fields_xml_def as $field_name=>$field_xml){
         $field_sql = $this->fields_sql_def[$field_name]; 
@@ -35,7 +36,7 @@ class table extends table_base {
         } else { //ajout de colonne
             $todo[] = "$table_alter ADD COLUMN `$field_name` {$field_xml['Type']}";
             if(!is_null($field_xml['Default'])){
-                $todo[] = "UPDATE `$this->name` SET `$field_name`={$field_xml['Default']}";
+                $todo[] = "UPDATE `$this->table_name` SET `$field_name`={$field_xml['Default']}";
             }
             $todo[] = "$table_alter MODIFY ".mykse::linearize($field_xml);
         }
@@ -46,7 +47,7 @@ class table extends table_base {
 
   function alter_keys(){
     $todo = array();
-    $table_alter = "ALTER TABLE $this->table_name_safe ";
+    $table_alter = "ALTER TABLE `$this->table_name` ";
     if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
     foreach($this->keys_sql_def as $key=>$def){
@@ -60,7 +61,7 @@ class table extends table_base {
     foreach($this->keys_xml_def as $key=>$def){
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "ADD CONSTRAINT ".sprintf($this->key_mask[$type],$key)." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON $this->table_name_safe $members";continue;}
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->table_name}` $members";continue;}
         if($type=="FOREIGN"){
             $add.=" REFERENCES {$def['refs']} ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
@@ -77,12 +78,12 @@ class table extends table_base {
 
  function table_fields(){
 
-    sql::query("SHOW FULL COLUMNS FROM $this->table_name_safe");
+    sql::query("SHOW FULL COLUMNS FROM `$this->table_name`");
     $test = sql::brute_fetch('Field');
-
     $table_cols=array();
 
     foreach($test as $column_name=>$column){
+
         $data=array(
             'Extra'=>$column['Extra'],
             'Default'=>$column['Default']?"'{$column['Default']}'":$column['Default'],
@@ -101,19 +102,20 @@ class table extends table_base {
   }
 
   function create() {
-    $todo=array();
+    $todo   = array(); 
+    $fields = array();
 
     foreach($this->fields_xml_def as $field_name=>$field_xml)
-        $todo[] = mykse::linearize($field_xml);
+        $fields[] = mykse::linearize($field_xml);
 
     foreach($this->keys_xml_def as $key=>$def) {
         if(($type=$def['type'])!='PRIMARY') continue;
-        $todo[]=$this->key_mask[$type]." (`".join('`,`',$def['members']).'`)';   
+        $fields[]=$this->key_mask[$type]." (`".join('`,`',$def['members']).'`)';   
     }
 
-    $query="CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t",$todo)."\n)";
-
-    return array($query);
+    $todo[] = "CREATE TABLE `$this->table_name` (\n\t".join(",\n\t",$fields)."\n)";
+    
+    return $todo;
     die($query);
 
     $description=(string)$this->xml->description;
