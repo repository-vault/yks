@@ -14,8 +14,15 @@ class myks {
   public static function get_tables_xml(){
     $myks_parser = new myks_parser(config::retrieve('myks'));
     $tables_xml  = $myks_parser->out("table");
+    return self::tables_reflection($tables_xml)->saveXML();
+  }
+
+/* RAW tables_xml data are not user-friendly
+   We should scan & transliterate it in a smarter container
+*/
+  public static function tables_reflection($tables_xml_raw) {
     $xsl_trans   = RSRCS_PATH."/xsl/metas/myks_tables.xsl";
-    return xsl::resolve($tables_xml, $xsl_trans)->saveXML();
+    return xsl::resolve($tables_xml_raw, $xsl_trans);
   }
 
 

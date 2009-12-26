@@ -106,7 +106,9 @@ class exyks {
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
+        /* $result_path, $href, $href_ks, $context_depths */
     $parsed_paths = exyks_paths::parse($query_path);
+    list(, self::$href, self::$href_ks) = $parsed_paths;
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
 
     if(self::$is_script) array_shift($parsed_paths[0]);

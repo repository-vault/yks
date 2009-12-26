@@ -30,4 +30,6 @@ if(in_array($cli_cmd, $cli_commands)) {  //from  CLI tunnel..
 
 } else $myks_runner->go();
 
+if($cli_cmd) exit;
+
 die(sys_end(exyks::tick('generation_start')));

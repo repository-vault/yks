@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="to_interval" type="interval">
+    <param name="time_in" type="bigint"/>
+    <def>
+DECLARE 
+BEGIN
+RETURN AGE( from_unix_timestamp(time_in), from_unix_timestamp(0));
+END;
+</def>
+  </procedure>
+  <procedure name="to_interval" type="interval">
+    <param name="time_in" type="float"/>
+    <def>
+DECLARE 
+BEGIN
+RETURN AGE( from_unix_timestamp(time_in), from_unix_timestamp(0));
+END;
+</def>
+  </procedure>
+</myks>

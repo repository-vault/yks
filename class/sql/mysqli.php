@@ -16,17 +16,28 @@ class sql {
    static public $rows;
    static public $log=true;
 
-  static function &connect($lnk=false){
-    if(!self::$servs) self::$servs=&yks::$get->config->sql;
+
+  static function init() {
+    if(!self::$servs) self::$servs = &yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
+
     if(self::$servs->prefixs)
     foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
         self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
+
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
-    
-    $serv=self::$servs->links->{$lnk=$lnk?$lnk:self::$link};
-    self::$lnks[$lnk]=@mysqli_connect($serv['host'],$serv['user'],$serv['pass'],$serv['db']);
-    if(!self::$lnks[$lnk]) return self::error();
+  }
+
+  static function &connect($lnk = false){
+    $lnk  = $lnk ? self::set_link($lnk) : self::$link;
+    $serv = attributes_to_assoc(self::$servs->links->$lnk);
+
+    $credentials = array($serv['host'],$serv['user'],$serv['pass'],$serv['db']);
+    self::$lnks[$lnk] = @call_user_func_array('mysqli_connect', $credentials);
+
+    if(!self::$lnks[$lnk] ) {
+        throw rbx::error("Unable to connect sql server");
+    }
 
     mysqli_set_charset(self::$lnks[$lnk],"utf8");
     return self::$lnks[$lnk];
@@ -34,10 +45,11 @@ class sql {
 
   static function query($query,$lnk=false){
 
-    $serv=self::$lnks[$lnk=$lnk?$lnk:self::$link];
-    if(!($serv||$serv=self::connect($lnk))) return false;
+    $lnk = $lnk?$lnk:self::$link;
+    $serv = self::$lnks[$lnk];
+    if(!($serv||$serv = self::connect($lnk))) return false;
     
-    $query=self::unfix($query); if(self::$log) self::$queries[]=$query;
+    $query = self::unfix($query); if(self::$log) self::$queries[]=$query;
     self::$result = mysqli_query($serv,$query);
 
     if(self::$result===false) return self::error(htmlspecialchars($query));
@@ -196,7 +208,7 @@ class sql {
     $arg = func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
   static function clean($str){
     return is_numeric($str)?$str:mysqli_escape_string(self::get_lnk(),$str); }
-  static function set_link($lnk){ self::$link=$lnk; }
+  static function set_link($lnk){ return self::$link = $lnk; }
 
   static function table_infos($table_name){ 
     return sql::qrow("SHOW TABLE STATUS LIKE '".trim(sql::unfix("`$table_name`"),'`')."'");

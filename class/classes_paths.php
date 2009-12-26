@@ -44,6 +44,9 @@ classes::register_class_paths(array(
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
     "myks_runner"         => CLTOOLS_PATH."/myks_runner.php",
+    "sync_runner"         => CLTOOLS_PATH."/sql/sync_runner.php",
     "sql_runner"          => CLTOOLS_PATH."/sql/runner.php",
-    "sql_sync"            => CLTOOLS_PATH."/sql/sync.php",
+    "sync_runner"         => CLTOOLS_PATH."/sql/sync_runner.php",
+    "__sql_sync"          => CLTOOLS_PATH."/sql/sync.php",
+    "sql_sync"            => CLTOOLS_PATH."/sql/".SQL_DRIVER."/sql_sync.php",
 ));

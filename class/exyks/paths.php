@@ -71,8 +71,8 @@ class exyks_paths {
 
   static function parse($url){
 
-    exyks::$href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
-    preg_match_all("#/([^/]+)(?://([^/]*))?#", exyks::$href_ks, $url_tree, PREG_SET_ORDER);
+    $href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
+    preg_match_all("#/([^/]+)(?://([^/]*))?#", $href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
          $url_tree= array(array(1=>ucfirst(SITE_CODE)));
@@ -86,14 +86,14 @@ class exyks_paths {
     $href_fold = "";
     $href_base = "";
 
-    $zero_args = substr(exyks::$href_ks, 0,strcspn(exyks::$href_ks, "/"));
+    $zero_args = array(substr($href_ks, 0,strcspn($href_ks, "/"))); //should be expode ;
     $result_path[] = array($subs_path, $subs_fold, "main", $zero_args);
 
     $value = strtok("|");
 
     foreach($url_tree as $tmp){
         list($node_name, $args_str) = array($tmp[1],$tmp[2]); 
-        $args = explode(';', "$args_str;;;;");
+        $args = self::parse_args($args_str);
 
             //sanitize all malicious attempts '/Admin/../config...'
         if(preg_match("#[.]#",$node_name) || $node_name=="main")
@@ -126,7 +126,7 @@ class exyks_paths {
     }
 
 
-    exyks::$href="$href_base/$node_name";
+    $href = "$href_base/$node_name";
         //si on a pas fini sur une feuille, utilisation de feuille par default
     if(!$node_name)
         $node_name = &exyks::$page_def;
@@ -134,9 +134,13 @@ class exyks_paths {
     $result_path[] = array($subs_path, $subs_fold, &$node_name, $args, $href_fold, $href_base);
 
 
-        /* $context, $href, $href_ks, $context_depths */
-    $res = array($result_path, exyks::$href, exyks::$href_ks, count($result_path) - 1, $value);
+        /* $result_path, $href, $href_ks, $context_depths */
+    $res = array($result_path, $href, $href_ks, count($result_path) - 1, $value);
     return $res;
+  }
+
+  static function parse_args($args_str){
+     return explode(';', "$args_str;;;;");
   }
 
 

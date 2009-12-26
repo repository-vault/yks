@@ -12,25 +12,32 @@ class sql {
    static private $pfx=array(
           '#&&#' => 'AND' // || is for concatenation !
    );
-   static private $lnks=array();
 
-  static function &connect($lnk=false){
+   static private $lnks = array();
+
+  static function init(){
     if(!self::$servs) self::$servs=&yks::$get->config->sql;
-    if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
+    if(!self::$servs)
+      throw rbx::error("Unable to load sql configuration.");
+
     if(self::$servs->prefixs)
     foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
         self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
 
     self::$pfx["#`(.*?)`#"] = "\"$1\"";
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
+  }
 
-    $lnk = $lnk?self::set_link($lnk):self::$link;
-    $serv=self::$servs->links->$lnk;
+  static function &connect($lnk = false){
+    $lnk  = $lnk?self::set_link($lnk):self::$link;
+    $serv = self::$servs->links->$lnk;
+
     if(!$serv['port'])$serv['port']= 5432;
     $sql_infos = "host='{$serv['host']}' port={$serv['port']} dbname='{$serv['db']}' user='{$serv['user']}' password='{$serv['pass']}'";
 
-    self::$lnks[$lnk]=pg_connect($sql_infos);
-    if(!self::$lnks[$lnk]) return self::error();
+    self::$lnks[$lnk] = pg_connect($sql_infos);
+    if(!self::$lnks[$lnk])
+      throw rbx::error("Unable to load link #{$lnk} configuration");
 
     return self::$lnks[$lnk];
   }
@@ -136,7 +143,8 @@ class sql {
   }
   
   static function error($msg=''){
-        $msg = "<b>".htmlspecialchars(pg_last_error(self::$lnks[self::$link]))."</b> in $msg";
+        $pg_error  = ($serv = self::$lnks[self::$link]) ? pg_last_error($serv) : "?? unknow serv ??";
+        $msg = "<b>".htmlspecialchars($pg_error)."</b> in $msg";
         if(DEBUG && !self::$transaction) error_log($msg);
         return false;
   }
@@ -144,7 +152,7 @@ class sql {
   
   static function update($table,$vals,$where='',$extras="") {
     if(!$vals) return false;
-    return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where, $table).$extras,false,true);
+    return self::query("UPDATE ".self::fromf($table)." ".sql::format($vals)." ".sql::where($where, $table).$extras,false,true);
   }
 
   static function replace($table, $vals, $where=array(), $auto_indx=false){
@@ -177,12 +185,16 @@ class sql {
   }
 
 
+  private static function fromf($table) {
+    return ' `'.str_replace('.','`.`',$table).'` ';
+  }
+
   static function from($tables){
         $ret='';
     if(!is_array($tables))
-            return 'FROM '.(preg_match('#^[a-z0-9_.-]+$#',$tables)? ' `'.str_replace('.', '`.`',$tables).'`':$tables);
+            return 'FROM '.(preg_match('#^[a-z0-9_.-]+$#',$tables)? self::fromf($tables):$tables);
     foreach($tables as $k=>$table)
-        $ret.=is_numeric($k)?(($k?',':'FROM ').' `'.str_replace('.','`.`',$table).'` '):
+        $ret.=is_numeric($k)?(($k?',':'FROM ').self::fromf($table)):
             (((is_array($table)&&list($join,$v)=each($table))
                 ?"$join `$v`":"INNER JOIN `$table`")." USING($k) ");
     return $ret;
@@ -203,7 +215,13 @@ class sql {
     $query=preg_replace('#SELECT (.*?) FROM (.*?)(\s*(?:ORDER BY|LIMIT).*)$#is',"SELECT COUNT(*) as nb_line FROM $2",$query);$ret=sql::qrow($query);
     return $ret['nb_line'];
 }
-  static function unfix($str){return preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);}
+  static function unfix($str){
+    $res = preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);
+
+return $res;
+  }
+
+
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }

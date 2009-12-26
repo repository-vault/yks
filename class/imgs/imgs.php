@@ -65,8 +65,10 @@ function imagecolorhide($img,$color){
 /** Merge two images, respecting alpha channels */
 function imagefusion($dest,$mask,$decx=0,$decy=0){
     $pic_w=imagesx($mask);$pic_h=imagesy($mask);
+    try {
     if(!is_numeric($decx))
         list($decx, $decy) = imageposition($dest, $mask, $decx);
+    } catch(Exception $e){ list($decx, $decy) = array(0, 0); }
 
     for($x=0; $x<$pic_w; $x++){
         for($y=0; $y<$pic_h; $y++){

@@ -51,7 +51,7 @@ abstract class procedure_base {
 
     $having = array();
     $having  []= "COUNT(parameters.specific_name) = ".count($params_types);
-    if(count($params_types)>1)
+    if(count($params_types)>0)
         $having  []= " concat_comma(parameters.data_type) = '".join(', ',$params_types)."'";
 
     $data_type = myks_gen::$type_resolver->convert($this->xml_def['type'],'search');

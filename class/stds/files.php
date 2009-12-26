@@ -142,6 +142,15 @@ class files {
   public static function tmppath($ext= 'tmp') {return tempnam(sys_get_temp_dir(), "$ext-").".$ext"; }
 
 
+  public static function extract($archive_file, $extract_path = "."){
+    if(!extension_loaded("zip")) dl("zip.so");
+    $zip = new ZipArchive();
+    $zip->open($archive_file);
+    $zip->extractTo($extract_path);
+    $zip->close();
+  }
+
+
     //creer une archive et en retourne le path
   public static function archive($files_list, $options =  array() ){
 

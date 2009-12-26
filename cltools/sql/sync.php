@@ -2,22 +2,75 @@
 
 
 
-class sql_sync {
+abstract class __sql_sync {
   const file_export_safe_size = 1024;
   const file_export_name      = "sync_data.tmp.sql";
 
-  private $tables;
-  private $coords;
-  private $tmp_file;
+  protected $tables;
+  protected $coords;
+  protected $tmp_file;
 
-  static private $tmp_cmd;
+  static protected $tmp_cmd;
 
-  function __construct($tables, $from, $to, $tmp_file = "tmp.sql") {
+  
+  function __construct($tables, $from, $to, $tmp_file = self::file_export_name) {
+    $this->coords   = array(
+        'from' => $this->parse($from),
+        'to'   => $this->parse($to)
+    );
+
+    if(!is_array($tables)) $tables = $this->tablify($tables);
     $this->tables   = $tables;
-    $this->coords   = array($from, $to);
+
+    cli::box("Tables list", array_keys($this->tables));
+
     $this->tmp_file = $tmp_file;
     
     if(is_file($this->tmp_file)) unlink($this->tmp_file);
+  }
+
+  static private function parse($table_dsn){
+    if(!is_array($table_dsn)) {
+        list($database, $host)    = explode('@', $table_dsn);
+        list($database, $schema)  = explode('.', $database);
+        $table_dsn = compact('database', 'host', 'schema');
+    }
+    if(!$table_dsn['schema']) $table_dsn['schema'] = "public";
+    return $table_dsn;
+  }
+
+
+  private function escape($str){
+    return str_replace('"', '\"', str_replace("`", "\\`", ($str)));
+  }
+
+  private function tablify($table_filter){
+
+    $coord = $this->coords['from'];
+    $col   = "CONCAT(table_schema,',',table_name)";
+    $query = "SELECT $col FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND $table_filter";
+
+    $query = sql::unfix($query);
+
+
+    $cmd   = sprintf('echo "%s" | %s %s', self::escape($query), $this->bin_raw($coord), $coord['database']);
+
+    if($coords['host'])
+        $cmd = "ssh {$coords['host']} \"".self::escape($cmd)."\"";
+
+    $out = array();
+    exec($cmd, $out, $success);
+    
+    $tables_list = array();
+    foreach($out as $line) {
+      list($schema, $table) = explode(",", "$line,,");
+      $tables_list["$schema.$table"] = compact('schema', 'table');
+    }
+
+    if(!$out)
+        throw rbx::error("Unable to retrieve tables_list, aborting");
+        
+    return $tables_list;
   }
 
 /**  controler
@@ -25,8 +78,8 @@ class sql_sync {
 * @alias down down
 */
   function sync($way){
-    if($way == 'up') list($from, $to) = $this->coords;
-    else            list($to, $from) = $this->coords;
+    if($way == 'up') list($from, $to) = array($this->coords['from'], $this->coords['to']);
+    else             list($to, $from) = array($this->coords['from'], $this->coords['to']);
 
     try {
         rbx::title("Starting");
@@ -43,37 +96,32 @@ class sql_sync {
   }
 
 
-  private static function sync_tables($from_database, $tables){
+  private static function sync_tables($from, $tables){
     $tmp_file = tempnam(sys_get_temp_dir(), 'sql-');
 
     $tables_nb = count($tables);
     if(!$tables_nb) die("Please specify at least one table");
     rbx::ok("Retrieving distant data ($tables_nb table(s))");
 
-    list($from_database, $from_host)    = explode('@', $from_database);
-    list($from_database, $from_schema)  = explode('.', $from_database);
 
-    $from_cmd      =  "pg_dump -a %s $from_database"; //tables
+    $from_cmd   = sql_sync::bin_dump($from, $tables);
 
-    if($from_host)
-        $from_cmd = "ssh $from_host \"$from_cmd\"";
+    if($from['host'])
+        $from_cmd = "ssh {$from['host']} \"".self::escape($from_cmd)."\"";
 
-    $cmds       = array();
-    $from_cmd   = sprintf($from_cmd, mask_join(' ', $tables, "-t %s"));
-    $cmds []    = "$from_cmd  > $tmp_file";
-    $cmds       = join(LF, $cmds);
+    $cmd = "$from_cmd  > $tmp_file";
 
-        exec($cmds);
-
+    exec($cmd);
 
     if( !is_file($tmp_file)
         || filesize($tmp_file) < self::file_export_safe_size)
             throw rbx::error("Error while retrieving external data");
 
 
-    $triggers_off       = mask_join(LF, $tables, "ALTER TABLE %s DISABLE TRIGGER ALL;");
-    $triggers_on        = mask_join(LF, $tables, "ALTER TABLE %s ENABLE TRIGGER ALL;");
-    $delete_queries     = mask_join(LF, $tables, "DELETE FROM %s;");
+    
+    $triggers_off       = sql_sync::triggers_off($tables);
+    $triggers_on        = sql_sync::triggers_on($tables);
+    $delete_queries     = sql_sync::delete_tables($tables);
     $insert_queries     = file_get_contents($tmp_file);
 
     $contents = "BEGIN;".LF
@@ -85,28 +133,33 @@ class sql_sync {
     ; file_put_contents($tmp_file, $contents);
 
 
+    rbx::ok("Ouput to $tmp_file");
     return file_get_contents($tmp_file);
 
   }
+  
+  protected static function delete_tables($tables){
+    $tables = array_extract($tables, 'table');
+    return mask_join(LF, $tables, "DELETE FROM %s;");
+  }
 
-  private static function send_contents($source_file, $dest_database){
-    list($dest_database, $dest_host)    = explode('@', $dest_database);
-
+  protected static function send_contents($source_file, $dest){
     $dist_name = self::file_export_name;
 
-    if($dest_host) {
-        rbx::ok("Copying to $dest_host");
-        exec("scp $source_file $dest_host:$dist_name");
-        rbx::ok("Copy to $dest_host : done");
+    if($dest['host']) {
+        rbx::ok("Copying to {$dest['host']}");
+        $cmd = "scp $source_file {$dest['host']}:$dist_name";
+        exec($cmd);
+        rbx::ok("Copy to {$dest['host']} : done");
     }else $dist_name = $source_file;
 
-    self::$tmp_cmd = "psql $dest_database < $dist_name";
-    if($dest_host) self::$tmp_cmd = "ssh $dest_host \"".self::$tmp_cmd."\"";
+    self::$tmp_cmd = sprintf("%s %s < %s", sql_sync::bin($dest), $dest['database'], $dist_name);
+    if($dest['host']) self::$tmp_cmd = "ssh {$dest['host']} \"".self::$tmp_cmd."\"";
 
     $cmd= "!!! Please Check source file $source_file before running this !!!".LF.self::$tmp_cmd;
     rbx::box("cmd", self::$tmp_cmd);
-
   }
+
   public static function doit(){
     if(self::$tmp_cmd) {
         rbx::ok("Running ".self::$tmp_cmd);

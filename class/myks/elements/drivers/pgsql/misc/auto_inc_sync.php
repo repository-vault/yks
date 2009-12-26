@@ -8,10 +8,15 @@ class pgsql_auto_inc_sync {
     foreach($types_xml  as $mykse_type=>$mykse_xml) {
         $birth = (string) $mykse_xml['birth'];
         $base_type = (string) $mykse_xml['type'];
+
         if(!$birth) continue;
         if($base_type != 'int') continue;
 
-        $sql_max = sql::value($birth, "true", "MAX($mykse_type)");
+            //mykse_type is not always the table_field, but it's the only on field of this type
+        $table_keys = array_flip(fields($tables_xml->$birth, "primary")); //liste des primary
+        $primary_field = $table_keys[$mykse_type];
+
+        $sql_max = sql::value($birth, "true", "MAX($primary_field)");
         $auto_inc = sql::auto_indx($birth);
         if($sql_max == $auto_inc) continue; //nothing to do
 

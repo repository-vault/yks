@@ -65,13 +65,17 @@ class http {
   }
 
 
-  public static function head($src_url){
+  public static function head($src_url, $timeout = 3, $ip = false, $end = false){
+         //timeout is unused yet
+
     $url = new url($src_url);
+
+    $host_ip  = $ip ? $ip : $url->host;
 
     $port    = $url->is_ssl?443:80;
     $enctype = $url->is_ssl?'ssl://':'';
 
-    $lnk = new sock($url->host, $port, $enctype);
+    $lnk = new sock($host_ip, $port, $enctype);
     $lnk->request($url->http_query, "HEAD");
     $response = $lnk->response; unset($lnk);
     $response['headers'] = self::parse_headers($response['raw']);

@@ -34,13 +34,8 @@ class myks_runner {
 
 
   function go(){
-    if(PHP_SAPI == "cli") {
-        $this->httpd_tunnel("manage_types");
-        $this->httpd_tunnel("manage_locales");
-    } else {
-        $this->manage_types();
-        $this->manage_locales();
-    }
+    $this->manage_types();
+    $this->manage_locales();
     $this->manage_xsl();
     $this->manage_sql();
   }
@@ -61,11 +56,11 @@ class myks_runner {
 
 /**
 * parse&update mykse XML
-* @accessible ! PHP_SAPI cli
+* @alias types
 */
   function manage_types(){
     if(PHP_SAPI == "cli")
-        return rbx::error("You might want to use manage_types_cli, as this require httpd handler");
+        return $this->httpd_tunnel("manage_types");
 
     self::cache_dir_check();
 
@@ -89,8 +84,6 @@ class myks_runner {
 
 /**
 * cli tunneling for APC related features
-* @alias types   manage_types
-* @alias locales manage_locales
 */
   function httpd_tunnel($command){
     self::http_auto_check(); //check self http lookup
@@ -144,12 +137,12 @@ class myks_runner {
 
 /**
 * Update locales
-* @accessible ! PHP_SAPI cli
+* @alias locales
 */
-  static function manage_locales(){
+  function manage_locales(){
 
     if(PHP_SAPI == "cli")
-        return rbx::error("You might want to use manage_types_cli, as this require httpd handler");
+        return $this->httpd_tunnel("manage_locales");
 
     rbx::title("Starting localization");
 

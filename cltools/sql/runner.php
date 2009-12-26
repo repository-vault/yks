@@ -50,11 +50,18 @@ class sql_runner {
 
 
   function __construct(){
+    $this->init_engine();
+  }
 
+/**
+*  @alias reinit
+*/
+  function init_engine(){
     if(!self::$sql_ready)
         throw rbx::error("SQL management is not ready");
 
     rbx::title("Starting SQL driver ".SQL_DRIVER);
+
 
     $myks_parser          = new myks_parser(self::$myks_config);
     cli::box("Scanning : mykses paths", '● '.join(LF.'● ', $myks_parser->myks_paths));
@@ -62,6 +69,7 @@ class sql_runner {
     $types_xml            = $myks_parser->out("mykse");
     $tables_xml           = $myks_parser->out("table");
 
+    $this->tables_xml_tdy = simplexml_import_dom(myks::tables_reflection($tables_xml));
     $this->types_xml      = simplexml_import_dom($types_xml);
     $this->tables_xml     = simplexml_import_dom($tables_xml, "field");
     $this->procedures_xml = simplexml_import_dom($myks_parser->out("procedure"));
@@ -70,9 +78,6 @@ class sql_runner {
     //echo chunk_split($this->tables_xml->asXML(),90);die('here');
     if(!$this->types_xml instanceof SimpleXMLElement) die("Unable to load types_xml");
 
-
-    //$only_stuff = $sub1;
-    //$only_stuff = "#".str_replace("*", ".*", $only_stuff)."#";
 
 
     $xsl_trans  = RSRCS_PATH."/xsl/metas/myks_tables.xsl";
@@ -92,18 +97,49 @@ class sql_runner {
   }
 
   function go($run_queries = false){
+    $this->queue(false, "start");
     $this->scan_views();
     $this->scan_procedures();
     $this->scan_tables();
-    if($run_queries) $this->run_queries();
+    $this->autoinc_sync();
+
+    $this->queue(bool($run_queries), "end");
+
   }
 
-  function run_queries(){
+
+  private function queries_queue($queries){
+    $this->queries = array_merge($this->queries, $queries);
+  }
+
+/**
+*  Query stack manager
+*  We can - prepare a query queue
+*/
+  private $stack_mode = false;
+  private function queue($run_queue, $stack = false){
+    if($stack === "start" ) {
+        $this->stack_mode = true;
+        return;
+    }
+    if($stack === "end") {
+        $this->stack_mode = false;
+    }
+
+    if($this->stack_mode)
+        return;
+
+    if(!$run_queue && !$this->stack_mode) { //abort
+        $this->queries = array();
+        return;
+    }
+
+    $this->stack_mode = false;
     if(!$this->queries) {
         rbx::ok("-- No queries to execute");
         return;
     }
-
+        //at least, we can run queries 
     cli::trace("-- Running %d queries", count($this->queries));
     array_walk($this->queries, array('sql', 'query_raw'));
 
@@ -111,7 +147,14 @@ class sql_runner {
     rbx::ok("-- Queries done & reset");
   }
 
-  function scan_views($run_queries = false){
+  private function pattern_exlude_filter($filter, $value){
+    if(!$filter) return false;
+    $filter = "#".str_replace("*", ".*", $filter)."#";
+    return !preg_match($filter, $value);
+  }
+
+
+  function scan_views($run_queries = false, $only_stuff = ''){
     myks_gen::reset_types();
     rbx::title("Analysing views");
     $this->dependencies_ordering();
@@ -127,7 +170,7 @@ class sql_runner {
         );
         $view_xml = $view_infos['xml'];
         $name = (string)$view_xml['name'];
-        if($only_stuff && !preg_match($only_stuff, $name)) continue;
+        if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
         list($res, $cascade) = myks_gen::view_check($view_xml, $parent_has_been_reloaded_and_so_should_i_be);
         if(!$res) {
@@ -135,7 +178,7 @@ class sql_runner {
             continue;
         }
         rbx::ok("-- New definition for $name");
-        $this->queries = array_merge($this->queries, $res);
+        $this->queries_queue($res);
         echo join(END, $res).END; flush();
         rbx::ok("-- end of definition");
 
@@ -144,17 +187,17 @@ class sql_runner {
     }
 
     rbx::line();
-    if($run_queries) $this->run_queries();
+    $this->queue(bool($run_queries));
   }
 
-    
 
-  function scan_procedures($run_queries = false){
+  function scan_procedures($run_queries = false, $only_stuff = ''){
+    
     myks_gen::reset_types();
     rbx::title("Analysing stored procedures");
     foreach($this->procedures_xml->procedure as $procedure_xml){
         $name = (string)$procedure_xml['name'];
-        if($only_stuff && !preg_match($only_stuff, $name)) continue;
+        if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
         $res = myks_gen::procedure_check($procedure_xml);
         if(!$res) {
@@ -163,37 +206,41 @@ class sql_runner {
         }
 
         rbx::ok("-- New definition for $name");
-        $this->queries = array_merge($this->queries, $res);
+        $this->queries_queue($res);
         echo join(END, $res).END; flush();
         rbx::ok("-- end of definition");
     }
 
     rbx::line();
-    if($run_queries) $this->run_queries();
+    $this->queue(bool($run_queries));
  }
 
-  function scan_tables($run_queries = false){
-    if(SQL_DRIVER == "pgsql")
-        pgsql_auto_inc_sync::doit($this->tables_xml, $this->types_xml);
+  function autoinc_sync(){
+    if(SQL_DRIVER != "pgsql") return;
+    pgsql_auto_inc_sync::doit($this->tables_xml_tdy, $this->types_xml);
+  }
+
+
+  function scan_tables($run_queries = false, $only_stuff = ''){
 
     myks_gen::reset_types();
     rbx::title("Analysing database structure");
 
     foreach($this->tables_xml->table as $table_xml){
         $name=(string)$table_xml['name'];
-        if($only_stuff && !preg_match($only_stuff, $name)) continue;
+        if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
         $res = myks_gen::table_check($table_xml);
         if(!$res) {
             rbx::ok("-- Nothing to do in $name");
             continue;
         };
-        $this->queries = array_merge($this->queries, $res);
+        $this->queries_queue($res);
         echo join(END, $res).END; flush();
     }
 
     rbx::line();
-    if($run_queries) $this->run_queries();
+    $this->queue(bool($run_queries));
  }
 
 

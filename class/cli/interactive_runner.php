@@ -14,19 +14,30 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  private function __construct($obj){
+  private function __construct($from){
 
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
 
-    $this->obj = $obj;
-    $this->className = get_class($this->obj);
+    $this->obj  = null;
 
-    $this->reflection_scan($this->className, $this->obj);
-    rbx::ok("Runner is ready '{$this->className}'");
+    if(is_string($from)) {
+        $this->className = $from;
+    } else {
+        $this->obj       = $from;
+        $this->className = get_class($this->obj);
+    }
 
-    $this->reflection_scan("runner", $this); //register runners own commands
+    $reflector = $this->reflection_scan($this->className, $this->className, $this->obj);
+
+    $mode = is_null($this->obj) ? "auto-instanciation" : "std";
+    rbx::ok("Runner is ready '{$this->className}' in $mode mode");
+
+    $this->reflection_scan(__CLASS__, "runner", $this); //register runners own commands
 
     $this->help();
+
+    if(is_null($this->obj))
+        $this->obj = $reflector->newInstance();
   }
 
 
@@ -45,8 +56,15 @@ class interactive_runner {
       $aliases  = array_diff($aliases, array($command['command_key'], $command_hash));
       if($aliases) $str.= "(".join(', ', $aliases).") ";
 
-      if($command['usage']['params'])
-        $str .= join(' ', array_keys($command['usage']['params']));
+      if($command['usage']['params']) {
+        $tmp_trailing_optionnal = 0; $tmp_str = array();
+        foreach($command['usage']['params'] as $param_name=>$param_infos){
+            $tmp_str [] = ($param_infos['optional'] ? '[':'')."\$$param_name";
+            if($param_infos['optional']) $tmp_trailing_optionnal++;
+        }
+        $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
+      }
+
       $msgs[$command['command_ns']][] = $str;
 
       foreach($parametred_aliases as $alias_name=>$args)
@@ -113,7 +131,7 @@ class interactive_runner {
         throw rbx::error("Invalid command key '$command_prompt'");
 
       if(count($command_resolve) > 1)
-        throw rbx::error("Too many results for command '$command_prompt', please specify ns");
+        throw rbx::error("Too many results for command '*::$command_prompt', please specify ns");
 
       $command_hash      = $command_resolve[0];
       $command_infos     = $this->commands_list[$command_hash];
@@ -191,12 +209,12 @@ class interactive_runner {
 
   }
 
-
-  private function reflection_scan($command_ns, $object){
-    $reflect   = new ReflectionObject($object);
-
+/**
+*  Return ReflectionClass
+*/
+  private function reflection_scan($className, $command_ns, &$instance){
+    $reflect   = new ReflectionClass($className);
     $methods   = $reflect->getMethods();
-    $className = $reflect->getName();
 
     foreach($methods as $method) { $method_name = $method->getName();
 
@@ -205,7 +223,7 @@ class interactive_runner {
       if($method->isPublic()
           && !$method->isStatic()
           && !$method->isConstructor()) {
-        $callback = array($object, $method_name);
+        $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
           && $method_name != "init"){
@@ -219,8 +237,17 @@ class interactive_runner {
       $params = $method->getParameters();
       $doc = doc_parser::parse($method->getDocComment());
 
-      foreach($params as $param)
-        $usage['params'][$param->getName()] = array(); //!
+      $tmp = $doc['args']['interactive_runner']['computed'];
+      if(is_array($tmp) && in_array("hide", $tmp)) 
+        continue;
+        
+      foreach($params as $param) {
+        $param_infos = array();
+        if($param->isOptional()) $param_infos['optional'] = true;
+
+        $usage['params'][$param->getName()] = $param_infos;
+
+      }
 
       $this->command_register($command_ns, $command_key, $callback, $usage);
 
@@ -232,13 +259,16 @@ class interactive_runner {
 
     }
 
-    
+    return $reflect;
   }
 
-  public static function start($obj){
+/**
+* @interactive_runner hide tooto ao tooa ao
+*/
+  static public function start($obj){
 
     $runner = new self($obj);
-    $runner->main_loop();
+    $runner->main_loop(); //private internal
   }
 }
 

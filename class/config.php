@@ -15,7 +15,9 @@ class config  {
   static function retrieve($key){
     $tmp = self::$config->$key; $file = (string) $tmp['file'];
     if(!$tmp) return simplexml_load_string("<$key/>");
-    return $file && file_exists($file)?simplexml_load_file($file):$tmp;
+    $ret = $file && file_exists($file)?simplexml_load_file($file):$tmp;
+    foreach($tmp->attributes() as $k=>$v)$ret[$k]=(string)$v; //reset args
+    return $ret;
   }
 
   static function load($config_file){
@@ -23,7 +25,7 @@ class config  {
     self::$config = &$config; self::$config_file = $config_file;
     $domain=parse_url($config->site['url']);
     if(!$domain['host']){
-        $domain['host']=$_SERVER['SERVER_NAME'];
+        $domain['host'] = SERVER_NAME;
         $config->site['url']="http://{$domain['host']}";
 
         if(!$config->site['code'])

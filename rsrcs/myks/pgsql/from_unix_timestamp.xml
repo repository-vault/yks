@@ -12,4 +12,16 @@ RETURN tmp;
 END;
 </def>
   </procedure>
+
+  <procedure name="from_unix_timestamp" type="timestamp">
+    <param name="time_in" type="float"/>
+    <def>
+DECLARE 
+tmp TIMESTAMP;
+BEGIN
+SELECT TIMESTAMP WITH TIME ZONE 'epoch' + time_in * INTERVAL '1 second'  INTO tmp;
+RETURN tmp;
+END;
+</def>
+  </procedure>
 </myks>

@@ -9,7 +9,8 @@ Doms.loaders['[MT]/Drag/Drag.Move'] = {
     "class": "Drag.Move",
     "match": false,
     "descr": "Drag.move",
-    "deps" : ["[MT]/Drag/Drag"]
+    "deps" : ["[MT]/Drag/Drag"],
+    "patch": ["[PATCH]/Drag/Drag.Move"]
 };
 
 Doms.loaders['[MT]/Interface/Accordion'] = {
