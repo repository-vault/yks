@@ -28,7 +28,7 @@ foreach($parent_infos as $_user_id=>$user_infos)
     $parent_path[]="<a href='/?/Admin/Users//$_user_id/list' target='users_list'>{$user_infos['user_name']}</a>";
 $parent_path=join(' &gt; ',$parent_path);
 
-$config->head->title="Gestion des utilisateurs"; //$user_infos["user_name"] ... JSX :/
+exyks::$head->title = "Gestion des utilisateurs"; //$user_infos["user_name"] ... JSX :/
 
 
 

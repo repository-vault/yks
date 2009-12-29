@@ -24,7 +24,7 @@ class sql_runner {
     define('END', ";\r\n");
 
         // static config load
-    self::$myks_config = config::retrieve("myks");
+    self::$myks_config = yks::$get->config->myks;
 
     $privileges = self::$myks_config->privileges;
     privileges::declare_root_privileges($privileges);

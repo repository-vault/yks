@@ -9,7 +9,7 @@ $params_values = sess::retrieve('query_params');
 $sql_query = $query->prepare_query($params_values);
 
 
-$config->head->title = $query['query_name'];
+exyks::$head->title = $query['query_name'];
 
 if(!$query->ready) return;
 

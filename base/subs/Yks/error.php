@@ -7,7 +7,7 @@ if(JSX){
 	jsx::$rbx=true;
 }
 
-$error_infos = current(config::retrieve("errors")
+$error_infos = current(yks::$get->config->errors
     ->xpath("error[@code='$error_code'][@visibility='public']"));
 
 $reloc_url = $_SESSION[SESS_TRACK_ERR];

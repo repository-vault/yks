@@ -6,7 +6,7 @@
 class sync_runner {
 
   function __construct(){
-    $this->sync = config::retrieve("sync");
+    $this->sync = yks::$get->config->sync;
     $this->sources = array();
     foreach($this->sync->sources->source as $source)
         $this->sources[(string)$source['key']]  = attributes_to_assoc($source);
