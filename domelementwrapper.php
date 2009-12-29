@@ -12,6 +12,10 @@ class domElementWrapper extends __wrapper {
     Element::__register("Forms");
   }
 
+  function __toString(){
+    return parent::__toString();
+  }
+
   function __construct(document $document, $dom){
     $this->document   = $document;
     parent::__construct($dom);

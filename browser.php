@@ -17,13 +17,18 @@ class browser {
     if($session_key) $this->session_load($session_key);
   }
 
-  function open($url){
+  function open($url = false){ //can open an empty tab
     $window = new window($this);
-    $window->go($url);
+    if($url) $window->go($url);
 
     return $window;
   }
 
+    //alias for new window go
+  function go(){
+    $args = func_get_args();
+    return call_user_func_array(array($this->open(), 'go'), $args);
+  }
 
   function session_clean(){
     $file = "{$this->session_key}.srz";
@@ -51,6 +56,14 @@ class browser {
     return $this->cookiejar->retrieve($url);
   }
 
+    // public 
+  public function adopt_cookies($url, $cookies){
+    $url = url::from($url);
+    foreach($cookies as $name=>$value)
+        $this->store_cookie($url, new cookie($name, $value, $url->host));
+  }
+
+    //internal
   function store_cookie($url, $cookie){
 
     if(!$cookie->under_authority($url)){

@@ -52,6 +52,7 @@ class window extends __native {
   }
 
 
+    //return void /self so it can be chained
   function go($url, $method = 'GET', $data  = array(), $enctype =false) {
 
     $url = url::from($url);
@@ -104,6 +105,8 @@ class window extends __native {
     if(!$charset){
         $this->get_charset();
     }
+
+    return $this;
 
   }
 
