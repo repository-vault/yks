@@ -64,12 +64,12 @@ class tpls {
     exyks::$page_def = $subs_file;
  }
  public static function css_add($href,$media=false){
-    $tmp=yks::$get->config->head->styles->addChild("css");
+    $tmp = exyks::$head->styles->addChild("css");
     if($media)$tmp['media']=$media;
     $tmp['href']=$href;
  }
  public static function css_clean(){
-    yks::$get->config->head->styles = null;
+    exyks::$head->styles = null;
  }
 
 /* register entities (k=>v) that will be available in &k; for .tpl file */
@@ -78,7 +78,7 @@ class tpls {
  }
 
  static function js_add($href,$defer=false){
-    $tmp=yks::$get->config->head->scripts->addChild("js");
+    $tmp = exyks::$head->scripts->addChild("js");
     if($defer)$tmp['defer']="true";
     $tmp['src']=$href;
  }

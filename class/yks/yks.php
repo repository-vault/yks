@@ -9,27 +9,77 @@ class yks
   const FATALITY_CONFIG     = "config";
   const FATALITY_SITE_CLOSED     = "site_closed";
 
+  private static $config_file;
   static function init($load_config = true){
-    classes::register_class_path("config", CLASS_PATH."/config.php");
-    classes::register_class_path("exyks",  CLASS_PATH."/exyks/exyks.php");
+
+    classes::register_class_paths(array(
+        "ksimplexmlelement"   => CLASS_PATH."/exts/ksimplexml/ksimplexmlelement.php", //fast
+        "config"              => CLASS_PATH."/yks/config.php",
+        "exyks"               => CLASS_PATH."/exyks/exyks.php"
+    ));
 
     classes::call_init(true);
-    classes::extend_include_path(LIBS_PATH, CLASS_PATH);
+    classes::extend_include_path(CLASS_PATH."/exts/ksimplexml", LIBS_PATH, CLASS_PATH);
     classes::activate();
     if($load_config) self::load_config(SERVER_NAME);
   }
 
   public static function load_config($host = SERVER_NAME){
 
-    if(preg_match("#[^a-z0-9_.-]#", $host)) die("Invalid hostname");
+    define('YKS_CONFIG_CACHE', isset($_SERVER['YKS_CONFIG_CACHE']));
+    define('YKS_CONFIG_FORCE', isset($_SERVER['YKS_CONFIG_FORCE']));
 
-    $config_file = CONFIG_PATH."/$host.xml";
-
-    if(!is_file($config_file))
-        yks::fatality(yks::FATALITY_CONFIG, "$config_file not found");
-    $GLOBALS['config'] = $config =  config::load($config_file);
 
     self::$get = new yks();
+
+    if(preg_match("#[^a-z0-9_.-]#", $host))
+        yks::fatality(yks::FATALITY_CONFIG, "Invalid host name");
+
+    self::$config_file = CONFIG_PATH."/$host.xml";
+
+    if(!is_file(self::$config_file))
+        yks::fatality(yks::FATALITY_CONFIG, self::$config_file." not found");
+    $GLOBALS['config'] = $config =  yks::$get->config;
+
+        //******************** Usefull constants **************
+
+    $domain = parse_url($config->site['url']);
+
+    if(!$domain['host']){
+        $domain['host'] = SERVER_NAME;
+        $config->site['url']="http://{$domain['host']}";
+
+        if(!$config->site['code'])
+            $config->site['code']=join('.',array_slice(explode(".",$domain['host']),0,-2));
+        if(!((string)$config->site['code'])) 
+            yks::fatality(yks::FATALITY_CONFIG, "site code cannot be resolved");
+    }
+
+
+    define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
+    define('SQL_DRIVER',     $config->sql['driver']);
+    define('SITE_CODE',      strtr($config->site['code'],'.','_'));
+    define('SITE_URL',       $config->site['url']);
+    define('SITE_BASE',      ucfirst(SITE_CODE));
+    define('SITE_DOMAIN',    $domain['host']);
+    define('FLAG_DOMAIN',    substr(md5(SITE_DOMAIN.SITE_CODE),0,5));
+    define('FLAG_APC',       FLAG_DOMAIN);
+    define('FLAG_LOG',       $config->flags['log']);
+    define('FLAG_FILE',      $config->flags['file'].FLAG_DOMAIN);
+    define('FLAG_SESS',      $config->flags['sess'].FLAG_DOMAIN);
+
+
+    define('CACHE_REL',      'cache/'.FLAG_DOMAIN);
+    define('CACHE_URL',      SITE_URL.'/'.CACHE_REL);
+    define('CACHE_PATH',     PUBLIC_PATH.'/'.CACHE_REL);
+
+    define('ROOT_PATH',      paths_merge(PUBLIC_PATH, $config->site['root_path'],".."));
+    define('TMP_PATH',       ROOT_PATH."/tmp");
+    define('LIBRARIES_PATH', paths_merge(YKS_PATH, $config->site['libraries_path'], ".."));
+
+
+        //********************************************************
+
     $paths = array();
     if($config->include_path)
         foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
@@ -65,7 +115,7 @@ class yks
         $this->$flag = data::load($key);
 
     if($key == "config")
-        $this->$flag = config::$config;
+        $this->$flag = config::load(self::$config_file);
 
     if($key == "entities")
         $this->$flag = data::load($key, $args);

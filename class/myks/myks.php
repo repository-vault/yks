@@ -7,12 +7,12 @@
 
 class myks {
   public static function get_types_xml(){
-    $myks_parser = new myks_parser(config::retrieve('myks'));
+    $myks_parser = new myks_parser(yks::$get->config->myks);
     return $myks_parser->out("mykse")->saveXML();
   }
 
   public static function get_tables_xml(){
-    $myks_parser = new myks_parser(config::retrieve('myks'));
+    $myks_parser = new myks_parser(yks::$get->config->myks);
     $tables_xml  = $myks_parser->out("table");
     return self::tables_reflection($tables_xml)->saveXML();
   }

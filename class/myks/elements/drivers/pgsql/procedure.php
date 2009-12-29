@@ -8,7 +8,7 @@ class procedure extends procedure_base {
 
 /*
 * Etend le resolver pour que postgres se sente bien
-* Il est gentil, mais un peu limité, le postgres...
+* Il est gentil, mais un peu limitÃ©, le postgres...
 */
   static function register_exts(){
 

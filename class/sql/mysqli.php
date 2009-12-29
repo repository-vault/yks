@@ -36,7 +36,7 @@ class sql {
     self::$lnks[$lnk] = @call_user_func_array('mysqli_connect', $credentials);
 
     if(!self::$lnks[$lnk] ) {
-        throw rbx::error("Unable to connect sql server");
+        throw new Exception("Unable to connect sql server ".print_r($serv,1));
     }
 
     mysqli_set_charset(self::$lnks[$lnk],"utf8");

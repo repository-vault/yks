@@ -37,7 +37,10 @@ class exyks_session {
 
     if(!isset(sess::$sess['user_access'])) try {
         sess::reload();
-    } catch(Exception $e){ rbx::error("Unable to start user session."); }
+    } catch(Exception $e){
+        error_log("Unable to start user session. ".$e->getMessage());
+        rbx::error("Unable to start user session.");
+    }
 
 
     if(bool((string)yks::$get->config->site['closed'])){

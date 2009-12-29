@@ -6,17 +6,17 @@
 
 class exyks {
 
-  static public $headers;
+  public static $headers;
 
-  static public $href_ks;
-  static public $page_def = 'home';
-  static public $href;
+  public static $href_ks;
+  public static $page_def = 'home';
+  public static $href;
+  public static $head = null;
 
-  static private $is_script = false;
-  static private $customs = array();
+  private static $is_script = false;
+  private static $customs = array();
 
-  static function init(){
-    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
+  static function init() {
 
     global $action, $config;
 
@@ -44,7 +44,8 @@ class exyks {
         'jsx-client'=>TYPE_XML,
     );
 
-    self::store('LANGUAGES', preg_split(VAL_SPLITTER, $config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
+    self::store('LANGUAGES',
+        preg_split(VAL_SPLITTER, $config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
 
 
@@ -52,6 +53,28 @@ class exyks {
     self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
     self::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
     self::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
+
+
+
+    define('FLAG_UPLOAD',    $config->flags['upload'].FLAG_DOMAIN);
+    define('USERS_ROOT',     (int)$config->users['root']);
+    define('BASE_CC',        $config->lang['country_code']);
+    define('ERROR_PAGE',     '/'.SITE_BASE.'/error');
+    define('ERROR_404',      "Location: /?".ERROR_PAGE.'//404');
+    define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
+
+    define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
+    define('COMMONS_URL',$config->site['commons_url']);
+
+    chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
+
+    include CLASS_PATH."/functions.php";
+
+    exyks_paths::register("/Yks", "path://yks//Yks");
+    data::register('types_xml',   array('myks', 'get_types_xml'));
+    data::register('tables_xml',  array('myks', 'get_tables_xml'));
+    data::register('entities',    array('locales_fetcher', 'retrieve'));
+
   }
 
 
@@ -92,19 +115,6 @@ class exyks {
 
     //website initialisation
   static function context_prepare($query_path){
-    $config  = yks::$get->config;
-
-    define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
-    define('COMMONS_URL',$config->site['commons_url']);
-
-    chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
-
-    include CLASS_PATH."/functions.php";
-
-    exyks_paths::register("/Yks", "path://yks//Yks");
-    data::register('types_xml',   array('myks', 'get_types_xml'));
-    data::register('tables_xml',  array('myks', 'get_tables_xml'));
-    data::register('entities',    array('locales_fetcher', 'retrieve'));
 
         /* $result_path, $href, $href_ks, $context_depths */
     $parsed_paths = exyks_paths::parse($query_path);
@@ -112,19 +122,21 @@ class exyks {
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
 
     if(self::$is_script) array_shift($parsed_paths[0]);
-    else self::website_prepare($config);
+    else self::website_prepare();
 
     return $parsed_paths;
   }
 
-  static function website_prepare($config){
+  static function website_prepare(){
+    global $config;
     rbx::$output_mode = 0;
 
         //head element creation
-    if(!$config->head)          $config->addChild("head");
-    if(!$config->head->jsx)     $config->head->addChild("jsx");
-    if(!$config->head->styles)  $config->head->addChild("styles");
-    if(!$config->head->scripts) $config->head->addChild("scripts");
+    self::$head = $config->head->to_simplexml();
+
+    if(!self::$head->jsx)     self::$head->addChild("jsx");
+    if(!self::$head->styles)  self::$head->addChild("styles");
+    if(!self::$head->scripts) self::$head->addChild("scripts");
 
     exyks_session::init_core();
     exyks_security::sanitize();
@@ -179,7 +191,7 @@ class exyks {
           "screen_id"  => 10
         ));
 
-        $meta = yks::$get->config->head->addChild("meta");
+        $meta = self::$head->addChild("meta");
         list($header, $value) = explode(':', TYPE_HTML);
         $meta->addAttribute("http-equiv", $header); $meta->addAttribute("content", $value);
     }
@@ -196,6 +208,7 @@ class exyks {
     $str = locales_manager::translate($str);
 
     if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
+
 
     $render_mode  = exyks::retrieve('RENDER_MODE');
     $render_side  = exyks::retrieve('RENDER_SIDE');

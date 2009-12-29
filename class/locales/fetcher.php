@@ -44,7 +44,7 @@ class locales_fetcher {
 
   public static function fetch_all(){
 
-    $locales          = config::retrieve("locales");
+    $locales          = yks::$get->config->locales;
     $languages        = exyks::retrieve('LANGUAGES');
 
     self::$locales_ns = self::default_ns(attributes_to_assoc($locales, self::prefix_ns));

@@ -6,11 +6,11 @@
 
 //Find documentation in the manual
 class data {
-  static $callbacks=array();
+  static $callbacks = array();
 
-  static function store($flag, $v, $ttl=0){return apc_store(FLAG_APC."_$flag", $v, $ttl)?$v:false; }
-  static function delete($flag) { return apc_delete(FLAG_APC."_$flag"); }
-  static function fetch($flag){ return apc_fetch(FLAG_APC."_$flag"); }
+  static function store($flag, $v, $ttl=0){ return storage::store(FLAG_APC."_$flag", $v, $ttl); }
+  static function delete($flag) { return storage::delete(FLAG_APC."_$flag"); }
+  static function fetch($flag)  { return storage::fetch(FLAG_APC."_$flag"); }
   static function register($flag, $callback, $file=false){
     self::$callbacks[$flag] = $callback;
     if($file) classes::register_class_path(reset($callback), $file);
@@ -31,4 +31,5 @@ class data {
     return substr($flag,-4)=="_xml"?simplexml_load_string($tmp):$tmp;
   }
 }
+
 

@@ -3,7 +3,7 @@
 class exyks_renderer_excel {
 
   static function process(){
-    header(sprintf(HEADER_FILENAME_MASK, yks::$get->config->head->title.".xls")); //filename
+    header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xls")); //filename
     exyks::$headers["excel-server"] = TYPE_CSV;
     exyks::store('XSL_SERVER_PATH', RSRCS_PATH."/xsl/specials/excel.xsl");
     exyks::store('RENDER_SIDE', 'server');

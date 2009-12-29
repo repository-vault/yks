@@ -50,7 +50,7 @@ class jsx {
 
   static function set($key, $val=false){
     if(!is_array($key)) $key = array($key=>$val);
-    foreach($key as $k=>$v) yks::$get->config->head->jsx[$k] = $v;
+    foreach($key as $k=>$v) exyks::$head->jsx[$k] = $v;
   }
   static function export($key,$val){ rbx::$rbx['set'][$key]=$val; }
   static function js_eval($msg) { rbx::msg(jsx::JS_EVAL,"$msg;"); }

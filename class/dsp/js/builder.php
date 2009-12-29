@@ -10,7 +10,7 @@ class js_builder {
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
-$js_config = config::retrieve("js");
+$js_config = yks::$get->config->js;
 
 
     //parse js_namespaces from configuration file

@@ -11,7 +11,7 @@ class dsp_titles {
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    self::$themes_config = config::retrieve("themes");
+    self::$themes_config = yks::$get->config->themes;
     if(!self::$themes_config) die("Unable to load theme config");
 
         //scanning fonts paths
