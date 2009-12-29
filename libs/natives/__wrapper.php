@@ -25,6 +25,10 @@ abstract class __wrapper implements ArrayAccess {
     return $base;
   }
 
+  function __toString(){
+    return (string) $this->__base;
+  }
+
   function __call($method, $args){
     $cb = array($this->__base, $method);
     return $this->¤(call_user_func_array($cb, $args));
