@@ -23,22 +23,6 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     return $element;
   }
 
-  public function asXML(){
-    $str = "<{$this->name}";
-    if(count($this->attrs)) $str .= ' '.mask_join(" ", $this->attrs, ATTR_MASK);
-
-    if($this->is_empty())
-        return "$str/>";
-    $str .= ">";
-
-    if(is_null($this->contents)) foreach($this->children() as $children)
-        $str .= $children->asXML();
-    else
-        $str .= $this->contents;
-    $str.= "</{$this->name}>";
-
-    return $str;
-  }
 
   
   private function is_empty(){
@@ -97,7 +81,12 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
 
   
     //******** Interfaces *************************
-  public function offsetExists($key){ throw new Exception("Not implemented");}
+  public function offsetExists($key){ 
+    if(is_numeric($key))
+        throw new Exception("Not implemented");
+    return isset($this->attrs[$key]);
+  }
+
   public function offsetUnset($key){ throw new Exception("Not implemented"); }
 
   public function offsetGet($key){
@@ -120,6 +109,31 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     return count($this->retrieve_siblings());
   }
     //*********************************************
+
+  public function asXML(){
+    $str = "<{$this->name}";
+    if(count($this->attrs)) $str .= ' '.self::join_args($this->attrs);
+
+    if($this->is_empty())
+        return "$str/>";
+    $str .= ">";
+
+    if(is_null($this->contents)) foreach($this->children() as $children)
+        $str .= $children->asXML();
+    else
+        $str .= $this->contents;
+    $str.= "</{$this->name}>";
+
+    return $str;
+  }
+
+    //***********************************
+
+  private static function join_args($attrs){
+    foreach($attrs as $k=>&$v)$v = "$k=\"$v\"";
+    return join(' ',$attrs);
+  }
+
 
 }
 

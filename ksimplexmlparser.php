@@ -1,5 +1,7 @@
 <?php
 
+// not implemented : ns support / mixed elements
+
 class KsimpleXMLParser {
   private $class = 'KsimpleXMLElement';
   private $parser;
