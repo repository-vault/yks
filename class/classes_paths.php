@@ -24,7 +24,10 @@ classes::register_class_paths(array(
     "yks_list"            => CLASS_PATH."/list/yks_list.php",
     "dtd"                 => CLASS_PATH."/dom/dtds.php",
     "myks"                => CLASS_PATH."/myks/myks.php",
+
     "http"                => CLASS_PATH."/exts/http/http.php",
+    "sock"                => CLASS_PATH."/exts/http/sock.php",
+
     "exyks_paths"         => CLASS_PATH."/exyks/paths.php",
     "tpls"                => CLASS_PATH."/exyks/tpls.php",
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",

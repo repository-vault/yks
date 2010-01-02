@@ -1,22 +1,32 @@
 <?php
 
 /*  "Yks config" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2007 
+    distributed under the terms of GNU General Public License - © 2010
+    Keep an internal reference table on ROOT_PATH hash so we can use it to clear APC cache
 */
 
 class config extends KsimpleXMLElement {
-    const xattr = 'file';
-    private static $_cache = array(); //avoid re-instanciation
+    const cache_pfx = 'config_';      // cache key prefix
+    const xattr = 'file';             // derivation attribute
+    private static $_cache = array(); // prevent level 0 re-instanciation
 
+  public static function hash_key(){ return self::cache_pfx.crpt(ROOT_PATH, "yks/confighash", 10); }
   public static function load($file_path, $use_cache = YKS_CONFIG_CACHE) {
 
     if(!$use_cache)
         return KsimpleXML::load_file($file_path, __CLASS__);
 
-    $key    = "config_".crpt($file_path, "yks/config", 10);
+    $key    = self::cache_pfx.crpt($file_path, "yks/config", 10);
     $config = YKS_CONFIG_FORCE ? false 
         : ( self::$_cache[$key] ? self::$_cache[$key] : self::$_cache[$key] = storage::fetch($key) );
-    if(!$config) $config = storage::store($key, self::load($file_path, false) );
+    if(!$config) {
+        $config = storage::store($key, self::load($file_path, false) );
+
+        //keep hash up to date
+        $hash_key = self::hash_key();
+        $hash = array_filter((array)storage::fetch($hash_key)); $hash[$key] = $file_path; //infos ?
+        storage::store($hash_key, $hash);
+    }
     return $config;
   }
 

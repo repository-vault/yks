@@ -60,9 +60,10 @@ class myks_runner {
 */
   function manage_types(){
     if(PHP_SAPI == "cli")
-        return $this->httpd_tunnel("manage_types");
+        return yks_runner::httpd_tunnel(__CLASS__, "manage_types");
 
-    self::cache_dir_check();
+    files::delete_dir(XML_CACHE_PATH, false); //cleaning...
+    files::create_dir(XML_CACHE_PATH);        //... and go
 
     rbx::title("Parsing myks definitions");
 
@@ -82,17 +83,6 @@ class myks_runner {
   }
 
 
-/**
-* cli tunneling for APC related features
-*/
-  function httpd_tunnel($command){
-    self::http_auto_check(); //check self http lookup
-
-    $myks_http_url = SITE_URL."/?/Yks/Scripts/Myks|$command";
-    $http_contents = self::wget_dnsless($myks_http_url);
-    rbx::ok("Running $myks_http_url");
-    echo $http_contents;
-  }
 
 
 /**
@@ -101,7 +91,6 @@ class myks_runner {
 */
   function manage_xsl(){
 
-    self::cache_dir_check();
     rbx::title("Updating XSL cache files");
 
     files::delete_dir(XSL_CACHE_PATH, false); //cleaning...
@@ -142,7 +131,7 @@ class myks_runner {
   function manage_locales(){
 
     if(PHP_SAPI == "cli")
-        return $this->httpd_tunnel("manage_locales");
+        return yks_runner::httpd_tunnel(__CLASS__, "manage_locales");
 
     rbx::title("Starting localization");
 
@@ -155,58 +144,7 @@ class myks_runner {
     rbx::line();
   }
 
-/**
-* Check caches
-* @alias caches
-*/
-  private static function cache_dir_check(){
-    try {
-        files::create_dir(CACHE_PATH);
-        if(!is_writable(CACHE_PATH))
-            throw rbx::error(CACHE_PATH." is not writable");
 
-        files::create_dir(XML_CACHE_PATH);
-
-        return ; //!
-        $me = trim(`id -un`).':'.trim(`id -gn`); $me_id = trim(`id -u`);
-
-        $cache_owner = fileowner(CACHE_PATH);
-        if($cache_owner!=$me_id)
-            rbx::error("Please make sure cache directory :'".CACHE_PATH."' is owned by $me");
-
-    } catch(Exception $e){ rbx::error("Unable to access cache directory '".CACHE_PATH."'"); die; }
-  }
-
-
-  private static function wget_dnsless($url){
-    $local_ip      = (string) yks::$get->config->site->local['ip'];
-    return http::ping_url($url, 3, $local_ip);
-  }
-
-
-/**
-*  Open a http lnk on itself, and search for a ping file
-*  Check whenever cli is able to talk to httpd
-*/
-  public static function http_auto_check() {
-    self::cache_dir_check();
-
-    $ping_file = CACHE_PATH."/ping";
-    $ping_url  = CACHE_URL."/ping";
-    $rnd       = md5(rand());
-    $res = file_put_contents($ping_file, $rnd);
-    if(!$res)
-        throw new Exception("Make sure cache directory '".CACHE_PATH."' is world writable");
- 
-    $http_contents = self::wget_dnsless($ping_url);
-    unlink($ping_file);
-
-    if($http_contents != $rnd) {
-        rbx::box("http_contents ($ping_url)", $http_contents, "rnd ($ping_file)", $rnd);
-        throw new Exception("Http self check failed, please make sure <site><local @ip/> is well configured");
-    }
-    return true;
-  }
 
 
 }
