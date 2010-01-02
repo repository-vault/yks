@@ -37,7 +37,6 @@ class xhr extends sock {
 
 
   function process_response(){
-    $this->response['headers'] = http::parse_headers($this->response['raw']);
 
     $cookies_headers = (array) $this->response['headers']['Set-Cookie'];
     foreach($cookies_headers as $header){
