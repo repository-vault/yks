@@ -6,6 +6,9 @@ $runner   = $sub0;
 $from_cli = $argv0 == "cli"; //from cli tunnel
 
 
+if(!$runner) 
+    return;
+
   //******* valid access ***************
 $valid_runners = array('yks_runner', 'myks_runner', 'sql_runner');
 $access = 
