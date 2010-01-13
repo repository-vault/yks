@@ -46,7 +46,9 @@ class myks_parser {
     $this->myks_ns = self::default_ns($ns);
 
     $this->myks_paths = array();
-    if($myks_config->myks_paths->path) foreach($myks_config->myks_paths->path as $path) {
+    if($myks_config->myks_paths->search("path"))
+        foreach($myks_config->myks_paths->path as $path) {
+
         $path = $this->resolve_path($path['path']);
         if(!is_dir($path)) {
             rbx::error("$path is not a directory, skipping");
