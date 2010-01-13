@@ -51,10 +51,15 @@ class xhr extends sock {
 
   function follow_redirect(){
     $this->end_headers();
+    $headers = array();
+        $headers["Referer"] = (string)$this->url;
+
     $location = new url((string) $this->response['headers']['Location']);
     $url = $this->url->merge($location);
     $this->set_url($url);
-    $this->request($this->url->http_query);
+
+
+    $this->request($this->url->http_query, 'GET', false, $headers);
   }
 
   function forge_query_headers($headers = array()){
