@@ -37,19 +37,25 @@ var Planning = new Class({
   },
 
 
-  load:function(data){
-    alert(data);
+  load:function(data, key ){
+    key = key || 'key';
+    var id, brush;
+    this.getElements().each(function(el){
+        id = el.get(key); brush = data[id];
+        if(! $defined(this.brushes_list[brush]) ) return;
+        this.brushes_list[brush].use(el);
+    }.bind(this));
   },
 
   getElements:function(){
     return this.anchor.getElements(this.paint_area_mask);
   },
 
-  brush_lambda_apply:function(cell,brush, event){
+  brush_lambda_apply:function(cell, brush, event){
     var base = cell.retrieve('base_class', cell.className );
     cell.className = base;
-    if(event.event.ctrlKey) cell.store('value', '');
-    else  cell.addClass(brush.key).store('value', brush.key);
+    if(event && event.event && event.event.ctrlKey) cell.store('value', '');
+    else  cell.addClass(this.key).store('value', this.key);
   },
 
     // existing table initialization

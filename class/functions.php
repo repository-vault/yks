@@ -74,9 +74,11 @@ function mail_valid($mail){ return (bool) filter_var($mail, FILTER_VALIDATE_EMAI
 
 
 function strip_start($str, $start){
-    return substr($str, 0, strlen($start)) == $start ? substr($str, strlen($start)) : $str;
+    return  starts_with($str, $start) ? substr($str, strlen($start)) : $str;
 }
-
+function starts_with($str, $start){
+    return substr($str, 0, strlen($start)) == $start;
+}
 
 
 function reloc($url) {
