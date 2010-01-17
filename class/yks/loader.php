@@ -37,7 +37,7 @@ define('Ex/yks', 'A cloudy tool');
   define('RSRCS_PATH',   YKS_PATH.'/rsrcs');
   define('CLTOOLS_PATH', YKS_PATH.'/cltools');
 
-  define('EXYKS',        YKS_PATH.'/index.php');
+  define('EXYKS',        YKS_PATH.'/web.php');
   define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
 
 include "$class_path/constants.php";

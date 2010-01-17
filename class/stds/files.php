@@ -42,6 +42,20 @@ class files {
     } return $files;
   }
 
+
+  public static function merge($in_files, $out_file){
+    $out = fopen($out_file, "w");
+    foreach($in_files as $k=>$file) {
+        if(!is_file($file))
+            throw new Exception("file::merge failed as part #$k($file) is not a valid file");
+
+        $contents = file_get_contents($file);
+        fwrite($out, $contents, strlen($contents));
+    }
+    fclose($out);
+    return filesize($out);
+  }
+
   public static function create_dir($dir){
 
     if($dir && !is_dir( $dir) ) {

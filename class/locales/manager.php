@@ -21,18 +21,20 @@ class locales_manager {
     }
 
     $user_lang = $_SESSION['langs']['current'];
-    define('USER_LANG', $user_lang);
+    exyks::store("USER_LANG", $user_lang);
 
     if(yks::$get->config->dyn_entities)
       foreach(yks::$get->config->dyn_entities->children() as $entity_def)
         locales_processor::register($entity_def->getName(), array("locales_sql_scanner", 'render'));
   }
 
-  public static function translate($str, $lang = USER_LANG){
+  public static function translate($str, $lang = false){
+    if(!$lang) $lang = exyks::retrieve("USER_LANG");
 
     $entities = yks::$get->get("entities", $lang);
     if(!$entities) $entities = array();
     $entities = array_merge(
+        array('&USER_LANG;'=>$lang),
         $entities,
         retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
     ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
