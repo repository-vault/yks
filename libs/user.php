@@ -26,6 +26,13 @@ class user extends _user {
     self::$tables_registration[$key] = compact('table_name', 'table_key', 'row_unique');
   }
 
+  function upgrade_rights($rights) {
+    foreach($rights as $zone_name=>$zone)
+      foreach($zone as $access=>$val)
+        $this->user_access[$zone_name][$access] = true;
+  }
+
+
   private function get_extended_infos($key){
     if((!$tmp = self::$tables_registration[$key]) || !extract($tmp)) return false;
     sql::select($table_name, $this);
