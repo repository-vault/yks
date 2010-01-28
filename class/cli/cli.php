@@ -1,6 +1,7 @@
 <?php
 
 class cli {
+
   const OS_UNIX = 1;
   const OS_WINDOWS = 2;
   private static $OS = null;
@@ -11,12 +12,13 @@ class cli {
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
     $win = stripos($_SERVER['OS'],'windows')!==false;
-    self::$OS = $win ? self::OS_WINDOWS : OS_LINUX;
+    $tty = isset($_SERVER['SSH_TTY']);
+    self::$OS = $win && !$tty ? self::OS_WINDOWS : self::OS_UNIX;
+
 
       //transcoding UTF-8 to IBM codepage
-    if(self::$OS & self::OS_WINDOWS)
+    if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
-
   }
 
   static function trace($msg) {
@@ -91,7 +93,7 @@ class cli {
             $line = substr($line, 0, -strlen($out[0]));
         } else $control = false;
 
-        if(self::$OS & self::OS_WINDOWS) 
+        if(self::$OS == self::OS_WINDOWS) 
             $line = self::console_in($line);
 
         $data_str .= $line;
@@ -128,8 +130,27 @@ class cli {
     return $args;
   }
 
-  function exec($cmd){
-    $WshShell = new COM("WScript.Shell");
-    return $WshShell->Run($cmd);
+
+  function exec($cmd, $file_mode = false){
+    //write in file so we avoid args parsing issues
+    if($file_mode) {
+      $temp_file = tempnam(sys_get_temp_dir(), '.bat').".bat";
+      $cmds = array();
+      $cmds[] = "@ $cmd"; //silent
+      file_put_contents($temp_file, join(CRLF, $cmds));
+      return passthru($temp_file);
+    } else {
+        $WshShell = new COM("WScript.Shell");
+        return $WshShell->Run($cmd);
+    }
+  }
+  
+  public static function winpath($path){
+    return self::cygpath($path, "-w");
+  }
+
+  public static function cygpath($path, $options = ''){
+    if(self::$OS == self::OS_WINDOWS) return $path;
+    return '"'.trim(`cygpath $options "$path"`).'"';
   }
 }
