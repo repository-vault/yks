@@ -47,6 +47,8 @@ class browser {
     if(!is_file($file)) return false;
     $data = file_get_contents($file);
     $data = unserialize($data);
+    if(!is_a($data, "cookiejar")) return false;
+
     $this->cookiejar   = $data;
     return true;
   }
