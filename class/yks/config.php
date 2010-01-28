@@ -13,14 +13,19 @@ class config extends KsimpleXMLElement {
   public static function hash_key(){ return self::cache_pfx.crpt(ROOT_PATH, "yks/confighash", 10); }
   public static function load($file_path, $use_cache = YKS_CONFIG_CACHE) {
 
-    if(!$use_cache)
-        return KsimpleXML::load_file($file_path, __CLASS__);
-
     $key    = self::cache_pfx.crpt($file_path, "yks/config", 10);
+    if(!$use_cache){
+        syslog(LOG_INFO, "Skipping config cache for $key,you might want to SetEnv YKS_CONFIG_CACHE true");
+        return KsimpleXML::load_file($file_path, __CLASS__);
+    }
+
+
     $config = YKS_CONFIG_FORCE ? false 
         : ( self::$_cache[$key] ? self::$_cache[$key] : self::$_cache[$key] = storage::fetch($key) );
     if(!$config) {
-        $config = storage::store($key, self::load($file_path, false) );
+        $config = self::load($file_path, false);
+        storage::store($key, $config);
+        syslog(LOG_INFO, "Reloading config for $key");
 
         //keep hash up to date
         $hash_key = self::hash_key();

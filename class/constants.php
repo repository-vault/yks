@@ -12,8 +12,6 @@ define('_NOW',$_SERVER['REQUEST_TIME']);
 define('_UDAY',floor(_NOW/86400));
 
 
-    //Engine detection
-
 define('BOM', pack('C*',239,187,191));
 define('VAL_SPLITTER', '#\s*[;,]\s*#');
 

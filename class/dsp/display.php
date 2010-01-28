@@ -152,7 +152,7 @@ class dsp{
 
   // Find documentation in the manual
   static function nav($tree,$id=false, $depth=0){
-    $str="<ul ".($id?"id='$id'":'').">";
+    $ul="<ul ".($id?"id='$id'":'').">"; $str = '';
     foreach($tree as $link_key=>$link_infos){
         if($link_infos['access']
              && !auth::verif(key($link_infos['access']),current($link_infos['access'])))
@@ -177,8 +177,9 @@ class dsp{
         if($children) $str.=self::nav($link_infos['children'],false,$depth+1)."";
        $str.="</li>";
     }
-    $str.="</ul>";
-    return $str;
+    $ul.= $str;
+    $ul.= "</ul>";
+    return $str?$ul:"";
  }
 
 }
