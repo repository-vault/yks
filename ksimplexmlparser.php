@@ -5,7 +5,7 @@
 class KsimpleXMLParser {
   private $class = 'KsimpleXMLElement';
   private $parser;
-  private $config;
+  private $node;
   private $depth;
   private $nodes_path;
 
@@ -13,7 +13,7 @@ class KsimpleXMLParser {
   public function __construct($class){
     if(!is_null($class)) $this->class  = $class;
     $this->parser = xml_parser_create();
-    $this->config = null;
+    $this->node   = null;
     $this->depth  = 0;
     $this->nodes_path = array();
 
@@ -28,15 +28,15 @@ class KsimpleXMLParser {
 
   public function process($str){
     xml_parse($this->parser, $str);
-    return $this->config; 
+    return $this->node; 
   }
 
   private function tag_open($parser, $name, $attribs) {
     $class = $this->class;
     $node = new $class($name, $attribs);
 
-    if(!$this->config) {
-        $this->config = $this->nodes_path[0] = $node;
+    if(!$this->node) {
+        $this->node = $this->nodes_path[0] = $node;
         return;
     }
 
@@ -51,9 +51,9 @@ class KsimpleXMLParser {
   }
 
   private function cdata($parser, $str) {
-    $str = trim($str);
+    //$str = trim($str);
     if(!$str) return;
-    $this->nodes_path[$this->depth]->set($str);
+    $this->nodes_path[$this->depth]->text($str);
   }
 
   private function std($parser, $str) {

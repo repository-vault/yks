@@ -6,7 +6,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
   private $parent;
   private $children; //splat
   private $attrs;
-  private $contents; //no mixed contents
+  private $contents; //no mixed contents (string)
 
   public function __construct($name, $attrs = array(), $contents = null) {
     $this->name     = $name;
@@ -74,6 +74,9 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     return $tmp;
   }
 
+  public function text($str){
+    $this->contents .= $str;
+  }
   public function set($value){ //to myself
     $this->contents = $value;
   }
