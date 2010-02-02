@@ -14,7 +14,7 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  private function __construct($from){
+  private function __construct($from, $args){
 
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
 
@@ -29,15 +29,15 @@ class interactive_runner {
 
     $reflector = $this->reflection_scan($this->className, $this->className, $this->obj);
 
-    $mode = is_null($this->obj) ? "auto-instanciation" : "std";
-    rbx::ok("Runner is ready '{$this->className}' in $mode mode");
+    $mode_str = is_null($this->obj) ? "auto-instanciation" : "std";
+    rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
     $this->reflection_scan(__CLASS__, "runner", $this); //register runners own commands
 
     $this->help();
 
     if(is_null($this->obj))
-        $this->obj = $reflector->newInstance();
+        $this->obj = $reflector->newInstanceArgs($args);
   }
 
 
@@ -263,11 +263,11 @@ class interactive_runner {
   }
 
 /**
-* @interactive_runner hide tooto ao tooa ao
+* @interactive_runner hide
 */
-  static public function start($obj){
+  static public function start($obj, $args = array()){
 
-    $runner = new self($obj);
+    $runner = new self($obj, $args);
     $runner->main_loop(); //private internal
   }
 }
