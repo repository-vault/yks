@@ -16,6 +16,7 @@ class KsimpleXMLParser {
     $this->node   = null;
     $this->depth  = 0;
     $this->nodes_path = array();
+    $this->nodes_contents = array();
 
     xml_set_object($this->parser, $this);
     xml_set_element_handler($this->parser, "tag_open", "tag_close");
@@ -40,10 +41,10 @@ class KsimpleXMLParser {
         return;
     }
 
-    $this->nodes_path[$this->depth++]->adopt(
-        $this->nodes_path[$this->depth] = $node
-    );
+    $this->nodes_path[$this->depth+1] = $node;
+    $this->nodes_path[$this->depth++]->adopt($node);
 
+    $this->nodes_contents[self::hash($node)] = null;
   }
 
   private function tag_close($parser, $name) {    
@@ -51,9 +52,20 @@ class KsimpleXMLParser {
   }
 
   private function cdata($parser, $str) {
-    //$str = trim($str);
-    if(!$str) return;
-    $this->nodes_path[$this->depth]->text($str);
+
+    $node = $this->nodes_path[$this->depth];
+    $UID  = self::hash($node);
+
+    if( !trim($str) //empty nodes are skipped
+        && is_null($this->nodes_contents[$UID]))
+        return;
+
+    $this->nodes_contents[$UID] .= $str;
+    $node->set(trim($this->nodes_contents[$UID]));
+  }
+
+  static private hash($node){
+    return spl_object_hash($node);
   }
 
   private function std($parser, $str) {
