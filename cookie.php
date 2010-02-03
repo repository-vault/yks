@@ -1,6 +1,6 @@
 <?php
 
-    //http://www.ietf.org/rfc/rfc2109.txt
+    //http://www.ietf.org/rfc/rfc2965.txt
 
 class cookie {
   private $name;
@@ -14,6 +14,7 @@ class cookie {
     $this->name  = $name;
     $this->value = $value;
 
+        //.domain ALLOW sub.domain
     $this->domain_restricted = substr($host,0,1)!='.';
     $host = trim($host, '.');
 
@@ -46,9 +47,9 @@ class cookie {
   function match($url){
 
     $match = $this->domain == $url->domain
-        && ( $this->sub ? substr($url->sub, -strlen($this->sub)) == $this->sub : true )
+        && ends_with($url->sub, $this->sub)
         && ( $this->domain_restricted ? $url->sub == $this->sub : true)
-        && ( substr($url->path,0,strlen($this->path))==$this->path );
+        && starts_with($url->path, $this->path);
 
     return $match;
   }
