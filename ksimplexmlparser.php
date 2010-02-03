@@ -64,7 +64,7 @@ class KsimpleXMLParser {
     $node->set(trim($this->nodes_contents[$UID]));
   }
 
-  static private hash($node){
+  static private function hash($node){
     return spl_object_hash($node);
   }
 
