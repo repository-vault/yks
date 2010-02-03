@@ -74,9 +74,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     return $tmp;
   }
 
-  public function text($str){
-    $this->contents .= $str;
-  }
+
   public function set($value){ //to myself
     $this->contents = $value;
   }
