@@ -10,4 +10,8 @@
 %MYKSProcedures;
 %MYKSViews;
 
+
 <!ELEMENT myks (mykse|table|procedure|view)+>
+<!ATTLIST myks 
+  ns CDATA	#IMPLIED
+>
