@@ -14,6 +14,7 @@ abstract class __sql_sync {
 
   
   function __construct($tables, $from, $to, $tmp_file = self::file_export_name) {
+
     $this->coords   = array(
         'from' => $this->parse($from),
         'to'   => $this->parse($to)
@@ -36,6 +37,7 @@ abstract class __sql_sync {
         $table_dsn = compact('database', 'host', 'schema');
     }
     if(!$table_dsn['schema']) $table_dsn['schema'] = "public";
+
     return $table_dsn;
   }
 
@@ -47,7 +49,7 @@ abstract class __sql_sync {
   private function tablify($table_filter){
 
     $coord = $this->coords['from'];
-    $col   = "CONCAT(table_schema,',',table_name)";
+    $col   = "(table_schema || ',' || table_name)";
     $query = "SELECT $col FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND $table_filter";
 
     $query = sql::unfix($query);

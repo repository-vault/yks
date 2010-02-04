@@ -5,7 +5,8 @@
 */
 class sync_runner {
 
-  function __construct(){
+  function __construct($pattern = false){
+
     $this->sync = yks::$get->config->sync;
     $this->sources = array();
     foreach($this->sync->sources->source as $source)
@@ -15,10 +16,12 @@ class sync_runner {
     $this->to   = $this->sources[(string) $this->sync['to']];
 
     $this->patterns = array();
-    foreach($this->sync->patterns->pattern as $pattern)
-        $this->patterns[(string)$pattern['key']] = $pattern;
+    foreach($this->sync->patterns->pattern as $pattern_xml)
+        $this->patterns[(string)$pattern_xml['key']] = $pattern_xml;
 
-    cli::box("Available patterns", array_keys($this->patterns));
+    if(!$pattern)
+        cli::box("Available patterns", array_keys($this->patterns));
+    else $this->start($pattern);
   }
   
   function start($pattern){
