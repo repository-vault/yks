@@ -15,6 +15,8 @@ class users  {
     return sql::brute_fetch('addr_type');
   }
 
+  static private $infos_tables = array('ks_users_list','ks_users_tree','ks_auth_password', 'ks_users_addrs');
+
   static function get_infos_unique($user_id, $cols=array('user_name'),$where=array()){
      if(!$user_id) return array();
      $tmp=self::get_infos(array($user_id),$cols,false,false,false,$where);
@@ -85,9 +87,9 @@ class users  {
     //this implementation only works for postgres 
   static function get_children_infos($parent_id, $where=true, $cols=array()){
     $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
-    $query_tree = is_array($parent_id)
-            ? "(".mask_join(" UNION ", $parent_id, " SELECT * FROM $mask_tree").") as tmp"
-            : sprintf($mask_tree, $parent_id);
+    if(!$parent_id) return array();
+    if(!is_array($parent_id)) $parent_id = array((int)$parent_id);
+    $query_tree = "(".mask_join(" UNION ", $parent_id, " SELECT * FROM $mask_tree").") as tmp";
     $query = "SELECT * FROM
         $query_tree    
         LEFT JOIN `ks_users_list` USING(user_id) 
@@ -132,15 +134,14 @@ class users  {
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    $users_type=vals(yks::$get->types_xml->user_type);
-    self::$users_profiles=array_mask($users_type,'%s_profile');
+    $users_type = vals(yks::$get->types_xml->user_type);
+    self::$users_profiles = array_mask($users_type,'%s_profile');
 
     self::$cols_def=array(); $tables_xml = yks::$get->tables_xml;
     foreach(self::$users_profiles as $k=>$table_name)
         if(!$tables_xml->$table_name)unset(self::$users_profiles[$k]);
 
-    $tables = array_merge(self::$users_profiles,
-        array('ks_users_list','ks_users_tree','ks_auth_password') );
+    $tables = array_merge(self::$users_profiles, self::$infos_tables);
     foreach($tables as $table_name)
         self::$cols_def = array_merge_recursive(self::$cols_def,
             array_fill_keys(

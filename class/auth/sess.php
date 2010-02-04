@@ -21,7 +21,7 @@ class sess  {
 
     if(sess::$id) return false;
     session_name(SESSION_NAME);
-    session_set_cookie_params (0, "/", SITE_DOMAIN, false, true);
+    session_set_cookie_params (0, "/", SESS_DOMAIN, false, true);
     session_start();
     self::$sess = &$_SESSION['user'];
     self::$id = session_id();
@@ -37,18 +37,19 @@ class sess  {
   }
 
   static function renew(){
-    setcookie('user_id', false);
+    setcookie('user_id', false, 0, "/", SESS_DOMAIN);
     sess::$sess     = array();
     sess::$_storage = array();
     self::$renewed  = true;
-    $sess_infos     = auth::valid_tree(USERS_ROOT);
+    $sess_infos     = auth::valid_tree(exyks::retrieve('USERS_ROOT'));
     if($sess_infos) sess::$sess = $sess_infos;
   }
 
   static function close(){ return session_write_close(); }
 
   static function status_check(){
-    self::$connected=(self::$sess['user_id'] && self::$sess['user_id']!=USERS_ROOT);
+    self::$connected=( self::$sess['user_id']
+                      && self::$sess['user_id'] != exyks::retrieve('USERS_ROOT') );
   }
 
   static function update($user_id, $skip_auth = false){

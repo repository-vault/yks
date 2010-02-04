@@ -25,8 +25,8 @@ class auth_password {
         return false;
     }
     $COOKIE_EXPIRE = _NOW+86400*10;
-    setcookie('user_id', $user_id, $COOKIE_EXPIRE,'/');
-    setcookie($cookie_pswd, $_COOKIE[$cookie_pswd], $COOKIE_EXPIRE, '/');
+    setcookie('user_id', $user_id, $COOKIE_EXPIRE,'/', SESS_DOMAIN);
+    setcookie($cookie_pswd, $_COOKIE[$cookie_pswd], $COOKIE_EXPIRE, '/', SESS_DOMAIN);
     return $allow_redirect?auth::reloc_chk():true;
   }
 

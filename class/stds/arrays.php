@@ -12,9 +12,6 @@ function make_tree($splat, $root=false, $inverted = false){
 }
 
 
-    //return the first non empty value
-function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
-
     //return the first non empty valid value (last arg is a list of possibles values)
 function pick_in(){
     $args = func_get_args();

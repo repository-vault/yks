@@ -152,7 +152,7 @@ class files {
 
     return $data;
   }
-
+  public static function tmpdir(){mkdir($tmp = self::tmppath()); return $tmp; }
   public static function tmppath($ext= 'tmp') {return tempnam(sys_get_temp_dir(), "$ext-").".$ext"; }
 
 

@@ -79,7 +79,9 @@ function strip_start($str, $start){
 function starts_with($str, $start){
     return substr($str, 0, strlen($start)) == $start;
 }
-
+function ends_with($str, $end){
+    return $end ? substr($str, -strlen($end)) == $end : true;
+}
 
 function reloc($url) {
     if(substr($url,0,1)=="/") $url=SITE_URL.'/'.ltrim($url,'/');

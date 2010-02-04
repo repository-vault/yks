@@ -6,16 +6,6 @@
 
 class exyks_session {
 
-  static function init_core() {
-        //register classic sess managers
-    classes::register_class_paths(array(
-        "sess"                 => CLASS_PATH."/auth/sess.php",
-        "auth"                 => CLASS_PATH."/auth/auth.php",
-        "auth_password"        => CLASS_PATH."/auth/interfaces/password.php",
-        "auth_restricted_ip"   => CLASS_PATH."/auth/interfaces/restricted_ip.php",
-    ));
-  }
-
 
     //  Load basic session, if existing, load root user else
   static function load_classic(){

@@ -14,9 +14,10 @@ class exyks {
   public static $head = null;
 
   private static $is_script = false;
-  private static $customs = array();
 
   static function init() {
+
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return; //exyks::init can be called
 
     global $action, $config;
 
@@ -46,16 +47,8 @@ class exyks {
 
     self::store('LANGUAGES',
         preg_split(VAL_SPLITTER, $config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
+
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
-
-
-    $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
-    self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
-    self::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
-    self::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
-
-
-
     define('FLAG_UPLOAD',    $config->flags['upload'].FLAG_DOMAIN);
     define('USERS_ROOT',     (int)$config->users['root']);
     define('BASE_CC',        $config->lang['country_code']);
@@ -66,6 +59,15 @@ class exyks {
     define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
     define('COMMONS_URL',$config->site['commons_url']);
 
+
+    $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
+    self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
+    self::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
+    self::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
+    self::store('USERS_ROOT', USERS_ROOT); //drop constants here
+
+
+
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
 
     include CLASS_PATH."/functions.php";
@@ -74,6 +76,14 @@ class exyks {
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
+
+        // prepare sessions & auths
+    classes::register_class_paths(array(
+        "sess"                 => CLASS_PATH."/auth/sess.php",
+        "auth"                 => CLASS_PATH."/auth/auth.php",
+        "auth_password"        => CLASS_PATH."/auth/interfaces/password.php",
+        "auth_restricted_ip"   => CLASS_PATH."/auth/interfaces/restricted_ip.php",
+    ));
 
   }
 
@@ -92,27 +102,6 @@ class exyks {
   }
 
 
-
-  static function register($tagName, $callback){
-    self::$customs[$tagName] = $callback;
-  }
-
-  static function parse($doc){
-    if(!self::$customs) return;
-
-    $xpath = new DOMXPath($doc);
-    $query = mask_join("|",array_keys(self::$customs), "//%s");
-    $entries = $xpath->query($query);
-    if(!$entries->length) return;
-
-    foreach ($entries as $entry) {
-        $nodeName = $entry->nodeName;
-        $callback = self::$customs[$nodeName];
-        if($callback)
-            call_user_func($callback, $doc, $entry);
-    }
-  }
-
     //website initialisation
   static function context_prepare($query_path){
 
@@ -127,6 +116,7 @@ class exyks {
     return $parsed_paths;
   }
 
+
   static function website_prepare(){
     global $config;
     rbx::$output_mode = 0;
@@ -138,7 +128,6 @@ class exyks {
     if(!self::$head->styles)  self::$head->addChild("styles");
     if(!self::$head->scripts) self::$head->addChild("scripts");
 
-    exyks_session::init_core();
     exyks_security::sanitize();
     locales_manager::init();
 
@@ -222,7 +211,7 @@ class exyks {
     if(true || self::$customs || $render_side=="server"){ // || optim XML
         $doc = xml::load_string($str);
         if(!$doc) yks::fatality(yks::FATALITY_XML_SYNTAX, $str, $render_mode);
-        exyks::parse($doc);
+        tpls::process_customs_elements($doc);
         if($render_side=="client") $str = $doc->saveXML();
     }
     

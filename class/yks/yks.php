@@ -40,6 +40,8 @@ class yks
     if(!is_file(self::$config_file))
         yks::fatality(yks::FATALITY_CONFIG, self::$config_file." not found");
     $GLOBALS['config'] = $config =  yks::$get->config;
+    if(!is_a($config, "config"))
+        yks::fatality(yks::FATALITY_CONFIG, "\$config is no config");
 
         //******************** Usefull constants **************
 
@@ -62,11 +64,13 @@ class yks
     define('SITE_URL',       $config->site['url']);
     define('SITE_BASE',      ucfirst(SITE_CODE));
     define('SITE_DOMAIN',    $domain['host']);
+    define('SESS_DOMAIN',    pick($config->site->sess['domain'], SITE_DOMAIN) );
+
     define('FLAG_DOMAIN',    substr(md5(SITE_DOMAIN.SITE_CODE),0,5));
     define('FLAG_APC',       FLAG_DOMAIN);
     define('FLAG_LOG',       $config->flags['log']);
     define('FLAG_FILE',      $config->flags['file'].FLAG_DOMAIN);
-    define('FLAG_SESS',      $config->flags['sess'].FLAG_DOMAIN);
+    define('FLAG_SESS',      $config->flags['sess'].SESS_DOMAIN);
 
 
     define('CACHE_REL',      'cache/'.FLAG_DOMAIN);

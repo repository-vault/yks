@@ -7,9 +7,10 @@ class tpls {
  const STD = 0;
 
  static $nav=array();
- static private $top=array();
- static private $bottom=array();
- static $body=false; //if!tpls::$body
+ static private $top    = array();
+ static private $bottom = array();
+ static $body = false; //if!tpls::$body
+ private static $customs = array();
 
  static private $paths = array('search'=>array(), 'replace'=>array());
 
@@ -96,6 +97,27 @@ class tpls {
     $tmp = preg_replace(self::$paths['search'], self::$paths['replace'], $tpl);
 
     return $tmp == $tpl?ROOT_PATH."/tpls$tpl":$tmp;
+  }
+
+
+  static function register_custom_element($tagName, $callback){
+    self::$customs[$tagName] = $callback;
+  }
+
+  static function process_customs_elements($doc){
+    if(!self::$customs) return;
+
+    $xpath = new DOMXPath($doc);
+    $query = mask_join("|", array_keys(self::$customs), "//%s");
+    $entries = $xpath->query($query);
+    if(!$entries->length) return;
+
+    foreach ($entries as $entry) {
+        $nodeName = $entry->nodeName;
+        $callback = self::$customs[$nodeName];
+        if($callback)
+            call_user_func($callback, $doc, $entry);
+    }
   }
 
 
