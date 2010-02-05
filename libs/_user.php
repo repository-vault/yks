@@ -4,9 +4,18 @@ class _user extends _sql_base {
   const sql_table = 'ks_users_list';
   const sql_key = 'user_id';
 
-  protected $sql_table = "ks_users_list";
-  protected $sql_key = "user_id";
+  protected $sql_table = self::sql_table;
+  protected $sql_key = self::sql_key;
   private $storage = array();
+
+
+  static function from_where($where){
+    return parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
+  }
+
+  static function from_ids($ids){
+    return parent::from_ids(__CLASS__, self::sql_table, self::sql_key, $ids);
+  }
 
   function __toString(){ return $this->user_name; }
 
@@ -45,6 +54,7 @@ class _user extends _sql_base {
         $key = reset(array_keys(fields($table_xml), _user::sql_key));
     return array($key => $this->user_id);
   }
+
 
   function __get($key){
     $get = parent::__get($key);
