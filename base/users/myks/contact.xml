@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
-<myks>
-<!-- a contact est nullable user -->
-  <mykse type="contact_id" null="null">
-    <mykse type="user_id"/>
-  </mykse>
-</myks>
