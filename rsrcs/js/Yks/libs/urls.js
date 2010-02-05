@@ -26,6 +26,7 @@ var Urls = {
   },
 
   reloc:function(href,target){
+    if($type(target)=="string") window.open(href, target);
     if($defined(target)) Jsx.open(href,target);
     else window.location.href=href;
   },
