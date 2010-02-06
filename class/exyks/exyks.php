@@ -77,14 +77,6 @@ class exyks {
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
-        // prepare sessions & auths
-    classes::register_class_paths(array(
-        "sess"                 => CLASS_PATH."/auth/sess.php",
-        "auth"                 => CLASS_PATH."/auth/auth.php",
-        "auth_password"        => CLASS_PATH."/auth/interfaces/password.php",
-        "auth_restricted_ip"   => CLASS_PATH."/auth/interfaces/restricted_ip.php",
-    ));
-
   }
 
 

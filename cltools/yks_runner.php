@@ -43,6 +43,35 @@ class yks_runner {
   
 
 
+  function install(){
+    $root_path  = ROOT_PATH;
+    $www_path  = $root_path.DIRECTORY_SEPARATOR.'www';
+    $tpls_path  = $root_path.DIRECTORY_SEPARATOR.'tpls';
+    $subs_path  = $root_path.DIRECTORY_SEPARATOR.'subs';
+    $config_path  = $root_path.DIRECTORY_SEPARATOR.'config';
+
+
+        //creating base dirs
+    files::create_dir($www_path);
+    files::create_dir($tpls_path);
+    files::create_dir($subs_path);
+    files::create_dir($config_path);
+
+    $host_name = cli::text_prompt("Host name");
+    $host_key  = join('.',array_slice(explode(".",$host_name),0,-2));
+    do {
+        $prompt = "Host key".($host_key?" [{$host_key}]":"");
+        $host_key = pick(cli::text_prompt($prompt), $host_key);
+    } while(!$host_key);
+
+    $config = simplexml_load_string(XML_HEAD."<config/>");
+    
+    echo $config->asXML();
+  }
+
+
+
+
 
 /**
 * Check caches directory
