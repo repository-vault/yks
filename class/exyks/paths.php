@@ -3,57 +3,65 @@
 
 class exyks_paths {
 
-  const prefix_ns = "paths_prefix";
-  static private $paths_ns = array();
-  private static $paths = array();
+  static private $paths = array();
 
-/*
-    Scan config file for paths definitions and register them
-    <paths xmlns:pf="paths_prefix" pf:admin="."
-*/
   public static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    $config   = yks::$get->config->search("paths");
-    $prefixes = $config ? attributes_to_assoc($config, self::prefix_ns) : array();
-    self::$paths_ns = array_merge($prefixes, array(
-        'yks'   => BASE_PATH,
-        'here'  => ROOT_PATH,
-        '3rd'   => THRD_PATH,
-    ));
-    if($config) foreach($config->path as $path){
-        foreach(explode(':', $path['symbolic']) as $path_key) {
-            $dest = $path['base']?$path['base']."/$path_key":$path['dest'];
-            self::register($path_key, $dest);
-        }
-    }
+    self::register("yks", YKS_PATH, "yks");
+    self::register("here", ROOT_PATH, "yks");
+
+  }
+
+  public static function register($key, $dest, $ns){
+    //"ns/key" index prevents double declaration (could have been [] as key is irrevelant
+    self::$paths["$ns/$key"] = compact('key', 'dest', 'ns');
   }
 
 
-/*
-    Register a "virual" path from any file starting with $path_key
-*/
-  public static function register($path_key, $path){
-        //resolve
-    $mask = '#^path://('.join('|',array_keys(self::$paths_ns)).')(.*?)(//|$)#ie'; //cooool
 
+  public static function resolve($path, $ns = false){
+
+        //namespace list resolution order
+    if(!$ns) $ns_list = array_values(array_extract(self::$paths, "ns", true));
+    elseif(!is_array($ns)) $ns_list = array($ns);
+    else $ns_list = $ns;
+
+    $replaces = array();
+    foreach($ns_list as $ns) {
+      foreach(self::$paths as $path_infos){
+        if($path_infos['ns'] != $ns) continue;
+        $replaces[$path_infos['key']] = $path_infos['dest'];
+    }}
+
+        //resolve
+    $mask = '#^path://('.join('|',array_keys($replaces)).')(.*?)(/|$)#ie'; //cooool
+
+    $repl = '$replaces["$1"]."$2"';
+
+    if(preg_match($mask, $path, $out)) {
+        $path = preg_replace($mask, "$repl.'/'", $path);
+        return $path;
+
+    }
+
+die("Resolving $path failed in $mask");
     $repl = 'self::$paths_ns["$1"]."$2"';
+
     $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs/'", $path));
     $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls/'", $path));
 
+
+
     self::$paths['subs'][$path_key]   = $sub_path;
     tpls::add_resolver($path_key, $tpl_path);
+
+
+    
+
+    echo "resolving $path";
+    print_r(self::$paths_ns);die;
   }
-
-
-
-  private static function resolve($subs_fold, $node_name, $subs_path){
-    if($subs = self::$paths['subs']["$subs_fold/$node_name"]) {
-        return $subs;
-    }
-    return "$subs_path/$node_name";
-  }
-
 
 /*
   Prepare the passed URL to be used in the whole yks layer
@@ -142,6 +150,10 @@ class exyks_paths {
   static function parse_args($args_str){
      return explode(';', "$args_str;;;;");
   }
+
+
+
+
 
 
 }

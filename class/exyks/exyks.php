@@ -72,10 +72,22 @@ class exyks {
 
     include CLASS_PATH."/functions.php";
 
-    exyks_paths::register("/Yks", "path://yks//Yks");
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
+
+
+    $yks = new exyks_module(array(
+        'key'      => "yks",
+        'manifest' => "path://yks/base",
+    ));
+
+    foreach($config->modules->module as $module) {
+      $module = new exyks_module($module);   
+      print_r($module);die;
+    }
+    die("module node");
+    echo $config->modules->asXML();die;
 
   }
 

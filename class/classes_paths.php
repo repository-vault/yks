@@ -19,7 +19,6 @@ classes::register_class_paths(array(
     "sql_func"            => CLASS_PATH."/sql/functions.php",
     "yks_list"            => CLASS_PATH."/list/yks_list.php",
     "dtd"                 => CLASS_PATH."/dom/dtds.php",
-    "myks"                => CLASS_PATH."/myks/myks.php",
 
     "http"                => CLASS_PATH."/exts/http/http.php",
     "sock"                => CLASS_PATH."/exts/http/sock.php",
@@ -30,7 +29,6 @@ classes::register_class_paths(array(
     "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
 
-    "myks_parser"         => CLASS_PATH."/myks/parser.php",
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 
     "cli"                 => CLASS_PATH."/cli/cli.php",
