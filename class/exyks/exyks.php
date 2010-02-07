@@ -17,9 +17,7 @@ class exyks {
 
   private static $modules_list;
 
-  static function get_modules_list(){
-    return self::$modules_list;
-  }
+  static function get_modules_list(){    return self::$modules_list;  }
   
 
   static function init() {
@@ -92,7 +90,6 @@ class exyks {
 
     foreach($config->modules->module as $module)
       self::$modules_list[] = new exyks_module($module);
-
   }
 
 
@@ -114,7 +111,7 @@ class exyks {
   static function context_prepare($query_path){
 
         /* $result_path, $href, $href_ks, $context_depths */
-    $parsed_paths = exyks_paths::parse($query_path);
+    $parsed_paths = exyks_urls::parse($query_path);
     list(, self::$href, self::$href_ks) = $parsed_paths;
     self::$is_script = substr(self::$href_ks,0,13)=="/Yks/Scripts/";
 

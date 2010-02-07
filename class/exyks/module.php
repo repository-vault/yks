@@ -6,6 +6,7 @@ class exyks_module {
   private $manifest_file;
   private $key;
   private $ns;
+  private $module_root;
 
   function __construct($module_xml){
 
@@ -27,12 +28,25 @@ class exyks_module {
 
     $this->manifest_xml  = ksimplexml::load_file($this->manifest_file);
 
-    $module_root         = dirname($this->manifest_file); //or ...
+    $this->module_root   = dirname($this->manifest_file); //or ...
 
-    exyks_paths::register("here", $module_root, $this->ns);
+    exyks_paths::register("here", $this->module_root, $this->ns);
 
 
     $this->register_classes();
+  }
+
+  private function get_virtual_paths(){
+    $paths = array();
+    $path = $this->manifest_xml->paths->search("path");
+    if($path) foreach($path as $path) {
+        $path_key = $path['symbolic'];
+
+        $dest     = $path['base']?$path['base']."/$path_key":$path['dest'];
+        if(!$dest) $dest = $path_key;
+        $paths[$path_key] = array($this->module_root, $dest);
+    }
+    return $paths;
   }
 
   function __get($key){

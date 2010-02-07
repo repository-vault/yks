@@ -84,7 +84,7 @@ class tpls {
     $tmp['src']=$href;
  }
 
- static function call($page,$vars=array()){
+ static function call($page, $vars=array()){
     global $href_fold, $class_path, $action;
     $href=$page;
     extract($vars);
