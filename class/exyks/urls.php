@@ -33,7 +33,6 @@ class exyks_urls {
 
   private static function resolve($subs_fold, $node_name, $subs_path){
 
-    return "$subs_path/$node_name";
     if($subs = self::$paths['subs']["$subs_fold/$node_name"]) {
         return $subs;
     }
