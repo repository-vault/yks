@@ -16,10 +16,11 @@ class sql_runner {
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
-    include_once CLASS_PATH."/myks/elements.php";
-    include_once CLASS_PATH."/myks/generator.php";
+    include_once myks::$LIBS."/elements.php";
+    include_once myks::$LIBS."/generator.php";
+
     classes::register_class_path("pgsql_auto_inc_sync",
-        CLASS_PATH."/myks/elements/drivers/pgsql/misc/auto_inc_sync.php");
+        myks::$LIBS."/elements/drivers/pgsql/misc/auto_inc_sync.php");
 
     define('END', ";\r\n");
 

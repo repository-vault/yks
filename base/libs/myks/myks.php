@@ -6,16 +6,37 @@
 
 
 class myks {
-  public static function get_types_xml(){
-    $myks_parser = new myks_parser(yks::$get->config->myks);
+
+  public static $LIBS; //libraries path (here)
+  private static $paths;
+
+  public static function init(){
+
+    self::$LIBS = dirname(__FILE__); //MOD_YKS_ROOT."/libs/myks"; //?
+
+    $paths = array();
+    //list paths 
+    foreach(yks::$get->config->myks->path as $path)
+        $paths[] = exyks_paths::resolve($path['path']);
+
+    foreach(exyks::get_modules_list() as $modules)
+        $paths = array_merge($paths, $modules->myks_paths);
+
+    self::$paths = $paths;
+
+  }
+
+  public static function get_types_xml() {
+    $myks_parser = new myks_parser(self::$paths);
     return $myks_parser->out("mykse")->saveXML();
   }
 
   public static function get_tables_xml(){
-    $myks_parser = new myks_parser(yks::$get->config->myks);
+    $myks_parser = new myks_parser(self::$paths);
     $tables_xml  = $myks_parser->out("table");
     return self::tables_reflection($tables_xml)->saveXML();
   }
+
 
 /* RAW tables_xml data are not user-friendly
    We should scan & transliterate it in a smarter container
@@ -38,6 +59,5 @@ class myks {
     elseif(!$mykse) return array();
     else return self::resolve_to($mykse['type'], $final_types);
   }
-
 
 }
