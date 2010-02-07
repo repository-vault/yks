@@ -11,19 +11,30 @@
 class myks_parser {
   private $xslt;
   private $myks_gen;
-  public $myks_paths;
   const myks_fpi = "-//YKS//MYKS";
 
+  static private $myks_paths;
+  public static function init(){
 
-  function __construct($myks_paths){
+    $paths = array();
+    //list paths 
+    foreach(yks::$get->config->myks->path as $path)
+        $paths[] = exyks_paths::resolve($path['path']);
 
+    foreach(exyks::get_modules_list() as $modules)
+        $paths = array_merge($paths, $modules->myks_paths);
+
+    self::$myks_paths = $paths;
+  }
+
+  function __construct(){
 
     $this->myks_gen   = new DomDocument("1.0");
 
     $main_xml = $this->myks_gen->appendChild($this->myks_gen->createElement("myks_gen"));
 
     $files = array();
-    foreach($myks_paths as $path)
+    foreach(self::$myks_paths as $path)
         $files = array_merge($files, files::find($path,'.*?\.xml$'));
 
     $xsl_file = RSRCS_PATH."/xsl/metas/myks_gen.xsl";
@@ -43,6 +54,7 @@ class myks_parser {
     $xsl = new DOMDocument();$xsl->load($xsl_file,LIBXML_YKS);
     $this->xslt = new XSLTProcessor(); $this->xslt->importStyleSheet($xsl);
   }
+
   function out($mode){
     $this->xslt->setParameter('',array('root_xml'=>$mode));
     return $this->xslt->transformToDoc($this->myks_gen);

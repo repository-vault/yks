@@ -8,31 +8,18 @@
 class myks {
 
   public static $LIBS; //libraries path (here)
-  private static $paths;
 
   public static function init(){
-
     self::$LIBS = dirname(__FILE__); //MOD_YKS_ROOT."/libs/myks"; //?
-
-    $paths = array();
-    //list paths 
-    foreach(yks::$get->config->myks->path as $path)
-        $paths[] = exyks_paths::resolve($path['path']);
-
-    foreach(exyks::get_modules_list() as $modules)
-        $paths = array_merge($paths, $modules->myks_paths);
-
-    self::$paths = $paths;
-
   }
 
   public static function get_types_xml() {
-    $myks_parser = new myks_parser(self::$paths);
+    $myks_parser = new myks_parser();
     return $myks_parser->out("mykse")->saveXML();
   }
 
   public static function get_tables_xml(){
-    $myks_parser = new myks_parser(self::$paths);
+    $myks_parser = new myks_parser();
     $tables_xml  = $myks_parser->out("table");
     return self::tables_reflection($tables_xml)->saveXML();
   }
