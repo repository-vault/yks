@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <myks>
+    <path path="path://here/myks"/>
+  </myks>
+  <classes>
+    <class name="sess" path="path://here/libs/auth/sess.php"/>
+    <class name="auth" path="path://here/libs/auth/auth.php"/>
+    <class name="auth_password" path="path://here/libs/auth/interfaces/password.php"/>
+    <class name="auth_restricted_ip" path="path://here/libs/auth/interfaces/restricted_ip.php"/>
+    <class name="sess" path="path://here/libs/auth/sess.php"/>
+    <class name="users" path="path://here/libs/users/users.php"/>
+  </classes>
+</config>

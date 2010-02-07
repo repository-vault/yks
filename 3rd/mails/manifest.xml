@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <paths>
+    <path symbolic="/Admin/Mails" dest="/Mails"/>
+  </paths>
+  <myks>
+    <path path="path://here/myks"/>
+  </myks>
+  <classes>
+    <class name="mail" path="path://here/libs/mails/mail.php"/>
+    <class name="mails" path="path://here/libs/mails/mails.php"/>
+    <class name="mail_base" path="path://here/libs/mails/mail_base.php"/>
+    <class name="mime" path="path://yks/class/apis/mails/mime.php"/>
+  </classes>
+</config>
