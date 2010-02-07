@@ -59,7 +59,7 @@ class yks
 
 
     define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
-    define('SQL_DRIVER',     $config->sql['driver']);
+    define('SQL_DRIVER',     $config->sql['driver']); //very early, but need to be BEFORE exyks
     define('SITE_CODE',      strtr($config->site['code'],'.','_'));
     define('SITE_URL',       $config->site['url']);
     define('SITE_BASE',      ucfirst(SITE_CODE));

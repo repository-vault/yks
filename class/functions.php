@@ -10,7 +10,6 @@ require CLASS_PATH."/stds/rbx.php";
 require CLASS_PATH."/stds/txt.php";
 require CLASS_PATH."/stds/jsx.php";
 require CLASS_PATH."/stds/arrays.php";
-require CLASS_PATH."/myks/input.php";
 
 
 
@@ -112,7 +111,7 @@ function str_evaluate($str, $vars = array()){  extract($vars);
 }
 
 function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
-    $tmp = call_user_func_array("get_defined_constants", $useronly?array(true):array());
+    $tmp = call_user_func_array("get_defined_constants", $useronly?array(true):array()); //!
     $tmp = $useronly?$tmp['user']:$tmp;  $constants = array();
     foreach($tmp as $name=>$val)
         if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;

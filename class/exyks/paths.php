@@ -3,17 +3,19 @@
 
 class exyks_paths {
 
-  static private $paths = array();
+  static private $paths  = array();
+  static private $consts_cache = array();
+  const default_ns = 'default';
 
   public static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    self::register("yks", YKS_PATH, "yks");
-    self::register("here", ROOT_PATH, "yks");
-
+    self::register("yks", YKS_PATH);
+    self::register("here", ROOT_PATH);
+    self::$consts_cache = retrieve_constants();
   }
 
-  public static function register($key, $dest, $ns){
+  public static function register($key, $dest, $ns = self::default_ns){
     //"ns/key" index prevents double declaration (could have been [] as key is irrevelant
     self::$paths["$ns/$key"] = compact('key', 'dest', 'ns');
   }
@@ -22,15 +24,19 @@ class exyks_paths {
 
   public static function resolve($path, $ns = false){
 
+    $path  = strtr($path, self::$consts_cache);
+    
         //namespace list resolution order
     if(!$ns) $ns_list = array_values(array_extract(self::$paths, "ns", true));
     elseif(!is_array($ns)) $ns_list = array($ns);
     else $ns_list = $ns;
+    $ns_list[] = self::default_ns;
 
     $replaces = array();
     foreach($ns_list as $ns) {
       foreach(self::$paths as $path_infos){
         if($path_infos['ns'] != $ns) continue;
+        if(isset($replaces[$path_infos['key']])) continue;
         $replaces[$path_infos['key']] = $path_infos['dest'];
     }}
 
@@ -45,7 +51,9 @@ class exyks_paths {
 
     }
 
-die("Resolving $path failed in $mask");
+    return $path;
+print_r(debug_backtrace());
+    die("this is '$path'");
     $repl = 'self::$paths_ns["$1"]."$2"';
 
     $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs/'", $path));

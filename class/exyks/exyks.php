@@ -15,6 +15,13 @@ class exyks {
 
   private static $is_script = false;
 
+  private static $modules_list;
+
+  static function get_modules_list(){
+    return self::$modules_list;
+  }
+  
+
   static function init() {
 
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return; //exyks::init can be called
@@ -77,17 +84,14 @@ class exyks {
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
 
-    $yks = new exyks_module(array(
+    self::$modules_list = array();
+    self::$modules_list[] = new exyks_module(array(
         'key'      => "yks",
         'manifest' => "path://yks/base",
     ));
 
-    foreach($config->modules->module as $module) {
-      $module = new exyks_module($module);   
-      print_r($module);die;
-    }
-    die("module node");
-    echo $config->modules->asXML();die;
+    foreach($config->modules->module as $module)
+      self::$modules_list[] = new exyks_module($module);
 
   }
 
