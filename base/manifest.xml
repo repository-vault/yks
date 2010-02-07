@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<config>
+<mod>
+  <paths>
+    <path symbolic="/Yks"/>
+  </paths>
   <myks>
     <path path="path://here/myks/yks/types"/>
     <path path="path://here/myks/yks/locale"/>
@@ -16,4 +19,4 @@
     <class name="myks" path="path://here/libs/myks/myks.php"/>
     <class name="myks_parser" path="path://here/libs/myks/parser.php"/>
   </classes>
-</config>
+</mod>
