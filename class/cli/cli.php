@@ -134,11 +134,12 @@ class cli {
   function exec($cmd, $file_mode = false){
     //write in file so we avoid args parsing issues
     if($file_mode) {
-      $temp_file = tempnam(sys_get_temp_dir(), '.bat').".bat";
+      $temp_file = files::tmppath("bat");
       $cmds = array();
       $cmds[] = "@ $cmd"; //silent
       file_put_contents($temp_file, join(CRLF, $cmds));
-      return passthru($temp_file);
+      $cmd = sprintf('"%s"', $temp_file);
+      return passthru($cmd);
     } else {
         $WshShell = new COM("WScript.Shell");
         return $WshShell->Run($cmd);
@@ -150,7 +151,9 @@ class cli {
   }
 
   public static function cygpath($path, $options = ''){
-    if(self::$OS == self::OS_WINDOWS) return $path;
-    return '"'.trim(`cygpath $options "$path"`).'"';
+    $quot = '"%s"';
+    if(self::$OS == self::OS_WINDOWS)
+      return sprintf($quot, $path);
+    return sprintf($quot, trim(`cygpath $options "$path"`));
   }
 }
