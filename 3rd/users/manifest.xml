@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<config>
+<!DOCTYPE module PUBLIC  "-//YKS//MODULE" "">
+<module>
   <myks>
     <path path="path://here/myks"/>
   </myks>
@@ -11,4 +12,4 @@
     <class name="sess" path="path://here/libs/auth/sess.php"/>
     <class name="users" path="path://here/libs/users/users.php"/>
   </classes>
-</config>
+</module>
