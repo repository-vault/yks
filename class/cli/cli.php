@@ -32,6 +32,7 @@ class cli {
   }
 
   static function console_in($str){
+    if(self::$OS != self::OS_WINDOWS) return $str;
     return charset_map::Utf8StringEncode($str, charset_map::$_toUtfMap);
   }
 
