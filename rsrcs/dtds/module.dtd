@@ -4,9 +4,16 @@
   version CDATA #REQUIRED
 >
 
+<!ENTITY % sliceable
+ "file CDATA  #IMPLIED"
+>
 
 
-<!ELEMENT myks_path (path)+>
+<!ATTLIST myks_path
+  %sliceable
+>
+
+<!ELEMENT myks_path (path)*>
 
 <!ELEMENT path #EMPTY>
 
