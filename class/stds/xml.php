@@ -5,7 +5,16 @@ class xml {
   private static $dtds_paths = array();
 
 
+  static function register_fpi($FPI, $dtd_path, $root_element=false) {
+    self::$dtds_paths[$FPI] = array(
+        'dtd_path'=>$dtd_path,
+        'root_mask'=>$root_element?$root_element:"[a-z]+", //anonymous root preg
+        'fpi_mask'=> preg_quote($FPI, '#')
+    );
+  }
+
   static function load_file($file_path, $FLAGS = LIBXML_YKS, $FPI = false){
+
     if(!$FPI) {
         $doc = new DOMDocument('1.0','UTF-8');
         $doc->formatOutput = false;
@@ -14,6 +23,24 @@ class xml {
         return $tmp?$doc:false;
     }
 
+    $contents = file_get_contents($file_path);
+    return self::parse_string($contents, $FLAGS, $FPI);
+  }
+
+  static function load_string($str, $FLAGS = LIBXML_YKS, $FPI = false){
+    if(!$FPI) {
+        $doc = new DOMDocument('1.0','UTF-8');
+        $doc->formatOutput = false;
+        $doc->preserveWhiteSpace= false;
+        $tmp = $doc->loadXML($str, $FLAGS);
+        return $tmp?$doc:false;
+    }
+    return self::parse_string($str, $FLAGS, $FPI);
+
+  }
+
+
+  private static function parse_string($contents, $FLAGS, $FPI){
 
     $fpi = self::$dtds_paths[$FPI];
     if(!$fpi) throw new Exception("Unknow fpi");
@@ -22,7 +49,6 @@ class xml {
     $search_mask = sprintf($search_mask, $fpi['root_mask'], $fpi['fpi_mask']);
     $replace = '<!DOCTYPE $1 SYSTEM "'.$fpi['dtd_path'].'">';
 
-    $contents = file_get_contents($file_path);
     $contents = preg_replace( $search_mask, $replace, $contents);
 
     if(!$contents)
@@ -40,23 +66,8 @@ class xml {
     if(!$success)
         throw new Exception("Invalid syntax");
     return $doc;
-  }
 
 
-  static function load_string($str, $FLAGS = LIBXML_YKS){
-    $doc = new DOMDocument('1.0','UTF-8');
-    $doc->formatOutput = false;
-    $doc->preserveWhiteSpace= false;
-    $tmp = $doc->loadXML($str, $FLAGS);
-    return $tmp?$doc:false;
-  }
-
-  static function register_fpi($FPI, $dtd_path, $root_element=false) {
-    self::$dtds_paths[$FPI] = array(
-        'dtd_path'=>$dtd_path,
-        'root_mask'=>$root_element?$root_element:"[a-z]+", //anonymous root preg
-        'fpi_mask'=> preg_quote($FPI, '#')
-    );
   }
 
 }

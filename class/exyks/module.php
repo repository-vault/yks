@@ -1,4 +1,4 @@
-<?
+<?php
 
 class exyks_module {
 
@@ -55,6 +55,15 @@ class exyks_module {
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
       return $this->$getter();
+  }
+
+
+  public function __toString(){
+    return "<module #{$this->key}/> ";
+  }
+
+  private function get_manifest_xml(){
+    return $this->manifest_xml;
   }
 
   private function get_myks_paths(){
