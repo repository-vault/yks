@@ -18,13 +18,18 @@ class myks_parser {
 
     $paths = array();
     //list paths 
-    foreach(yks::$get->config->myks->path as $path)
+    foreach(yks::$get->config->myks->myks_paths->iterate("path") as $path)
         $paths[] = exyks_paths::resolve($path['path']);
 
     foreach(exyks::get_modules_list() as $modules)
         $paths = array_merge($paths, $modules->myks_paths);
 
     self::$myks_paths = $paths;
+  }
+
+
+  function trace(){
+    cli::box("Scanning : mykses paths", '● '.join(LF.'● ', self::$myks_paths));
   }
 
   function __construct(){

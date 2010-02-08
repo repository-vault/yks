@@ -14,12 +14,12 @@ class myks {
   }
 
   public static function get_types_xml() {
-    $myks_parser = new myks_parser();
+    $myks_parser = myks::get_parser();
     return $myks_parser->out("mykse")->saveXML();
   }
 
   public static function get_tables_xml(){
-    $myks_parser = new myks_parser();
+    $myks_parser = myks::get_parser();
     $tables_xml  = $myks_parser->out("table");
     return self::tables_reflection($tables_xml)->saveXML();
   }
@@ -45,6 +45,10 @@ class myks {
     if(in_array((string)$mykse['type'], $final_types)) return $mykse;
     elseif(!$mykse) return array();
     else return self::resolve_to($mykse['type'], $final_types);
+  }
+
+  public static function get_parser(){
+    return new myks_parser(); //no config
   }
 
 }

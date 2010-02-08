@@ -72,6 +72,7 @@ class myks_runner {
     rbx::ok("APC types_xml/tables_xml cache reloaded");
 
     $types_xml->asXML($this->mykse_file_path);	// export
+
     rbx::ok("Myks types {$this->mykse_file_path} updated");
 
         //before export ? after ? i don't know is it's very usefull anymore

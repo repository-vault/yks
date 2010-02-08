@@ -64,8 +64,8 @@ class sql_runner {
     rbx::title("Starting SQL driver ".SQL_DRIVER);
 
 
-    $myks_parser          = new myks_parser(self::$myks_config);
-    cli::box("Scanning : mykses paths", '● '.join(LF.'● ', $myks_parser->myks_paths));
+    $myks_parser = myks::get_parser();
+    $myks_parser->trace();
 
     $types_xml            = $myks_parser->out("mykse");
     $tables_xml           = $myks_parser->out("table");
