@@ -73,7 +73,11 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
         return $this->adopt(new $className($path));
     return $tmp;
   }
-
+    //return an iterator in all case - usefull with foreach(
+  public function iterate($path){
+    $ret = $this->search($path);
+    return $ret ? $ret : array();
+  }
 
   public function set($value){ //to myself
     $this->contents = $value;
