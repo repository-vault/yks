@@ -30,16 +30,19 @@ class exyks_module {
 
     $this->module_root   = dirname($this->manifest_file); //or ...
 
+        //two way
     exyks_paths::register("here", $this->module_root, $this->ns);
+    exyks_paths::register($this->key, $this->module_root);
 
 
     $this->register_classes();
+    $this->extend_include_path();
+ 
   }
 
   private function get_virtual_paths(){
     $paths = array();
-    $path = $this->manifest_xml->paths->search("path");
-    if($path) foreach($path as $path) {
+    foreach($this->manifest_xml->paths->iterate("path") as $path) {
         $path_key = $path['symbolic'];
 
         $dest     = $path['base']?$path['base']."/$path_key":$path['dest'];
@@ -62,9 +65,15 @@ class exyks_module {
     return $paths;
   }
 
+  private function extend_include_path(){
+    foreach($this->manifest_xml->include_path->iterate("path") as $path){
+        $path = exyks_paths::resolve($path['path'], $this->ns);
+        classes::extend_include_path($path);
+    }
+  }
 
   private function register_classes(){
-    foreach($this->manifest_xml->classes->class as $class) {
+    foreach($this->manifest_xml->classes->iterate("class") as $class) {
         $class_name = $class['name'];
         $class_path = exyks_paths::resolve($class['path'], $this->ns);
         classes::register_class_path($class_name, $class_path);

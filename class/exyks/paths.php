@@ -50,7 +50,8 @@ class exyks_paths {
 
     }
 
-    return $path;
+    $str = files::paths_merge(ROOT_PATH."/", files::rp($path)); //ROOT_PATH is a directory
+    return $str;
   }
 
 

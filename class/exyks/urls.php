@@ -6,7 +6,8 @@ class exyks_urls {
 
   public static function init(){
 
-    $config   = yks::$get->config->search("paths");
+    $config   = yks::$get->config->paths->iterate("path");
+    //here
 
     foreach(exyks::get_modules_list() as $module) {
         foreach($module->virtual_paths as $path_key=>$dest)

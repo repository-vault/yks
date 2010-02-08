@@ -84,11 +84,11 @@ class exyks {
 
     self::$modules_list = array();
     self::$modules_list[] = new exyks_module(array(
-        'key'      => "yks",
+        'key'      => "base",
         'manifest' => "path://yks/base",
     ));
 
-    foreach($config->modules->module as $module)
+    foreach($config->modules->iterate("module") as $module)
       self::$modules_list[] = new exyks_module($module);
   }
 
