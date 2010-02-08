@@ -1,0 +1,24 @@
+
+<!ELEMENT module (myks_path)>
+<!ATTLIST module
+  version CDATA #REQUIRED
+>
+
+
+
+<!ELEMENT myks_path (path)+>
+
+<!ELEMENT path #EMPTY>
+
+<!ATTLIST path
+  path CDATA    #REQUIRED
+>
+
+<!ELEMENT classes (class)+>
+
+<!ELEMENT class #EMPTY>
+
+<!ATTLIST class
+  name CDATA  #REQUIRED
+  path CDATA  #REQUIRED
+>
