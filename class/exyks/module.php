@@ -73,19 +73,23 @@ class exyks_module {
     return $this->manifest_xml;
   }
 
-  private function get_myks_paths(){
-    $paths  = array();
-    foreach($this->manifest_xml->myks->path as $path)
-        $paths[] = exyks_paths::resolve($path['path'], $this->ns);
-
+  private function paths($from){
+    $paths = array();
+    foreach($from as $path) $paths[] = exyks_paths::resolve($path['path'], $this->ns);
     return $paths;
   }
 
+  private function get_myks_paths(){
+    return $this->paths($this->manifest_xml->myks->iterate("path"));
+  }
+
+  private function get_locale_paths(){
+    return $this->paths($this->manifest_xml->locales->iterate("path"));
+  }
+
   private function extend_include_path(){
-    foreach($this->manifest_xml->include_path->iterate("path") as $path){
-        $path = exyks_paths::resolve($path['path'], $this->ns);
-        classes::extend_include_path($path);
-    }
+    $paths = $this->manifest_xml->include_path->iterate("path");
+    classes::extend_include_path($paths);
   }
 
   private function register_classes(){

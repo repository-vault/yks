@@ -6,6 +6,9 @@
     <path path="path://here/myks/yks/locale"/>
     <path path="path://here/myks/isos"/>
   </myks>
+  <locales>
+    <path path="path://here/locale"/>
+  </locales>
   <classes>
     <!-- runner -->
     <class name="myks_runner" path="path://here/libs/myks_runner.php"/>
