@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE module PUBLIC "-//YKS//MODULE" "">
 <module start="/Yks">
+  <paths>
+    <path virtual="/Admin/Yks" dest="/Admin"/>
+  </paths>
   <myks>
     <path path="path://here/myks/yks/types"/>
     <path path="path://here/myks/yks/locale"/>
@@ -10,14 +13,19 @@
     <path path="path://here/locale"/>
   </locales>
   <classes>
-    <!-- runner -->
+<!-- runner -->
     <class name="myks_runner" path="path://here/libs/myks_runner.php"/>
     <class name="sync_runner" path="path://here/libs/sql/sync_runner.php"/>
     <class name="sql_runner" path="path://here/libs/sql/runner.php"/>
     <class name="__sql_sync" path="path://here/libs/sql/sync.php"/>
     <class name="sql_sync" path="path://here/libs/sql/{SQL_DRIVER}/sql_sync.php"/>
-    <!--  myks -->
+<!--  myks -->
     <class name="myks" path="path://here/libs/myks/myks.php"/>
     <class name="myks_parser" path="path://here/libs/myks/parser.php"/>
+<!-- auth & sess -->
+    <class name="sess" path="path://here/libs/auth/sess.php"/>
+    <class name="auth" path="path://here/libs/auth/auth.php"/>
+    <class name="auth_password" path="path://here/libs/auth/interfaces/password.php"/>
+    <class name="auth_restricted_ip" path="path://here/libs/auth/interfaces/restricted_ip.php"/>
   </classes>
 </module>

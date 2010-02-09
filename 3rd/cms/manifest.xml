@@ -5,6 +5,6 @@
     <path path="path://here/myks"/>
   </myks>
   <classes>
-    <class name="users" path="path://here/libs/users/users.php"/>
+    <include_path path="path://here/libs"/>
   </classes>
 </module>
