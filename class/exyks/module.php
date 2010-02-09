@@ -22,7 +22,7 @@ class exyks_module {
         $manifest_file = $manifest_dest;
     elseif(is_file($manifest_file = "$manifest_dest/manifest.xml"));
     elseif(is_file($manifest_file = "$manifest_dest/{$this->key}.xml"));
-    else throw new Exception("Unresolved module");
+    else throw new Exception("Unresolved module in $manifest_dest");
 
 
     $this->manifest_file = $manifest_file;
@@ -49,7 +49,7 @@ class exyks_module {
         $paths[$this->module_rq_start] = array($this->module_root, $this->module_sg_start);
 
     foreach($this->manifest_xml->paths->iterate("path") as $path) {
-        $path_key = $path['symbolic'];
+        $path_key = $path['virtual'];
 
         $dest     = $path['base']?$path['base']."/$path_key":$path['dest'];
         if(!$dest) $dest = $path_key;
