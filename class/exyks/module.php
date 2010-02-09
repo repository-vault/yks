@@ -39,8 +39,7 @@ class exyks_module {
     exyks_paths::register($this->key, $this->module_root);
 
 
-    $this->register_classes();
-    $this->extend_include_path();
+    $this->process_classes();
  
   }
 
@@ -75,7 +74,8 @@ class exyks_module {
 
   private function paths($from){
     $paths = array();
-    foreach($from as $path) $paths[] = exyks_paths::resolve($path['path'], $this->ns);
+    foreach($from as $path)
+        $paths[] = exyks_paths::resolve($path['path'], $this->ns);
     return $paths;
   }
 
@@ -87,17 +87,16 @@ class exyks_module {
     return $this->paths($this->manifest_xml->locales->iterate("path"));
   }
 
-  private function extend_include_path(){
-    $paths = $this->manifest_xml->include_path->iterate("path");
-    classes::extend_include_path($paths);
-  }
-
-  private function register_classes(){
-    foreach($this->manifest_xml->classes->iterate("class") as $class) {
+  private function process_classes(){
+    $classes  = $this->manifest_xml->classes;
+    foreach($classes->iterate("class") as $class) {
         $class_name = $class['name'];
         $class_path = exyks_paths::resolve($class['path'], $this->ns);
         classes::register_class_path($class_name, $class_path);
     }
+
+    $paths = $this->paths($classes->iterate("include_path"));
+    classes::extend_include_path($paths);
   }
 
 }

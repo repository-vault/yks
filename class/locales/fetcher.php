@@ -44,7 +44,7 @@ class locales_fetcher {
     $languages_order  = array_intersect($languages_order, $languages);
 
 
-    if($locales->cache->sql) foreach($locales->cache->sql as $cache_def)
+    foreach($locales->cache->iterate("sql") as $cache_def)
         self::$locale_tables[] = $cache_def['table'];
 
     $done = array();
