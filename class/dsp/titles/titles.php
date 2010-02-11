@@ -14,13 +14,12 @@ class dsp_titles {
     self::$themes_config = yks::$get->config->themes;
     if(!self::$themes_config) die("Unable to load theme config");
 
-        //scanning fonts paths
-    $paths = retrieve_constants('#_PATH$#');
-    self::$fonts_paths = array( strtr("{RSRCS_PATH}/fonts", $paths) ); //initial path
+    self::$fonts_paths = array();
+    self::$fonts_paths[] =  exyks_paths::resolve("path://yks/rsrcs/fonts");
+
     if(self::$themes_config->fonts_paths->path)
       foreach(self::$themes_config->fonts_paths->path as $path)
-        self::$fonts_paths[] = strtr((string) $path['path'], $paths);
-
+        self::$fonts_paths[] = exyks_paths::resolve($path['path']);
 
     include_once CLASS_PATH."/imgs/functions.php";
     include_once CLASS_PATH."/imgs/imgs.php";
@@ -31,15 +30,17 @@ class dsp_titles {
   private static function parse_theme_config($themes_list, $theme_name){
     if(!is_array($themes_list)) $themes_list = array($themes_list);
 
+
     list($theme_name, $theme_pseudo) = explode(':', $theme_name, 2);
     foreach($themes_list as $theme_parent){
 
-        $theme_xml = $theme_parent->$theme_name; $theme_xml = $theme_xml[0];
+        $theme_xml = $theme_parent->$theme_name;
+
         if(!$theme_xml)
             continue;
 
         array_unshift($themes_list, $theme_xml);
-        $theme_config =  attributes_to_assoc($theme_xml);
+        $theme_config =  $theme_xml->attributes();
 
         if($theme_pseudo)
             return array_merge($theme_config, self::parse_theme_config($themes_list, $theme_pseudo));
@@ -57,12 +58,13 @@ class dsp_titles {
     $theme_name  = $theme_name?$theme_name:$themes_list[$is_title?'base_title':'base'];
 
     $theme_config = self::parse_theme_config($themes_list, $theme_name);
+
     $font_name    = "{$theme_config['font']}.ttf";
 
     if(!($font_file = files::locate($font_name, self::$fonts_paths)))
         throw rbx::error("Requested font '$font_name' cannot be found");
 
-    if(!is_file($box_src = ROOT_PATH."/{$theme_config['src']}")) $box_src = false;
+    if(!is_file($box_src = exyks_paths::resolve($theme_config['src']) )) $box_src = false;
        // break rbx::error("Le thème demandée est incomplet, image $box_src introuvable");
 
     if($theme_config->options['caps']=="true") $text = mb_strtoupper($text);
