@@ -80,7 +80,7 @@ $dsp_profile = array_diff_key($dsp_profile, array_flip($exclude) ); //only displ
 
 
 
-$user_infos=mykse_out($user_infos);
+$user_infos = mykses::out($user_infos);
 
 if($action=="su")try {
     sess::renew();

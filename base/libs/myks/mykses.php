@@ -16,7 +16,7 @@ class mykses {
     elseif($mykse_type) return self::value($mykse_type, $val);
   }
 
-  static function mykse_out($data, $fields=array()){
+  static function out($data, $fields=array()){
     $types_xml = yks::$get->types_xml; $out=array();
 
     foreach($data as $field_name=>$val){
