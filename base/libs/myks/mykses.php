@@ -1,6 +1,32 @@
 <?php
 
-function mykse_validate($data,$filter_in){
+//mykse elements manager
+
+class mykses {
+  static function value($mykse_type, $val){
+    static $types_xml = false; if(!$types_xml) $types_xml = yks::$get->types_xml;
+    $mykse = $types_xml->$mykse_type;
+    if(!$mykse) return $val; 
+    $mykse_type = $mykse['type'];
+    if($mykse_type=='bool') return bool($val,true);
+    elseif($mykse_type=='time') return date('d/m/Y',$val);
+    elseif($mykse_type == 'text') return specialchars_encode($val);
+    elseif(in_array($mykse_type, array('text', 'string','int')) )
+        return $val;
+    elseif($mykse_type) return self::value($mykse_type, $val);
+  }
+
+  static function mykse_out($data, $fields=array()){
+    $types_xml = yks::$get->types_xml; $out=array();
+
+    foreach($data as $field_name=>$val){
+        $mykse_type = isset($fields[$field_name])?$fields[$field_name]:$field_name;
+        $out[$field_name] = self::value($mykse_type, $val);
+     } return $out;
+  }
+
+
+  static function validate($data,$filter_in){
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;
     if($filter_in instanceof simpleXmlElement) $filter_in=fields($filter_in);
@@ -61,33 +87,9 @@ function mykse_validate($data,$filter_in){
       } //loop
 
     } return $filter_unique?$out[$filter_unique]:$out;
-}
-
-
-class mykses {
-  static function value($mykse_type, $val){
-    static $types_xml = false; if(!$types_xml) $types_xml = yks::$get->types_xml;
-    $mykse = $types_xml->$mykse_type;
-    if(!$mykse) return $val; 
-    $mykse_type = $mykse['type'];
-    if($mykse_type=='bool') return bool($val,true);
-    elseif($mykse_type=='time') return date('d/m/Y',$val);
-    elseif($mykse_type == 'text') return specialchars_encode($val);
-    elseif(in_array($mykse_type, array('text', 'string','int')) )
-        return $val;
-    elseif($mykse_type) return self::value($mykse_type, $val);
   }
+
 }
 
 
-
-
-function mykse_out($data, $fields=array()){
-    $types_xml = yks::$get->types_xml; $out=array();
-
-    foreach($data as $field_name=>$val){
-        $mykse_type = isset($fields[$field_name])?$fields[$field_name]:$field_name;
-        $out[$field_name] = mykses::value($mykse_type, $val);
-     } return $out;
-}
 

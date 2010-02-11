@@ -30,7 +30,7 @@ class user_gest {
 
     $mode_update=(bool) ($user_id=$def['user_id']);
 
-    $data=mykse_validate($def, $tables_xml->ks_users_list);
+    $data=mykses::validate($def, $tables_xml->ks_users_list);
 
     if($mode_update){
         sql::update("ks_users_list", $data,compact('user_id'));
@@ -41,7 +41,7 @@ class user_gest {
     }
     if(!$user_id) return false;
 
-    $data=array_filter(mykse_validate($def, $tables_xml->ks_users_addrs));
+    $data=array_filter(mykses::validate($def, $tables_xml->ks_users_addrs));
     if($data) sql::replace("ks_users_addrs", $data, compact('user_id') );
 
     if(is_array($def['user_access'])){
@@ -50,17 +50,17 @@ class user_gest {
             sql::insert("ks_users_access", compact('user_id', 'access_zone', 'access_lvl'));
         }
     }
-    $data=mykse_validate($def, $tables_xml->ks_users_tree);
+    $data = mykses::validate($def, $tables_xml->ks_users_tree);
     sql::insert("ks_users_tree",$data);
 
     foreach(array_unique(array("ks_users",$def['user_type'])) as $user_type){
         $profile_table="{$user_type}_profile";
-        $data=mykse_validate($def, $tables_xml->$profile_table);
+        $data = mykses::validate($def, $tables_xml->$profile_table);
         sql::insert($profile_table,$data);
     }
 
     if(strpos($def['auth_type'],'auth_password')!==false){
-        $data=mykse_validate($def, $tables_xml->ks_auth_password);
+        $data = mykses::validate($def, $tables_xml->ks_auth_password);
         $res = sql::insert("ks_auth_password", $data);
         if(!$res) return false;
     }

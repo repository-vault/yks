@@ -31,7 +31,7 @@ if($action=="add")try{
             if($multi_depth_criteria) $msg .= "Please simplify your criteria.";
             throw rbx::error($msg);
         }
-        $data = mykse_validate($data, $table_fields);
+        $data = mykses::validate($data, $table_fields);
         $res = sql::insert($table_name, $data);
         if(!$res ) throw rbx::error("Unable to insert data");
     }
