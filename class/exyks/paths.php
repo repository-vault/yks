@@ -8,10 +8,15 @@ class exyks_paths {
   const default_ns = 'default';
 
   public static function init(){
+
     if(!classes::init_need(__CLASS__)) return;
 
     self::register("yks", YKS_PATH);
     self::register("here", ROOT_PATH);
+
+    foreach(yks::$get->config->paths->iterate("ns") as $ns)
+        self::register($ns['name'], self::resolve($ns['path']));
+
     self::$consts_cache = retrieve_constants();
   }
 
@@ -44,10 +49,12 @@ class exyks_paths {
 
     $repl = '$replaces["$1"]."$2"';
 
-    if(preg_match($mask, $path, $out)) {
+    if(starts_with($path, "path://")) {
+      if(preg_match($mask, $path, $out)) {
         $path = preg_replace($mask, "$repl.'/'", $path);
         return $path;
-
+      }
+      throw new Exception("Unresolved path : '$path'");
     }
 
     $str = files::paths_merge(ROOT_PATH."/", files::rp($path)); //ROOT_PATH is a directory
