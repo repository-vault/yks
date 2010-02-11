@@ -6,5 +6,6 @@
   </myks>
   <classes>
     <class name="users" path="path://here/libs/users/users.php"/>
+    <class name="user_gest" path="path://here/libs/users/gest.php"/>
   </classes>
 </module>
