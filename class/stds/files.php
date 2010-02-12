@@ -95,6 +95,16 @@ class files {
     return false;
   }
 
+
+  public static function delivers($file){
+    header("Cache-control: public");
+    header("Expires: Thu, 12 Apr 2036 19:31:20 GMT");
+    header(HTTP_CACHED_FILE);
+
+    readfile($file);
+    die;
+  }
+
   public static function download($file, $filename = false, $mime_type = false ){
 
     if($mime_type)
