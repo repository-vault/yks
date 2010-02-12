@@ -2,6 +2,8 @@
 
 auth::verif("yks", "admin", 403);
 
+tpls::css_add("path://users/www/Users/users.css");
+
 $tables_xml = data::load("tables_xml");
 
 $user_filter = &sess::$sess->retrieve('user_filter');

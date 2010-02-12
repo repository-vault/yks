@@ -3,8 +3,8 @@
 <?
 
   $links = "";
-  $links .= "<a href='/?$href_fold//$user_id/Manage' target='user_infos'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/user1.png' style='vertical-align:middle'/></a>";
-  $links .= "<a href='/?$href_fold//$user_id/Manage/access' target='user_access'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/lock_16.png' style='vertical-align:middle'/></a>";
+  $links .= "<a class='user_icon icon_user_infos' href='/?$href_fold//$user_id/Manage' target='user_infos'>&#160;</a>";
+  $links .= "<a class='user_icon icon_user_auth' href='/?$href_fold//$user_id/Manage/access' target='user_access'>&#160;</a>";
 
 ?>
 
@@ -38,13 +38,13 @@ if($children_infos) foreach($children_infos as $user_id=>$user_infos){
 
   $actions="";
   if(auth::verif("yks","admin"))
-        $actions.="<div class='rbx_close' onclick='user_delete($user_id)'>&#160;</div>";
+        $actions.="<span class='user_icon icon_user_trash' onclick='user_delete($user_id)'>&#160;</span>";
 
-  $auth = "lock_16".($can_auth?"":"_gray").".png";
+  $auth = "auth".($can_auth?"":"_disabled");
 
   $links = "";
-  $links .= "<a href='/?$href_fold//$user_id/Manage' target='user_infos'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/user1.png'/></a>";
-  $links .= "<a href='/?$href_fold//$user_id/Manage/access' target='user_access'><img src='&COMMONS_URL;/css/Yks/skin/noia0/imgs/$auth'/></a>";
+  $links .= "<a class='user_icon icon_user_infos' href='/?$href_fold//$user_id/Manage' target='user_infos'>&#160;</a>";
+  $links .= "<a class='user_icon icon_user_$auth' href='/?$href_fold//$user_id/Manage/access' target='user_access'>&#160;</a>";
   $user_name = $user_infos['user_name'];
   if(!$user_name) $user_name = "&yks.users.unnamed; #$user_id";
 

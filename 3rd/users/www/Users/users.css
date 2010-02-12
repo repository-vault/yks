@@ -6,18 +6,6 @@
     width:200px;
 }
 
-.button_trash {
-    display:block;
-    width:16px;
-    height:16px;
-    background-image:url(../icons/delete);
-}
-
-.button_reload {
-    width:16px;
-    height:16px;
-    background-image:url(../icons/reload);
-}
 
 #access_zones_list tbody {
     display:none;
@@ -25,3 +13,16 @@
 }
 #access_zones_list tbody.on {  display:table-row-group;}
 #access_zones_list tbody.on_ie { display:block; }
+
+.user_icon {
+    display:inline-block;
+    width:16px;
+    height:16px;
+    vertical-align:middle;
+}
+
+.icon_user_infos { background-image:url(user1.png); }
+.icon_user_auth { background-image:url(lock_16.png); }
+.icon_user_auth_disabled { background-image:url(lock_16_gray.png); }
+.icon_zone_trash, .icon_user_trash { background-image:url(delete.png); }
+.icon_user_reload { background-image:url(reload.png); }

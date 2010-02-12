@@ -14,7 +14,7 @@ foreach($access_zones as $access_zone=>$zone_infos){
         <td>{$zone_infos['access_zone']}</td>
         <td>{$zone_infos['access_zone_parent']}</td>
         <td>{$zone_infos['zone_descr']}</td>
-        <td><div class='button_trash' onclick=\"zone_delete('{$zone_infos['access_zone']}')\"> </div></td>
+        <td><div class='user_icon icon_zone_trash' onclick=\"zone_delete('{$zone_infos['access_zone']}')\">&#160;</div></td>
     </tr>";
 }
 ?>
