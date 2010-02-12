@@ -64,7 +64,9 @@ class tpls {
  static function page_def($subs_file){
     exyks::$page_def = $subs_file;
  }
- public static function css_add($href,$media=false){
+ public static function css_add($href, $media=false){
+    if(starts_with($href, "path://")) $href = exyks_paths::expose($href, TYPE_CSS);
+
     $tmp = exyks::$head->styles->addChild("css");
     if($media)$tmp['media']=$media;
     $tmp['href']=$href;
