@@ -12,6 +12,8 @@ class exyks_paths {
     if(!classes::init_need(__CLASS__)) return;
 
     self::register("yks", YKS_PATH);
+
+    self::register("skin", RSRCS_PATH."/themes/Yks");
     self::register("here", ROOT_PATH);
 
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
@@ -35,6 +37,7 @@ class exyks_paths {
   }
 
   public static function merge($path0, $path1){
+    if(starts_with($path1, "path://")) return $path1;
     $path0 = '/'.strip_start($path0, "path://");
     $path = files::paths_merge($path0, $path1);
     return "path://".ltrim($path, '/');
