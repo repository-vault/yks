@@ -61,9 +61,6 @@ class exyks {
     define('ERROR_404',      "Location: /?".ERROR_PAGE.'//404');
     define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
 
-    define('COMMONS_PATH', paths_merge(ROOT_PATH, $config->site['commons_path']));
-    define('COMMONS_URL',$config->site['commons_url']);
-
 
     $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
     self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
