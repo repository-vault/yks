@@ -26,6 +26,20 @@ class exyks_paths {
   }
 
 
+  public static function expose($path){
+
+    $full = self::resolve($path);
+    $hash = crpt("$path/$full", FLAG_FILE);
+    return "?/Yks/Scripts/Contents//$hash|$path";
+
+  }
+
+  public static function merge($path0, $path1){
+    $path0 = '/'.strip_start($path0, "path://");
+    $path = files::paths_merge($path0, $path1);
+    return "path://".ltrim($path, '/');
+  }
+
   public static function resolve($path, $ns = false){
 
     $path  = strtr($path, self::$consts_cache);
