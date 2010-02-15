@@ -11,7 +11,7 @@ define("PUBLIC_PATH", getcwd()."/www");
 
 
 include "yks/class/yks/loader.php";
-include "yks/class/functions.php";
+exyks::init();
 
 $z_e_r_o_entries = array(
   'yks'  => 'yks_runner',
