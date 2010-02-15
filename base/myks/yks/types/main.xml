@@ -43,8 +43,11 @@
   <mykse type="boolean">
     <mykse type="bool"/>
   </mykse>
-  <mykse type="url">
+  <mykse type="uri" null="null">
     <string length="250"/>
+  </mykse>
+  <mykse type="url">
+    <mykse type="uri"/>
   </mykse>
   <mykse type="mail" default="''">
     <string length="250"/>
