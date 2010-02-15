@@ -1,13 +1,13 @@
-.noia0_lu {background-image:url(lu);}
-.noia0_ru {background-image:url(ru);}
-.noia0_ld {background-image:url(ld);}
-.noia0_rd {background-image:url(rd);}
+.noia0_lu {background-image:url(lu.png);}
+.noia0_ru {background-image:url(ru.png);}
+.noia0_ld {background-image:url(ld.png);}
+.noia0_rd {background-image:url(rd.png);}
 
-.noia0_lm {background-image:url(lm);}
-.noia0_rm {background-image:url(rm);}
+.noia0_lm {background-image:url(lm.png);}
+.noia0_rm {background-image:url(rm.png);}
 
-.noia0_mu {background-image:url(mu);}
-.noia0_md {background-image:url(md);}
+.noia0_mu {background-image:url(mu.png);}
+.noia0_md {background-image:url(md.png);}
 
 .noia0_lm, .noia0_rm {width:16px;}
 .noia0_lu, .noia0_ru { height:19px;max-height:19px;}
@@ -17,7 +17,7 @@
 
 .noia0_mm {
 	background-image:url('/?/Yks/Imgs/bgs//7eb1da/13');
-	background-image:url('mm');
+	background-image:url(mm.png);
 	height:100%;
 }
 
@@ -39,14 +39,14 @@
 	margin-right:-5px;
 }
 
-.noia0_close { background-image:url(close);  }
-.noia0_reload { background-image:url(reload);  }
+.noia0_close { background-image:url(close.png);  }
+.noia0_reload { background-image:url(reload.png);  }
 
 .noia0_rd div {
 	width:8px;
 	height:9px;
 	margin:auto;
-	background-image:url(drag);
+	background-image:url(drag.png);
 }
 
 .noia0_table a {

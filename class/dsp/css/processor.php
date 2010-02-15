@@ -24,7 +24,7 @@ class css_processor {
   }
   
   private function resolve_externals(){
-    $mask  = "#url\(\s*(?:\"([^\"]*)\"|'([^']*)$\'|([^)]*))\s*\)#";
+    $mask  = "#url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)#";
     $match = preg_match_all($mask, $this->file_contents, $out, PREG_SET_ORDER);
     if(!$match) return;
     $matches = array();
@@ -37,6 +37,7 @@ class css_processor {
         $val = exyks_paths::expose($val);
         $val = "url(\"$val\")";
      }
+
     $this->file_contents = strtr($this->file_contents, $matches);
   }
 

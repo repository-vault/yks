@@ -7,13 +7,13 @@
 
 .rbx_error {
     
-    background-image:url(bgs/red);
+    background-image:url(bgs/red.png);
     border:1px solid #eaeaea;
     padding:5px;
 }
 
 .rbx_ok{
-    background-image:url(bgs/white);
+    background-image:url(bgs/white.png);
     border:1px solid #eaeaea;
     color:black;
     padding:5px;
