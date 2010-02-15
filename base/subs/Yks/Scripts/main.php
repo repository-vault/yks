@@ -16,7 +16,7 @@ $access =
   && in_array($runner, $valid_runners);
 
 if(!$access)
-    die("Yks script cannot be started from untrusted location");
+    die("Yks script cannot be started from untrusted location ({$_SERVER['REMOTE_ADDR']})");
 
 
   //********* Exec runner *************

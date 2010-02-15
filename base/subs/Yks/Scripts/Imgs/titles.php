@@ -1,8 +1,9 @@
 <?php
 
-$theme_name  = $sub0;
-$is_title    = (bool)$sub1;
-$title_text  = $argv0;
+$theme_name   = $sub0;
+$is_title     = (bool)$sub1;
+$title_text   = $argv0;
+$bypass_cache = (bool)$sub2;
 
 if(!$title_text) $title_text = "Default title";
 
@@ -12,7 +13,7 @@ $hash     = md5("$theme_name, $title_text, ".SITE_CODE.", $is_title");
 $img_path = "$titles_cache_path/$hash.png";
 
 
-if(!is_file($img_path)) try {
+if($bypass_cache || !is_file($img_path)) try {
 
     $img = dsp_titles::draw($theme_name, $title_text, $is_title);
     files::create_dir($titles_cache_path);
