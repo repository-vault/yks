@@ -12,7 +12,7 @@
 <?
 foreach($params_list as $param_id=>$param) {
   $actions = "";
-  $actions .= "<img src='&COMMONS_URL;/css/Yks/icons/trash_24' onclick=\"Jsx.action({ks_action:'param_trash', param_id:$param_id},this)\"/>";
+  $actions .= "<img alt='trash_icon' src='/css/Yks/icons/trash_24' onclick=\"Jsx.action({ks_action:'param_trash', param_id:$param_id},this)\"/>";
 
   echo "<tr class='line_pair'>
     <td>{$param['param_key']}</td>

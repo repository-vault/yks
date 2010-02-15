@@ -71,8 +71,6 @@
   <item key="month_short_10">Oct</item>
   <item key="month_short_11">Nov</item>
   <item key="month_short_12">Dec</item>
-<!-- icons -->
-  <item key="icon.trash"><![CDATA[&COMMONS_URL;/css/Yks/icons/trash.png]]></item>
 <!-- mykse -->
   <item key="bool.true">Oui</item>
   <item key="bool.false">Non</item>

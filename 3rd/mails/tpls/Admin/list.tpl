@@ -14,9 +14,9 @@
 if($mails_list) foreach($mails_list as $mail_id=>$mail_infos){
   $actions ="";
   $actions .= "<a ext='/?$href_fold/Manage//$mail_id' class='std'>
-        <img src='&COMMONS_URL;/css/Yks/icons/edit_24'/>
+        <img alt='edit_icon' src='/css/Yks/icons/edit_24'/>
       </a>";
-  $actions .= "<img onclick=\"Jsx.action({ks_action:'mail_delete',mail_id:$mail_id},this,this.title)\" title='Supprimer' src='&COMMONS_URL;/css/Yks/icons/trash_24'/>";
+  $actions .= "<img onclick=\"Jsx.action({ks_action:'mail_delete',mail_id:$mail_id},this,this.title)\" title='Supprimer' alt='trash_icon' src='/css/Yks/icons/trash_24'/>";
 
 
   echo "<tr class='line_pair'>

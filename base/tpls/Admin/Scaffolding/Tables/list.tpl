@@ -26,7 +26,7 @@ if($data) foreach($data as $line){
         $uid[$key_name] = $line[$key_name];
     $do = json_encode(array('ks_action'=>'delete', 'uid'=>$uid));
 
-    $actions.="<img onclick='Jsx.action($do, this, \"Supprimer\")' src='&COMMONS_URL;/css/Yks/icons/trash_24'/>";
+    $actions.="<img alt='trash_icon' onclick='Jsx.action($do, this, \"Supprimer\")' src='/css/Yks/icons/trash_24'/>";
     echo "<td>$actions</td>";
 
 
