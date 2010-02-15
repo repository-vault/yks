@@ -15,6 +15,7 @@ class exyks_paths {
 
     self::register("skin", RSRCS_PATH."/themes/Yks");
     self::register("here", ROOT_PATH);
+    self::register("public", PUBLIC_PATH);
 
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
         self::register($ns['name'], self::resolve($ns['path']));
