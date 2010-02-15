@@ -5,10 +5,6 @@ list($content_type)=preg_split('#[\s;]+#',$_SERVER['CONTENT_TYPE']);
 
 define('FILE',$content_type==ENCTYPE_FILE);
 
-include_once "$class_path/stds/files.php";
-include_once "$class_path/users/users.php";
-include_once "$class_path/auth/auth.php";
-
 
 $upload_flag = preg_clean("a-z0-9",$sub0);
 $upload_src  = $sub1;
