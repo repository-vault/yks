@@ -40,8 +40,9 @@ class mykses {
 
         if(!isset($data[$mykse_key]) && !is_null($data[$mykse_key])) continue;
         $val_init = $val = $data[$mykse_key];
-        $mykse=$types_xml->$mykse_type;
+        $mykse = $types_xml->$mykse_type;
         $null = is_null($val);
+        $mykse_start_type = $mykse_type;
 
       while(true) {    //loop to recurse
         if(!$mykse) break;
@@ -58,13 +59,13 @@ class mykses {
         }elseif($mykse_type=='mail'){
             $val = trim(strtolower($val));
             $out[$mykse_key]= mail_valid($val)?$val:false;
-        }elseif($mykse_type=='int'){
-            if($null) break;
-            $out[$mykse_key]=(int) $val;
-        }elseif($mykse_type=='time'){
+        }elseif(in_array("time", array($mykse_start_type, $mykse_type)) ){
             if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
             else $out[$mykse_key]=date::validate($val);
+        }elseif($mykse_type=='int'){
+            if($null) break;
+            $out[$mykse_key]=(int) $val;
         }elseif($mykse_type=='string'){
             $out[$mykse_key]=$val;
         } elseif($mykse_type=='enum'){
