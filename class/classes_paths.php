@@ -15,6 +15,7 @@ classes::register_class_paths(array(
     "data"                => CLASS_PATH."/stds/data.php",
 
     "dsp"                 => CLASS_PATH."/dsp/display.php",
+    "css_processor"       => CLASS_PATH."/dsp/css/processor.php",
     "sql"                 => CLASS_PATH."/sql/".SQL_DRIVER.".php",
     "sql_func"            => CLASS_PATH."/sql/functions.php",
     "yks_list"            => CLASS_PATH."/list/yks_list.php",

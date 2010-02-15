@@ -1,39 +1,39 @@
 
-Doms.loaders['[MT]/Drag/Drag'] = {
+Doms.loaders['path://mt/Drag/Drag.js'] = {
     "class": "Drag",
     "match": false,
     "descr": "Drag"
 };
 
-Doms.loaders['[MT]/Drag/Drag.Move'] = {
+Doms.loaders['path://mt/Drag/Drag.Move.js'] = {
     "class": "Drag.Move",
     "match": false,
     "descr": "Drag.move",
-    "deps" : ["[MT]/Drag/Drag"],
-    "patch": ["[PATCH]/Drag/Drag.Move"]
+    "deps" : ["path://mt/Drag/Drag.js"],
+    "patch": ["path://patch/Drag/Drag.Move.js"]
 };
 
-Doms.loaders['[MT]/Interface/Accordion'] = {
+Doms.loaders['path://mt/Interface/Accordion.js'] = {
     "class": "Accordion",
     "match": false,
-    "patch": ["[PATCH]/Interface/Accordion"]
+    "patch": ["path://patch/Interface/Accordion.js"]
 };
 
 
-Doms.loaders['[MT]/Utilities/Cookie'] = {
+Doms.loaders['path://mt/Utilities/Cookie.js'] = {
     "class": "Cookie",
     "match": false,
     "descr": "Cookie utilities",
-    "patch": ["[PATCH]/Utilities/Cookie"]
+    "patch": ["path://patch/Utilities/Cookie.js"]
 };
 
-Doms.loaders['[MT]/Interface/Slider'] = {
+Doms.loaders['path://mt/Interface/Slider.js'] = {
     "class": "Slider",
     "match": false,
     "descr": "Slider"
 };
 
-Doms.loaders['[MT]/Fx/Fx.Scroll'] = {
+Doms.loaders['path://mt/Fx/Fx.Scroll.js'] = {
     "class": "Fx.Scroll",
     "match": false,
     "descr": "Effect to smoothly scroll any element, including the window."

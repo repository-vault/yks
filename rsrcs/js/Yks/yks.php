@@ -1,40 +1,40 @@
 <?
+$base_dir = dirname(__FILE__);
 
-$js_prefixs['[YKS/ROOT]'] = dirname(__FILE__);
-$js_prefixs['[YKS/LIBS]'] = $js_prefixs['[YKS/ROOT]'].'/libs';
-$js_prefixs['[YKS]']      = $js_prefixs['[YKS/ROOT]'].'/mts';
+Js::register("yks.root", $base_dir);
+Js::register("yks.libs", "$base_dir/libs");
+Js::register("yks", "$base_dir/mts");
+
 
 $js_build_list = array_merge( $js_build_list, array(
 
-    '[YKS/LIBS]/xhr'         => true,
-    '[YKS/LIBS]/xslt'        => true,
-    '[YKS/LIBS]/urls'        => true,
+    'path://yks.libs/xhr.js'         => true,
+    'path://yks.libs/xslt.js'        => true,
+    'path://yks.libs/urls.js'        => true,
 
-    '[YKS/ROOT]/constants'   => true,
+    'path://yks.root/constants.js'   => true,
 
-    '[YKS]/Doms'             => true,
+    'path://yks/Doms.js'             => true,
 
-    '[YKS]/Jsx/Rbx'          => true,
-    '[YKS]/Jsx/Jsx'          => true,
-    '[YKS]/Jsx/Forms'        => true,
+    'path://yks/Jsx/Rbx.js'          => true,
+    'path://yks/Jsx/Jsx.js'          => true,
+    'path://yks/Jsx/Forms.js'        => true,
 
-    '[YKS]/Jsx/Uploader'     => false,
+    'path://yks/Jsx/Uploader.js'     => false,
 
-    '[YKS]/Jsx/Links'        => true,
+    'path://yks/Jsx/Links.js'        => true,
 
-    '[YKS]/Jsx/Screen'       => true,
-    '[YKS]/Jsx/Box'          => true,
+    'path://yks/Jsx/Screen.js'       => true,
+    'path://yks/Jsx/Box.js'          => true,
     
-    '[YKS]/Headers/Yks'      => true,
-    '[YKS]/Headers/Mootools' => true,
-    '[YKS]/Headers/Interfaces' => true,
+    'path://yks/Headers/Yks.js'      => true,
+    'path://yks/Headers/Mootools.js' => true,
+    'path://yks/Headers/Interfaces.js' => true,
 
 
-    '[YKS]/Interface/ShowCase' => false,
-    '[YKS]/Interface/Title' => true,
+    'path://yks/Interface/ShowCase.js' => false,
+    'path://yks/Interface/Title.js' => true,
 
-    '[YKS]/Math/Matrix'    =>false,
-
-
+    'path://yks/Math/Matrix.js'    =>false,
 
 ));

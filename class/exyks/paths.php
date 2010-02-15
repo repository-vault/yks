@@ -38,9 +38,12 @@ class exyks_paths {
 
   public static function merge($path0, $path1){
     if(starts_with($path1, "path://")) return $path1;
+
+    $info = parse_url($path0);
+    
     $path0 = '/'.strip_start($path0, "path://");
-    $path = files::paths_merge($path0, $path1);
-    return "path://".ltrim($path, '/');
+    $path = files::paths_merge($info['path'], $path1);
+    return "path://{$info['host']}/".ltrim($path, '/');
   }
 
   public static function resolve($path, $ns = false){

@@ -1,23 +1,26 @@
 <?php
 
-include_once CLASS_PATH."/stds/files.php";
 define("YUI_COMPRESSOR","yuicompressor-2.2.4");
 define("JAVA_PATH", ($tmp=$config->apis->java['bin_path'])?$tmp:"java");
 
 define("YUI_COMPRESSOR_PATH",RSRCS_PATH."/yui_compressor/yui_compressor.jar");
 define("JS_CACHE_PATH", CACHE_PATH."/js");
 
-$js_prefixs=array();
+
 $js_build_list=array();
 
 
 class Js {
-  static $prefixs;
+  const ns = "js ns"; //namespace js \o/
 
-  static function realpath($file){
-    return strtr($file, self::$prefixs).'.js';
+  public static function resolve($path) {
+    //verify safe path here
+    return exyks_paths::resolve($path, self::ns);
   }
 
+  public static function register($prefix, $path) {
+    return exyks_paths::register($prefix, $path, self::ns);
+  }
 
   static function dynload($uid, $js_build_list, $commons_path){
 
@@ -46,7 +49,8 @@ class Js {
         foreach($load['patch'] as $patch)
             $patchs[] = $patch;
     $build_list = array_merge($deps, array($uid), $patchs);
-    $build_list = array_map(array('Js','realpath'), $build_list);
+
+    $build_list = array_map(array('Js','resolve'), $build_list);
 
     return $build_list;
   }
@@ -80,4 +84,4 @@ class Js {
     return $cache_file;
   }
 }
-Js::$prefixs = &$js_prefixs;
+
