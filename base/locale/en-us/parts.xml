@@ -31,6 +31,7 @@
   <item key="date.yesterday">Yesterday</item>
   <item key="date.0">Unknow date</item>
   <item key="date.never">Never</item>
+  <item key="date.undefined">Undefined date</item>
 <!-- days -->
   <item key="day_1">Monday</item>
   <item key="day_2">Tuesday</item>
