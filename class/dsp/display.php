@@ -139,6 +139,8 @@ class dsp{
     return self::date($date, preg_replace("#[a-z]#i",'$$0', $format));
   }
   static function date($date=_NOW,$format=DATE_DAY,$format_rel=false){
+
+    if(is_null($date)) return "&date.undefined;";
     static $rs=false; if(!$rs) $rs=array(
             date('z/Y',_NOW)=>'&date.today;',
             date('z/Y',_NOW-86400)=>'&date.yesterday;');
