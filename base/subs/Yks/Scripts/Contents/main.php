@@ -14,6 +14,7 @@ $ext = files::ext($full);
 
 if($ext == "css") {
     header(TYPE_CSS);
+    files::highlander();
     //css_processor might be able to compress ?
     $process = new css_processor($path);
     echo $process->output();

@@ -95,12 +95,15 @@ class files {
     return false;
   }
 
-
-  public static function delivers($file){
+//he'll live forever
+  public static function highlander(){
     header("Cache-control: public");
     header("Expires: Thu, 12 Apr 2036 19:31:20 GMT");
     header(HTTP_CACHED_FILE);
+  }
 
+  public static function delivers($file){
+    self::highlander();
     readfile($file);
     die;
   }
