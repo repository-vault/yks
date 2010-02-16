@@ -71,6 +71,9 @@ function mailto_escape($str){ return rawurlencode(utf8_decode(specialchars_decod
 function mail_valid($mail){ return (bool) filter_var($mail, FILTER_VALIDATE_EMAIL ); }
 
 
+function strip_end($str, $end){
+    return ends_with($str, $end) ? substr($str, 0,-strlen($end)): $str;
+}
 
 function strip_start($str, $start){
     return  starts_with($str, $start) ? substr($str, strlen($start)) : $str;
