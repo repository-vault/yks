@@ -33,7 +33,7 @@ class exyks_paths {
 
     $full = self::resolve($path);
     $hash = crpt("$path/$full", FLAG_FILE);
-    return "?/Yks/Scripts/Contents//$hash|$path";
+    return "/?/Yks/Scripts/Contents//$hash|$path";  //absolute here, might be a pref ?
 
   }
 
