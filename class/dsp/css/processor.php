@@ -7,14 +7,16 @@ class css_processor {
   private $file_directory;
   private $file_contents;
 
-  function __construct($uri){
+  function __construct($uri, $contents = false){
     $this->file_uri       = $uri;
 
     $this->file_path      = exyks_paths::resolve($this->file_uri);
 
     $this->file_name      = basename($file);
     $this->file_directory = dirname($file);
-    $this->file_contents  = file_get_contents($this->file_path);
+
+    if(!$contents) $contents = file_get_contents($this->file_path);
+    $this->file_contents  = $contents;
   }
 
   function output(){
@@ -39,6 +41,14 @@ class css_processor {
      }
 
     $this->file_contents = strtr($this->file_contents, $matches);
+  }
+
+//inline style rewrite callback
+  function style_rewrite($doc, $node){
+    $contents = $node->nodeValue;
+    $css = new self("path://public", $contents);
+    $contents = $css->output();
+    $node->nodeValue= $contents;
   }
 
   private function resolve_refs() {
