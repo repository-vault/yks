@@ -152,6 +152,26 @@ class users  {
     //done
   }
 
+
+/*
+    (void) Extend an object list and add new property, enable user creations
+    Use users::inform((node)$mystufflist, 'sender_id') //populate all (node) with ->sender
+    Also users::inform((node)$mystufflist, array('sender'=>'user_id' [,…]));
+*/
+
+  public static function inform($list, $fields, $cols=array('user_name', 'addr_phone', 'user_mail')) {
+    if(!is_array($fields)) $fields = array( strip_end($fields, '_id') => $fields);
+
+    $users_list = array();
+    foreach($fields as $tmp) $users_list = array_merge($users_list, array_extract($list, $tmp));
+    $users_list = array_unique($users_list);
+
+    $users_list = users::get_infos($users_list, $cols);
+    foreach($list as $item)
+        foreach($fields as $prop=>$key)
+            $item->{$prop} = $users_list[$item->{$key}];
+  }
+
 /*
     Check if a file the user upload is fine to be used
     Usage $file_infos = upload_check( upload_type, $_POST['myfile'] )
