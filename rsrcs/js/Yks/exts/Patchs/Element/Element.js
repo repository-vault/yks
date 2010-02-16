@@ -1,7 +1,7 @@
 
 Element.implement({
   dispose: function(){
-    if($(this.fireEvent)) this.fireEvent("onRemove");
+    if(this.fireEvent) $(this).fireEvent("onRemove");
     return (this.parentNode) ? this.parentNode.removeChild(this): this;
   },
 

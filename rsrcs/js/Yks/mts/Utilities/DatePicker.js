@@ -32,10 +32,11 @@ var DatePicker = new Class({
         this.user_day=this.day(this.user_date);
     };
 
-    var tmp = this.anchor.getPosition(); tmp = {left:tmp.x+'px',top:tmp.y+'px'};
+    $(this.anchor.getBox()).addEvent('unload', this.remove.bind(this));
+    var tmp = this.anchor.getCoordinates();
+    tmp = {'left':tmp.left+'px', 'top':tmp.top+'px'};
+    this.container = $n('div',{'class':'dp_container', styles:tmp}).inject($('container'));
 
-    this.container = $n('div',{'class':'dp_container',styles:tmp}
-        ).inject(this.anchor,'before');
     this.calendar = $n('table',{'class':'dp_cal'}).inject(this.container);
     var head = $n('th', {'colspan':'7'}
         ).inject($n('tr'

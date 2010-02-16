@@ -102,7 +102,9 @@ var Box = new Class({
     if(this.modal_box) $(this.modal_box).destroy();
     this.anchor.effect('opacity',{duration:200}).start(1,0).chain(function(){
         delete Screen.boxes_list[this.box_name];
+        $(this.anchor).fireEvent('unload');
         this.anchor=$(this.anchor).destroy();
+        
         if(this.opener) this.opener.focus();
     }.bind(this));
     return false;
