@@ -158,13 +158,12 @@ class cms_nodes_manager {
   static function lnk($node, $txt = false, $target=false, $class=false ){
     $txt = $txt ? $txt : $node->node_id;
     $class = $class?"class='$class'":''; 
-    $title = $node['node_title'];
 
     if($node['node_type'] == 'link')
         $node_dest = $node['link_dest_node'];
     else $node_dest = $node->node_id;
 
-    $href =  "/?/Corporate//$node_dest|$title";
+    $href =  "/?/Corporate//$node_dest";
 
     $title = $title? "title='$title'":'';
     return "<a $title $class href='$href'>$txt</a>";
