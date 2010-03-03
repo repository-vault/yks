@@ -1,6 +1,6 @@
 <?
 
-$query_lib = THRD_PATH."/scafolding/queries/libs";
+$query_lib = exyks_paths::resolve("path://yks/3rd/queries/libs");
 
     classes::extend_include_path($query_lib);
     classes::register_class_path("query_param", "$query_lib/query_param.lib.php");
