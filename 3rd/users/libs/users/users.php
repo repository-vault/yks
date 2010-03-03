@@ -164,9 +164,9 @@ class users  {
 
     $users_list = array();
     foreach($fields as $tmp) $users_list = array_merge($users_list, array_extract($list, $tmp));
-    $users_list = array_unique($users_list);
-
+    $users_list = array_filter(array_unique($users_list));
     $users_list = users::get_infos($users_list, $cols);
+
     foreach($list as $item)
         foreach($fields as $prop=>$key)
             $item->{$prop} = $users_list[$item->{$key}];
