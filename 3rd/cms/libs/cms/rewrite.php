@@ -19,7 +19,8 @@ class cms_rewrite {
 
     self::$map_file  = CACHE_PATH."/map.txt";
     self::$map      = data::fetch(self::DATA_KEY);
-    if(true || !self::$map) {
+    if(!self::$map) {
+
         self::$map = cms_rewrite::generate_map();
         self::write();
     }
