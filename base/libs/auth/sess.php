@@ -9,8 +9,14 @@ class sess  {
 
     //need 5.3 late static binding self::_class
   static protected $_storage = array();
-  static function store($key, $value){ return self::$_storage[$key]=$value; }
-  static function retrieve($key){ return self::$_storage[$key]; }
+  static function store($key, $value){
+    $key = SITE_CODE.$key;
+    return self::$_storage[$key] = $value;
+  }
+  static function retrieve($key){
+    $key = SITE_CODE.$key;
+    return self::$_storage[$key];
+ }
 
   static function flag_ks($connected = true){
     $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
