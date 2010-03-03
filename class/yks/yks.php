@@ -85,11 +85,10 @@ class yks
         //********************************************************
 
     $paths = array();
-    if($config->include_path)
-        foreach(explode(PATH_SEPARATOR, $config->include_path['paths']) as $path)
-            $paths[] = paths_merge(ROOT_PATH, $path);
-    $exts = (string) $config->include_path['exts'];
-    $call_init = ((string)$config->include_path['call_init']) != 'false';
+     foreach($config->paths->iterate("include") as $path)
+        $paths[] = paths_merge(ROOT_PATH, $path['path']);//?
+    $exts = (string) $config->classes['exts'];
+    $call_init = ((string)$config->classes['call_init']) != 'false';
 
     classes::extend_include_path($paths);
     classes::activate($exts); //it's okay to activate again, autoload seems to be smart enough
