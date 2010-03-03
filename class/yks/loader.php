@@ -32,7 +32,6 @@ define('Ex/yks', 'A cloudy tool');
   define('YKS_PATH',    realpath("$class_path/.."));
 
   define('LIBS_PATH',    YKS_PATH.'/libs');
-  define('THRD_PATH',    YKS_PATH.'/3rd');
   define('RSRCS_PATH',   YKS_PATH.'/rsrcs');
   define('CLTOOLS_PATH', YKS_PATH.'/cltools');
 
