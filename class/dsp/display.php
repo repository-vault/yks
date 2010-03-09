@@ -99,18 +99,26 @@ class dsp{
         $list = array_combine($list, array_mask($list,"&$data.%s;"));
     } else $list = $data;
 
-    $depth = (int)$opts['depth'];
-    $options="";$pad=$opts['pad']?$opts['pad']:"&#160;&#160;";
-    $truncate=$opts['truncate']?$opts['truncate']:50;
+    $depth    = (int)$opts['depth'];
+    $options  = "";
+    $pad      = $opts['pad'] ? $opts['pad'] : "&#160;&#160;";
+    $truncate = $opts['truncate'] ? $opts['truncate'] : 50;
+
+
     foreach($list as $k=>$v){
         if(!is_array($v))$v=array("value"=>$v);
+
+        if($opts['mask']) 
+            $str = str_evaluate($opts['mask'], $v);
+        else $str = $v[$col];
+
         $options.="<option value='$k' "
-        .((!$mykse) && $truncate&&mb_strlen($v[$col])>$truncate?"title='{$v[$col]}' ":'')
+        .((!$mykse) && $truncate&&mb_strlen($str)>$truncate?"title='$str' ":'')
         .($v['class']?"class='{$v['class']}' ":'')
         .($v['disabled']?"disabled='{$v['disabled']}' ":'')
         .($v['selected']||in_array($k,$selected)?'selected="selected" ':'')
         .">".str_repeat($pad,(int)$v['depth']+$depth)
-            .($mykse?"&$mykse.$k;":truncate($v[$col],$truncate))
+            .($mykse?"&$mykse.$k;":truncate($str,$truncate))
         ."</option>";
     } return $options;
   }
