@@ -24,7 +24,7 @@ if($action=="check_names")try{
         $where=array('user_name'=>array('sql'=>"LIKE '$user_name%'"));
         $order='char_length(user_name)';
         $cols=array('user_name');
-        $tmp=users::get_infos($children_list,$cols,$order,0,1,$where);
+        $tmp = users::get_infos($children_list, $cols, $where, $order, 0, 1);
         if( !($user_id = (int)key($tmp)) ){$users_checked[]=''; break;}
         $users_checked[$user_id]=$tmp[$user_id]['user_name'];
     }

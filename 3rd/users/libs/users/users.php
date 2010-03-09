@@ -17,13 +17,13 @@ class users  {
 
   static private $infos_tables = array('ks_users_list','ks_users_tree','ks_auth_password', 'ks_users_addrs');
 
-  static function get_infos_unique($user_id, $cols=array('user_name'),$where=array()){
+  static function get_infos_unique($user_id, $cols=array('user_name'), $where=array()){
      if(!$user_id) return array();
-     $tmp=self::get_infos(array($user_id),$cols,false,false,false,$where);
+     $tmp=self::get_infos(array($user_id) , $cols, $where);
      return $tmp?$tmp[$user_id]:array();
   }
 
-  static function get_infos($users, $cols=array('user_name'), $sort=false, $start=false, $by=false, $where=array()) {
+  static function get_infos($users, $cols=array('user_name'), $where=array(), $sort=false, $start=false, $by=false) {
 
     if(!self::$cols_def) self::init();
 
@@ -62,10 +62,12 @@ class users  {
         else $order="ORDER BY TRIM(".coalesce(array_mask(self::$cols_def[$sort],"`%s`.$sort")).')';
     } else $order="";
 
-    sql::query("SELECT $selected 
-        FROM `ks_users_list` ".mask_join(' ',$tables_used,"LEFT JOIN `%s` USING(`user_id`)")."
-        $where $order $limit
-    "); $users_infos=sql::brute_fetch('user_id',false,$start,$by);
+    sql::query("SELECT "
+        .CRLF."$selected "
+        .CRLF."FROM `ks_users_list` "
+        .CRLF.mask_join(CRLF, $tables_used, "LEFT JOIN `%s` USING(`user_id`) ")
+        .CRLF." $where $order $limit"
+    ); $users_infos=sql::brute_fetch('user_id',false,$start,$by);
 
     if(!$sort)
         $users_infos=array_filter(array_merge_numeric(array_flip($users),$users_infos),'is_array');

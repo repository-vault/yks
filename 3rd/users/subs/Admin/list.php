@@ -24,7 +24,7 @@ $sort   = "user_type<>'{$user_infos['user_type']}' ,user_name";
 $where  = $user_filter['where']?$user_filter['where']:array();
 $cols   = array('user_name', 'user_type', 'auth_type');
 
-$children_infos = users::get_infos($children_list, $cols, $sort, $start, $by, $where);
+$children_infos = users::get_infos($children_list, $cols, $where, $sort, $start, $by);
 
 
 
