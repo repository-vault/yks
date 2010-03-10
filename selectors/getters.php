@@ -3,9 +3,12 @@
 class Selectors_Getters {
 
   static function descendant($found, $self, $tag, $id, &$uniques){ // ' '
+
     $items = Selectors_Utils::getByTagAndId($self, $tag, $id);
     foreach($items as $item) 
-        if( Selectors_Utils::chk($item, $uniques)) $found[] = $item;
+        if( Selectors_Utils::chk($item, $uniques)
+            && $item != $self ) $found[] = $item;
+
     return $found;
   }
 
