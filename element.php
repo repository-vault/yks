@@ -34,12 +34,15 @@ class Element extends XHTMLElement {
     }
   }
 
-  function get($key){
+  function get($key, $opts = false){
     if($key=="tag")
         return strtolower($this->getName());
-    if($key=="text")
-        return dom_import_simplexml($this)->textContent;
-    elseif($key=="html")
+    if($key=="text") {
+        $clean = (bool) $opts;
+        $str = dom_import_simplexml($this)->textContent;
+        if($clean) $str = preg_replace("#[\s\r\n]+#"," ", trim($str));
+        return $str;
+    } elseif($key=="html")
         return $this->asXML();
     elseif($key=="innerHTML")
         return innerHTML($this->asXML());
