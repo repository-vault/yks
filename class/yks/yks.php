@@ -85,8 +85,11 @@ class yks
         //********************************************************
 
     $paths = array();
-     foreach($config->paths->iterate("include") as $path)
-        $paths[] = paths_merge(ROOT_PATH, $path['path']);//?
+     foreach($config->paths->iterate("include") as $path) {
+        $path = $path['path']; if(substr($path,0,7)=="path://") continue;
+        $paths[] = paths_merge(ROOT_PATH, $path);//?
+     }
+
     $exts = (string) $config->classes['exts'];
     $call_init = ((string)$config->classes['call_init']) != 'false';
 

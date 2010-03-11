@@ -87,6 +87,15 @@ class exyks {
 
     foreach($config->modules->iterate("module") as $module)
       self::$modules_list[] = new exyks_module($module);
+
+    self::extends_include_path();
+  }
+
+  private static function extends_include_path(){
+    $base = array_extract(yks::$get->config->paths->iterate("include"), "path");
+    foreach($base as &$path)
+        $path = exyks_paths::resolve($path);
+    classes::extend_include_path($base);
   }
 
 
