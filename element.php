@@ -34,12 +34,21 @@ class Element extends XHTMLElement {
     }
   }
 
-  function get($key, $opts = false){
+//get("text:first/clean");
+  function get($path){
+    $extras = explode("/", $path);
+    $path = explode(':', array_shift($extras));
+    $key  = array_shift($path);
+
     if($key=="tag")
         return strtolower($this->getName());
+
     if($key=="text") {
-        $clean = (bool) $opts;
-        $str = dom_import_simplexml($this)->textContent;
+        $clean = in_array("clean", $extras);
+        $part  = array_shift($path);
+        $dom = dom_import_simplexml($this);
+        if($part == "first") $dom = $dom->firstChild;
+        $str = $dom->textContent;
         if($clean) $str = preg_replace("#[\s\r\n]+#"," ", trim($str));
         return $str;
     } elseif($key=="html")
