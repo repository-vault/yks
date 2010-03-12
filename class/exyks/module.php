@@ -22,7 +22,7 @@ class exyks_module {
         $manifest_file = $manifest_dest;
     elseif(is_file($manifest_file = "$manifest_dest/manifest.xml"));
     elseif(is_file($manifest_file = "$manifest_dest/{$this->key}.xml"));
-    else throw new Exception("Unresolved module in $manifest_dest");
+    else throw new Exception("Unresolved module #{$this->key} in $manifest_dest");
 
 
     $this->manifest_file = $manifest_file;

@@ -26,6 +26,9 @@ class exyks {
 
     global $action, $config;
 
+    if(!$config)
+        yks::fatality(yks::FATALITY_CONFIG, "Exyks configuration not found");
+
     $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 
     $tmp = (string)$config->site['default_mode'];
