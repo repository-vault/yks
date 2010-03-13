@@ -23,6 +23,20 @@ class users  {
      return $tmp?$tmp[$user_id]:array();
   }
 
+
+  static function update_password($user, $user_login, $user_pswd) {
+    $verif_user = array('user_id' => $user['user_id']);
+    $data       = compact('user_login', 'user_pswd');
+    if($data['user_login']) {
+        $tmp = sql::row("ks_auth_password", array('user_login'=>$data['user_login']));
+        if($data['user_pswd'] && ( !$tmp || $tmp['user_id']==$user_id) ){
+            $data['user_pswd'] = crpt($data['user_pswd'], FLAG_LOG);
+            sql::replace("ks_auth_password", $data, $verif_user);
+        } else throw rbx::warn("Invalid password");
+    } else throw rbx::warn("Invalid login");
+  }
+
+
   static function get_infos($users, $cols=array('user_name'), $where=array(), $sort=false, $start=false, $by=false) {
 
     if(!self::$cols_def) self::init();
