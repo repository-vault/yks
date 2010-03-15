@@ -1,7 +1,7 @@
 <?
 
 
-include "$class_path/users/gest.php";
+
 
 
 if($action=="user_manage")try {

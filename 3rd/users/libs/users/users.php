@@ -25,7 +25,7 @@ class users  {
 
 
   static function update_password($user, $user_login, $user_pswd) {
-    $verif_user = array('user_id' => $user['user_id']);
+    $user_id    = $user['user_id']; $verif_user = compact('user_id');
     $data       = compact('user_login', 'user_pswd');
     if($data['user_login']) {
         $tmp = sql::row("ks_auth_password", array('user_login'=>$data['user_login']));
