@@ -2,20 +2,37 @@
 
 class exyks_renderer_excel {
 
-  static function process(){
+  private static $XSL_SERVER_PATH;
+  private static $XSL_TPL_TOP    = "Yks/Renderers/excel_top";
+  private static $XSL_TPL_BOTTOM = "Yks/Renderers/excel_bottom";
+
+  static function init(){
+    self::$XSL_SERVER_PATH = RSRCS_PATH."/xsl/specials/excel.xsl";
+  }
+
+  static function process(){ //prepare exyks rendering engine
+
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xls")); //filename
     exyks::$headers["excel-server"] = TYPE_CSV;
-    exyks::store('XSL_SERVER_PATH', RSRCS_PATH."/xsl/specials/excel.xsl");
+    exyks::store('XSL_SERVER_PATH', self::$XSL_SERVER_PATH);
     exyks::store('RENDER_SIDE', 'server');
     exyks::store('RENDER_MODE', 'excel');
     exyks::store('RENDER_START', '<html');
-    tpls::top("Yks/Renderers/excel_top", tpls::STD, "excel");
-    tpls::bottom("Yks/Renderers/excel_bottom", tpls::STD, "excel");
-
+    tpls::top(self::$XSL_TPL_TOP, tpls::STD, "excel");
+    tpls::bottom(self::$XSL_TPL_BOTTOM, tpls::STD, "excel");
   }
 
+  public static function render($str){
+    self::process();
+    $str = file_get_contents(tpls::tpl(self::$XSL_TPL_TOP))
+          .$str
+          .file_get_contents(tpls::tpl(self::$XSL_TPL_BOTTOM));
+    exyks::render($str);
+    die;
+  }
+ 
 
-  static function build_xls($table_contents, $headers = array(), $styles=""){
+  public static function build_xls($table_contents, $headers = array(), $styles=""){
     $table_xml = "<table class='table'>";
     if(!$headers) $headers = array_combine($headers = array_keys(current($table_contents)), $headers);
 
@@ -37,8 +54,7 @@ class exyks_renderer_excel {
 
     $doc = new DOMDocument('1.0','UTF-8');
     $tmp = $doc->loadXML($xml_contents, LIBXML_YKS);
-    $excel = RSRCS_PATH."/xsl/specials/excel.xsl";
-    $doc   = xsl::resolve($doc, $excel);
+    $doc   = xsl::resolve($doc, self::$XSL_SERVER_PATH);
     $contents = $doc->saveXML();
     $contents = strstr($contents, '<html');
     return $contents;
