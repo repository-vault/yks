@@ -2,32 +2,11 @@
 
 
 <toggler caption="Détails de la query" class="closed">
-    <textarea class="fill" style="height:400px"><?=specialchars_encode($sql_query)?></textarea>
+    <textarea class="fill" style="height:400px"><?=specialchars_encode($query->sql_query)?></textarea>
 </toggler>
-<?if($query->ready){?>
-
-<table class='table center' style="width:100%">
-<tr class='line_head'>
-<?
-foreach($cols as $col_key=>$tmp)
-    echo "<th>$col_key</th>";
-?>
-</tr>
-
-<?
-foreach($data as $line){
-  echo "<tr class='line_pair'>";
-  foreach($cols as $col_key=>$col_infos){
-    echo "<td>{$line[$col_key]}</td>";
-  }
-  echo "</tr>";
-}if(!$data)
-    echo "<tfail>La requete n'a retourné aucun resultat</tfail>";
-
-?>
-
-</table>
-<?}else{?>
+<?if($query->ready)
+    $query->print_data();
+else {?>
 <div class="rbx" style="height:40px;display:block">
     <div class="rbx_loader">&#160;</div>
 </div>

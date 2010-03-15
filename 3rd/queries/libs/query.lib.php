@@ -1,51 +1,72 @@
-<?
+<?php
 
-class query  extends _sql_base {
 
-  
-  const sql_table = 'ks_queries_list';
-  protected $sql_table = 'ks_queries_list';
-  protected $sql_key = "query_id";
-  const sql_key = "query_id";
-  protected $manager = "queries_manager";
+class query {
 
-  public $ready = false;
+  private $sql_query;
+  private $data_results;
+  private $cols;
 
-  public function prepare_query($params_values){
-    $sql_query = $this->query_def;
+  function __construct($sql_query) {
 
-    $ready = true;
+    $this->sql_query = $sql_query;
+  }
 
-    foreach($this->params_list as $param) {
-        $param_key = $param['param_key'];
+  public function execute(){
 
-        $ready &= isset($params_values[$param_key]);
-        $str = '';
-        if($param->query_usage['param_field'])
-            $str = sql::conds($param->query_usage['param_field'], $params_values[$param_key]);
-        else $str = sql::clean($params_values[$param_key]);
 
-        $sql_query = str_replace($param->query_usage['search_mask'], $str, $sql_query);
+    $res = sql::query($this->sql_query);
+    if($res === false)
+        throw new Exception("Query failed");
+
+    $this->cols = array();
+      for ($i = 0, $max=pg_num_fields($res); $i < $max; $i++) {
+        $this->cols[$fieldname = pg_field_name($res, $i)] = array(
+            'name'=>$fieldname ,
+            'type'=>pg_field_type($res, $i),
+        );
+      }
+
+    sql::reset($res);
+    $this->data_results = sql::brute_fetch();
+
+  }
+
+    //direct output, use ob_start if required
+  public function print_html_table_data(){
+    echo "<table class='table center' style='width:100%'>
+        <tr class='line_head'>";
+    foreach($this->cols as $col_key=>$tmp)
+        echo "<th>$col_key</th>";
+    echo "</tr>";
+
+    foreach($this->data_results as $line){
+      echo "<tr class='line_pair'>";
+      foreach($this->cols as $col_key=>$col_infos)
+        echo "<td>{$line[$col_key]}</td>";
+      echo "</tr>";
     }
-
-    $this->ready = $ready;
-
-    return $sql_query;
+    if(!$this->data_results)
+        echo "<tfail>La requete n'a retourné aucun resultat</tfail>";
+    echo "</table>";
   }
 
+  public static function fast_export($sql_query){
+    $query = new self($sql_query);
+    $query->execute();
 
-  function trash(){
-    $this->sql_delete();
-  }
-  function update($data){
-    queries_manager::query_verify($data);
-    $this->sql_update($data);
-  }
+    ob_start();
+    $query->print_html_table_data();
+    $str = ob_get_contents();
+    ob_end_clean();
 
+    exyks_renderer_excel::render($str);
+  }
 
   public function __toString(){
-    return "query #{$this->query_id}";
+    return $this->sql_query;
   }
+
 
 
 }

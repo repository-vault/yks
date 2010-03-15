@@ -2,7 +2,7 @@
 
 class queries_manager {
 
-  function get_params_list(query $query) {
+  function get_params_list(query_db $query) {
 
     $params_def = self::get_params_def($query->query_def);
     $verif_params = array(
@@ -42,7 +42,7 @@ class queries_manager {
     try {
         self::query_verify($data);
         $query_id = sql::insert("ks_queries_list", $data, true);
-        return new query($query_id);
+        return new query_db($query_id);
     } catch(Exception $e){ throw rbx::error("Creation error"); }
 
   }
