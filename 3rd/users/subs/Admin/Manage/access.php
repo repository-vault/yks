@@ -1,15 +1,8 @@
 <?
 
 
-$user_access=array();$access=array();
-sql::select("ks_users_access",$verif_user,'access_zone,access_lvl');
-while(extract(sql::fetch()))
-    $user_access[$access_zone]=array_flip(array_filter(explode(',',$access_lvl)));
-
-$parents=array('user_id'=>array_diff($parent_tree,array($user_id)));
-sql::select("ks_users_access", $parents, 'access_zone,access_lvl');
-while(extract(sql::fetch()))
-    $access[$access_zone]=array_flip(array_filter(explode(',',$access_lvl)));
+$user_access = auth::get_access(array($user_id));
+$access      = auth::get_access( array_diff($parent_tree,array($user_id)) );
 
 
 if($action=="access_save")try {

@@ -73,7 +73,7 @@ class auth {
     return $grant;
   }
 
-  static function get_access($users_tree = false){
+  public static function get_access($users_tree = false){
     $access_zones = self::get_access_zones();
 
     if($users_tree===false)$users_tree = (array)sess::$sess['users_tree'];
