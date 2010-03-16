@@ -23,10 +23,5 @@
     <class name="myks" path="path://here/libs/myks/myks.php"/>
     <class name="mykses" path="path://here/libs/myks/mykses.php"/>
     <class name="myks_parser" path="path://here/libs/myks/parser.php"/>
-<!-- auth & sess -->
-    <class name="sess" path="path://here/libs/auth/sess.php"/>
-    <class name="auth" path="path://here/libs/auth/auth.php"/>
-    <class name="auth_password" path="path://here/libs/auth/interfaces/password.php"/>
-    <class name="auth_restricted_ip" path="path://here/libs/auth/interfaces/restricted_ip.php"/>
   </classes>
 </module>

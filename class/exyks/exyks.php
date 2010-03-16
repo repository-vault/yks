@@ -146,7 +146,7 @@ class exyks {
     locales_manager::init();
 
     if(! bool($config->users['custom_session_manager']))
-        exyks_session::load_classic();
+        exyks_session::load();
 
 
 
@@ -163,7 +163,7 @@ class exyks {
     //Ferme les subs : close session, shut SQL link down & co
   static function context_end(){
     if(exyks::$is_script) die;
-    if(class_exists('sess')) sess::close();
+    exyks_session::close();
     exyks::store('generation_time', exyks::tick('generation_start'));
 
     $str = ob_get_contents(); ob_end_clean(); //did subs provide contents ?

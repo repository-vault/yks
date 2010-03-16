@@ -2,13 +2,28 @@
 
 
 class auth {
-  private static $access_zone;
+
   private static function get_access_zones(){
-    if(self::$access_zone) return self::$access_zone;
+    static $zone_names = false; if($zone_names) return $zone_names;
     sql::select("ks_access_zones");
-    self::$access_zone = sql::brute_fetch("access_zone", "zone_parent");
-    print_r(self::$access_zone);die;
+    $access_zone = sql::brute_fetch("access_zone", "access_zone_parent");
+
+    $zone_names = array();
+    foreach($access_zone as $zone_name=>&$val)
+        $zone_names[$zone_name] = self::zone_name($access_zone, $zone_name);
+    return $zone_names;
   }
+
+  private static function zone_name($zone_tree, $zone_name) {
+    $zone_parent = $zone_tree[$zone_name];
+    $zone_names = array($zone_name);
+    if(!in_array($zone_parent, array($zone_name, "yks")))
+        $zone_names[] = "$zone_parent:$zone_name";
+    
+    //todo : manage recurse here
+    return $zone_names;
+  }
+
 
   static function limit($module_xml){
     // to refactor
@@ -59,15 +74,17 @@ class auth {
   }
 
   static function get_access($users_tree = false){
-    $access_zone = self::get_access_zones();
+    $access_zones = self::get_access_zones();
+
     if($users_tree===false)$users_tree = (array)sess::$sess['users_tree'];
     sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
     $access = array();while(extract(sql::fetch()))
+        foreach($access_zones[$access_zone] as $access_zone)
         $access[$access_zone]=array_merge_numeric(
             $access[$access_zone]?$access[$access_zone]:array(),
             array_flip(array_filter(explode(',',"$access_lvl")))
         );
-print_r($access);die;
+
     return $access;
   }
 

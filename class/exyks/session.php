@@ -6,9 +6,37 @@
 
 class exyks_session {
 
+  public static $renewed = false;
+
+  private static $sess_loaded = false;
+
+  public static function init(){
+    self::$sess_loaded = class_exists('sess');
+  }
+
+  public static function close(){
+    if(self::$sess_loaded)
+        return sess::close();
+
+    session_write_close();
+  }
+
+  public static function flag_ks(){
+    if(self::$sess_loaded) 
+        return sess::flag_ks();
+    return "ks_flag";
+  }
+
+
+  public static function load(){
+    if(self::$sess_loaded)
+        return self::load_classic();
+
+    session_start();
+  }
 
     //  Load basic session, if existing, load root user else
-  static function load_classic(){
+  private static function load_classic(){
     global $action;
 
     if(!isset(sess::$sess['user_id']))
@@ -38,11 +66,6 @@ class exyks_session {
         else tpls::css_add("/css/".SITE_BASE."/off.css"); //not mandatory.., but could help
     }
 
-        //last piece of trash code ?
-    global $user_id, $verif_user, $user_sess;
-    $user_id=sess::$sess['user_id'];
-    $verif_user=compact('user_id');
-    $user_sess=sess::$sess;
   }
 
 }

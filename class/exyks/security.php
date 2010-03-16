@@ -7,7 +7,7 @@ class exyks_security {
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    self::$flag_ks = sess::flag_ks();
+    self::$flag_ks = exyks_session::flag_ks();
     jsx::set('ks_flag', self::$flag_ks);
   }
 
@@ -19,8 +19,9 @@ class exyks_security {
     if($action){
       if($_POST['ks_flag'] != self::$flag_ks){
           $action="";
-          $msg = sess::$renewed ? "Your session has expired, reload the page you are on, and try again"
-                : "Invalid security flag";
+          $msg = exyks_session::$renewed
+                   ? "Your session has expired, reload the page you are on, and try again"
+                   : "Invalid security flag";
           rbx::error($msg);
       } if(JSX) jsx::$rbx=true;
       unset($_POST['ks_flag']);
