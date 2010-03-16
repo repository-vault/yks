@@ -2,6 +2,14 @@
 
 
 class auth {
+  private static $access_zone;
+  private static function get_access_zones(){
+    if(self::$access_zone) return self::$access_zone;
+    sql::select("ks_access_zones");
+    self::$access_zone = sql::brute_fetch("access_zone", "zone_parent");
+    print_r(self::$access_zone);die;
+  }
+
   static function limit($module_xml){
     // to refactor
     die;
@@ -51,6 +59,7 @@ class auth {
   }
 
   static function get_access($users_tree = false){
+    $access_zone = self::get_access_zones();
     if($users_tree===false)$users_tree = (array)sess::$sess['users_tree'];
     sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
     $access = array();while(extract(sql::fetch()))
@@ -58,6 +67,7 @@ class auth {
             $access[$access_zone]?$access[$access_zone]:array(),
             array_flip(array_filter(explode(',',"$access_lvl")))
         );
+print_r($access);die;
     return $access;
   }
 
