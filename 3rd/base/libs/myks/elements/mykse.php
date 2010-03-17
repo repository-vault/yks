@@ -6,13 +6,13 @@
   */
 
 abstract class mykse_base {
-  public $field_def=array();
+  public $field_def = array();
   protected $table;
-  protected $types_tree=array();
-  protected $birth=false;
-  protected $depth_max=10;
-  protected $depth=0;
-  public $base_type=0;
+  protected $types_tree = array();
+  protected $birth      = false;
+  protected $depth_max  = 10;
+  protected $depth      = 0;
+  public $base_type     = 0;
 
   function  __construct($field_xml, $table){
 
@@ -30,17 +30,19 @@ abstract class mykse_base {
         // SAUF si on est sur une primary explicite
     // depth==1 est ok
 
-    $birth = sql::resolve((string)$this->mykse_xml['birth']);
-    if($birth){
- 
-      if($birth['name']==(string)$this->table->table_name
+
+
+
+    $birth_root   = sql::resolve((string)$this->mykse_xml['birth']);
+    if($birth_root){
+       if($birth_root['name']==(string)$this->table->table_name
         && $this->depth==1
         && ($field_xml['type']==$this->field_def['Field']
             || $field_xml['key'] == "primary") ){
             $this->table->key_add('primary',$this->field_def["Field"]);
-            $this->birth=true;
+            $this->birth = true;
             if($this->field_def['Null']) $this->field_def['Null']=false; //pas de null dans le birth
-      } else  $this->fk($field_xml, $birth);
+      } else  $this->fk($field_xml, $birth_root);
     }
 
     $this->get_def(); 
@@ -50,30 +52,41 @@ abstract class mykse_base {
         $this->field_def['Null'] = true;
 
 
-    $birth = sql::resolve((string)$this->mykse_xml['birth']);
-    if($birth && $this->depth > 1) $this->fk($field_xml, $birth);
+    $birth_deep = sql::resolve((string)$this->mykse_xml['birth']);
+    if($birth_deep
+        && !$birth_root
+        && $this->depth > 1)
+            $this->fk($field_xml, $birth_deep);
 
     if($field_xml['key'])
         $this->table->key_add("{$field_xml['key']}","{$this->field_def['Field']}");
 
   }
-  private function fk($field_xml, $birth){
-    $table_name = $birth['raw'];
-    $birth_xml  = myks_gen::$tables_xml->$table_name;
-        //resolve distant table fields name
 
+
+  private function fk($field_xml, $birth){
+     //rbx::ok("FK to ".$field_xml->asXML()." ".json_encode($birth));
+
+    $local_field = $this->field_def["Field"];
+    $table_name  = $birth['raw'];
+    $birth_xml   = myks_gen::$tables_xml->$table_name;
+        //resolve distant table fields name
     $fields = array_keys(fields($birth_xml, true), $this->type);
 
         //this is complicated, see http://doc.exyks.org/wiki/Myks:External_references_resolutions
     $fields = in_array($this->type, $fields)?array($this->type):array_slice($fields,0,1);
 
-    $this->table->key_add('foreign', $this->field_def["Field"], array(
+    if(!$fields)
+        throw rbx::error("-- Unresolved ext ref on {$this->table->table_name}/{$this->type} to {$birth['name']}");
+
+    $this->table->key_add('foreign', $local_field, array(
         "table"    => $birth['name'],
         "refs"     => table::build_ref($birth['schema'], $birth['name'], $fields ), 
         "update"   => (string)$field_xml['update'],
         "delete"   => (string)$field_xml['delete'],
         "defer"    => (string)$field_xml['defer'],
     ));
+
   }
 
   protected function resolve($type){

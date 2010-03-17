@@ -155,7 +155,7 @@ class sql_runner {
   }
 
 
-  function scan_views($run_queries = false, $only_stuff = ''){
+  function scan_views($only_stuff = '*', $run_queries = false){
     myks_gen::reset_types();
     rbx::title("Analysing views");
     $this->dependencies_ordering();
@@ -192,7 +192,7 @@ class sql_runner {
   }
 
 
-  function scan_procedures($run_queries = false, $only_stuff = ''){
+  function scan_procedures($only_stuff = '*', $run_queries = false){
     
     myks_gen::reset_types();
     rbx::title("Analysing stored procedures");
@@ -222,7 +222,7 @@ class sql_runner {
   }
 
 
-  function scan_tables($run_queries = false, $only_stuff = ''){
+  function scan_tables($only_stuff = '*', $run_queries = false){
 
     myks_gen::reset_types();
     rbx::title("Analysing database structure");

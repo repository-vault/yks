@@ -4,6 +4,8 @@ class privileges {
   private static $root_privileges = array();
   private  $grants_xml;
   private  $element_name;
+  private  $element_schema;
+
   private  $element_type;
 
 
@@ -16,6 +18,7 @@ class privileges {
     $this->element_infos = $element_infos;
     $this->element_name  = $element_infos['name'];
     $this->element_name_safe  = $element_infos['safe'];
+    $this->element_schema = $element_infos['schema'];
 
     $this->grants_xml = $grants_xml;
   }
@@ -58,7 +61,7 @@ class privileges {
   }
 
   function sql_infos(){
-    $verif_table = array('table_name'=>$this->element_name);
+    $verif_table = array('table_name'=>$this->element_name, 'table_schema' => $this->element_schema );
     sql::select("information_schema.table_privileges", $verif_table);
     $this->sql_def = sql::brute_fetch_depth('grantee', 'privilege_type', false);
   }
