@@ -42,16 +42,15 @@ class sql {
     return self::$lnks[$lnk];
   }
 
-  static function &query($query,$lnk=false,$arows=false){
+  static function &query($query, $lnk=false, $arows=false){
     $lnk = $lnk?$lnk:self::$link;
     $serv = isset(self::$lnks[$lnk])?self::$lnks[$lnk]:self::connect($lnk);
     if(!$serv) return false;
 
     $query = self::unfix($query);
-    if(sql::$transaction) self::$result = pg_query($serv, $query); 
-    else self::$result = pg_query($serv, $query);  //i want to see errors
+    self::$result = pg_query($serv, $query);
 
-    if(self::$log)self::$queries[]=$query;
+    if(self::$log) self::$queries[] = $query;
     if(self::$result===false) {
         $error = self::error(htmlspecialchars($query));
         return $error;
@@ -137,9 +136,9 @@ class sql {
  static function insert($table,$vals=false,$auto_indx=false,$keys=false){
     if(is_array($keys)) $vals=array_intersect_key($vals,array_flip($keys));
     $vals = $vals?sql::format($vals,false):'VALUES (DEFAULT)';
-    $res = &sql::query("INSERT INTO `$table` $vals",false,true);
-    //if(is_resource($res)){$rows=pg_affected_rows($res);self::free($res);}
-    return $auto_indx && $res?self::auto_indx($table):$res;
+
+    $result = &sql::query("INSERT INTO `$table` $vals", false, true);
+    return $auto_indx && $result ? self::auto_indx($table) : $result;
   }
   
   static function error($msg=''){
