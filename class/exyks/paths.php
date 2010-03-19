@@ -66,7 +66,7 @@ class exyks_paths {
     }}
 
         //resolve
-    $mask = '#^path://('.join('|',array_keys($replaces)).')(.*?)(/|$)#ie'; //cooool
+    $mask = '#^path://('.join('|',array_keys($replaces)).')(?:/(.*?)|$)#iem'; //cooool
 
     $repl = '$replaces["$1"]."$2"';
 
