@@ -51,6 +51,7 @@ class myks_triggers extends table_collection {
         "tg_{$this->table['name']}%",
         $this->table['schema'],
         'trigger');
+
     foreach($procedures as $proc_name=>$procedure){
         $attached = false;
         foreach($elements as $element){

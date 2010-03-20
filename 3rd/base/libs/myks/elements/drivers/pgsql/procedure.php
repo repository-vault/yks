@@ -2,17 +2,11 @@
 
 class procedure extends procedure_base {
 
-
-  function __construct($name, $proc_xml){
-    self::register_exts();
-    parent::__construct($name, $proc_xml);
-  }
-
 /*
 * Etend le resolver pour que postgres se sente bien
 * Il est gentil, mais un peu limité, le postgres...
 */
-  static function register_exts(){
+  static function init(){
 
     myks_gen::$type_resolver->register("in", array(
       'boolean'=>'bool',
@@ -39,4 +33,6 @@ class procedure extends procedure_base {
 
 
   }
+
+
 }
