@@ -7,12 +7,11 @@ abstract class view_base extends myks_base {
   public $xml_def = array();
 
   private $update_cascade = false;
+  protected $view_name;
 
   function __construct($view_xml){
     $this->view_xml = $view_xml;
-    $this->view_infos     = sql::resolve( (string) $view_xml['name'] );
-    $this->view_name      = $this->view_infos['name'];
-    $this->view_name_safe = $this->view_infos['safe'];
+    $this->view_name     = sql::resolve( (string) $view_xml['name'] );
   }
 
   function check($force = false){
@@ -25,7 +24,7 @@ abstract class view_base extends myks_base {
 
     //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
     if(!$todo)
-        throw rbx::error("-- Unable to look for differences in $this->view_name");
+        throw rbx::error("-- Unable to look for differences in $this");
 
     $todo = array_map(array('sql', 'unfix'), $todo);
     return array($todo, $this->update_cascade);
@@ -46,13 +45,13 @@ abstract class view_base extends myks_base {
     $this->update_cascade = true;
 
     if($force || $this->sql_def['compiled_definition'])
-        $todo[] = "DROP VIEW IF EXISTS $this->view_name_safe CASCADE";
+        $todo[] = "DROP VIEW IF EXISTS {$this->view_name['safe']} CASCADE";
 
-    $todo []= "CREATE OR REPLACE VIEW  $this->view_name_safe AS ".CRLF
+    $todo []= "CREATE OR REPLACE VIEW  {$this->view_name['safe']} AS ".CRLF
          . $this->xml_def['def'];
 
 
-    $todo []= $this->sign("VIEW", $this->view_name_safe, $this->xml_def['def'], $this->xml_def['signature'] );
+    $todo []= $this->sign("VIEW", {$this->view_name['safe']}, $this->xml_def['def'], $this->xml_def['signature'] );
     return $todo;
   }
 
@@ -68,8 +67,8 @@ abstract class view_base extends myks_base {
   function sql_infos(){
    $where = sql::where( array(
         "c.relkind" => "v",
-        "c.relname" => $this->view_name,
-        "n.nspname" => $this->view_infos['schema']
+        "c.relname" => $this->view_name['name'],
+        "n.nspname" => $this->view_name['schema']
     ));
 
     $query = "SELECT

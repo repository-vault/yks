@@ -8,8 +8,8 @@ class view extends view_base  {
   function __construct($view_xml){
     parent::__construct($view_xml);
 
-    $this->rules      = new rules($view_xml->rules, $this->view_infos, 'view');
-    $this->privileges = new privileges($view_xml->grants, $this->view_infos, 'view');
+    $this->rules      = new rules($view_xml->rules, $this->view_name, 'view');
+    $this->privileges = new privileges($view_xml->grants, $this->view_name, 'view');
   }
 
   function sql_infos(){
