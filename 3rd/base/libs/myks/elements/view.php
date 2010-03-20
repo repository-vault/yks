@@ -51,7 +51,7 @@ abstract class view_base extends myks_base {
          . $this->xml_def['def'];
 
 
-    $todo []= $this->sign("VIEW", {$this->view_name['safe']}, $this->xml_def['def'], $this->xml_def['signature'] );
+    $todo []= $this->sign("VIEW", $this->view_name['safe'], $this->xml_def['def'], $this->xml_def['signature'] );
     return $todo;
   }
 
@@ -68,7 +68,7 @@ abstract class view_base extends myks_base {
    $where = sql::where( array(
         "c.relkind" => "v",
         "c.relname" => $this->view_name['name'],
-        "n.nspname" => $this->view_name['schema']
+        "n.nspname" => $this->view_name['schema'],
     ));
 
     $query = "SELECT
