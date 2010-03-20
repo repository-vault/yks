@@ -228,8 +228,8 @@ class sql {
     $tmp = explode('.', str_replace('`', '', sql::unfix("`$name`")) , 2);
     $name = array_pop($tmp); $schema = $tmp[0];
     if(!$schema) $schema = (string) self::$servs->links->{self::$link}['db'];
-    $safe = sprintf('`%s`.`%s`', $schema, $name );
-    return compact('name', 'schema', 'safe');
+    $safe = sprintf('`%s`.`%s`', $schema, $name ); $hash = str_replace('`','', $safe);
+    return compact('name', 'schema', 'safe', 'hash');
   }
 
 

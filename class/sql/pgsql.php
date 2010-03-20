@@ -133,7 +133,7 @@ class sql {
     if(is_bool($v))   return $v?"$k":"!$k";
   }
   
- static function insert($table,$vals=false,$auto_indx=false,$keys=false){
+ static function insert($table,$vals=false, $auto_indx=false, $keys=false){
     if(is_array($keys)) $vals=array_intersect_key($vals,array_flip($keys));
     $vals = $vals?sql::format($vals,false):'VALUES (DEFAULT)';
 
@@ -204,9 +204,13 @@ class sql {
         sql::$transaction=false;return $error?rbx::error($error):false;
   }
   static function commit($msg=false){
+    sql::$transaction = false;
+    $result = sql::query('commit');
+    if(!$result)
+        throw new Exception("Transaction commit failed");
     if($msg) rbx::ok($msg);
-    sql::$transaction=false;
-    sql::query('commit');
+
+    
   }
 
   static function limit_rows(){
@@ -246,8 +250,8 @@ return $res;
     if(!$raw) return array();
     $tmp = explode('.', str_replace('"', '', sql::unfix("`$raw`")) , 2);
     $name = array_pop($tmp); $schema = $tmp[0]; if(!$schema) $schema = "public";
-    $safe = sprintf('"%s"."%s"', $schema, $name );
-    return compact('name', 'schema', 'safe', 'raw');
+    $safe = sprintf('"%s"."%s"', $schema, $name ); $hash = str_replace('"','', $safe);
+    return compact('name', 'schema', 'safe', 'raw', 'hash');
   }
 
 
