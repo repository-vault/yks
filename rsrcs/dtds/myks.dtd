@@ -3,9 +3,11 @@
 <!ENTITY % MYKSViews      PUBLIC "-//YKS//MYKSViews"      "sql_views.dtd">
 <!ENTITY % MYKSRules      PUBLIC "-//YKS//MYKSRules"      "sql_rules.dtd">
 <!ENTITY % MYKSTables     PUBLIC "-//YKS//MYKSTables"     "sql_tables.dtd">
+<!ENTITY % MYKSTrigger    PUBLIC "-//YKS//MYKSTrigger"    "sql_trigger.dtd">
 
 %MYKSElements;
 %MYKSRules;
+%MYKSTrigger;
 %MYKSTables;
 %MYKSProcedures;
 %MYKSViews;

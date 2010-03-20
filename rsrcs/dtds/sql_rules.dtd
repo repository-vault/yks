@@ -1,5 +1,5 @@
 <!ELEMENT rule (#PCDATA)>
 <!ATTLIST rule
-  on  (insert|update|delete) #REQUIRED
+  on  %Events;  #REQUIRED
   where  CDATA	 #IMPLIED
 >

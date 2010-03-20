@@ -1,6 +1,9 @@
 <!ENTITY % Num "CDATA">
 
 <!ENTITY % IntSizes "(mini|small|int|big|giga|float|decimal)">
+<!ENTITY % Events       "(insert|update|delete)">
+<!ENTITY % EventsTimer  "(before|after)">
+
 
 <!ENTITY % null
   "null  (null|not_null) 'not_null'"

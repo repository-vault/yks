@@ -1,0 +1,7 @@
+<!ELEMENT trigger (#PCDATA)>
+<!ATTLIST trigger 
+  on  %Events;  #REQUIRED
+  timing    %EventsTimer;  'after'
+  orientation (row|statement) 'row'
+>
+
