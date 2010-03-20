@@ -52,6 +52,7 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
+//    $this->scan_tables("mirrors_list");
   }
 
 /**

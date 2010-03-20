@@ -2,15 +2,16 @@
 
 
 
-abstract class table_base {
+abstract class table_base  extends myks_installer {
 
-  protected $keys_xml_def=array();
-  protected $fields_xml_def=array();
+  protected $table_name;
 
-  protected $keys_sql_def=array();
-  protected $fields_sql_def=array();
+  protected $keys_xml_def   = array();
+  protected $fields_xml_def = array();
 
-  protected $table_schema;
+  protected $keys_sql_def   = array();
+  protected $fields_sql_def = array();
+
 
   protected $keys_name = array(        // $this->table_name, $field, $type
     'PRIMARY'=>"%s_pkey", 
@@ -18,25 +19,35 @@ abstract class table_base {
     'FOREIGN'=>"%s_%s_%s",
   );
 
+  function get_name(){
+    return $this->table_name;
+  }
+
+  function delete_def(){
+    return array(
+        "DROP TABLE {$this->table_name['safe']}"
+    );
+  }
 
   function __construct($table_xml){
     $this->xml = $table_xml;
-    $this->table_infos = sql::resolve( (string) $table_xml['name']);
-    $this->table_name            = $this->table_infos['name'];
-    $this->table_name_safe       = $this->table_infos['safe'];
-
-    $this->table_where = array(
-        'table_name'   => $this->table_name,
-        'table_schema' => $this->table_infos['schema']
-    );
+    $this->table_name = sql::resolve( (string) $table_xml['name']);
 
     $this->keys_def=array();
   }
   
-  function check(){
+  protected function table_where(){
+    return array(
+        'table_name'   => $this->table_name['name'],
+        'table_schema' => $this->table_name['schema'],
+    );
+  }
 
-    if(in_array($this->table_name, myks_gen::$tables_ghosts_views)) {
-        rbx::ok("-- Double sync from view $this->table_name, skipping");
+
+  function alter_def(){
+
+    if(in_array($this->table_name['name'], myks_gen::$tables_ghosts_views)) {
+        rbx::ok("-- Double sync from view {$this->table_name['name']}, skipping");
         return false;
     }
 
@@ -51,7 +62,7 @@ abstract class table_base {
         //print_r($this->privileges);die;
         $todo  = $this->update();
     }
-    if(!$todo) throw rbx::error("Error while looking for differences in $this->table_name");
+    if(!$todo) throw rbx::error("Error while looking for differences in {$this->table_name['name']}");
     $todo = array_map(array('sql', 'unfix'), $todo);
     return $todo;
   }
@@ -59,7 +70,6 @@ abstract class table_base {
   function modified(){
     return $this->fields_xml_def != $this->fields_sql_def
         || $this->keys_xml_def != $this->keys_sql_def;
-
   }
 
 
@@ -68,8 +78,8 @@ abstract class table_base {
     return (boolean) whereas this table already exists (alter mode) or not (create mode)
 */
 
-  protected function sql_infos(){
-    $this->sql = sql::row("information_schema.tables", $this->table_where);
+  public function sql_infos(){
+    $this->sql = sql::row("information_schema.tables", $this->table_where());
 
     if(!$this->sql) return false;
     $this->fields_sql_def = $this->table_fields();
@@ -89,7 +99,7 @@ abstract class table_base {
   }
 
   function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
-    $key_name = sprintf($this->keys_name[$TYPE], $this->table_name, $field, $type);
+    $key_name = sprintf($this->keys_name[$TYPE], $this->table_name['name'], $field, $type);
 
     if($TYPE=="PRIMARY"){
         $this->keys_xml_def[$key_name]['type'] = $TYPE;
@@ -125,7 +135,7 @@ abstract class table_base {
 
 
   protected function table_keys(){
-    $where = $this->table_where;
+    $where = $this->table_where();
     $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
     if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
     sql::select("information_schema.table_constraints", $where, $cols);

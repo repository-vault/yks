@@ -14,9 +14,9 @@ class table extends table_base {
   function __construct($table_xml){
     parent::__construct($table_xml);
 
-    $this->privileges  = new privileges($table_xml->grants, $this->table_infos, 'table');
-    $this->rules       = new rules($table_xml->rules, $this->table_infos, 'table');
-    $this->triggers    = new myks_triggers($this->table_infos, $table_xml->triggers);
+    $this->privileges  = new privileges($table_xml->grants, $this->table_name, 'table');
+    $this->rules       = new rules($table_xml->rules, $this->table_name, 'table');
+    $this->triggers    = new myks_triggers($this->table_name, $table_xml->triggers);
   }
 
 
@@ -71,7 +71,7 @@ class table extends table_base {
   }
 
   function alter_fields() {
-    $table_alter = "ALTER TABLE $this->table_name_safe ";
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
     $todo = array();
     //fields sync
     foreach($this->fields_xml_def as $field_name=>$field_xml){
@@ -84,7 +84,7 @@ class table extends table_base {
             foreach($diff as $diff_type=>$new_value){
                 if($diff_type=="Null"){
                     if(!$new_value && !is_null($field_xml['Default']))
-                        $todo[] = "UPDATE $this->table_name_safe "
+                        $todo[] = "UPDATE {$this->table_name['safe']} "
                             ."SET `$field_name`={$field_xml['Default']} WHERE `$field_name` IS NULL";
                     $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                               .($new_value?"DROP NOT NULL":"SET NOT NULL");
@@ -101,7 +101,7 @@ class table extends table_base {
             if(!is_null($field_xml['Default'])){
                 $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                           ." SET DEFAULT {$field_xml['Default']}";
-                $todo[] = "UPDATE $this->table_name_safe SET `$field_name`={$field_xml['Default']}";
+                $todo[] = "UPDATE {$this->table_name['safe']} SET `$field_name`={$field_xml['Default']}";
             }
             $todo[] = "$table_alter ALTER COLUMN `$field_name` "
                 .($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
@@ -114,7 +114,7 @@ class table extends table_base {
   }
 
   function alter_keys(){
-    $table_alter = "ALTER TABLE $this->table_name_safe ";
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
     $todo = array();
     if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
@@ -130,7 +130,7 @@ class table extends table_base {
     foreach($this->keys_xml_def as $key=>$def){
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON $this->table_name_safe $members";continue;}
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
         elseif($type=="FOREIGN"){
             $add.=" REFERENCES ".table::output_ref($def['refs'])." ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
@@ -153,11 +153,11 @@ class table extends table_base {
         if($def['type']!="PRIMARY")continue;
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON $this->table_name_safe $members";
+        if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";
         else $parts[]=$add;
     }
 
-    $query = "CREATE TABLE $this->table_name_safe (\n\t".join(",\n\t", $parts)."\n)";
+    $query = "CREATE TABLE {$this->table_name['safe']} (\n\t".join(",\n\t", $parts)."\n)";
     $todo  []= $query;
     return $todo;
   }
@@ -172,7 +172,7 @@ class table extends table_base {
  protected function table_fields(){
     $strip_types = array("#::[a-z ]+#"=>"","#,\s+#"=>",");
     
-    sql::select("information_schema.columns", $this->table_where);
+    sql::select("information_schema.columns", $this->table_where());
     $columns=sql::brute_fetch('column_name');$table_cols=array();
 
 

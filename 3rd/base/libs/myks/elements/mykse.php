@@ -5,7 +5,8 @@
 	this class export the basic field SQL definition from a myks_xml structure
   */
 
-abstract class mykse_base {
+abstract class mykse_base  {
+
   public $field_def = array();
   protected $table;
   protected $types_tree = array();
@@ -35,7 +36,8 @@ abstract class mykse_base {
 
     $birth_root   = sql::resolve((string)$this->mykse_xml['birth']);
     if($birth_root){
-       if($birth_root['name']==(string)$this->table->table_name
+       $table = $this->table->get_name();
+       if($birth_root['name']==(string)$table['name']
         && $this->depth==1
         && ($field_xml['type']==$this->field_def['Field']
             || $field_xml['key'] == "primary") ){
@@ -77,7 +79,7 @@ abstract class mykse_base {
     $fields = in_array($this->type, $fields)?array($this->type):array_slice($fields,0,1);
 
     if(!$fields)
-        throw rbx::error("-- Unresolved ext ref on {$this->table->table_name}/{$this->type} to {$birth['name']}");
+        throw rbx::error("-- Unresolved ext ref on {$this->table}/{$this->type} to {$birth['name']}");
 
     $this->table->key_add('foreign', $local_field, array(
         "table"    => $birth['name'],

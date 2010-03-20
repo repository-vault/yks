@@ -8,4 +8,11 @@ abstract class myks_installer extends myks_parsed {
     $name = $this->get_name();
     return $name['hash'];
   }
+
+  
+  function __toString(){
+    $class = get_class($this);
+    $name  = $this->get_name();
+    return "[{$class}]#{$name['name']}";
+  }
 }

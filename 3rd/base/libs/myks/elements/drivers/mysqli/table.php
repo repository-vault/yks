@@ -24,7 +24,7 @@ class table extends table_base {
 
   function alter_fields(){
     $todo = array();
-    $table_alter = "ALTER TABLE `$this->table_name` ";
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
 
 
     foreach($this->fields_xml_def as $field_name=>$field_xml){
@@ -36,7 +36,7 @@ class table extends table_base {
         } else { //ajout de colonne
             $todo[] = "$table_alter ADD COLUMN `$field_name` {$field_xml['Type']}";
             if(!is_null($field_xml['Default'])){
-                $todo[] = "UPDATE `$this->table_name` SET `$field_name`={$field_xml['Default']}";
+                $todo[] = "UPDATE {$this->table_name['safe']} SET `$field_name`={$field_xml['Default']}";
             }
             $todo[] = "$table_alter MODIFY ".mykse::linearize($field_xml);
         }
@@ -47,7 +47,7 @@ class table extends table_base {
 
   function alter_keys(){
     $todo = array();
-    $table_alter = "ALTER TABLE `$this->table_name` ";
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
     if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
     foreach($this->keys_sql_def as $key=>$def){
@@ -61,7 +61,7 @@ class table extends table_base {
     foreach($this->keys_xml_def as $key=>$def){
         $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
         $add = "ADD CONSTRAINT ".sprintf($this->key_mask[$type],$key)." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON `{$this->table_name}` $members";continue;}
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
         if($type=="FOREIGN"){
             $add.=" REFERENCES {$def['refs']} ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
@@ -78,7 +78,7 @@ class table extends table_base {
 
  function table_fields(){
 
-    sql::query("SHOW FULL COLUMNS FROM `$this->table_name`");
+    sql::query("SHOW FULL COLUMNS FROM {$this->table_name['safe']}");
     $test = sql::brute_fetch('Field');
     $table_cols=array();
 
@@ -113,7 +113,7 @@ class table extends table_base {
         $fields[]=$this->key_mask[$type]." (`".join('`,`',$def['members']).'`)';   
     }
 
-    $todo[] = "CREATE TABLE `$this->table_name` (\n\t".join(",\n\t",$fields)."\n)";
+    $todo[] = "CREATE TABLE {$this->table_name['safe']} (\n\t".join(",\n\t",$fields)."\n)";
     
     return $todo;
     die($query);
