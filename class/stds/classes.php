@@ -75,6 +75,10 @@ class classes {
 
   static function spl_autoload($class_name){
     spl_autoload($class_name);
+
+    if(!class_exists($class_name))
+        return false; //class_exists
+
     self::init($class_name);
 
   }
