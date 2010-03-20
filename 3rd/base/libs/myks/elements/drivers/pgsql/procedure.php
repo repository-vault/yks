@@ -1,9 +1,11 @@
 <?php
 
 class procedure extends procedure_base {
-  function __construct($proc_xml){
+
+
+  function __construct($name, $proc_xml){
     self::register_exts();
-    parent::__construct($proc_xml);
+    parent::__construct($name, $proc_xml);
   }
 
 /*
@@ -22,7 +24,7 @@ class procedure extends procedure_base {
       'bigint'=>'bigint',
       'record'=>'record',
       'double precision'=>'float',
-    ));
+    ), 'proc');
 
     myks_gen::$type_resolver->register("out", array(
       'bool'=>'boolean',
@@ -33,7 +35,8 @@ class procedure extends procedure_base {
       'timestamptz'=>'timestamptz',
       'timestamp'=>'timestamp',
       'record'=>'record',
-    ));
+    ), 'proc'  );
+
 
   }
 }

@@ -1,5 +1,8 @@
 <?php
 
+include_once "element.php";
+include_once "collection.php";
+
 include_once "elements/base.php";
 include_once "elements/mykse.php";
 include_once "elements/table.php";
@@ -8,6 +11,8 @@ include_once "elements/procedure.php";
 include_once "elements/resolver.php";
 include_once "elements/rules.php";
 include_once "elements/privileges.php";
+include_once "elements/trigger.php";
+
 
 $driver = SQL_DRIVER;
 include_once "elements/drivers/$driver/mykse.php";

@@ -9,12 +9,14 @@ class table extends table_base {
 
   private $rules; //rules only exists in this driver
   private $privileges;
+  private $triggers;
 
   function __construct($table_xml){
     parent::__construct($table_xml);
 
     $this->privileges  = new privileges($table_xml->grants, $this->table_infos, 'table');
-    $this->rules = new rules($table_xml->rules, $this->table_infos, 'table');
+    $this->rules       = new rules($table_xml->rules, $this->table_infos, 'table');
+    $this->triggers    = new myks_triggers($this->table_infos, $table_xml->triggers);
   }
 
 
@@ -29,12 +31,14 @@ class table extends table_base {
 
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
+    $this->triggers->sql_infos();
     return true;
   }
 
   function xml_infos(){
     parent::xml_infos();
     $this->rules->xml_infos();
+    $this->triggers->xml_infos();
     $this->privileges->xml_infos();
     foreach($this->keys_xml_def as $k=>&$key){
         if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
@@ -51,7 +55,9 @@ class table extends table_base {
   function modified(){
     return parent::modified()
         || $this->privileges->modified()
+        || $this->triggers->modified()
         || $this->rules->modified();
+
   }
 
 
@@ -59,6 +65,7 @@ class table extends table_base {
     return array_merge(
         parent::update(),
         $this->privileges->alter_def(),
+        $this->triggers->alter_def(),
         $this->rules->alter_rules()
     );
   }

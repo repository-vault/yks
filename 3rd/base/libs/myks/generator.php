@@ -26,16 +26,17 @@ class myks_gen {
         return $table->check();
     } catch(rbx $r){}
   }
-  static function procedure_check($procedure_xml){
+  static function procedure_check($proc_xml){
     try {
-        $procedure=new procedure($procedure_xml);
+        $infos     = sql::resolve( (string)$proc_xml['name'] );
+        $procedure = new procedure($infos, $proc_xml);
         return $procedure->check();
     } catch(rbx $r){}
   }
 
   static function view_check($view_xml, $force= false){
     try {
-        $view=new view($view_xml);
+        $view = new view($view_xml);
         return $view->check($force);
     } catch(rbx $r){}
   }
