@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="strtoint" type="int">
+    <param type="string"/>
+    <def>
+BEGIN
+
+IF ($1 ~ '[^0-9]'
+    OR $1 = ''
+) THEN
+  RETURN 0;
+END IF;
+
+RETURN CAST($1 AS INTEGER);
+
+END;
+</def>
+  </procedure>
+</myks>

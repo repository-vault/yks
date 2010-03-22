@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="preg_clean" type="string">
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+BEGIN
+
+RETURN regexp_replace($1, $2 || '.*', E'\\1');
+
+END;
+</def>
+  </procedure>
+</myks>
