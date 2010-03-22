@@ -35,6 +35,7 @@ class myks_table_triggers extends table_collection {
     $verif = array(
         'event_object_table'  => $this->table->name['name'],
         'event_object_schema' => $this->table->name['schema'],
+        "trigger_name NOT LIKE 'rtg_%'",
     );
 
 
