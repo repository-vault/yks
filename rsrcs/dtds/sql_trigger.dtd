@@ -3,5 +3,6 @@
   on  %Events;  #REQUIRED
   timing    %EventsTimer;  'after'
   orientation (row|statement) 'row'
+  procedure CDATA #IMPLIED
 >
 

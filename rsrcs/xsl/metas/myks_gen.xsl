@@ -56,6 +56,9 @@
             <xsl:value-of select="//mykse[@birth=$name]/@type"/>
           </xsl:attribute>
         </xsl:if>
+        <xsl:if test="abstract">
+          <xsl:copy-of select="abstract"/>
+        </xsl:if>
         <fields>
           <xsl:copy-of select="//table[@name=$name]/fields/*"/>
         </fields>
