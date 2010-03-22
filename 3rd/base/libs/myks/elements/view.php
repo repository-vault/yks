@@ -10,13 +10,17 @@ abstract class view_base extends myks_base {
   protected $view_name;
 
   function __construct($view_xml){
-    $this->view_xml = $view_xml;
-    $this->view_name     = sql::resolve( (string) $view_xml['name'] );
+    $this->view_xml  = $view_xml;
+    $this->view_name = sql::resolve( (string) $view_xml['name'] );
+  }
+
+  function get_name(){
+    return $this->view_name;
   }
 
   function check($force = false){
-    $this->sql_infos(); //self signature, sql first
     $this->xml_infos();
+    $this->sql_infos();
 
     if($force) $this->sql_def = array();
     if(!$this->modified())  return false;
@@ -39,13 +43,19 @@ abstract class view_base extends myks_base {
     return $this->alter_def();
   }
 
+  function delete_def(){
+    return array(
+        "DROP VIEW IF EXISTS {$this->view_name['safe']} CASCADE"
+    );
+  }
+
   function alter_def($force = false){
     $todo = array();
     if(!$force && ($this->sql_def == $this->xml_def)) return $todo;
     $this->update_cascade = true;
 
     if($force || $this->sql_def['compiled_definition'])
-        $todo[] = "DROP VIEW IF EXISTS {$this->view_name['safe']} CASCADE";
+        $todo = array_merge($todo, $this->delete_def());
 
     $todo []= "CREATE OR REPLACE VIEW  {$this->view_name['safe']} AS ".CRLF
          . $this->xml_def['def'];
@@ -65,6 +75,9 @@ abstract class view_base extends myks_base {
   }
 
   function sql_infos(){
+    if($this->sql_def)
+        return;
+
    $where = sql::where( array(
         "c.relkind" => "v",
         "c.relname" => $this->view_name['name'],
@@ -94,6 +107,7 @@ abstract class view_base extends myks_base {
 
 
   function xml_infos() {
+    $this->sql_infos();  //recursive signature, sql first
 
     $this->xml_def = array(
         'compiled_definition' => $this->sql_def['compiled_definition'],

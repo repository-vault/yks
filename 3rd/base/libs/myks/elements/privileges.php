@@ -3,24 +3,17 @@
 class privileges {
   private static $root_privileges = array();
   private  $grants_xml;
-  private  $element_name;
-  private  $element_schema;
 
-  private  $element_type;
+  private $parent_type;
+  private $parent;
 
+  private $sql_def = array();
+  private $xml_def = array();
 
-  private $sql_def;
-  private $xml_def;
-
-  function __construct($grants_xml, $element_infos, $element_type){
-    $this->element_type  = $element_type;
-
-    $this->element_infos = $element_infos;
-    $this->element_name  = $element_infos['name'];
-    $this->element_name_safe  = $element_infos['safe'];
-    $this->element_schema = $element_infos['schema'];
-
-    $this->grants_xml = $grants_xml;
+  function __construct($parent, $grants_xml, $parent_type){
+    $this->parent_type  = $parent_type;
+    $this->parent       = $parent;
+    $this->grants_xml   = $grants_xml;
   }
 
   static function declare_root_privileges($config){
@@ -31,10 +24,14 @@ class privileges {
     }self::$root_privileges = $privileges;
   }
 
+  function modified(){
+    return $this->sql_def != $this->xml_def;
+  }
 
   function alter_def(){
     $todo = array();
-    if($this->sql_def== $this->xml_def) return array();
+    if(!$this->modified())
+        return $todo;
 
     $drops = array_diff_key($this->sql_def, $this->xml_def);
     foreach($this->xml_def as $to=>$def){
@@ -43,32 +40,33 @@ class privileges {
         if($erase = array_diff($current, $def)) $drops[$to] = $erase;
         if(!($missing = array_diff($def, $current))) continue;
         $missing = join(',', $missing);
-        $todo[] = "GRANT $missing ON $this->element_name_safe TO ".self::to($to);
+        $todo[] = "GRANT $missing ON {$this->parent->name['safe']} TO ".self::to($to);
     } foreach($drops as $to=>$def){
         $def = join(',', $def);
-        $todo[] = "REVOKE $def ON $this->element_name_safe FROM  ".self::to($to);
+        $todo[] = "REVOKE $def ON {$this->parent->name['safe']} FROM  ".self::to($to);
     }
     return $todo;
 
   }
 
-  function modified(){
-    return $this->sql_def != $this->xml_def;
-  }
 
   function to($to){
     return ($to != "PUBLIC")?'"'.$to.'"':$to;
   }
 
   function sql_infos(){
-    $verif_table = array('table_name'=>$this->element_name, 'table_schema' => $this->element_schema );
-    sql::select("information_schema.table_privileges", $verif_table);
+    $verif_table = array(
+        'table_name'   => $this->parent->name['name'],
+        'table_schema' => $this->parent->name['schema']
+    ); sql::select("information_schema.table_privileges", $verif_table);
     $this->sql_def = sql::brute_fetch_depth('grantee', 'privilege_type', false);
   }
 
   function xml_infos(){
-    $privileges = self::$root_privileges[$this->element_type];
-    foreach($this->grants_xml->grant as $grant)
+    $privileges = self::$root_privileges[$this->parent_type];
+
+    if($this->grants_xml->grant)
+      foreach($this->grants_xml->grant as $grant)
         $privileges = self::merge($privileges, self::parse($grant));
     $this->xml_def = (array)$privileges;
   }

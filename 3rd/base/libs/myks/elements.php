@@ -18,16 +18,24 @@ classes::register_class_paths(array(
     "table_base"       => "$elements/table.php",
     "view_base"        => "$elements/view.php",
     "procedure_base"   => "$elements/procedure.php",
-    "rules_base"       => "$elements/rules.php",
+    "procedures_list"  => "$elements/procedures.php",
+
+    "rule_base"        => "$elements/rule.php",
+    "rules"            => "$elements/rules.php",
     "privileges"       => "$elements/privileges.php",
-    "myks_triggers"    => "$elements/trigger.php",
+
+    "myks_trigger"     => "$elements/trigger.php",
+    "myks_triggers"    => "$elements/triggers.php",
+    "myks_table_triggers" => "$elements/table_triggers.php",
 
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",
     "resolver"         => "$ds_elements/resolver.php",
     "view"             => "$ds_elements/view.php",
     "procedure"        => "$ds_elements/procedure.php",
-    "rules"            => "$ds_elements/rules.php",
+    "rule"             => "$ds_elements/rule.php",
+
+    "materialized_view"=> "$elements/materialized_view.php",
 
     "base_type_resolver"        => "$elements/resolver.php",
 

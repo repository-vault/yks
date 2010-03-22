@@ -2,13 +2,16 @@
 
 
 abstract class myks_collection extends myks_parsed {
-  private $elements = array();
+  public $elements = array(); //DEBUG
 
-  protected function stack($element){
-    $key = $element->hash_key();
+  function stack($element, $hash = null){
+    $key = pick($hash, $element->hash_key());
     $this->elements[$key] = $element;
   }
 
+  function retrieve($key){
+    return $this->elements[$key];
+  }
 
   function xml_infos(){
     foreach($this->elements as $element)
@@ -22,9 +25,10 @@ abstract class myks_collection extends myks_parsed {
 
     //contains($element);/contains($hash_key);
   function contains($search){
-    if(is_string($search))
-        return isset($this->elements[$search]);
-    return in_array($search, $this->elements);
+    if($search instanceof myks_installer)
+        $search = $search->hash_key();
+    $search = (string) $search;
+    return isset($this->elements[$search]);
   }
 
   function modified(){

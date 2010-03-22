@@ -1,6 +1,7 @@
 <?php
 
 
+
 abstract class procedure_base extends myks_installer  {
 
 /**
@@ -55,9 +56,9 @@ abstract class procedure_base extends myks_installer  {
 
     return array($ret);
   }
-
+//return all procedures matching search criteria
   static function sql_search($proc_name, $proc_schema, $type, $params = array()){
-    $find = self::sp_sql_search($proc_name, $proc_schema, $type, $params);
+    $find = self::raw_sql_search($proc_name, $proc_schema, $type, $params);
     $ret = array(); 
     foreach($find as $infos){
         $tmp = sql::resolve("{$infos['routine_schema']}.{$infos['routine_name']}");
@@ -67,7 +68,8 @@ abstract class procedure_base extends myks_installer  {
     return $ret;
   }
 
-  private static function sp_sql_search($proc_name, $proc_schema, $type, $params = array()){
+//STATIC
+  private static function raw_sql_search($proc_name, $proc_schema, $type, $params = array()){
 
     $having    = array();
     $having  []= "COUNT(parameters.specific_name) = ".count($params);
@@ -107,7 +109,7 @@ abstract class procedure_base extends myks_installer  {
 
   function sql_infos(){
 
-    $find = self::sp_sql_search(
+    $find = self::raw_sql_search(
         $this->proc_name['name'],
         $this->proc_name['schema'],
         $this->xml_def['type'],

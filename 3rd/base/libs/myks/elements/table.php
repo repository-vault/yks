@@ -11,7 +11,9 @@ abstract class table_base  extends myks_installer {
 
   protected $keys_sql_def   = array();
   protected $fields_sql_def = array();
+  private $abstract;
 
+  private $tmp_key;
 
   protected $keys_name = array(        // $this->table_name, $field, $type
     'PRIMARY'=>"%s_pkey", 
@@ -34,6 +36,11 @@ abstract class table_base  extends myks_installer {
     $this->table_name = sql::resolve( (string) $table_xml['name']);
 
     $this->keys_def=array();
+
+    if($this->xml->abstract) {
+        $this->abstract = new materialized_view($this, $this->xml->abstract);
+    }
+
   }
   
   protected function table_where(){
@@ -48,28 +55,46 @@ abstract class table_base  extends myks_installer {
 
     if(in_array($this->table_name['name'], myks_gen::$tables_ghosts_views)) {
         rbx::ok("-- Double sync from view {$this->table_name['name']}, skipping");
-        return false;
+        return array();
     }
 
     $this->xml_infos();
-    $table_exists = $this->sql_infos();
-    if(!$table_exists) $todo = $this->create();
-    else {
-        if(!$this->modified())  return array();
+    if(!$this->sql_infos())
+        return $this->create();
 
-        //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def,"sql","xml"));die;
-        //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def,"sql","xml" ));die;
-        //print_r($this->privileges);die;
-        $todo  = $this->update();
+    if(!$this->modified()) 
+        return array();
+
+    //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def,"sql","xml"));die;
+    //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def,"sql","xml" ));die;
+    //print_r($this->privileges);die;
+
+    $todo = array_merge(
+        $this->alter_fields(),
+        $this->alter_keys()
+    );
+
+    if($this->abstract){
+        $todo = array_merge($todo, $this->abstract->alter_def());
     }
-    if(!$todo) throw rbx::error("Error while looking for differences in {$this->table_name['name']}");
+
+    return $todo;
+
+    if(!$todo)
+        throw rbx::error("Error while looking for differences in {$this->table_name['name']}");
     $todo = array_map(array('sql', 'unfix'), $todo);
     return $todo;
   }
 
+
   function modified(){
-    return $this->fields_xml_def != $this->fields_sql_def
-        || $this->keys_xml_def != $this->keys_sql_def;
+    $modified = $this->fields_xml_def != $this->fields_sql_def;
+    $modified |= $this->keys_xml_def != $this->keys_sql_def;
+
+    if($this->abstract)
+        $modified |= $this->abstract->modified();
+
+    return $modified;
   }
 
 
@@ -84,6 +109,10 @@ abstract class table_base  extends myks_installer {
     if(!$this->sql) return false;
     $this->fields_sql_def = $this->table_fields();
     $this->keys_sql_def   = $this->table_keys();
+
+    if($this->abstract)
+        $this->abstract->sql_infos();
+
     return true;
   }
 
@@ -96,6 +125,9 @@ abstract class table_base  extends myks_installer {
         $mykse=new mykse($field_xml,$this);
         $this->fields_xml_def[$mykse->field_def['Field']] = $mykse->field_def;
     }
+    if($this->abstract)
+        $this->abstract->xml_infos();
+
   }
 
   function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
@@ -122,13 +154,7 @@ abstract class table_base  extends myks_installer {
 
   }
 
-  function update(){
 
-    return array_merge(
-        $this->alter_fields(),
-        $this->alter_keys()
-    );
-  }
 
   function alter_fields(){ return array(); }
   function alter_keys(){ return array(); }

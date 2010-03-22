@@ -11,12 +11,14 @@ class table extends table_base {
   private $privileges;
   private $triggers;
 
+  private $ghost_keys;
+
   function __construct($table_xml){
     parent::__construct($table_xml);
 
-    $this->privileges  = new privileges($table_xml->grants, $this->table_name, 'table');
-    $this->rules       = new rules($table_xml->rules, $this->table_name, 'table');
-    $this->triggers    = new myks_triggers($this->table_name, $table_xml->triggers);
+    $this->privileges  = new privileges($this, $table_xml->grants, 'table');
+    $this->rules    = new rules($this, $table_xml->rules->xpath('rules/rule'), 'table');
+    $this->triggers = new myks_table_triggers($this, $table_xml->triggers->xpath('triggers/trigger'));
   }
 
 
@@ -61,12 +63,12 @@ class table extends table_base {
   }
 
 
-  function update(){
+  function alter_def(){
     return array_merge(
-        parent::update(),
+        parent::alter_def(),
         $this->privileges->alter_def(),
         $this->triggers->alter_def(),
-        $this->rules->alter_rules()
+        $this->rules->alter_def()
     );
   }
 

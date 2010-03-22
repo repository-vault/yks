@@ -10,6 +10,14 @@ abstract class myks_parsed {
   abstract function alter_def();
 
 
+  function __get($key){
+    if(method_exists($this, $getter = "get_$key"))
+        return $this->$getter();
+
+    throw new Exception("Unauthorized access to $key");
+
+  }
+
 
   function check(){
     $this->xml_infos();

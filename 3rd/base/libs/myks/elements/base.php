@@ -1,6 +1,6 @@
 <?php
 
-abstract class myks_base {
+abstract class myks_base extends myks_installer {
   const PAD = '==========';
 
   protected function sign($type, $name, $contents, $signature){
