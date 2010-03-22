@@ -50,7 +50,7 @@ abstract class rule_base extends myks_base {
     $todo []= "CREATE OR REPLACE RULE {$this->rule_name['name']} AS
         ON $event TO {$this->parent->name['safe']} $where
         DO INSTEAD $definition;";
-    $todo []= $this->sign("RULE", $rule_name, $definition, $signature);
+    $todo []= $this->sign("RULE", $this->rule_name['name'], $definition, $signature);
 
     return $todo;
   }

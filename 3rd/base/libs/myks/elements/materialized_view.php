@@ -68,6 +68,12 @@ SET $updates_fields
 WHERE $key = OLD.$key;
 RETURN NULL;
 END",
+  'sync' => "BEGIN
+--disable triggers on materialized table ? / use deferred keys instead ?
+DELETE FROM {$this->table->name['safe']};
+INSERT INTO {$this->table->name['safe']}
+SELECT * FROM {$this->view->name['safe']};
+END",
 
     );
 
