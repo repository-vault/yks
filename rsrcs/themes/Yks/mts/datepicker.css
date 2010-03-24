@@ -25,7 +25,7 @@ input.input_time {
     border-collapse:collapse;
     background-color:white;
 }
-.dp_cal select { width:auto; }
+.dp_cal select { width:auto; float:left; }
 .dp_cal th { background-color:#eaeaea; border-bottom:1px solid black;}
 .dp_cal td { text-align:center;}
 .dp_cal td.day { cursor:pointer;}
@@ -33,13 +33,18 @@ input.input_time {
 .dp_cal td.today { border:1px solid black;}
 .dp_cal td.current { background-color:#aeaeae;}
 
+.dp_cal .dp_t { width:20px;text-align:center;font-size:120%;font-weight:bold;}
 
-.dp_cal .close  {
-    width:16px;
-    height:16px;
+
+.dp_nav {
+    margin-top:3px;
+    width:7px;
+    height:10px;
     display:block;
-    float:right;
-    background-image:url(close.png);
-} 
-
-
+    float:left;
+}
+.dp_cal .years_sp {
+    float:left;
+}
+.dp_nav.dp_left { background-image:url(datepicker/left.png); }
+.dp_nav.dp_right { background-image:url(datepicker/right.png); }
