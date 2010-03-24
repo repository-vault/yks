@@ -32,5 +32,6 @@
 <!ELEMENT subscribe EMPTY>
 <!ATTLIST subscribe
   table CDATA #REQUIRED
+  key   CDATA #IMPLIED
 >
 <!ELEMENT query (#PCDATA)>
