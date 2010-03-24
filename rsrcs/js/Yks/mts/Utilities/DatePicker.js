@@ -18,6 +18,10 @@ var DatePicker = new Class({
 
   initialize: function(anchor){ if(DatePicker.extended(anchor)) return;
     this.anchor = anchor;
+    if(this.anchor.hasClass('input_time')) {
+        this.options.date_format = 'dd/mm/yyyy hh:ii';
+        this.display_mode = 'datetime';
+    }
     this.today = this.day(new Date());
     anchor.setProperties({'id':anchor.getProperty('name')});
     anchor.addEvent('click',this.create);

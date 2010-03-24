@@ -26,7 +26,7 @@ Doms.loaders['path://yks/Jsx/Links.js'] = {
 
 Doms.loaders['path://yks/Utilities/DatePicker.js'] = {
     'class': 'DatePicker',
-    'match': 'input.input_time',
+    'match': 'input.input_time,input.input_date',
     'descr': "Extend a basic text input into a small but usefull calendar"
 };
 

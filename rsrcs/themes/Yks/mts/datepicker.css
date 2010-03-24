@@ -4,7 +4,7 @@
     color:black;
 }
 
-input.input_time {
+input.input_time, input.input_date  {
     width:100px;
     cursor:pointer;
 }

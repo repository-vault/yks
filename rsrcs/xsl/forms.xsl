@@ -67,7 +67,7 @@
         <xsl:when test="not(boolean($item_type))">
           <xsl:apply-templates/>
         </xsl:when>
-        <xsl:when test="$item_type and contains(',string,int,time,sha1,hidden,',concat(',',$item_type,','))">
+        <xsl:when test="$item_type and contains(',string,int,time,date,sha1,hidden,',concat(',',$item_type,','))">
           <input type="text" name="{$name}" class="input_{$item_type}">
             <xsl:if test="$item_type='sha1'">
               <xsl:attribute name="type">password</xsl:attribute>
