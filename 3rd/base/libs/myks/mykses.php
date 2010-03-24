@@ -3,6 +3,12 @@
 //mykse elements manager
 
 class mykses {
+
+  static function vals($type){
+    return vals(yks::$get->types_xml->$type);
+  }
+
+
   static function value($mykse_type, $val){
     static $types_xml = false; if(!$types_xml) $types_xml = yks::$get->types_xml;
     $mykse = $types_xml->$mykse_type;
