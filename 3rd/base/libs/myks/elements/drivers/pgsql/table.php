@@ -87,30 +87,30 @@ class table extends table_base {
                 if($diff_type=="Null"){
                     if(!$new_value && !is_null($field_xml['Default']))
                         $todo[] = "UPDATE {$this->table_name['safe']} "
-                            ."SET `$field_name`={$field_xml['Default']} WHERE `$field_name` IS NULL";
-                    $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+                            ."SET \"$field_name\"={$field_xml['Default']} WHERE \"$field_name\" IS NULL";
+                    $todo[] = "$table_alter ALTER COLUMN \"$field_name\" "
                               .($new_value?"DROP NOT NULL":"SET NOT NULL");
                 }elseif($diff_type == "Type")
-                    $todo[] = "$table_alter ALTER COLUMN `$field_name` TYPE $new_value";
+                    $todo[] = "$table_alter ALTER COLUMN \"$field_name\" TYPE $new_value";
                 elseif($diff_type == "Default"){
                     $value="SET DEFAULT $new_value";
                     if(is_null($new_value))$value="DROP DEFAULT";
-                    $todo[] = "$table_alter ALTER COLUMN `$field_name` $value";
+                    $todo[] = "$table_alter ALTER COLUMN \"$field_name\" $value";
                 } else { rbx::error("-- UNKNOW type of diff : $diff_type"); }
             }
         } else { //ajout de colonne
-            $todo[] = "$table_alter ADD COLUMN `$field_name` {$field_xml['Type']}";
+            $todo[] = "$table_alter ADD COLUMN \"$field_name\" {$field_xml['Type']}";
             if(!is_null($field_xml['Default'])){
-                $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+                $todo[] = "$table_alter ALTER COLUMN \"$field_name\" "
                           ." SET DEFAULT {$field_xml['Default']}";
-                $todo[] = "UPDATE {$this->table_name['safe']} SET `$field_name`={$field_xml['Default']}";
+                $todo[] = "UPDATE {$this->table_name['safe']} SET \"$field_name\"={$field_xml['Default']}";
             }
-            $todo[] = "$table_alter ALTER COLUMN `$field_name` "
+            $todo[] = "$table_alter ALTER COLUMN \"$field_name\" "
                 .($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
         }
 
     } foreach(array_keys($this->fields_sql_def) as $field_name)
-        $todo[]="$table_alter DROP `$field_name`";
+        $todo[]="$table_alter DROP \"$field_name\"";
 
     return $todo;
   }
@@ -125,12 +125,12 @@ class table extends table_base {
             array_unshift($todo, $drop = "$table_alter DROP ".
                 (($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
                     "CONSTRAINT \"$key\""
-                    :"INDEX `$key`") );
+                    :"INDEX \"$key\"") );
         else unset($this->keys_xml_def[$key]);
     }
 
     foreach($this->keys_xml_def as $key=>$def){
-        $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
+        $members=" (\"".join('\",\"',$def['members']).'\")';$type=$def['type'];
         $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
         if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
         elseif($type=="FOREIGN"){
@@ -148,12 +148,12 @@ class table extends table_base {
     $parts = array();
 
     foreach($this->fields_xml_def as $field_name=>$field_xml)
-        $parts[]="`$field_name` {$field_xml['Type']}";
+        $parts[]="\"$field_name\" {$field_xml['Type']}";
 
 
     foreach($this->keys_xml_def as $key=>$def) {
         if($def['type']!="PRIMARY")continue;
-        $members=" (`".join('`,`',$def['members']).'`)';$type=$def['type'];
+        $members=" (\"".join('\",\"',$def['members']).'\")';$type=$def['type'];
         $add = "CONSTRAINT $key ".$this->key_mask[$type]." $members ";
         if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";
         else $parts[]=$add;
