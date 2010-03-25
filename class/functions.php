@@ -13,6 +13,18 @@ require CLASS_PATH."/stds/arrays.php";
 
 
 
+function aargs($args){
+    if(!$args)
+        return array($args, true);
+    if(is_array($args[0]))
+        return array($args[0], true);
+    $key = is_object($args[0])?$args[0]->hash_key:0;
+    return array(array($key=>$args[0]), false);
+}
+
+function alist($args){
+    return array_fill_keys(array_keys($args), array());
+}
 
 function sys_end($generation_time,$display_time=0){
     return sprintf("\n<!-- powerdé by exyks in - subs : %0-5Fs - tpls : %0-5Fs %s-->",

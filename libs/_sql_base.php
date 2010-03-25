@@ -38,10 +38,13 @@ abstract class _sql_base  implements ArrayAccess {
         || $this->manager && method_exists($this->manager, $getter))
         return $this->$getter();
   }
+  function get_hash_key(){
+    $key = $this->sql_key;
+    return $this->$key;
+  }
 
   function __sql_where(){
-    $key = $this->sql_key;
-    return array($key=> $this->$key);
+    return array($this->sql_key => $this->hash_key );
   }
 
   public function batch(){

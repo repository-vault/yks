@@ -58,8 +58,15 @@ function array_extract($array, $col, $clean=false){
 function array_get($array,$col){return $col?$array[$col]:$array; }
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
-  foreach($b as $k=>$v)$a[$k]=is_array($v)&&is_array($a[$k])?$depth($a[$k],$v):$v;return $a;
+    $args = func_get_args(); $res = array_shift($args);
+    $depth = is_string(end($args)) ? array_pop($args) : "array_merge";
+
+    for($i=0;$i<count($args);$i++)
+      foreach($args[$i] as $k=>$v)
+        $res[$k] = is_array($v) && is_array($res[$k]) ? $depth($res[$k], $v) : $v;
+    return $res;
 }
+
 function attributes_to_assoc($x, $ns=null, $prefix = false){$r=array(); //php 5.3 grrrr
     foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
     return $r;
