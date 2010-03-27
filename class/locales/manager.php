@@ -28,19 +28,21 @@ class locales_manager {
         locales_processor::register($entity_def->getName(), array("locales_sql_scanner", 'render'));
   }
 
-  public static function translate($str, $lang = false){
-    if(!$lang) $lang = exyks::retrieve("USER_LANG");
+  public static function translate($str, $lang_key = false){
+    if(!$lang_key) $lang_key = exyks::retrieve("USER_LANG");
 
-    $entities = yks::$get->get("entities", $lang);
+    $entities = yks::$get->get("entities", $lang_key);
+
+
     if(!$entities) $entities = array();
     $entities = array_merge(
-        array('&USER_LANG;'=>$lang),
+        array('&USER_LANG;' => $lang_key),
         $entities,
         retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
     ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
     if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
 
-    if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang);
+    if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang_key);
 
     if(preg_match(MASK_INVALID_ENTITIES, $str)) {
         error_log("There are invalid entities in your document");

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="fr-fr">
+  <!-- Rights & user management -->
+  <item key="access_lvl.access">Accès</item>
+  <item key="access_lvl.action">Action</item>
+  <item key="access_lvl.admin">Admin</item>
+  <!-- auth -->
+  <item key="auth_failed">Identification impossible</item>
+  <item key="auth_success">Identification réussie</item>
+  <item key="auth_deco">Vous êtes deconnecté</item>
+  <item key="action.deco">Se déconnecter</item>
+  <item key="auth_type.auth_password">Authentification par mot de passe</item>
+  <item key="restreint_access">Zone à accès restreint</item>
+  <item key="action.login">Se connecter</item>
+  <item key="your_login">Login</item>
+  <item key="your_pswd">Password</item>
+  <item key="your_email">E-mail</item>
+</locale>

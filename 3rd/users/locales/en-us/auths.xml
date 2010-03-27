@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="en-us">
+  <!-- Rights & user management -->
+  <item key="access_lvl.access">Access</item>
+  <item key="access_lvl.action">Modify</item>
+  <item key="access_lvl.admin">Admin</item>
+  <!-- auth -->
+  <item key="auth_failed">Authentication failure</item>
+  <item key="auth_success">Authentication success</item>
+  <item key="auth_deco">You are now disconnected</item>
+  <item key="action.deco">Disconnect</item>
+  <item key="auth_type.auth_password">Password authentification</item>
+  <item key="restreint_access">Restricted Access Area</item>
+  <item key="action.login">Connect</item>
+  <item key="your_login">Login</item>
+  <item key="your_pswd">Password</item>
+  <item key="your_email">E-mail</item>
+</locale>

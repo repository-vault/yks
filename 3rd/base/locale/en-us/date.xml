@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="en-us">
+  <!-- Date -->
+  <item key="date.today">Today</item>
+  <item key="date.yesterday">Yesterday</item>
+  <item key="date.0">Unknow date</item>
+  <item key="date.never">Never</item>
+  <item key="date.undefined">Undefined date</item>
+  <!-- days -->
+  <item key="day_1">Monday</item>
+  <item key="day_2">Tuesday</item>
+  <item key="day_3">Wednesday</item>
+  <item key="day_4">Thursday</item>
+  <item key="day_5">Friday</item>
+  <item key="day_6">Saturday</item>
+  <item key="day_7">Sunday</item>
+  <item key="day_short_1">Mon</item>
+  <item key="day_short_2">Tue</item>
+  <item key="day_short_3">Wed</item>
+  <item key="day_short_4">Thu</item>
+  <item key="day_short_5">Fri</item>
+  <item key="day_short_6">Sat</item>
+  <item key="day_short_7">Sun</item>
+  <!-- months -->
+  <item key="month_1">January</item>
+  <item key="month_2">February</item>
+  <item key="month_3">March</item>
+  <item key="month_4">April</item>
+  <item key="month_5">May</item>
+  <item key="month_6">June</item>
+  <item key="month_7">July</item>
+  <item key="month_8">August</item>
+  <item key="month_9">September</item>
+  <item key="month_10">October</item>
+  <item key="month_11">November</item>
+  <item key="month_12">December</item>
+  <item key="month_short_1">Jan</item>
+  <item key="month_short_2">Feb</item>
+  <item key="month_short_3">Mar</item>
+  <item key="month_short_4">Apr</item>
+  <item key="month_short_5">May</item>
+  <item key="month_short_6">Jun</item>
+  <item key="month_short_7">Jul</item>
+  <item key="month_short_8">Aug</item>
+  <item key="month_short_9">Sep</item>
+  <item key="month_short_10">Oct</item>
+  <item key="month_short_11">Nov</item>
+  <item key="month_short_12">Dec</item>
+</locale>

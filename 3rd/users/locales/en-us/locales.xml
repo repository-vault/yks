@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="en-us">
+  <!-- Users & addrs -->
+  <item key="addr_field.country_code">Country</item>
+  <item key="addr_field.addr_gender">Gender</item>
+  <item key="addr_field.addr_field1">Adress</item>
+  <item key="addr_field.addr_field2">Adress (more)</item>
+  <item key="addr_field.addr_zipcode">Zip</item>
+  <item key="addr_field.addr_state">State</item>
+  <item key="addr_field.addr_phone">Phone</item>
+  <item key="addr_field.addr_fax">Fax</item>
+  <item key="addr_field.addr_gsm">GSM</item>
+  <item key="addr_field.addr_firstname">Firstname</item>
+  <item key="addr_field.addr_lastname">Lastname</item>
+  <item key="addr_field.addr_company">Company</item>
+  <item key="addr_field.addr_mail">E-mail</item>
+  <item key="addr_gender.Mme">Mistress</item>
+  <item key="addr_gender.Mlle">Miss</item>
+  <item key="addr_gender.M">Mister</item>
+  <item key="user_type.ks_users">User account</item>
+  <item key="addr_mail.intro">Dear</item>
+  <item key="yks.users.unnamed">Unnamed user</item>
+  <item key="user_profile.user_name">Name</item>
+  <item key="user_profile.user_lang">Language</item>
+  <item key="user_profile.user_mail">E-mail</item>
+  <item key="user_profile.auth_type">Authentification</item>
+  <item key="user_profile.user_pswd">Password</item>
+  <item key="user_profile.user_login">Login</item>
+  <item key="user_profile.user_create">Creation</item>
+  <item key="user_profile.user_update">Update</item>
+  <item key="user_profile.user_flags">Flags</item>
+</locale>

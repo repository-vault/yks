@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE module PUBLIC  "-//YKS//MODULE" "">
+<!DOCTYPE module PUBLIC "-//YKS//MODULE" "">
 <module base="/Admin">
   <myks>
     <path path="path://here/myks"/>
@@ -14,4 +14,7 @@
     <class name="users" path="path://here/libs/users/users.php"/>
     <class name="user_gest" path="path://here/libs/users/gest.php"/>
   </classes>
+  <locales>
+    <path path="path://here/locales"/>
+  </locales>
 </module>

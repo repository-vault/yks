@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="fr-fr">
+  <!-- Date -->
+  <item key="date.today">Aujourd'hui</item>
+  <item key="date.yesterday">Hier</item>
+  <item key="date.0">Date inconnue</item>
+  <item key="date.never">Jamais</item>
+  <item key="date.undefined">Date indéfinie</item>
+  <!-- days -->
+  <item key="day_1">Lundi</item>
+  <item key="day_2">Mardi</item>
+  <item key="day_3">Mercredi</item>
+  <item key="day_4">Jeudi</item>
+  <item key="day_5">Vendredi</item>
+  <item key="day_6">Samedi</item>
+  <item key="day_7">Dimanche</item>
+  <item key="day_short_1">Lun</item>
+  <item key="day_short_2">Mar</item>
+  <item key="day_short_3">Mer</item>
+  <item key="day_short_4">Jeu</item>
+  <item key="day_short_5">Ven</item>
+  <item key="day_short_6">Sam</item>
+  <item key="day_short_7">Dim</item>
+  <!-- months -->
+  <item key="month_1">Janvier</item>
+  <item key="month_2">Février</item>
+  <item key="month_3">Mars</item>
+  <item key="month_4">Avril</item>
+  <item key="month_5">Mai</item>
+  <item key="month_6">Juin</item>
+  <item key="month_7">Juillet</item>
+  <item key="month_8">Août</item>
+  <item key="month_9">Septembre</item>
+  <item key="month_10">Octobre</item>
+  <item key="month_11">Novembre</item>
+  <item key="month_12">Décembre</item>
+  <item key="month_short_1">Jan</item>
+  <item key="month_short_2">Fev</item>
+  <item key="month_short_3">Mars</item>
+  <item key="month_short_4">Avr</item>
+  <item key="month_short_5">Mai</item>
+  <item key="month_short_6">Juin</item>
+  <item key="month_short_7">Juil</item>
+  <item key="month_short_8">Aout</item>
+  <item key="month_short_9">Sept</item>
+  <item key="month_short_10">Oct</item>
+  <item key="month_short_11">Nov</item>
+  <item key="month_short_12">Dec</item>
+</locale>
