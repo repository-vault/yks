@@ -137,6 +137,7 @@ class myks_runner {
     rbx::title("Starting localization");
 
     $result = locales_fetcher::fetch_all();
+    cli::box("Paths", locales_fetcher::$locale_paths);
     if(!$result)
         rbx::error("Please define at least one language");
     else foreach($result as $infos)
