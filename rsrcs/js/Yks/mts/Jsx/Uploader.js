@@ -8,9 +8,26 @@ var Uploader = {
     $(upload.src).form.retrieve('jsx').js_valid(rbx);
     $(upload.src).set('value', upload.upload_flag+'.'+upload.ext).fireEvent('change');
 
-    $$('div#label_'+upload.src).dispose();
+    var container_id = 'label_'+upload.src;
+    var reset = function(){
+        $$('#'+container_id).dispose();
+        $(upload.src).set('value','');
+    }; reset();
+
+
+    var head = "<tr><th>File</th><th>Size</th><th>Action</th></tr>";
+    var upload_table = $n('table', {id:container_id, 'class':'upload_table',html:head});
+    upload_table.inject($(upload.src),'after');
+    var line = $n('tr').inject(upload_table);
+    $n('td',{text:upload.name}).inject(line);
+    $n('td',{text:FileUtils.file_size(upload.size)}).inject(line);
+    $n('td',{text:"[remove]"}).inject(line).addEvent('click', reset);
+
+    form.box.close();
+    return;
+
     $n('div',{
-        id:'label_'+upload.src,
+        id:container_id,
         html:"Fichier : "+upload.name+" ("+FileUtils.file_size(upload.size)+")"
     }).inject($(upload.src),'after');
     form.box.close();

@@ -1,0 +1,8 @@
+table.upload_table {
+  border:1px solid #aeaeae;
+  width:100%;
+}
+table.upload_table td, table.upload_table th {
+  padding:1px;
+  border:1px solid #aeaeae;
+}
