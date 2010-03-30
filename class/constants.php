@@ -72,6 +72,8 @@ define('DATE_TXT', '$d &month_short_$n; $Y');
 
 
 define('DATE_MASK','d/m/Y');	//input date format (validation)
+define('DATETIME_MASK','d/m/Y H:i');	//input date format (validation)
+
 define('FILE_MASK','#^[a-z0-9_]+\.([a-z0-9_]{6,})\.([a-z_]{2,4})$#'); //upload file format
 define('WHERE_MASK','`%2$s`=\'%1$s\'');    //Join masks
 define('INI_MASK','%2$s=%1$s');    //Join masks

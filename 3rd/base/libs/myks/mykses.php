@@ -32,7 +32,7 @@ class mykses {
   }
 
 
-  static function validate($data,$filter_in){
+  static function validate($data,$filter_in) {
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;
     if($filter_in instanceof simpleXmlElement) $filter_in=fields($filter_in);
@@ -71,6 +71,7 @@ class mykses {
             else $out[$mykse_key]=date::validate($val);
         }elseif($mykse_type=='int'){
             if($null) break;
+            if($val === "") {$out[$mykse_key] = null;break; }
             $out[$mykse_key]=(int) $val;
         }elseif($mykse_type=='string'){
             $out[$mykse_key]=$val;
