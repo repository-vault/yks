@@ -1,6 +1,5 @@
 <?php
 
-include_once "822.php";
 
 class pop3 {
     //state = ready (non connected)
@@ -29,11 +28,11 @@ class pop3 {
             $data[1]=ucfirst(preg_replace("#(-[a-z])#e",'strtoupper("$1")',$data[1]));
             if($data[1]=="Content-Type"){ //loading extras
                 list($value,$params) = explode(';',$data[2],2);
-                $data=array($data[1]=>$value,$data[1]."-Details"=>rfc822::header_extras(";$params"));
-            } else $data=array($data[1]=>rfc822::header_decode($data[2]));
+                $data=array($data[1]=>$value,$data[1]."-Details"=>rfc_822::header_extras(";$params"));
+            } else $data=array($data[1]=>rfc_822::header_decode($data[2]));
             $message_headers = array_merge_recursive($message_headers,$data);
         }
-        if($tmp=rfc822::date_valid($message_headers['Date']))$message_headers['Date']=$tmp;
+        if($tmp=rfc_822::date_valid($message_headers['Date']))$message_headers['Date']=$tmp;
 
         return $message_headers;
     }

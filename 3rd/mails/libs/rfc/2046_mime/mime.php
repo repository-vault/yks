@@ -2,14 +2,7 @@
 
 
 abstract class mime extends mail_base {
-  public static function init(){
-    include_once CLASS_PATH."/apis/mails/mini_send.php";
-    include_once CLASS_PATH."/apis/mails/mime_functions.php";
 
-    classes::register_class_paths(array(
-      "mime_part" => CLASS_PATH."/apis/mails/mime_part.php"
-    ));
-  }
 
   function output_headers( $headers=array() ){
     $headers = array_filter(array_merge(array(

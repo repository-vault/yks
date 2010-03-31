@@ -45,8 +45,8 @@ class mime_part {
 
 
     $part_infos  = array(
-        'content-type'=>mime_content_type($file_path), //depends on file_ext
-        'part_contents'=>file_get_contents($file_path),
+        'content-type'  => rfc_2046::content_type($file_path), //depends on file_ext
+        'part_contents' => file_get_contents($file_path),
     );
 
     $child_part = new mime_part($this->mail, $part_infos);

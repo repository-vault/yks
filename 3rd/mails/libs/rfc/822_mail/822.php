@@ -2,7 +2,7 @@
 
 define('EXT_MBSTRING',extension_loaded('mbstring'));
 
-class rfc822 {
+class rfc_822 {
     static function date_valid($str){
         return strtotime(substr($str,0,31)); //lvl1
 

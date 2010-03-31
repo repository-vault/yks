@@ -1,31 +1,26 @@
 <?php
 
+class rfc_2046 {
 
-if(!function_exists('mime_content_type')) {
+  function  content_type($file_path){
+    $file_ext = files::ext($file_path);
 
-    function  mime_content_type($file_path){
-        $file_ext = files::ext($file_path);
+    $content_types = array(
+        'png'=>'image/png',
+        'gif'=>'image/gif',
+        'txt'=>'text/plain',
+        'pdf'=>'application/pdf',
+    );
 
-        $content_types = array(
-            'png'=>'image/png',
-            'gif'=>'image/gif',
-            'txt'=>'text/plain',
-            'pdf'=>'application/pdf',
-        );
+    $fallback = $content_types['txt'];
 
-        $fallback = $content_types['txt'];
-
-        $content_type = $content_types[$file_ext];
-        return $content_type?$content_type:$fallback;
-    }
-
-}
+    $content_type = $content_types[$file_ext];
+    return $content_type?$content_type:$fallback;
+  }
 
 
-
-
-function mime_decode($headers,$body){
-
+    //mime parse, unused
+  public static function mime_decode($headers, $body){
 
     $encoding = $headers['Content-Transfer-Encoding'];
     $charset = $headers['Content-Type-Details']['charset'];
@@ -53,7 +48,7 @@ function mime_decode($headers,$body){
         }
     } else {
 
-        if(false) $body=rfc822::decode($body,$encoding);
+        if(false) $body=rfc_822::decode($body,$encoding);
 
         if($type_primary == "text") {
             if($charset=='iso-8859-1' && preg_match("#[\x85\x91-\x97\xc9\xd0-\xd5]#",$body) ) $charset = 'cp1252';
@@ -67,5 +62,6 @@ function mime_decode($headers,$body){
     }
 
     return $data;
+  }
 
 }

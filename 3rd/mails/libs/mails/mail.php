@@ -26,7 +26,7 @@ class mail extends mime {
   function send($to=false){
     if($to) $this->to($to);
     $contents = $this->encode();
-    return smtpsend($contents, $this->dests);
+    return smtp_lite::smtpsend($contents, $this->dests);
   }
 
   function attach_file($file_path, $filename=null){
