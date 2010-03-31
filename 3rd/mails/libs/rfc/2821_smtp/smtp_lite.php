@@ -7,9 +7,10 @@ class smtp_lite {
   }
 
   public static function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
-    $contents = $headers.CRLF."Subject: $subject".CRLF;
-    $contents.= "From: [".SITE_DOMAIN."] <webmaster@".SITE_DOMAIN.">".CRLF;
-    $contents.= "To: $to".CRLF;
+    $contents = $headers.CRLF;
+    $contents.= "Subject: ".rfc_2047::header_encode($subject).CRLF;
+    $contents.= "From: ".rfc_2047::header_encode("[".SITE_DOMAIN."] <webmaster@".SITE_DOMAIN.">").CRLF;
+    $contents.= "To: ".rfc_2047::header_encode($to).CRLF;
     $contents.= CRLF.CRLF.$body;
 
     $name_mask = "#<\s*([^<]*)\s*>#";
@@ -21,6 +22,8 @@ class smtp_lite {
     $smtp_config = yks::$get->config->apis->smtp;
     if(!$smtp_config)
         return false;
+
+
 
     $smtp_sender = $smtp_config['sender'];
 
