@@ -27,7 +27,6 @@ classes::register_class_paths(array(
     "exyks_paths"         => CLASS_PATH."/exyks/paths.php",
     "tpls"                => CLASS_PATH."/exyks/tpls.php",
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
-    "rfc_2047"            => CLASS_PATH."/apis/net/2047.php",
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
 
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",

@@ -119,7 +119,7 @@ class files {
 
     $mask     = 'Content-Disposition: attachment; filename="%s"';
     $filename = utf8_decode($filename);
-    // $filename = rfc_2047::header_encode($filename); ie crap
+    // $filename = rfc_-2047::header_encode($filename); ie crap
     header(sprintf($mask, $filename));
 
     readfile($file);
