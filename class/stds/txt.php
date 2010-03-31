@@ -8,6 +8,13 @@ function unicode_value($code) {
     else return chr((($v&0xf000)>>12)|0xe0).chr((($v&0x0fc0)>>6)|0x80).chr(($v&0x3f)|0x80);
 }
 
+
+function html_extract_text($str){
+    $str = str_replace("<br/>", "\r\n", $str);
+    $str = preg_replace("#<.*?>#","",$str);
+    return trim($str);
+}
+
 function innerHTML($str){
     return preg_reduce("#^[^>]+>(.*?)<[^<^]+$#s", $str);
 }

@@ -19,11 +19,15 @@ abstract class mail_base {
     return $str;
   }
 
-  function split_dest($str){
-    $dest = array();
-    foreach(preg_split("#[;,\n]#",$str) as $line)
-        if($line= trim($line)) $dest[]=$line;
-    return $dest;
+  function split_dest($dests){
+    if(is_array($dests))
+        return $dests;
+
+    $dests_str = $dests;
+    $dests     = array();
+    foreach(preg_split("#[;,\n]#",$dests_str) as $line)
+        if($line= trim($line)) $dests[]=$line;
+    return $dests;
   }
 
   function to($to){ 

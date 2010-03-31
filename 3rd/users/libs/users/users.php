@@ -96,8 +96,10 @@ class users  {
         return $res;
     } else return sql_func::get_parents_path($user_id,'ks_users_tree','user_id');
   }
-  static function get_children($user_id,$depth=-1){
-    return sql_func::get_children($user_id,'ks_users_tree','user_id',$depth);
+
+  static function get_children($user_id, $depth=-1){
+    $users_list = sql_func::get_children($user_id, 'ks_users_tree', 'user_id', $depth);
+    return array_unique($users_list);
   }
 
     //this implementation only works for postgres 
@@ -128,8 +130,8 @@ class users  {
     </div>";
   }
 
-  static function mailto($user){
-    $args = func_get_args();
+  static function mailto(){//$users,
+    $args = func_get_args(); //no aargs, users could be simple arrays
     $mailto = array();
     foreach($args as $user)
         $mailto[] = mailto_escape("{$user['user_name']} <{$user['user_mail']}>");
