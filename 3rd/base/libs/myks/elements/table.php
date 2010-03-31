@@ -132,6 +132,7 @@ abstract class table_base  extends myks_installer {
 
   function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
     $key_name = sprintf($this->keys_name[$TYPE], $this->table_name['name'], $field, $type);
+    $key_name = substr($key_name, 0, 63);
 
     if($TYPE=="PRIMARY"){
         $this->keys_xml_def[$key_name]['type'] = $TYPE;
