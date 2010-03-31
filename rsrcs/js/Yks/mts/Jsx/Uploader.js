@@ -6,7 +6,7 @@ var Uploader = {
 
     upload = rbx.upload;
     $(upload.src).form.retrieve('jsx').js_valid(rbx);
-    $(upload.src).set('value', upload.upload_flag+'.'+upload.ext).fireEvent('change');
+
 
     var container_id = 'label_'+upload.src;
     var reset = function(){
@@ -14,6 +14,7 @@ var Uploader = {
         $(upload.src).set('value','');
     }; reset();
 
+    $(upload.src).set('value', upload.upload_flag+'.'+upload.ext).fireEvent('change');
 
     var head = "<tr><th>File</th><th>Size</th><th>Action</th></tr>";
     var upload_table = $n('table', {id:container_id, 'class':'upload_table',html:head});

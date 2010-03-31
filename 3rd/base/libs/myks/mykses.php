@@ -31,8 +31,14 @@ class mykses {
      } return $out;
   }
 
+  static function validate_update($data, $filter_in) {
+    return self::validate($data, $filter_in, false);
+  }
 
-  static function validate($data,$filter_in) {
+/*
+* @full_validation : force un-spececified params to "null" (or to the default value /type)
+*/
+  static function validate($data,$filter_in, $full_validatation = true) {
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;
     if($filter_in instanceof simpleXmlElement) $filter_in=fields($filter_in);
@@ -40,6 +46,10 @@ class mykses {
         $filter_in = array($filter_unique=$filter_in);
         if(!is_array($data)) $data=array($filter_unique=>$data);
     }
+    if(!$full_validatation)
+        $filter_in = array_intersect_key($filter_in, $data);
+
+
     //if(!is_array($data))  DONT cast here since $data might of an array type user_flags[]
     foreach($filter_in as $mykse_key=>$mykse_type){
         if(is_numeric($mykse_key)) $mykse_key=$mykse_type;

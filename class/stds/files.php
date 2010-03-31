@@ -81,7 +81,7 @@ class files {
     }
   }
 
-  public static function ext($file){ return substr($file,strrpos($file,".")+1); }
+  public static function ext($file){ return strtolower(substr($file,strrpos($file,".")+1)); }
 
   public static function update($from_file, $to_file, $expire_date){
     if(is_file($to_file) && filemtime($to_file) > $expire_date) return $to_file;
@@ -129,7 +129,8 @@ class files {
 
   public static function paths_merge($path_root, $path){
     if(!$path) return $path_root;
-    if(substr($path,0,1)=="/") return files::rp($path);
+    $root = '#^/|^[A-Z]\:#';
+    if(preg_match($root , $path)) return files::rp($path);
     $path_root = substr($path_root, 0, strrpos ( $path_root, "/"));
     return files::rp("$path_root/$path");
   }
