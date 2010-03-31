@@ -206,12 +206,17 @@ var DatePicker = new Class({
     this.close(null, false);
   },
 
+  write:function(){
+    this.anchor.value=this.format_out();
+    this.anchor.fireEvent('change');
+  },
+
   close:function(e, write){
 
     document.removeEvent('mousedown', this.outClick);
 
-    if(this.anchor.value == this.old_value || write)
-      this.anchor.value=this.format_out();
+    if(this.anchor.value == this.old_value || write) 
+        this.write();
   
     if(!this.container)
         return this.remove();
