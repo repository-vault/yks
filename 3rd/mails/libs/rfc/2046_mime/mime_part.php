@@ -33,9 +33,9 @@ class mime_part {
   function apply_context(){
     if(!$this->is_textual()) return ;
 
-    $context = (array) $this->mail->vars_list; extract($context);
-    $this->contents = preg_replace(VAR_MASK,VAR_REPL,$this->contents);
+    $context = (array) $this->mail->vars_list; 
 
+    $this->contents = str_evaluate($this->contents, $context);
     if($this->type_extension=="plain") //escape in no longer necessary
         $this->contents = specialchars_decode($this->contents);
   }

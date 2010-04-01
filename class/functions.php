@@ -12,16 +12,24 @@ require CLASS_PATH."/stds/jsx.php";
 require CLASS_PATH."/stds/arrays.php";
 
 
-
+//function return a array from func_get_args
+/*
+* object a,b,c;
+* f(a,b,c);   => [a,b,c]
+* f([a,b,c]); => [a,b,c]
+* f(a)        => [a]
+*/
 function aargs($args){
-    if(!$args)
+    if(!$args || count($args)>1 )
         return array($args, true);
-    if(is_array($args[0]))
-        return array($args[0], true);
-    $key = is_object($args[0])?$args[0]->hash_key:0;
-    return array(array($key=>$args[0]), false);
+    $arg = $args[0];
+    if(is_array($arg))
+        return array($arg, true);
+    $key = is_object($arg)?$arg->hash_key:0;
+    return array(array($key=>$arg), false);
 }
 
+//pad a list with empty array();
 function alist($args){
     return array_fill_keys(array_keys($args), array());
 }
@@ -119,6 +127,10 @@ function abort($code) {
 
     //cf doc in the manual
 function str_evaluate($str, $vars = array()){  extract($vars);
+    
+    $mask = "#{\\$([a-z&_0-9;-]+)}#ie";
+    $str = preg_replace($mask, '"$".specialchars_decode("$1")', $str);
+
     $str = preg_replace(array(FUNC_MASK,VAR_MASK), VAR_REPL, $str);
     $str = preg_replace('#<([a-z]+)>\s*</\\1>#','', $str);
     $str = join("<br/>",array_filter(preg_split('#(<br\s*/>\s*)#', $str)));
