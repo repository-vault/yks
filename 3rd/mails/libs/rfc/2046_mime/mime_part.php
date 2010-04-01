@@ -35,7 +35,7 @@ class mime_part {
 
     $context = (array) $this->mail->vars_list; 
 
-    $this->contents = str_evaluate($this->contents, $context);
+    $this->contents = str_evaluate($this->contents, $context, array(VAR_MASK)  );
     if($this->type_extension=="plain") //escape in no longer necessary
         $this->contents = specialchars_decode($this->contents);
   }
