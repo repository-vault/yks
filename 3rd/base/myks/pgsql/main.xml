@@ -11,6 +11,16 @@ BEGIN
 END
 ]]></def>
   </procedure>
+  <procedure name="max" type="string">
+    <param type="string"/>
+    <param type="string"/>
+    <def><![CDATA[
+BEGIN
+  IF($1 > $2 ) THEN return $1;  END IF;
+  return $2;
+END
+]]></def>
+  </procedure>
   <procedure name="min" type="int">
     <param type="bigint"/>
     <param type="bigint"/>

@@ -52,8 +52,10 @@ class myks_trigger extends myks_installer {
     $proc_name   = pick($proc_name,
                   "{$this->element_name['schema']}.tg_{$this->element_name['name']}");
 
-    $this->xml_def['proc_name'] = $proc_name;
     $this->procedure_name       = sql::resolve($proc_name);
+    $this->xml_def['proc_name']   = $this->procedure_name['name'];
+    $this->xml_def['proc_schema'] = $this->procedure_name['schema'];
+
 
     if($exists)
         return;
@@ -80,6 +82,7 @@ class myks_trigger extends myks_installer {
     $todo = array();
     if(!$this->modified())
         return $todo;
+
 
     if($this->sql_def)
         $todo = array_merge($todo, $this->delete_def());
@@ -119,14 +122,12 @@ class myks_trigger extends myks_installer {
         'event_object_table'  => $this->table_ref['name'],
         'event_object_schema' => $this->table_ref['schema'],
     );
-    $data = sql::row("information_schema.triggers", $verif);
-    $keys = array('event_object_schema', 'event_object_table', 'event_manipulation', 'action_orientation', 'condition_timing');
+    //$data = sql::row("information_schema.triggers", $verif);
+    $data = sql::qrow("SELECT * FROM (".self::INFORMATION_SCHEMA_TRIGGERS.") as triggers ".sql::where($verif));
+    $keys = array('event_object_schema', 'event_object_table', 'event_manipulation', 'action_orientation', 'condition_timing','proc_name','proc_schema');
 
-
-    $proc_name  = preg_reduce("#EXECUTE PROCEDURE (.*)\(#", $data['action_statement']);
 
     $data = array_intersect_key($data, array_flip($keys));
-    if($proc_name) $data['proc_name'] = $proc_name;
 
     if($this->procedure)
         $this->procedure->sql_infos();
@@ -138,6 +139,72 @@ class myks_trigger extends myks_installer {
     if($this->procedure)
         $this->procedure->xml_infos();
   }
+
+
+
+
+
+
+
+
+
+
+
+  const INFORMATION_SCHEMA_TRIGGERS = "  SELECT (current_database())::information_schema.sql_identifier AS
+    trigger_catalog, (n.nspname)::information_schema.sql_identifier AS
+    trigger_schema, (t.tgname)::information_schema.sql_identifier AS
+    trigger_name, (em.text)::information_schema.character_data AS
+    event_manipulation, (current_database())::information_schema.sql_identifier
+    AS event_object_catalog, (n.nspname)::information_schema.sql_identifier AS
+    event_object_schema, (c.relname)::information_schema.sql_identifier AS
+    event_object_table, (NULL::integer)::information_schema.cardinal_number AS
+    action_order, (NULL::character varying)::information_schema.character_data
+    AS action_condition, 
+    
+    
+    
+    p.proname AS proc_name,
+	pn.nspname AS proc_schema,
+
+    (\"substring\"(pg_get_triggerdef(t.oid), (\"position\"(\"substring\"(pg_get_triggerdef(t.oid), 48), 'EXECUTE PROCEDURE'::text) + 47)))::information_schema.character_data AS
+    action_statement, (CASE WHEN (((t.tgtype)::integer & 1) = 1) THEN
+    'ROW'::text ELSE 'STATEMENT'::text END)::information_schema.character_data
+    AS action_orientation, (CASE WHEN (((t.tgtype)::integer & 2) = 2) THEN
+    'BEFORE'::text ELSE 'AFTER'::text END)::information_schema.character_data
+    AS condition_timing, (NULL::character
+    varying)::information_schema.sql_identifier AS
+    condition_reference_old_table, (NULL::character
+    varying)::information_schema.sql_identifier AS
+    condition_reference_new_table, (NULL::character
+    varying)::information_schema.sql_identifier AS condition_reference_old_row,
+    (NULL::character varying)::information_schema.sql_identifier AS
+    condition_reference_new_row, (NULL::timestamp with time
+    zone)::information_schema.time_stamp AS created
+FROM pg_namespace n, pg_class c, pg_trigger t
+
+LEFT OUTER JOIN pg_proc p ON t.tgfoid = p.oid
+LEFT JOIN 
+ pg_namespace pn ON pn.oid = p.pronamespace
+ 
+, ((
+    SELECT 4, 'INSERT'
+    UNION ALL
+    SELECT 8, 'DELETE'
+    )
+UNION ALL
+SELECT 16, 'UPDATE') em(num, text)
+
+
+
+WHERE ((((((n.oid = c.relnamespace) AND (c.oid = t.tgrelid)) AND
+    (((t.tgtype)::integer & em.num) <> 0)) AND (NOT t.tgisconstraint)) AND (NOT
+    pg_is_other_temp_schema(n.oid))) AND (((((pg_has_role(c.relowner,
+    'USAGE'::text) OR has_table_privilege(c.oid, 'INSERT'::text)) OR
+    has_table_privilege(c.oid, 'UPDATE'::text)) OR has_table_privilege(c.oid,
+    'DELETE'::text)) OR has_table_privilege(c.oid, 'REFERENCES'::text)) OR
+    has_table_privilege(c.oid, 'TRIGGER'::text)))
+    
+    ";
 
 
 
