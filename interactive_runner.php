@@ -222,6 +222,7 @@ class interactive_runner {
       $callback   = null;
       if($method->isPublic()
           && !$method->isStatic()
+          && !starts_with($method_name, "__")
           && !$method->isConstructor()) {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
