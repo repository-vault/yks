@@ -1,6 +1,5 @@
 <?php
 
-
 abstract class rule_base extends myks_base {
   protected $sql_def = array();
   protected $xml_def = array();
@@ -96,7 +95,11 @@ abstract class rule_base extends myks_base {
         r.rulename                  AS rule_name,
         pg_get_ruledef(r.oid, true) AS compiled_definition,
         d.description               AS full_description,
-        CASE ev_type WHEN 2 THEN 'update' WHEN 3 THEN 'insert' WHEN 4 THEN 'delete' END AS rule_event
+        CASE ev_type::integer
+            WHEN 2 THEN 'update'
+            WHEN 3 THEN 'insert'
+            WHEN 4 THEN 'delete'
+        END AS rule_event
 
       FROM 
         pg_rewrite AS r

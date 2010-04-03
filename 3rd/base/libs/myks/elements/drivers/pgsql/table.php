@@ -153,7 +153,7 @@ class table extends table_base {
 
     foreach($this->keys_xml_def as $key=>$def) {
         if($def['type']!="PRIMARY")continue;
-        $members=" (\"".join('\",\"',$def['members']).'\")';$type=$def['type'];
+        $members=' ("'.join('","',$def['members']).'")';$type=$def['type'];
         $add = "CONSTRAINT $key ".$this->key_mask[$type]." $members ";
         if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";
         else $parts[]=$add;
