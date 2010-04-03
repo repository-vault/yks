@@ -22,7 +22,7 @@ class sql {
 
     if(self::$servs->prefixs)
     foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
-        self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
+        self::$pfx["#(?<!\.)`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
 
     self::$pfx["#`(.*?)`#"] = "\"$1\"";
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
@@ -219,9 +219,8 @@ class sql {
     return $ret['nb_line'];
 }
   static function unfix($str){
-    $res = preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);
-
-return $res;
+    $str = preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);
+    return $str;
   }
 
 
