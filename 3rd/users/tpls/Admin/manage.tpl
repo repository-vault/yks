@@ -6,10 +6,13 @@ Vous êtes ici : <?=$parent_path?>
 
  <p><span>Nom</span><input type="text" name="user_name"/></p>
  <p><span>Type</span>
-	<select name="user_type"><?=dsp::dd("user_type")?></select>
+    <select name="user_type">
+    &select.choose;
+    <?=dsp::dd("user_type")?>
+    </select>
   </p>
 
 </ks_form>
 
-	
+    
 </box>
