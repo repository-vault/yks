@@ -25,8 +25,47 @@ class png {
   private function get_contents(){
     $str = self::$PNG_HEADER;
     foreach($this->chunks as $chunk)
-      $str .= $chunk->get_contents();
+      $str .= $chunk->contents;
     return $str;
+  }
+
+
+  private function find_chunk($ltype){
+    foreach($this->chunks as $chunk) {
+      if($chunk->ltype == "idat") break;
+      if($chunk->ltype != $ltype) continue;
+      return $chunk;
+    }
+  }
+
+  function get_palette(){
+    $chunk = $this->find_chunk("plte");
+    if(!$chunk) return array();
+    $palette = array();
+    foreach(str_split($chunk->data,3) as $color)
+      $palette[] = hexdec(bin2hex($color));
+
+    return $palette;
+  }
+
+  function set_palette($palette){
+    $chunk = $this->find_chunk("plte");
+    if(!$chunk) return false;
+    $palette_str = "";
+    foreach($palette as $i=>$color)
+      $palette_str .= substr("\0\0\0".pack("N",$color),-3);
+    $chunk->data = $palette_str;
+    //file_put_contents("o", $palette_str);die;
+  }
+
+
+
+//********** COMMENT ******************/
+  function get_comment(){
+    $chunk = $this->find_chunk("text");
+    if(!$chunk) return null;
+    list($ckey, $data) = explode("\0", $chunk->data,2);
+    return $data;
   }
 
   function add_comment($data, $comment_key = "Comment"){
@@ -35,9 +74,13 @@ class png {
     array_splice($this->chunks, 2, 0, array($chunk));
   }
 
-  public function write($file){
-    file_put_contents($file, $this->get_contents());
-  }
 
+  public function output($file = null){
+    if(is_null($file))
+      echo $this->get_contents();
+     else if($file = '-')
+        return $this->get_contents();
+     else file_put_contents($file, $this->get_contents());
+  }
 
 }

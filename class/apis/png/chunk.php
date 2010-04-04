@@ -3,7 +3,7 @@
 
 class png_chunk {
   private $type;
-  private $data;
+  public $data;
   function __construct($type, $data){
     $this->type = $type;
     $this->data = $data;
@@ -13,13 +13,25 @@ class png_chunk {
     return $this->type;
   }
 
-  public function get_contents() {
-    return $this->get_size().$this->type.$this->data.$this->get_crc();
+  public function __get($key){
+    if(method_exists($this, $getter = "get_$key"))
+        return $this->$getter();
+    die("noo $key");
   }
-  public function get_size(){
+
+  private function get_ltype(){
+    return strtolower($this->type);
+  }
+
+  private function get_contents() {
+    return $this->size.$this->type.$this->data.$this->crc;
+  }
+
+  private function get_size(){
     return pack("N", strlen($this->data));
   }
-  public function get_crc(){
+
+  private function get_crc(){
     return pack("N", crc32($this->type.$this->data));
   }
 }

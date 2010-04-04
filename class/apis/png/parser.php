@@ -31,7 +31,7 @@ class png_parser {
 
     $chunk = new png_chunk($type, $data);
     $crc  = $this->feed(4);
-    $signed = $chunk->get_crc() == $crc;
+    $signed = $chunk->crc == $crc;
     $this->chunks[] = $chunk;
 
     return true;
