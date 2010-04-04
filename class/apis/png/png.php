@@ -6,6 +6,12 @@ class png {
 
   static function init(){
     self::$PNG_HEADER = pack('C*', 137,80,78,71,13,10,26,10);
+
+    classes::register_class_paths(array(
+      "png_chunk"  => CLASS_PATH."/apis/png/chunk.php",
+      "png_parser" => CLASS_PATH."/apis/png/parser.php",
+    ));
+
   }
 
   public function load_file($file){
