@@ -12,7 +12,7 @@ function detect_zones($img, $color){
 
         if(isset($zones[$path]))continue;
 
-        $to=gray(imagecolorat($img,$x,$y));
+        $to = imgs::gray(imagecolorat($img,$x,$y));
 
         if(abs($to-$color)>$ease) {
             $zones[$path] = false;
@@ -25,7 +25,7 @@ function detect_zones($img, $color){
         while(list($id,$pos) = each($todo)) {
             if(isset($zones[$id])) continue;
             list($mx, $my) = $pos;
-            $to=gray(imagecolorat($img, $mx, $my));
+            $to=imgs::gray(imagecolorat($img, $mx, $my));
             if(abs($to-$color)>$ease)continue;
             $zones[$done[] = $id] = $zone_id;
             extend_square($todo, $zones, $mx, $my, $w, $h);
@@ -72,7 +72,7 @@ function extend_square(&$todo,$zones, $x, $y, $w, $h){
 }
 
 function degrad($from, $to, $step){
-    return colorget(array(
+    return imgs::colorget(array(
         'red'=>($to['red']-$from['red'])*$step+$from['red'],
         'green'=>($to['green']-$from['green'])*$step+$from['green'],
         'blue'=>($to['blue']-$from['blue'])*$step+$from['blue'],
