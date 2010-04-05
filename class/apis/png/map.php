@@ -1,10 +1,12 @@
 <?php
 
 class png_map {
+
   private $png;
   private $hash ;
   private $palette;
   private $img;
+
   function __construct($file) {
     $this->png     = png::load_file($file);
     $comment       = $this->png->get_comment();
@@ -23,6 +25,13 @@ class png_map {
   function set_color($hash_key, $color){
     $index = $this->hash[$hash_key];
     $this->palette[$index] = $color;
+  }
+
+
+
+  function fill($color){
+    foreach($this->hash as $hash_key=>$index)
+        $this->palette[$index] = $color;
   }
 
   function hash_key_at($x, $y){
