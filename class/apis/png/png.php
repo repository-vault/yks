@@ -84,7 +84,7 @@ class png {
   public function output($file = null){
     if(is_null($file))
       echo $this->get_contents();
-     else if($file = '-')
+     else if($file == '-')
         return $this->get_contents();
      else file_put_contents($file, $this->get_contents());
   }
