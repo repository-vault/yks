@@ -1,7 +1,5 @@
 <?
 
-include_once CLASS_PATH."/imgs/functions.php";
-include_once CLASS_PATH."/imgs/imgs.php";
 
 
 $out_path="css/".SITE_BASE."/boxs";
@@ -10,7 +8,7 @@ foreach($themes_config->themes->children() as $theme_name=>$theme_data) try {
 	$theme_src="$out_path/$theme_name.png";
 	if(!is_file($theme_src)) throw rbx::error("$theme_name is incomplete for $theme_src");
 	$theme_path="$out_path/$theme_name"; files::create_dir($theme_path);
-	$base_img=imagecreatefromfile($theme_src);
+	$base_img=imgs::imagecreatefromfile($theme_src);
 
 	$box_w=imagesx($base_img);$box_h=imagesy($base_img);
 	$tmp=explode(";",$theme_data['grid']);
@@ -35,8 +33,8 @@ foreach($themes_config->themes->children() as $theme_name=>$theme_data) try {
 	$theme_css="";
 	foreach($todo as $key=>$data){
 		$theme_css.=".{$theme_name}_$key {background-image:url($key);}\n";
-		$tmp=imagetrunk($base_img,$data[0],$data[1],$data[2],$data[3]);
-		$file="$theme_path/$key.png";
+		$tmp  = imgs::imagetrunk($base_img,$data[0],$data[1],$data[2],$data[3]);
+		$file = "$theme_path/$key.png";
 		imagepng($tmp,$file);
 		imagedestroy($tmp);
 	} 
