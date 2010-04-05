@@ -31,6 +31,10 @@ classes::register_class_paths(array(
 
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 
+
+    "imgs"                => CLASS_PATH."/imgs/imgs.php",
+    "png"                 => CLASS_PATH."/apis/png/png.php",
+
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/exts/cli/interactive_runner.php",
