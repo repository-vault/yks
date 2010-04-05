@@ -6,7 +6,7 @@ function mm($mm){
 
 
 function zend_color($color){
-    $tmp = colordec($color);
+    $tmp = imgs::colordec($color);
     return new Zend_Pdf_Color_Rgb(
         $tmp['red']/255,
         $tmp['green']/255,

@@ -98,7 +98,7 @@ class Table {
     $caption = new Box($this->x, $this->y, $this->w, $height);
     $caption->inject($this->page);
     $caption->setContents($this->caption);
-    $caption->drawBox( coloralpha(200,200,200) );
+    $caption->drawBox( imgs::coloralpha(200,200,200) );
     $caption->setFormat(Box::H_CENTER|Box::V_MIDDLE);
     $caption->drawText();
     $this->y+=$height;
@@ -153,7 +153,7 @@ class Table {
             $cell = new Box($col['start_x'], $this->y, $col['width'],$height);
             $cell->inject($this->page);
             $cell->setContents($header_title);
-            $cell->drawBox( coloralpha(125,125,125) );
+            $cell->drawBox( imgs::coloralpha(125,125,125) );
             $cell->setFormat(Box::H_CENTER|Box::V_MIDDLE);
             $cell->drawText();
         }

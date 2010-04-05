@@ -1,6 +1,5 @@
 <?php
 
-include_once CLASS_PATH."/imgs/functions.php";
 
 
 class Box {

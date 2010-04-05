@@ -21,8 +21,6 @@ class dsp_titles {
       foreach(self::$themes_config->fonts_paths->path as $path)
         self::$fonts_paths[] = exyks_paths::resolve($path['path']);
 
-    include_once CLASS_PATH."/imgs/functions.php";
-    include_once CLASS_PATH."/imgs/imgs.php";
     include_once CLASS_PATH."/imgs/effects.php";
 
   }
@@ -110,27 +108,28 @@ class dsp_titles {
     if(!isset($box_mr))$box_mr=$box_xr;
     $img_h=max( $text_h+$box_mu+$box_md, $box_yu+$box_ym+$box_yd);
     $img_w=max( $text_w+$box_ml+$box_mr, $box_xl+$box_xm+$box_xr, $width);
-    $img_back=imagecreatetruealpha($img_w,$img_h);
+    if($width) $img_w = $width;
+    $img_back = imgs::imagecreatetruealpha($img_w,$img_h);
 
     if($box_src){
-        $box_img=imagecreatefromfile($box_src);
+        $box_img = imgs::imagecreatefromfile($box_src);
         if(!$box_x) $box_x = array(0,imagesx($box_img));
         if(!$box_y) $box_y = array(0,imagesy($box_img));
-        image_bg_scale($img_back, $box_img, $box_x, $box_y);  
+        imgs::image_bg_scale($img_back, $box_img, $box_x, $box_y);  
 
         if($icon){
             list($tmp_x, $tmp_y) = explode(";",$icon_grid);
 
-            $icon = imagecreatefromfile($icon);
+            $icon   = imgs::imagecreatefromfile($icon);
             $icon_h = imagesy($icon);
             $icon_y = floor(($img_h-$icon_h)/2) - $tmp_y;
             $icon_x = $box_xl + $tmp_x;
-            imagefusion($img_back, $icon, $icon_x, $icon_y);
+            imgs::imagefusion($img_back, $icon, $icon_x, $icon_y);
         }
     }
 
-    $img_text=imagecreatetruealpha($img_w,$img_h);
-    $img_text_mask=imagecreatetruealpha($img_w,$img_h);
+    $img_text      = imgs::imagecreatetruealpha($img_w,$img_h);
+    $img_text_mask = imgs::imagecreatetruealpha($img_w,$img_h);
 
     $text_align = $text_align?$text_align:"center";
 
@@ -140,21 +139,21 @@ class dsp_titles {
     elseif($text_align=="right") $text_x = $img_w - ($text_w+$box_mr); //right
     else  $text_x = $box_ml + floor(($img_w-($box_ml+$box_mr+$text_w))/2); //center
 
-    imagettftext($img_text_mask,$font_size,0,$text_x,$text_y,COLOR_GRAY,$font,$text);
+    imagettftext($img_text_mask, $font_size, 0, $text_x, $text_y, imgs::COLOR_GRAY, $font, $text);
 
     if(is_array($color))
         $img_text = imagefilldegrad($img_back, $img_text_mask,127, $color );
     else
-        imagettftext($img_text,$font_size,0,$text_x,$text_y,$color,$font,$text);
+        imagettftext($img_text, $font_size, 0, $text_x, $text_y, $color, $font, $text);
 
     if($border!==false){
-        $res = imageboldedge($img_text_mask, colordec($border)); 
-        imagefusion($img_text,$res);
+        $res = imageboldedge($img_text_mask, imgs::colordec($border)); 
+        imgs::imagefusion($img_text,$res);
     }
     if($shadow!==false)
-        $img_back = imageglow($img_back, $img_text_mask, colordec($shadow));
+        $img_back = imageglow($img_back, $img_text_mask, imgs::colordec($shadow));
 
-    imagefusion($img_back, $img_text);
+    imgs::imagefusion($img_back, $img_text);
     return $img_back;
   }
 
