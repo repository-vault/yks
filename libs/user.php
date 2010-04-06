@@ -14,6 +14,7 @@ class user extends _user {
     $this->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
 
     $this->user_access = auth::get_access($this->users_tree);
+    $this->user_flags  = explode(',',$this->user_flags);
   }
 
   function register($key, $table_name){
@@ -24,6 +25,10 @@ class user extends _user {
     $table_key = count($table_keys)==1?reset($table_keys):false;
          //on indexe les resultat sur la deuxieme clée(si unique, hors user_id de join)
     self::$tables_registration[$key] = compact('table_name', 'table_key', 'row_unique');
+  }
+
+  function has_flag($flag){
+    return in_array($flag, $this->user_flags);
   }
 
   function upgrade_rights($rights) {
