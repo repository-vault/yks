@@ -1,10 +1,11 @@
 <?php
 
 class geomaps {
+
   private static $maps_path;
   protected $area_colors;
-  private $png_map;
-
+  protected $png_map;
+  protected $data;
   static function init(){
     classes::register_class_path("png_map",  CLASS_PATH."/apis/png/map.php");
 
@@ -16,15 +17,16 @@ class geomaps {
   }
 
   public function __construct($map_id){
-    $verif_map = compact('map_id');
-    $map_infos = sql::row("ks_users_geomaps_list", $verif_map);
-    if(!$map_infos)
+    $verif_map  = compact('map_id');
+    $this->data = sql::row("ks_users_geomaps_list", $verif_map);
+    if(!$this->data)
         throw new Exception("Invalid map #");
 
     $file_path = self::$maps_path."/$map_id.png";
     $this->png_map = new png_map($file_path);
     
   }
+
 
   public function render($default_color = imgs::COLOR_WHITE ){
     $this->png_map->fill($default_color);
