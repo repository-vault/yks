@@ -66,7 +66,8 @@ abstract class __sql_sync {
     $tables_list = array();
     foreach($out as $line) {
       list($schema, $table) = explode(",", "$line,,");
-      $tables_list["$schema.$table"] = compact('schema', 'table');
+      $table_name = "`$schema`.`$table`";
+      $tables_list[$table_name] = sql::resolve($table_name);
     }
 
     if(!$out)
@@ -111,19 +112,19 @@ abstract class __sql_sync {
     if($from['host'])
         $from_cmd = "ssh {$from['host']} \"".self::escape($from_cmd)."\"";
 
-    $cmd = "$from_cmd  > $tmp_file";
 
+    
+    $triggers_off       = sql_sync::triggers_off($tables);
+    $triggers_on        = sql_sync::triggers_on($tables);
+    $delete_queries     = sql_sync::delete_tables($tables);
+
+    $cmd = "$from_cmd  > $tmp_file";
     exec($cmd);
 
     if( !is_file($tmp_file)
         || filesize($tmp_file) < self::file_export_safe_size)
             throw rbx::error("Error while retrieving external data");
 
-
-    
-    $triggers_off       = sql_sync::triggers_off($tables);
-    $triggers_on        = sql_sync::triggers_on($tables);
-    $delete_queries     = sql_sync::delete_tables($tables);
     $insert_queries     = file_get_contents($tmp_file);
 
     $contents = "BEGIN;".LF
@@ -141,7 +142,7 @@ abstract class __sql_sync {
   }
   
   protected static function delete_tables($tables){
-    $tables = array_extract($tables, 'table');
+    $tables = array_extract($tables, 'safe');
     return mask_join(LF, $tables, "DELETE FROM %s;");
   }
 

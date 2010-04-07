@@ -17,7 +17,7 @@ class sql_sync extends __sql_sync  {
     $args          = "-a";
 
     $tables_str = '';
-    foreach($tables as $table) $tables_str .= ' -t '.$table['table'];
+    foreach($tables as $table) $tables_str .= ' -t '.$table['safe'];
 
 
     $from_cmd      = sprintf("%s %s %s %s", self::$sql_dump, $args, $tables_str, $coord['database']);
@@ -36,12 +36,12 @@ class sql_sync extends __sql_sync  {
   }
 
   public static function triggers_off($tables){
-    return mask_join(LF, array_keys($tables),
+    return mask_join(LF, array_extract($tables, 'safe'),
         "ALTER TABLE %s DISABLE TRIGGER ALL;");
   }
 
   public static function triggers_on($tables){
-    return mask_join(LF, array_keys($tables),
+    return mask_join(LF, array_extract($tables, 'safe'),
         "ALTER TABLE %s ENABLE TRIGGER ALL;");
   }
 

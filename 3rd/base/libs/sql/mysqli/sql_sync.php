@@ -15,7 +15,7 @@ class sql_sync extends __sql_sync {
   
   static function bin_dump($coord, $tables){
     $tables_str = '';
-    foreach($tables as $table) $tables_str .= ' '.$table['table'];
+    foreach($tables as $table) $tables_str .= ' '.$table['safe'];
     
     $args = "--no-create-info --password={$coord['password']} -u {$coord['user']} --skip-set-charset --skip-opt --quick --extended-insert";
     $from_cmd      = sprintf("%s %s %s %s", self::$sql_dump, $args, $coord['database'], $tables_str);
