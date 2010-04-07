@@ -18,13 +18,16 @@ class materialized_view extends myks_installer {
     $this->table = $table;
 
     $name = $this->table->name['name'];
+
     $this->table_keys   = fields(yks::$get->tables_xml->$name,true);
     $this->table_fields = fields(yks::$get->tables_xml->$name);
 
     $this->subscribed_tables = array();
     foreach($this->abstract_xml->subscribe as $subscription)
         $this->subscribed_tables[] = sql::resolve((string)$subscription['table']);
-
+    
+    // not ok at all since remote table could use diff keys name
+    $this->rtable_keys   = array($this->abstract_xml->subscribe[0]['key']);
 
     $this->view       = $this->load_ghost_view();
     $this->procedures = $this->load_procedures();
@@ -34,52 +37,103 @@ class materialized_view extends myks_installer {
   }
 
 
+  private function load_procedures_materialized_view($data_help){
+    extract($data_help); //'key', 'updates_fields', 'rkey'
+
+    return array(
+      'insert' => array(
+        'type'  => 'trigger',
+        'query' => "BEGIN".CRLF
+            ."INSERT INTO {$this->table->name['safe']}".CRLF
+            ."SELECT * FROM {$this->view->name['safe']}".CRLF
+            ."  WHERE $key = NEW.$key".CRLF
+            ."-- avoid double entries".CRLF
+            ."  AND $key NOT IN (".CRLF
+            ."    SELECT $key FROM {$this->table->name['safe']}".CRLF
+            ."    WHERE $key = NEW.$key".CRLF
+            .");".CRLF
+            ."RETURN NULL;".CRLF
+            ."END"),
+      'delete' => array(
+        'type'  => 'trigger',
+        'query' => "BEGIN".CRLF
+            ."DELETE FROM {$this->table->name['safe']}".CRLF
+            ."WHERE $key = OLD.$key;".CRLF
+            ."RETURN NULL;".CRLF
+            ."END"),
+      'update' => array(
+        'type'  => 'trigger',
+        'query' => "BEGIN".CRLF
+            ."UPDATE {$this->table->name['safe']}".CRLF
+            ."SET $updates_fields".CRLF
+            ."WHERE $key = OLD.$key;".CRLF
+            ."RETURN NULL;".CRLF
+            ."END"),
+      'sync' => array(
+        'type'  => 'bool',
+        'query' => "BEGIN".CRLF
+            ."--disable triggers on materialized table ? / use deferred keys instead ?".CRLF
+            ."DELETE FROM {$this->table->name['safe']};".CRLF
+            ."INSERT INTO {$this->table->name['safe']}".CRLF
+            ."    SELECT * FROM {$this->view->name['safe']};".CRLF
+            ."RETURN true;".CRLF
+            ."END"),
+    );
+  }
+
+  private function load_procedures_cached_logs($data_help){
+    extract($data_help); //'key', 'updates_fields', 'rkey'
+
+    return array(
+      'insert' => array(
+        'type'  => 'trigger',
+        'query' => "BEGIN".CRLF
+            ."INSERT INTO {$this->table->name['safe']}".CRLF
+            ."SELECT * FROM {$this->view->name['safe']}".CRLF
+            ."  WHERE $key = NEW.$rkey".CRLF
+            ."-- avoid double entries".CRLF
+            ."  AND $key NOT IN (".CRLF
+            ."    SELECT $key FROM {$this->table->name['safe']}".CRLF
+            ."    WHERE $key = NEW.$rkey".CRLF
+            .");".CRLF
+            ."UPDATE {$this->table->name['safe']} AS t".CRLF
+            ."    SET $updates_fields".CRLF
+            ."    FROM {$this->view->name['safe']} AS ghost".CRLF
+            ."    WHERE ghost.$key = NEW.$rkey".CRLF
+            ."        AND t.$key = NEW.$rkey;".CRLF
+            ."RETURN NULL;".CRLF
+            ."END"),
+      'sync' => array(
+        'type'  => 'bool',
+        'query' => "BEGIN".CRLF
+            ."--disable triggers on materialized table ? / use deferred keys instead ?".CRLF
+            ."DELETE FROM {$this->table->name['safe']};".CRLF
+            ."INSERT INTO {$this->table->name['safe']}".CRLF
+            ."    SELECT * FROM {$this->view->name['safe']};".CRLF
+            ."RETURN true;".CRLF
+            ."END"),
+    );
+  }
+
   private function load_procedures(){
 
     $procedures = new procedures_list($this->table);
+    $key  = join(',', $this->table_keys); //nok
+    $rkey = join(',', $this->rtable_keys);
 
-    $key = join(',', $this->table_keys);
 
     $updates_fields = array();
     foreach(array_keys($this->table_fields) as $field_name)
-      $updates_fields []= "$field_name = NEW.$field_name";
+      $updates_fields []= "$field_name = ghost.$field_name";
     $updates_fields = join(',', $updates_fields);
-    
-    $queries = array(
-  'insert' => "BEGIN
-INSERT INTO {$this->table->name['safe']}
-SELECT * FROM {$this->view->name['safe']}
-  WHERE $key = NEW.$key
--- avoid double entries
-  AND $key NOT IN (
-    SELECT $key FROM {$this->table->name['safe']}
-    WHERE $key = NEW.$key
-);
-RETURN NULL;
-END",
-  'delete' => "BEGIN
-DELETE FROM {$this->table->name['safe']}
-WHERE $key = OLD.$key;
-RETURN NULL;
-END",
-  'update' => "BEGIN
-UPDATE {$this->table->name['safe']}
-SET $updates_fields
-WHERE $key = OLD.$key;
-RETURN NULL;
-END",
-  'sync' => "BEGIN
---disable triggers on materialized table ? / use deferred keys instead ?
-DELETE FROM {$this->table->name['safe']};
-INSERT INTO {$this->table->name['safe']}
-SELECT * FROM {$this->view->name['safe']};
-END",
+    $data_help = compact('key', 'updates_fields', 'rkey');
 
-    );
+    $callback_method = "load_procedures_{$this->abstract_xml['type']}";
+    $queries = $this->$callback_method($data_help);
 
-    foreach($queries as $key=>$proc) {
+    foreach($queries as $key=>$proc_infos) {
         $p_name = "{$this->table->name['schema']}.rtg_{$this->table->name['name']}_$key";
-        $p_xml  = "<procedure name='$_name' type='trigger'><def>$proc</def></procedure>";
+        $p_xml  = "<procedure name='$_name' type='{$proc_infos['type']}'><def>{$proc_infos['query']}</def></procedure>";
 
         $p_name = sql::resolve($p_name);
         $p_xml  = simplexml_load_string($p_xml);
@@ -99,13 +153,13 @@ END",
       $xml  = "<triggers>";
 
       $name = $this->procedures->retrieve('insert')->name;
-      $xml .= "<trigger name='{$name['name']}' on='insert' procedure='{$name['name']}'/>";
+      if($name) $xml .= "<trigger name='{$name['name']}' on='insert' procedure='{$name['name']}'/>";
 
       $name = $this->procedures->retrieve('delete')->name;
-      $xml .= "<trigger name='{$name['name']}' on='delete' procedure='{$name['name']}'/>";
+      if($name) $xml .= "<trigger name='{$name['name']}' on='delete' procedure='{$name['name']}'/>";
 
       $name = $this->procedures->retrieve('update')->name;
-      $xml .= "<trigger name='{$name['name']}' on='update' procedure='{$name['name']}'/>";
+      if($name) $xml .= "<trigger name='{$name['name']}' on='update' procedure='{$name['name']}'/>";
 
       $xml .= "</triggers>";
 

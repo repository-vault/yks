@@ -35,6 +35,7 @@ abstract class view_base extends myks_base {
   }
 
   function modified(){
+    //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
     $res = $this->sql_def != $this->xml_def;
     return $res;
   }

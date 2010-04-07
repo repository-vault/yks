@@ -17,7 +17,7 @@ class data {
   }
   static function load($flag,$zone=''){
     $tmp = self::fetch(trim("{$flag}_{$zone}",'_'));
-    if($tmp===false) return self::reload($flag, $zone);
+    if($tmp===false || is_null($tmp)) return self::reload($flag, $zone);
     return substr($flag,-4)=="_xml"?simplexml_load_string($tmp):$tmp;
   }
 

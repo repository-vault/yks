@@ -14,7 +14,7 @@ class myks_table_triggers extends table_collection {
     $ret  = parent::alter_def();
     if($this->drops) {
       foreach($this->drops as $trigger_name)
-        $ret[] = "DROP TRIGGER `$trigger_name` ON {$this->table->name['safe']}";
+        $ret[] = "DROP TRIGGER \"$trigger_name\" ON {$this->table->name['safe']}";
     }
     foreach($this->fn_drops as $procedure){
         $ret = array_merge($ret, $procedure->delete_def());
