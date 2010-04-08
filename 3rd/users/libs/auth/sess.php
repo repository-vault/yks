@@ -7,6 +7,15 @@ class sess  {
   static $connected = false;
   static $renewed = false;
 
+  static function init(){
+    if(!classes::init_need(__CLASS__)) return;
+
+    if(sess::$id) return false;
+    session_name(SESSION_NAME);
+    session_set_cookie_params (0, "/", SESS_DOMAIN, false, true);
+    self::$id = $_COOKIE[SESSION_NAME];
+  }
+
     //need 5.3 late static binding self::_class
   static protected $_storage = array();
   static function store($key, $value){
@@ -22,12 +31,8 @@ class sess  {
     $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
     return crpt($id, FLAG_SESS, 10);
   }
-  static function init(){
-    if(!classes::init_need(__CLASS__)) return;
 
-    if(sess::$id) return false;
-    session_name(SESSION_NAME);
-    session_set_cookie_params (0, "/", SESS_DOMAIN, false, true);
+  static function connect(){
     session_start();
     self::$sess = &$_SESSION['user'];
     self::$id = session_id();

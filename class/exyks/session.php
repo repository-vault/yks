@@ -11,6 +11,7 @@ class exyks_session {
   private static $sess_loaded = false;
 
   public static function init(){
+        //load & start session (if available)
     self::$sess_loaded = class_exists('sess');
   }
 
@@ -38,6 +39,8 @@ class exyks_session {
     //  Load basic session, if existing, load root user else
   private static function load_classic(){
     global $action;
+
+    sess::connect();
 
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
