@@ -41,7 +41,7 @@ $profile_def=array();
         //puisque l'on est avant le traitement des actions, ca n'est judicieux ici qu'en JSX
 
 
-$profile_table="{$user_type}_profile";
+$profile_table      = "{$user_type}_profile";
 $profile_table_xml  = $tables_xml->$profile_table;
 
 
@@ -51,8 +51,13 @@ if($user_type!="ks_users"){
     $user_infos=array_merge($user_infos,sql::row($profile_table, $verif_user));
 }
 $tables_children_list = array();
-if($profile_table_xml['children']) {
-    $tables_children = explode(",", $profile_table_xml['children']);
+
+
+$involved_tables_list = array("ks_users_list", $profile_table);
+foreach($involved_tables_list as $table_name) {
+    $table_xml = $tables_xml->$table_name;
+    if(!$table_xml['children']) continue;
+    $tables_children = explode(",", $table_xml['children']);
     foreach($tables_children as $table_children_name){
         $data = array();
         if($user_id) { sql::select($table_children_name, $verif_user); $data = sql::brute_fetch(); }
@@ -62,8 +67,9 @@ if($profile_table_xml['children']) {
             'data'=>$data,
         );
     }
-
 }
+
+
 
 
 $user_infos=array_merge($user_infos,sql::row("ks_users_profile", $verif_user));

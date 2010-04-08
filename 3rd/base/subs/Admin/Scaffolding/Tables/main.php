@@ -20,7 +20,7 @@ $table_name = array_shift($args);
 
 
 $initial_criteria = array_filter($args);
-if(!$initial_criteria) $initial_criteria= array("true");
+if(!$initial_criteria) $initial_criteria = array("true");
 else {
     parse_str(join("&", $initial_criteria), $initial_criteria);
     $initial_criteria = input_deep($initial_criteria);
@@ -36,7 +36,13 @@ $table_fields  = fields($table_xml);
 $birth_elements = array_intersect($table_fields, array($birth=>$birth));
 
 $birth_field   = $birth ? array_intersect_assoc( $table_keys, $birth_elements):array();
- 
+
+
+$mode = "vertical"; //|horizontal = linear, slice table
+if(!$birth
+    && array_keys($initial_criteria) == array_keys($table_keys))
+    $mode = "horizontal";
+
 
     //ordering table_fields and put primary_keys at first
 $table_fields = array_sort($table_fields,

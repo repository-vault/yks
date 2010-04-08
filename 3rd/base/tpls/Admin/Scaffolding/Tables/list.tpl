@@ -1,6 +1,8 @@
 <box>
 Table : <?=$table_name?>
 
+<?if($mode=="vertical"){?>
+
 <table class='table'>
 <tr class='line_head'>
     <?foreach($table_fields as $field_name=>$field_type){
@@ -8,7 +10,6 @@ Table : <?=$table_name?>
     }?>
     <th>Actions</th>
 </tr>
-
 <?
 
 if($data) foreach($data as $line){
@@ -31,12 +32,34 @@ if($data) foreach($data as $line){
 
 
   echo "</tr>";
-} else echo "<tfail> No data here</tfail>";
+} else echo "<tfail>No data here</tfail>";
 
 
 ?>
 </table>
 
 <?=$pages_str?>
+
+<?} else {
+$line = $data[0];
+
+
+    $key_name  = key($table_keys);
+    $key_value = $line[$key_name];
+
+    $actions = "<ks_form ks_action='delete' submit='Supprimer'><input type='hidden' name='uid[{$key_name}]' value='$key_value'/></ks_form>";
+if($data) {
+  foreach($table_fields as $field_name=>$field_type){
+    echo "<p class='clear'><span class='float_left'><b>$field_name</b></span><var class='float_right'>{$line[$field_name]}</var></p>";
+  }
+    echo "$actions<hr class='clear'/>";
+}else {
+    echo "<p><i>Aucune donnée</i></p>";
+}
+
+
+}
+?>
+
 
 </box>
