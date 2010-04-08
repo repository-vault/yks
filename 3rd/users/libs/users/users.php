@@ -7,8 +7,8 @@ function coalesce($cols,$alias=false){
 class users  {
     // user_id || users_id
 
-  static $cols_def=false;
-  static $users_profiles =array();
+  private static $cols_def            = false;
+  private static $users_linear_tables = array();
 
   static function get_addrs($user_id,$addr_type=array('sql'=>"!=''")){
     sql::select('ks_users_addrs',compact('user_id','addr_type'));
@@ -47,9 +47,9 @@ class users  {
     $limit="LIMIT ".count($users);
 
     if(is_string($cols) ) {
-        $tables_used = self::$users_profiles;
+        $tables_used = self::$users_linear_tables;
         $selected = $cols;
-    } else { 
+    } else {
         foreach($cols as $col) if(self::$cols_def[$col]&& !$selected[$col]) {
             $tables_used    = array_merge($tables_used, self::$cols_def[$col]);
             $selected[$col] = coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"),$col);
@@ -153,20 +153,37 @@ class users  {
     if(!classes::init_need(__CLASS__)) return;
 
     $users_type = vals(yks::$get->types_xml->user_type);
-    self::$users_profiles = array_mask($users_type,'%s_profile');
+    self::$users_linear_tables = array_mask($users_type,'%s_profile');
 
     self::$cols_def=array(); $tables_xml = yks::$get->tables_xml;
-    foreach(self::$users_profiles as $k=>$table_name)
-        if(!$tables_xml->$table_name)unset(self::$users_profiles[$k]);
+    foreach(self::$users_linear_tables as $k=>$table_name)
+        if(!$tables_xml->$table_name) unset(self::$users_linear_tables[$k]);
 
-    $tables = array_merge(self::$users_profiles, self::$infos_tables);
-    foreach($tables as $table_name)
+    $tables = array_merge(self::$users_linear_tables, self::$infos_tables);
+    foreach($tables as $table_name) {
+        $table_xml = $tables_xml->$table_name;
+
         self::$cols_def = array_merge_recursive(self::$cols_def,
-            array_fill_keys(
-                vals($tables_xml->$table_name,'field'),
-                array($table_name)
-            ));
+            array_fill_keys(array_keys(fields($table_xml)), array($table_name))
+        );
+
+        if(!$table_xml['children']) continue;
+        $tables_children = explode(",", $table_xml['children']);
+        foreach($tables_children as $table_children_name){
+            $keys   = fields($tables_xml->$table_children_name, true);
+            if(array_values($keys) != array('user_id')) continue;
+            self::$users_linear_tables[] = $table_children_name;
+            $fields = fields($tables_xml->$table_children_name);
+
+            self::$cols_def = array_merge_recursive(self::$cols_def,
+                array_fill_keys(array_keys($fields), array($table_children_name))
+            );
+        }
+            
+
+    }
     self::$cols_def['user_id'] = array('ks_users_list');
+
     //done
   }
 
