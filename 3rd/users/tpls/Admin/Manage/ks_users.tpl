@@ -2,37 +2,20 @@
 
 Vous êtes ici : <?=$parent_path?><br/>
 
-<ks_form ks_action="user_edit">
+<ks_form ks_action="user_edit" class="nullable">
 
 <?
 
 foreach($dsp_profile as $field_name=>$field_type){
-echo "<field title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
+    $disabled = is_null($user_infos[$field_name])?"disabled='disabled'":'';
+    echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
 }
 ?>
 
 <hr/>
 
-<toggler caption="Propriétés héritées :" class="closed">
-<?
-foreach($dsp_profile as $field_name=>$field_type){
-    $checked=is_null($user_infos[$field_name])?"checked='checked'":'';
-    echo "<field title='&user_profile.$field_name;'>
-        <input type='checkbox' $checked name='fields_inherit[{$field_name}]'/>
-    </field>";
-}
-?>
 
-<domready>
-$$('input[type=checkbox][name^=fields_inherit]').addEvent('change',function(){
-    var flag=this.name.match(/\[(.*)\]/)[1],sel ='[name='+flag+'],[name="'+flag+'[]"]', el=$E(sel, this.getBox().anchor);
-    if(el) el.set('disabled', this.checked);
-});$$('input[type=checkbox][name^=fields_inherit]').fireEvent('change');
 
-</domready>
-</toggler>
-
-<hr/>
 
 <toggler caption="Authentification" class="closed">
 

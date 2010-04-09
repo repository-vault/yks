@@ -44,7 +44,7 @@ if($data) foreach($data as $line){
   
 
 if($data) {
-    echo "<ks_form ks_action='update' submit='Update'>";
+    echo "<ks_form ks_action='update' submit='Update' class='nullable'>";
 
   foreach($table_fields as $field_name=>$field_type){
     if($field_name == $key_name) continue;
