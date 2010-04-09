@@ -41,18 +41,19 @@ if($data) foreach($data as $line){
 <?=$pages_str?>
 
 <?} else {
-$line = $data[0];
+  
 
-
-    $key_name  = key($table_keys);
-    $key_value = $line[$key_name];
-
-    $actions = "<ks_form ks_action='delete' submit='Supprimer'><input type='hidden' name='uid[{$key_name}]' value='$key_value'/></ks_form>";
 if($data) {
+    echo "<ks_form ks_action='update' submit='Update'>";
+
   foreach($table_fields as $field_name=>$field_type){
-    echo "<p class='clear'><span class='float_left'><b>$field_name</b></span><var class='float_right'>{$line[$field_name]}</var></p>";
+    if($field_name == $key_name) continue;
+    echo "<field title='$field_name' type='$field_type' name='$field_name' value='{$data[$field_name]}'/>";
   }
-    echo "$actions<hr class='clear'/>";
+    echo "</ks_form>";
+
+    echo "<ks_form ks_action='delete' submit='Supprimer (Heritage)'><input type='hidden' name='uid[{$key_name}]' value='$key_value'/></ks_form>";
+    echo "<hr class='clear'/>";
 }else {
     echo "<p><i>Aucune donnée</i></p>";
 }
