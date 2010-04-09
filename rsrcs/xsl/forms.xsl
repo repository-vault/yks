@@ -72,7 +72,7 @@
             <xsl:if test="$item_type='sha1'">
               <xsl:attribute name="type">password</xsl:attribute>
             </xsl:if>
-            <xsl:copy-of select="@value|@style|@name|@id"/>
+            <xsl:copy-of select="@value|@style|@name|@id|@disabled"/>
           </input>
         </xsl:when>
         <xsl:when test="$item_type='file'">
@@ -135,6 +135,7 @@
             </xsl:when>
             <xsl:otherwise>
               <select name="{$name}">
+                <xsl:copy-of select="@disabled"/>
                 <xsl:if test="$mykse/@set">
                   <xsl:attribute name="multiple">multiple</xsl:attribute>
                   <xsl:attribute name="name"><xsl:value-of select="$name"/>[]</xsl:attribute>

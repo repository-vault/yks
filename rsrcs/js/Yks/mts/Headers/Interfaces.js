@@ -6,6 +6,13 @@ Doms.loaders['path://yks/Interface/ShowCase.js'] = {
 };
 
 
+Doms.loaders['path://yks/Interface/Forms.nullable.js'] = {
+    'class': "Jsx.Form.Nullable",
+    'match': 'form.nullable',
+    'descr': "Nullable forms"
+};
+
+
 Doms.loaders['path://yks/Interface/Switcher.js'] = {
     "class": "Switcher",
     "match": false
