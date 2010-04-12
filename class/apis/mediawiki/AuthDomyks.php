@@ -1,6 +1,10 @@
 <?php
  
 
+/*
+    Client Side
+*/
+
 class Auth_Domyks extends AuthPlugin {
   private $wsdl_url;
   private $host_key;

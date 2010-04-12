@@ -1,7 +1,7 @@
 <?
 
 /*
-    Report de bugs 
+    Server Side
 */
 
 class auth_api_webservice {
