@@ -50,11 +50,27 @@ class _user extends _sql_base {
 
   function __sql_where($sql_table = false){
     $key = $this->sql_key;
-    if($table_xml  = yks::$get->tables_xml->$sql_table)
+    if($sql_table && $table_xml  = yks::$get->tables_xml->$sql_table)
         $key = reset(array_keys(fields($table_xml), _user::sql_key));
     return array($key => $this->user_id);
   }
 
+  function update($data_full) {
+    $tables_list = array('ks_users_profile'); //todo : see users::$users_linear_tables
+    foreach($tables_list as $table_name){
+        $data = mykses::validate_update($data_full, yks::$get->tables_xml->$table_name);
+        if(!$data) continue;
+        sql::update($table_name, $data, $this);
+
+            //contains inherited values
+        $this->computed = array_merge($this->computed,
+            array_intersect_key($data, $this->computed));
+            //contains non-inheritABLE values
+        $this->data = array_merge($this->data,
+            array_intersect_key($data, $this->data));
+
+    }
+  }
 
   function __get($key){
     $get = parent::__get($key);

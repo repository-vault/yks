@@ -6,8 +6,13 @@ class user extends _user {
 
   protected $sql_table = "ks_users_list";
   protected $sql_key = "user_id";
-
   static private $tables_registration = array();
+
+
+  static function init(){
+    user::register("auth_password", "ks_auth_password");
+  }
+
   function __construct($user_id, $auth_tree){
     $this->users_tree = $auth_tree;
     parent::__construct($user_id);
