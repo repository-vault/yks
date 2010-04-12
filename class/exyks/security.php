@@ -21,7 +21,7 @@ class exyks_security {
           $action="";
           $msg = exyks_session::$renewed
                    ? "Your session has expired, reload the page you are on, and try again"
-                   : "Invalid security flag";
+                   : "Invalid security flag, try refreshing this page (F5)";
           rbx::error($msg);
       } if(JSX) jsx::$rbx=true;
       unset($_POST['ks_flag']);
