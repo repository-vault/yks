@@ -4,7 +4,7 @@
     Server Side
 */
 
-class auth_api_webservice {
+class mediawiki_auth_api {
   /**
    * @param string $user_login
    * @param string $user_pswd

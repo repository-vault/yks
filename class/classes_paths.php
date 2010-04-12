@@ -28,6 +28,7 @@ classes::register_class_paths(array(
     "tpls"                => CLASS_PATH."/exyks/tpls.php",
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
+    "mediawiki_auth_api"  => CLASS_PATH."/apis/mediawiki/AuthApi.php",
 
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 
