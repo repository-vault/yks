@@ -11,7 +11,8 @@ class exyks_session {
   private static $sess_loaded = false;
 
   public static function init(){
-        //load & start session (if available)
+        // load & start session (if available)
+        // session is ready to start
     self::$sess_loaded = class_exists('sess');
   }
 
@@ -29,11 +30,15 @@ class exyks_session {
   }
 
 
+  public static function connect(){
+    if(self::$sess_loaded)
+        return sess::connect();
+    session_start();
+  }
+
   public static function load(){
     if(self::$sess_loaded)
         return self::load_classic();
-
-    session_start();
   }
 
     //  Load basic session, if existing, load root user else

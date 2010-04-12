@@ -142,6 +142,7 @@ class exyks {
     if(!self::$head->styles)  self::$head->addChild("styles");
     if(!self::$head->scripts) self::$head->addChild("scripts");
 
+    exyks_session::connect();
     exyks_security::sanitize();
     locales_manager::init();
 
