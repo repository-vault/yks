@@ -32,7 +32,7 @@ class dsp_titles {
     list($theme_name, $theme_pseudo) = explode(':', $theme_name, 2);
     foreach($themes_list as $theme_parent){
 
-        $theme_xml = $theme_parent->$theme_name;
+        $theme_xml = $theme_parent->search($theme_name);
 
         if(!$theme_xml)
             continue;

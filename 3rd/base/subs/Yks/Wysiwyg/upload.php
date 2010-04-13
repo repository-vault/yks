@@ -34,10 +34,13 @@ if($action=="upload_tmp")try {
     apc_delete("upload_$upload_flag");
     rbx::ok("Le fichier a correctement été envoyé");
   } while(false);
+}catch(Exception $e){ 
+  rbx::error("Upload failure");
+}
+
+
+if($action == "upload_tmp" && rbx::$rbx)
   die("<script>window.parent.Doms.wake('Uploader').end('$upload_flag',".json_encode(rbx::$rbx).")</script>");
-
-}catch(rbx $e){}
-
 
 
 
