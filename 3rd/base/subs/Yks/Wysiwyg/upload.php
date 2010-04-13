@@ -35,6 +35,7 @@ if($action=="upload_tmp")try {
     rbx::ok("Le fichier a correctement été envoyé");
   } while(false);
 }catch(Exception $e){ 
+  error_log($e);
   rbx::error("Upload failure");
 }
 
