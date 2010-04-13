@@ -60,7 +60,7 @@ var Box = new Class({
     var modal = options.modal || this.anchor.hasClass('modal') ;
 
     if(options.modal_box) this.modal_box = options.modal_box;
-    else if(modal) this.modal_box = Screen.modaler();
+    else if(modal) this.modal_box = Screen.modaler(this);
   },
 
   reload:function(){ Jsx.open(this.url, this.box_name, this.anchor); },

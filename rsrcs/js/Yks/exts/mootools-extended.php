@@ -9,6 +9,7 @@ $js_build_list=array_merge( $js_build_list, array(
     'path://patch/Core/Window.js'            => true,
     'path://patch/Native/String.js'          => true,
     'path://patch/Native/Number.js'          => true,
+    'path://patch/Native/Array.js'          => true,
     'path://patch/Native/Hash.js'            => true,
     'path://patch/Class/Class.extended.js'   => true,
     'path://patch/Element/Element.js'        => true,

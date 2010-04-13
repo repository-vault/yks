@@ -41,16 +41,20 @@ var Screen = {
 
 
 
-  modaler:function(options){
+  modaler:function(box){
     var scroll_size = getScrollSize();
     Screen.modal_lvl++;
 
+    var liste = $$('select').diff($(box).getElements('select'));
+    liste.setStyle('visibility', 'hidden');
     return $n('div',{'class':'modal_mask',styles:{
         'opacity':0.5,
         'z-index':Screen.box_zImax-1,
         'height':scroll_size.y,
         'width':scroll_size.x
-      }}).addEvent('onRemove',function(){Screen.modal_lvl--;}
-      ).inject($('container'));
+      }}).addEvent('onRemove',function(){
+            Screen.modal_lvl--;
+            liste.setStyle('visibility', 'visible');
+      }).inject($('container'));
   }
 };

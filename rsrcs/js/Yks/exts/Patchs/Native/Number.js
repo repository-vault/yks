@@ -4,4 +4,4 @@ Number.implement({
   gt:function(max){ return this>max; }
 });
 
-Math.sign = function(a){ return a<0?-1:1; }
+Math.sign = function(a){ return a<0?-1:1; };
