@@ -86,21 +86,26 @@ class mime_part {
   }
 
 
+/**
+* raw : n'applique aucun encoding, ni headers, retourne uniquement le contenu
+*/
+  function encode($raw = false){
 
-  function encode(){
     $str="";
-    $str.=$this->headers_output();
+    if(!$raw)
+        $str.=$this->headers_output();
 
     if($this->is_composed()){
         $str.="There is no contents in a multipart";
 
         foreach($this->children as $child_part ){
             $str.=CRLF."--$this->boundary".CRLF;
-            $str.=$child_part->encode();
+            $str.=$child_part->encode($raw);
         }
     } else {
         $this->apply_context();
-        $str .= rfc_2047::encoding_encode($this->contents, $this->transfer_encoding);
+        if($raw) $str.= $this->contents;
+        else $str .= rfc_2047::encoding_encode($this->contents, $this->transfer_encoding);
     } return $str;
   }
 

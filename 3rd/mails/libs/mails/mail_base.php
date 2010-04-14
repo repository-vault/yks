@@ -19,7 +19,7 @@ abstract class mail_base {
     return $str;
   }
 
-  function split_dest($dests){
+  private function split_dest($dests){
     if(is_array($dests))
         return $dests;
 
@@ -30,16 +30,23 @@ abstract class mail_base {
     return $dests;
   }
 
-  function to($to){ 
-    $to = $this->split_dest($to);
-    $this->dests = array_merge($this->dests, $to);
-    $this->to = array_merge($this->to, $to);
+  private function dest_add($key, $list){
+
+    $list = $this->split_dest($list);
+        //stack dests
+    $this->dests = array_unique(array_merge($this->dests, $list));
+
+    if(in_array($key, array('to','cc')))
+        $this->$key = array_merge($this->$key, $list);//no unique here, thx
   }
 
-  function cc($cc){ 
-    $cc = $this->split_dest($cc);
-    $this->dests = array_merge($this->dests, $cc);
-    $this->cc = array_merge($this->cc, $cc);
+  
+  public function to($to){ 
+    return $this->dest_add("to", $to);
+  }
+
+  public function cc($cc){ 
+    return $this->dest_add("cc", $cc);
   }
 
 /**

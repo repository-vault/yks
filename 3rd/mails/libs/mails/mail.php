@@ -23,6 +23,14 @@ class mail extends mime {
 
   }
 
+
+  function send_mobile($to){
+
+    $message = $this->first_part->encode(true);
+    return mms::send_message($to, $message);
+  }
+
+
   function send($to=false){
     if($to) $this->to($to);
     $contents = $this->encode();

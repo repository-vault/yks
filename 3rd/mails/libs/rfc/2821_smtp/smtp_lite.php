@@ -3,7 +3,8 @@
 class smtp_lite {
   private static function server_sync($sock,$response){
     while(!preg_match("#^[0-9]{3}(?=\s)#",$tmp=fgets($sock,256),$out) );
-    if($out[0]!=$response) throw rbx::error("Sync {$out[0]}!={$response} : $tmp");
+    if($out[0]!=$response)
+        throw new Exception("Sync {$out[0]}!={$response} : $tmp");
   }
 
   public static function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
@@ -18,10 +19,14 @@ class smtp_lite {
     return self::smtpsend($contents, array($to));
   }
 
+/**
+* $dests is ALL recipients list (TO/CC/CCi)
+*/
   public function smtpsend($contents, $dests){
     $smtp_config = yks::$get->config->apis->smtp;
     if(!$smtp_config)
         return false;
+
 
 
 
@@ -44,10 +49,20 @@ class smtp_lite {
     fputs($sock, "MAIL FROM: <$smtp_sender>".CRLF);
     self::server_sync($sock, "250");
 
+    
+    $errors = array();
     foreach($dests as $mail_to){
+      try {
         fputs($sock, "RCPT TO: <$mail_to>".CRLF);
         self::server_sync($sock, "250");
+      } catch(Exception $e){ 
+        error_log($e);
+        $errors[] = $mail_to;
+      }
     }
+    if($errors)
+        rbx::error("Not all recipient are valid (".join(', ',$errors).")");
+
         
     fputs($sock, "DATA".CRLF);
     self::server_sync($sock, "354");
