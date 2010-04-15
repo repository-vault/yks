@@ -73,6 +73,7 @@ class myks_runner {
 
     $types_xml->asXML($this->mykse_file_path);	// export
 
+    myks_parser::trace();
     rbx::ok("Myks types {$this->mykse_file_path} updated");
 
         //before export ? after ? i don't know is it's very usefull anymore

@@ -28,7 +28,7 @@ class smtp_lite {
         return false;
 
 
-
+    //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
 
     $smtp_sender = $smtp_config['sender'];
 

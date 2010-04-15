@@ -24,82 +24,73 @@ class rfc_2047 {
     return $str;
   }
 
-  static function quoted_printable_encode($input, $line_max = 75, $trim = false) {
+
+  static function quoted_printable_encode($input){
+    $bEmulate_imap_8bit=true;
+
+    $aLines = preg_split("/(?:\r\n|\r|\n)/", $input);
+
+    for ($i=0;$i<count($aLines);$i++) {
+    $sLine =& $aLines[$i];
+    if (strlen($sLine)===0) continue; // do nothing, if empty
+
+    $sRegExp = '/[^\x09\x20\x21-\x3C\x3E-\x7E]/e';
+
+    // imap_8bit encodes x09 everywhere, not only at lineends,
+    // for EBCDIC safeness encode !"#$@[\]^`{|}~,
+    // for complete safeness encode every character :)
+    if ($bEmulate_imap_8bit)
+      $sRegExp = '/[^\x20\x21-\x3C\x3E-\x7E]/e';
+
+    $sReplmt = 'sprintf( "=%02X", ord ( "$0" ) ) ;';
+    $sLine = preg_replace( $sRegExp, $sReplmt, $sLine ); 
+
+    // encode x09,x20 at lineends
+    {
+      $iLength = strlen($sLine);
+      $iLastChar = ord($sLine{$iLength-1});
+
+      //              !!!!!!!!   
+      // imap_8_bit does not encode x20 at the very end of a text,
+      // here is, where I don't agree with imap_8_bit,
+      // please correct me, if I'm wrong,
+      // or comment next line for RFC2045 conformance, if you like
+      if (!($bEmulate_imap_8bit && ($i==count($aLines)-1)))
+         
+      if (($iLastChar==0x09)||($iLastChar==0x20)) {
+        $sLine{$iLength-1}='=';
+        $sLine .= ($iLastChar==0x09)?'09':'20';
+      }
+    }    // imap_8bit encodes x20 before chr(13), too
+    // although IMHO not requested by RFC2045, why not do it safer :)
+    // and why not encode any x20 around chr(10) or chr(13)
+    if ($bEmulate_imap_8bit) {
+      $sLine=str_replace(' =0D','=20=0D',$sLine);
+      //$sLine=str_replace(' =0A','=20=0A',$sLine);
+      //$sLine=str_replace('=0D ','=0D=20',$sLine);
+      //$sLine=str_replace('=0A ','=0A=20',$sLine);
+    }
+
+    // finally split into softlines no longer than 76 chars,
+    // for even more safeness one could encode x09,x20
+    // at the very first character of the line
+    // and after soft linebreaks, as well,
+    // but this wouldn't be caught by such an easy RegExp                  
+    preg_match_all( '/.{1,73}([^=]{0,2})?/', $sLine, $aMatch );
+    $sLine = implode( '=' . chr(13).chr(10), $aMatch[0] ); // add soft crlf's
+    }
+
+    // join lines into text
+    return implode(chr(13).chr(10),$aLines);
+  }
+
+/**
+    This application cause crashes, sometimes, ... GTFO !
+  static function quoted_printable_encode3($input, $line_max = 75, $trim = false) {
    $hex = array('0','1','2','3','4','5','6','7',
                           '8','9','A','B','C','D','E','F');
-   $lines = preg_split("/(?:\r\n|\r|\n)/", $input);
-   $linebreak = "=0D=0A=\r\n";
-   /* the linebreak also counts as characters in the mime_qp_long_line
-    * rule of spam-assassin */
-   $line_max = $line_max - strlen($linebreak);
-   $escape = "=";
-   $output = "";
-   $cur_conv_line = "";
-   $length = 0;
-   $whitespace_pos = 0;
-   $addtl_chars = 0;
 
-   for ($j=0; $j<count($lines); $j++) {
-     $line = $lines[$j];
-     $linlen = strlen($line);
+**/
 
-     for ($i = 0; $i < $linlen; $i++) {
-       $c = substr($line, $i, 1);
-       $dec = ord($c);
 
-       $length++;
-
-       if ($dec == 32) {
-       // space occurring at end of line, need to encode
-      if (($i == ($linlen - 1))) {
-         $c = "=20";
-         $length += 2;
-      }
-
-      $addtl_chars = 0;
-      $whitespace_pos = $i;
-    } elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) {
-      $h2 = floor($dec/16); $h1 = floor($dec%16);
-      $c = $escape . $hex["$h2"] . $hex["$h1"];
-      $length += 2;
-      $addtl_chars += 2;
-    }
-
-    // length for wordwrap exceeded, get a newline into the text
-    if ($length >= $line_max) {
-      $cur_conv_line .= $c;
-
-      // read only up to the whitespace for the current line
-      $whitesp_diff = $i - $whitespace_pos + $addtl_chars;
-      $output .= substr($cur_conv_line, 0,
-                            (strlen($cur_conv_line) - $whitesp_diff)) .
-                            $linebreak;
-
-      /* the text after the whitespace will have to be read
-          * again ( + any additional characters that came into
-          * existence as a result of the encoding process after the whitespace) */
-      $i =  $i - $whitesp_diff + $addtl_chars;
-
-      $cur_conv_line = "";
-      $length = 0;
-      $whitespace_pos = 0;
-    } else {
-      // length for wordwrap not reached, continue reading
-      $cur_conv_line .= $c;
-    }
-     } // end of for
-
-     $length = 0;
-     $whitespace_pos = 0;
-     $output .= $cur_conv_line;
-     $cur_conv_line = "";
-
-     if ($j<=count($lines)-1) {
-       $output .= $linebreak;
-     }
-  }
-    if($trim && ends_with($output, $linebreak))
-        $output = substr($output, 0, -strlen($linebreak));
-    return trim($output);
-  }
 }

@@ -38,6 +38,10 @@ class mime_part {
     $this->contents = str_evaluate($this->contents, $context, array(VAR_MASK)  );
     if($this->type_extension=="plain") //escape in no longer necessary
         $this->contents = specialchars_decode($this->contents);
+
+        //not here
+    $this->contents = locales_manager::translate($this->contents);
+
   }
 
   function add_file($file_path, $file_name=false){
