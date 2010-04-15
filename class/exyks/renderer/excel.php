@@ -30,16 +30,33 @@ class exyks_renderer_excel {
     exyks::render($str);
     die;
   }
- 
+  public static function build_table($table_contents, $headers = array(), $multiline_style = true){
 
-  public static function build_xls($table_contents, $headers = array(), $styles=""){
     $table_xml = "<table class='table'>";
     if(!$headers) $headers = array_combine($headers = array_keys(current($table_contents)), $headers);
 
+    $med_size = array();
+
+    foreach($table_contents as $line){
+        $k=0;
+        foreach($line as $val) {
+            $len = strlen($val);
+            if($len) $med_size["col_".$k][] = $len;
+            $k++;
+        }
+    }
+
     $table_xml .= "<tr class='line_head'>"; $col_count=0;
-    foreach($headers as $col_name)
-        $table_xml .= "<th class='col_{$col_name} col_".($col_count++)."'>$col_name</th>";
-    $table_xml .="</tr>";
+    foreach($headers as $col_key => $col_name) {
+        $col_key = preg_replace("#[^a-z0-9_-]#","", strtolower($col_key));
+        $col_id = "col_".($col_count++);
+
+        $strlen = $med_size[$col_id] ?array_sum($med_size[$col_id])/count($med_size[$col_id]) : 10;
+        $width  = max(15, $strlen * 7); //pt
+        $width = $multiline_style?"":"width='{$width}'";
+
+        $table_xml .= "<th $width class='col_$col_key $col_id' id='$col_id'>$col_name</th>";
+    } $table_xml .="</tr>";
 
     foreach($table_contents as $line) {
         $str = "<tr class='line_pair'>";
@@ -47,15 +64,30 @@ class exyks_renderer_excel {
             $str .="<td>{$line[$col_key]}</td>";
         $str .= "</tr>";
         $table_xml .= $str;
-    }
+    } if(!$table_contents)
+        $table_xml.="<tfail>no results</tfail>";
     $table_xml .="</table>";
 
-    $xml_contents = "<body xmlns:xls='excel'><xls:style>$styles</xls:style>$table_xml</body>";
+    return $table_xml;
+
+  }
+
+
+    //deprecated, use render instead
+  public static function build_xls($table_contents, $headers = array(), $styles=""){
+    $table_xml = self::build_table($table_contetns, $headers);
+
+    $xml_contents = "<body xmlns:xls='excel'>
+        <xls:style xmlns:xls='excel'>$styles</xls:style>
+        $table_xml
+    </body>";
 
     $doc = new DOMDocument('1.0','UTF-8');
     $tmp = $doc->loadXML($xml_contents, LIBXML_YKS);
     $doc   = xsl::resolve($doc, self::$XSL_SERVER_PATH);
     $contents = $doc->saveXML();
+
+
     $contents = strstr($contents, '<html');
     return $contents;
   }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE stylesheet [
-<!ENTITY match_full "col">
-<!ENTITY match_element "b|big | div | em | h2 | h3 | h4 | h5 | h6 | i | p | span | strong | tbody | td | tfoot | th | thead | tr | u | cdata | font">
+<!ENTITY match_full "col | td | th  ">
+<!ENTITY match_element "b|big | div | em | h2 | h3 | h4 | h5 | h6 | i | p | span | strong | tbody | tfoot | thead | tr | u | cdata | font">
 <!ENTITY match_onlybody "a|*">
 ]>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/TR/REC-html40" xmlns:xls="excel" version="1.0">

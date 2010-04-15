@@ -32,33 +32,20 @@ class query {
 
   }
 
-    //direct output, use ob_start if required
-  public function print_html_table_data(){
-    echo "<table class='table center' style='width:100%'>
-        <tr class='line_head'>";
-    foreach($this->cols as $col_key=>$tmp)
-        echo "<th>$col_key</th>";
-    echo "</tr>";
 
-    foreach($this->data_results as $line){
-      echo "<tr class='line_pair'>";
-      foreach($this->cols as $col_key=>$col_infos)
-        echo "<td>{$line[$col_key]}</td>";
-      echo "</tr>";
-    }
-    if(!$this->data_results)
-        echo "<tfail>La requete n'a retourné aucun resultat</tfail>";
-    echo "</table>";
-  }
-
-  public static function fast_export($sql_query){
+  public static function fast_export($sql_query, $multiline = false){
     $query = new self($sql_query);
     $query->execute();
 
-    ob_start();
-    $query->print_html_table_data();
-    $str = ob_get_contents();
-    ob_end_clean();
+    if(!$multiline)
+        $styles = "tr {mso-height-source:userset;height:12.0pt }";
+    $table_xml = exyks_renderer_excel::build_table($query->data_results, false, $multiline);
+    $str = "<body xmlns:xls='excel'>
+        <xls:style xmlns:xls='excel'>$styles</xls:style>
+        $table_xml
+    </body>";
+
+
 
     exyks_renderer_excel::render($str);
   }
