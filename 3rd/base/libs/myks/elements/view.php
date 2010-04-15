@@ -24,7 +24,7 @@ abstract class view_base extends myks_base {
 
     if($force) $this->sql_def = array();
     if(!$this->modified())  return false;
-    $todo = $this->update();
+    $todo = $this->alter_def();
 
     //print_r(array_show_diff($this->sql_def,  $this->xml_def, 'sql', 'xml'));die;
     if(!$todo)
@@ -40,9 +40,8 @@ abstract class view_base extends myks_base {
     return $res;
   }
 
-  function update(){
-    return $this->alter_def();
-  }
+
+
 
   function delete_def(){
     return array(

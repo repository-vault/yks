@@ -23,11 +23,14 @@ class materialized_view extends myks_installer {
     $this->table_fields = fields(yks::$get->tables_xml->$name);
 
     $this->subscribed_tables = array();
-    foreach($this->abstract_xml->subscribe as $subscription)
-        $this->subscribed_tables[] = sql::resolve((string)$subscription['table']);
-    
-    // not ok at all since remote table could use diff keys name
-    $this->rtable_keys   = array($this->abstract_xml->subscribe[0]['key']);
+    $this->rtable_keys   = array();
+
+    foreach($this->abstract_xml->subscribe as $subscription) {
+        $table_infos = sql::resolve((string)$subscription['table']);;
+        $table_infos['rkey']  = (string)$subscription['key'];
+        $this->rtable_keys[(string)$subscription['key']] = (string)$subscription['key'];
+        $this->subscribed_tables[] = $table_infos;
+    }
 
     $this->view       = $this->load_ghost_view();
     $this->procedures = $this->load_procedures();
@@ -41,32 +44,32 @@ class materialized_view extends myks_installer {
     extract($data_help); //'key', 'updates_fields', 'rkey'
 
     return array(
-      'insert' => array(
+      "insert_{$rkey}" => array(
         'type'  => 'trigger',
         'query' => "BEGIN".CRLF
             ."INSERT INTO {$this->table->name['safe']}".CRLF
             ."SELECT * FROM {$this->view->name['safe']}".CRLF
-            ."  WHERE $key = NEW.$key".CRLF
+            ."  WHERE $key = NEW.$rkey".CRLF
             ."-- avoid double entries".CRLF
             ."  AND $key NOT IN (".CRLF
             ."    SELECT $key FROM {$this->table->name['safe']}".CRLF
-            ."    WHERE $key = NEW.$key".CRLF
+            ."    WHERE $key = NEW.$rkey".CRLF
             .");".CRLF
             ."RETURN NULL;".CRLF
             ."END"),
-      'delete' => array(
+      "delete_{$rkey}" => array(
         'type'  => 'trigger',
         'query' => "BEGIN".CRLF
             ."DELETE FROM {$this->table->name['safe']}".CRLF
-            ."WHERE $key = OLD.$key;".CRLF
+            ."WHERE $key = OLD.$rkey;".CRLF
             ."RETURN NULL;".CRLF
             ."END"),
-      'update' => array(
+      "update_{$rkey}" => array(
         'type'  => 'trigger',
         'query' => "BEGIN".CRLF
             ."UPDATE {$this->table->name['safe']}".CRLF
             ."SET $updates_fields".CRLF
-            ."WHERE $key = OLD.$key;".CRLF
+            ."WHERE $key = OLD.$rkey;".CRLF
             ."RETURN NULL;".CRLF
             ."END"),
       'sync' => array(
@@ -119,26 +122,27 @@ class materialized_view extends myks_installer {
 
     $procedures = new procedures_list($this->table);
     $key  = join(',', $this->table_keys); //nok
-    $rkey = join(',', $this->rtable_keys);
-
 
     $updates_fields = array();
     foreach(array_keys($this->table_fields) as $field_name)
       $updates_fields []= "$field_name = ghost.$field_name";
     $updates_fields = join(',', $updates_fields);
-    $data_help = compact('key', 'updates_fields', 'rkey');
 
-    $callback_method = "load_procedures_{$this->abstract_xml['type']}";
-    $queries = $this->$callback_method($data_help);
+    foreach($this->rtable_keys as $rkey) {
+        //$rkey = join(',', $rkey);
 
-    foreach($queries as $key=>$proc_infos) {
-        $p_name = "{$this->table->name['schema']}.rtg_{$this->table->name['name']}_$key";
-        $p_xml  = "<procedure name='$_name' type='{$proc_infos['type']}'><def>{$proc_infos['query']}</def></procedure>";
+        $callback_method = "load_procedures_{$this->abstract_xml['type']}";
+        $queries = $this->$callback_method(compact('key', 'updates_fields', 'rkey'));
 
-        $p_name = sql::resolve($p_name);
-        $p_xml  = simplexml_load_string($p_xml);
-        $p      = new procedure($p_name, $p_xml);
-        $procedures->stack($p, $key);
+        foreach($queries as $pid=>$proc_infos) {
+            $p_name = "{$this->table->name['schema']}.rtg_{$this->table->name['name']}_$pid";
+            $p_xml  = "<procedure name='$p_name' type='{$proc_infos['type']}'><def>{$proc_infos['query']}</def></procedure>";
+
+            $p_name = sql::resolve($p_name);
+            $p_xml  = simplexml_load_string($p_xml);
+            $p      = new procedure($p_name, $p_xml);
+            $procedures->stack($p, $pid);
+        }
     }
 
     return $procedures;
@@ -149,18 +153,14 @@ class materialized_view extends myks_installer {
 
     $tables_triggers = array();
     foreach($this->subscribed_tables as $table) {
-       
+      $rkey = $table['rkey'];
+
       $xml  = "<triggers>";
-
-      $name = $this->procedures->retrieve('insert')->name;
-      if($name) $xml .= "<trigger name='{$name['name']}' on='insert' procedure='{$name['name']}'/>";
-
-      $name = $this->procedures->retrieve('delete')->name;
-      if($name) $xml .= "<trigger name='{$name['name']}' on='delete' procedure='{$name['name']}'/>";
-
-      $name = $this->procedures->retrieve('update')->name;
-      if($name) $xml .= "<trigger name='{$name['name']}' on='update' procedure='{$name['name']}'/>";
-
+      foreach(array('insert', 'delete', 'update') as $event) {
+        $pid    = "{$event}_{$rkey}";
+        $name = $this->procedures->retrieve($pid)->name;
+        if($name) $xml .= "<trigger name='{$name['name']}' on='$event' procedure='{$name['name']}'/>";
+      }
       $xml .= "</triggers>";
 
       $triggers_collection = simplexml_load_string($xml)->xpath("./trigger");
@@ -182,10 +182,11 @@ class materialized_view extends myks_installer {
   }
 
   function modified(){
-    return $this->view->modified()
-           || $this->procedures->modified()
-           || $this->triggers->modified()
-    ;
+    $modified = $this->view->modified()
+           || $this->procedures->modified();
+    foreach($this->triggers as $triggers)
+        $modified |= $triggers->modified();
+    return $modified;
   }
 
   function get_name(){

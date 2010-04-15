@@ -32,9 +32,9 @@ class view extends view_base  {
     return $res;
   }
 
-  function update(){
+  function alter_def(){
     return array_merge(
-        parent::update(),
+        parent::alter_def(),
         $this->privileges->alter_def(),
         $this->rules->alter_def()
     );
