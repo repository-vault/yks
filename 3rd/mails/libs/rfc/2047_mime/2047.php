@@ -25,7 +25,7 @@ class rfc_2047 {
   }
 
 
-  static function quoted_printable_encode($input){
+  static function quoted_printable_encode($input, $line_max = 75){
     $bEmulate_imap_8bit=true;
 
     $aLines = preg_split("/(?:\r\n|\r|\n)/", $input);
@@ -75,8 +75,8 @@ class rfc_2047 {
     // for even more safeness one could encode x09,x20
     // at the very first character of the line
     // and after soft linebreaks, as well,
-    // but this wouldn't be caught by such an easy RegExp                  
-    preg_match_all( '/.{1,73}([^=]{0,2})?/', $sLine, $aMatch );
+    // but this wouldn't be caught by such an easy RegExp
+    preg_match_all( '/.{1,'.($line_max-3).'}([^=]{0,2})?/', $sLine, $aMatch );
     $sLine = implode( '=' . chr(13).chr(10), $aMatch[0] ); // add soft crlf's
     }
 
