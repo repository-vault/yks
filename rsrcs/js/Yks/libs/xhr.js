@@ -13,9 +13,14 @@ function http_lnk(options,url,data,async_func){
         if( this.readyState!=4 || !(/200|404/).test(this.status)) return false;
         this.onreadystatechange = $empty;
         var content_type = (this.getResponseHeader("Content-Type") || "text/xml").split(';')[0];
-        var val = content_type=="application/json"?Urls.jsx_eval(this.responseText):
-            ((/[^a-z]xml$/).test(content_type)?this.responseXML:this.responseText);
-        async_func(val);
+        var val;
+        if(content_type=="application/json") val = Urls.jsx_eval(this.responseText);
+        else if(!(/[^a-z]xml$/).test(content_type)) val = this.responseText;
+        else {
+            val = this.responseXML;//prepare serialize for later, no other chance after here (BB)
+            if(!val.xml && !window.XMLSerializer) val.xml = this.responseText;
+        }
+        async_func(val, http_lnk.split_headers(this.getAllResponseHeaders()) );
     }; lnk.onreadystatechange = state_change.bind(lnk);
 
     if(options.method=='post'){
@@ -26,3 +31,14 @@ function http_lnk(options,url,data,async_func){
 
     if((!options.async) && lnk.readyState==4) state_change.call(lnk);
 } http_lnk.security_flag = false;
+
+http_lnk.split_headers = function(str){
+  var ret = {}, e;
+  str.split("\n").each(function(line){    
+    line = line.trim();
+    if(!line) return;
+    e = line.split(':',2)
+    ret[e[0].toLowerCase().trim()] = e[1].trim();
+  });
+  return ret;
+};

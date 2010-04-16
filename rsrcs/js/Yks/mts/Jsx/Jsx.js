@@ -23,14 +23,15 @@ var Jsx = new Class({
   fire:function(chain){
     this.options.headers = {'Screen-Id':Screen.screen_id};
     if(this.options.target) this.options.headers['Content-Target'] = this.options.target;
-    http_lnk(this.options, this.options.url, this.options.data, function(ret){
+    http_lnk(this.options, this.options.url, this.options.data, function(ret, headers){
 
     if(!!($type(ret)=="document" || ret.xml)) {
         this.xml_body = ret;
         var tmp = ret.getElementsByTagName("rbx")[0];
         tmp = tmp?Urls.jsx_eval(tmp.firstChild.nodeValue):(this.options.box||{});
         if(chain) tmp.chain = chain; chain = false;
-        this.xsl_trans(tmp);
+
+        this.transform(tmp, headers['x-render-side'] );
       } else if($type(ret)=="object") {
          this.js_valid(ret);
       }if(chain && !(ret.error||ret.stop)) chain();
@@ -54,14 +55,19 @@ var Jsx = new Class({
 
  xsl_prepare:function(rbx){
     http_lnk('get',xsl_path,{},function(xsl){
-        window.store('transformer',new xslt(xsl));
-        this.xsl_trans(rbx);
+        window.store('transformer',new transformer_xslt(xsl));
+        this.transform(rbx);
     }.bind(this));
  },
 
- xsl_trans:function(rbx){
+ transform:function(rbx, render_side){
     var transformer = window.retrieve("transformer");
-    if(!transformer) return this.xsl_prepare(rbx);
+    if(!transformer){
+        if(render_side=='client')
+            return this.xsl_prepare(rbx); //delayed
+        transformer = new transformer_dummy();
+        window.store('transformer', transformer);
+    }
 
     var scripts = '', tmp = $n('div'), anchor;
     tmp.appendChild(transformer.out(this.xml_body)), 
