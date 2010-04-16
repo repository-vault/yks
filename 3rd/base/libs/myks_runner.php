@@ -27,7 +27,7 @@ class myks_runner {
     $this->mykse_file_path  = XML_CACHE_PATH."/myks.xml";
     $this->mykse_file_url   = SITE_URL."/".ltrim(end(explode(WWW_PATH, $this->mykse_file_path,2)),"/");
 
-    $this->browsers_engines = array( 'trident', 'gecko', 'webkit', 'presto');
+    $this->browsers_engines = array( 'trident', 'gecko', 'webkit', 'presto', 'mobile');
     $this->rendering_sides  = array( 'server', 'client');
 
   }

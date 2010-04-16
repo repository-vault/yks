@@ -36,14 +36,14 @@ class exyks {
 
     include CLASS_PATH."/exyks/browser.php"; //define $engine
 
-    $default = ROBOT||IPOD ? "html" : DEFAULT_MODE;
+    $default = ROBOT||PLATFORM_MOBILE ? "html" : DEFAULT_MODE;
     $mode =  isset($_SERVER['HTTP_SCREEN_ID']) || isset($_POST['jsx']) ?  "jsx" : $default;
     define('JSX', $mode == "jsx");
 
     define('XSL_ENGINE', $engine);
 
     self::store('RENDER_MODE', JSX?"jsx":"full");
-    self::store('RENDER_SIDE', ($mode=="html"?"server":"client")); //rbx is a render_side too
+    self::store('RENDER_SIDE', ($mode=="html"||PLATFORM_MOBILE)?"server":"client" ); //rbx is a render_side too
 
     if(IE6) exyks::store('RENDER_START', '<!DOCTYPE');
 
@@ -51,6 +51,7 @@ class exyks {
         'full-server'=>ROBOT?TYPE_XHTML:TYPE_HTML,
         'full-client'=>TYPE_XML,
         'jsx-client'=>TYPE_XML,
+        'jsx-server'=>TYPE_XML,//no TYPE_XHTML as it's irrelevant (DOM is more important)
     );
 
     self::store('LANGUAGES',
@@ -222,6 +223,7 @@ class exyks {
 
     header(self::$headers[$render_style]);
     header("Cache-Control: no-cache");
+    header("X-Render-Side: $render_side");
 
     if(true || self::$customs || $render_side=="server"){ // || optim XML
         $doc = xml::load_string($str);
@@ -229,7 +231,7 @@ class exyks {
         tpls::process_customs_elements($doc);
         if($render_side=="client") $str = $doc->saveXML();
     }
-    
+
     if($render_side == "client"){
         if($xsl_client && !is_file($xsl_client))
             yks::fatality(yks::FATALITY_XSL_404, "xsl file is missing : $xsl_client",  $render_mode);
@@ -242,7 +244,13 @@ class exyks {
         $render_start = exyks::retrieve('RENDER_START');
         $doc = xsl::resolve($doc, $xsl_server);
         $contents = $doc->saveXML();
-        if($render_start) die(strstr($contents, $render_start));
+
+        if($render_mode == "jsx")
+            $contents = preg_replace("#<!DOCTYPE.*?>#", "", $contents);
+
+        if($render_start)
+            $contents = strstr($contents, $render_start);
+
         die($contents);
         $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$str);
     }
