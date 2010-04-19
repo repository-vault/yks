@@ -68,7 +68,7 @@ function array_merge_numeric($a,$b, $depth="array_merge"){
 }
 
 function attributes_to_assoc($x, $ns=null, $prefix = false){$r=array(); //php 5.3 grrrr
-    foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
+    if($x) foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
     return $r;
 }
 
