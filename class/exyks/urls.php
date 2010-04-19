@@ -6,8 +6,10 @@ class exyks_urls {
 
   public static function init(){
 
-    foreach(yks::$get->config->paths->iterate("path") as $path)
-        self::register($path['virtual'], ROOT_PATH, $path['dest']);
+    foreach(yks::$get->config->paths->iterate("path") as $path) {
+        $root = $path['root'] ? exyks_paths::resolve($path['root']) : ROOT_PATH;
+        self::register($path['virtual'], $root, $path['dest']);
+    }
 
     //here
 
@@ -132,27 +134,6 @@ class exyks_urls {
      return explode(';', "$args_str;;;;");
   }
 
-
-/*
-
-print_r(debug_backtrace());
-    die("this is '$path'");
-    $repl = 'self::$paths_ns["$1"]."$2"';
-
-    $sub_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/subs/'", $path));
-    $tpl_path = paths_merge(ROOT_PATH, preg_replace($mask, "$repl.'/tpls/'", $path));
-
-
-
-    self::$paths['subs'][$path_key]   = $sub_path;
-    tpls::add_resolver($path_key, $tpl_path);
-
-
-    
-
-    echo "resolving $path";
-    print_r(self::$paths_ns);die;
-*/
 
 
 }
