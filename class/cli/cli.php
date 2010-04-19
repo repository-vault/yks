@@ -43,7 +43,10 @@ class cli {
             str_repeat($pad, max($left,0)) . $title . str_repeat($pad, max($pad_len - $left,0)));
   }
 
-
+  public static function pause(){
+    echo "[PAUSE Press Any key]";
+    self::text_prompt();
+  }
   public static function box($title, $msg){
     $args = func_get_args(); $pad_len = self::pad;
     $options = count($args)%2==1?array_pop($args) : array();
