@@ -36,15 +36,18 @@ var Box = new Class({
     this.size = anchor.getSize();
 
     var screen_size = getSize(), scroll_top = getScroll();
+    if(Browser.Platform.blackberry) {
+        screen_size = $('container').getSize(); scroll_top = {x:0,y:0}; }
         //y positioning can be done better (Math.max&min a lot
     if(!$defined(options.place))
         options.place = {
             top:Math.max((screen_size.y-this.size.y)/2+scroll_top.y,0),
             left:(screen_size.x-this.size.x)/2
         };
+    options.place.position = "absolute";
 
-    anchor.setStyles($merge(options.place, {position:'absolute'}));
-    var scroll_size=getScrollSize(); //must be done AFTER absolute positionning
+    anchor.setStyles(options.place);
+    var scroll_size = getScrollSize(); //must be done AFTER absolute positionning
 
     Doms.autoload("Drag.Move");
 

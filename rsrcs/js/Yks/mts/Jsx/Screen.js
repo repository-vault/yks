@@ -43,6 +43,9 @@ var Screen = {
 
   modaler:function(box){
     var scroll_size = getScrollSize();
+    if(Browser.Platform.blackberry) 
+        scroll_size = $('container').getSize();
+
     Screen.modal_lvl++;
 
     var liste = $$('select').diff($(box).getElements('select'));
