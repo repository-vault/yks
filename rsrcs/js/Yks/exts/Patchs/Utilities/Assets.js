@@ -17,3 +17,15 @@ Asset.css = function(source, properties){
 };
 
 
+Asset.javascript = function(source, properties){
+    var onload = properties.onload || $empty;
+    delete properties.onload;
+
+    http_lnk('get', source, {}, function(txt){
+        $exec(txt);
+        onload();
+    });
+};
+
+
+
