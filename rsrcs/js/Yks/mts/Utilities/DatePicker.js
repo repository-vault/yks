@@ -1,3 +1,4 @@
+
 var DatePicker = new Class({
   Declare : ['DatePicker'],
   Binds : ['create', 'destroy', 'close', 'outClick'],
@@ -23,6 +24,7 @@ var DatePicker = new Class({
         this.display_mode = 'datetime';
     }
     this.today = this.day(new Date());
+
     anchor.setProperties({'id':anchor.getProperty('name')});
     anchor.addEvent('click',this.create);
     anchor.addEvent('focus',this.create);
@@ -105,13 +107,13 @@ var DatePicker = new Class({
         var bottom = $n('td',{'colspan':'7'}).inject($n('tr').inject(this.calendar));
         var udate = this.user_date;
 
-        $n('input',{'class':'dp_t',value:this.double(udate.getHours())}
+        $n('input',{'class':'dp_t',value:this.zeropad(udate.getHours())}
           ).inject(bottom).addEvent('change', function(){
             udate.setHours(this.value);
         });
 
         $n('span',{ text:':'}).inject(bottom);
-        $n('input',{'class':'dp_t',value:this.double(udate.getMinutes())}
+        $n('input',{'class':'dp_t',value:this.zeropad(udate.getMinutes())}
           ).inject(bottom).addEvent('change', function(){
             udate.setMinutes(this.value);
         });
@@ -167,15 +169,15 @@ var DatePicker = new Class({
 
   format_out: function(){
     return this.options.date_format.areplace({
-        dd:this.double(this.user_date.getDate()),
-        mm:this.double(this.user_date.getMonth()+1),
+        dd:this.zeropad(this.user_date.getDate()),
+        mm:this.zeropad(this.user_date.getMonth()+1),
         yyyy:this.user_date.getFullYear(),
-        hh:this.double(this.user_date.getHours()),
-        ii:this.double(this.user_date.getMinutes())
+        hh:this.zeropad(this.user_date.getHours()),
+        ii:this.zeropad(this.user_date.getMinutes())
     });
   },
 
-  double:function(str){ return ('0'+str).slice(-2); },
+  zeropad:function(str){ return ('0'+str).slice(-2); },
 
   hop_fast:false,
 
@@ -226,4 +228,5 @@ var DatePicker = new Class({
   }
 
 });
+
 
