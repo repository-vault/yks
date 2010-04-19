@@ -11,7 +11,7 @@ function http_lnk(options,url,data,async_func){
 
     var state_change = function(){
         if( this.readyState!=4 || !(/200|404/).test(this.status)) return false;
-        this.onreadystatechange = $empty;
+        this.onreadystatechange = this.onready = $empty;
         var content_type = (this.getResponseHeader("Content-Type") || "text/xml").split(';')[0];
         var val;
         if(content_type=="application/json") val = Urls.jsx_eval(this.responseText);
@@ -21,7 +21,7 @@ function http_lnk(options,url,data,async_func){
             if(!val.xml && !window.XMLSerializer) val.xml = this.responseText;
         }
         async_func(val, http_lnk.split_headers(this.getAllResponseHeaders()) );
-    }; lnk.onreadystatechange = state_change.bind(lnk);
+    }; lnk.onreadystatechange = lnk.onready = state_change.bind(lnk);//onready is a _true_ delegate
 
     if(options.method=='post'){
         if(http_lnk.security_flag) data += "&ks_flag=" + http_lnk.security_flag;
@@ -29,7 +29,7 @@ function http_lnk(options,url,data,async_func){
         lnk.send(data);
     } else lnk.send(null);
 
-    if((!options.async) && lnk.readyState==4) state_change.call(lnk);
+    if((!options.async) && lnk.readyState==4) lnk.onready();
 } http_lnk.security_flag = false;
 
 http_lnk.split_headers = function(str){
