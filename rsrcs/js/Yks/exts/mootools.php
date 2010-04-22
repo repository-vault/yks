@@ -19,6 +19,8 @@ $js_build_list = array_merge( $js_build_list, array(
     'path://mt/Element/Element.Event.js'     => true,
     'path://mt/Element/Element.Style.js'     => true,
     'path://mt/Element/Element.Dimensions.js'=> true,
+    'path://mt/Element/Element.Measure.js'   => true,
+
     'path://mt/Utilities/Selectors.js'       => true,
     'path://mt/Utilities/JSON.js'            => true,
     'path://mt/Utilities/DomReady.js'        => true,
