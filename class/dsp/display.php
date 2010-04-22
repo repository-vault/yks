@@ -88,16 +88,17 @@ class dsp{
     $title = !$empty && $truncated!=$str?" title=\"$str\"":'';
     return "<{$element}{$title}>$truncated</$element_name>";
   }
-  static function dd($data, $opts=false){
-    if(!is_array($opts))$opts=array('selected'=>array($opts));
-    $selected=$opts['selected']; if(!is_array($selected)) $selected=array($selected);
-    $mykse=$opts['mykse'];$col=$opts['col'];if(!$col)$col="value";
+  static function dd($data, $opts = false){
+    if(!is_array($opts)) $opts = array('selected'=>array($opts));
+    $selected = $opts['selected']; if(!is_array($selected)) $selected = array($selected);
+    $mykse=$opts['mykse']; $col=$opts['col']; if(!$col)$col="value";
     if(!$data) $data = array();
     if(!is_array($data)){
         $tmp = myks::resolve_base($data);
         $list = $tmp['type']!='enum'?array():vals($tmp);
         $list = array_combine($list, array_mask($list,"&$data.%s;"));
     } else $list = $data;
+
 
     $depth    = (int)$opts['depth'];
     $options  = "";
@@ -106,7 +107,7 @@ class dsp{
 
 
     foreach($list as $k=>$v){
-        if(!is_array($v))$v=array("value"=>$v);
+        if( ! (is_array($v)||is_object($v)) ) $v = array("value"=>$v);
 
         if($opts['mask']) 
             $str = str_evaluate($opts['mask'], $v);
