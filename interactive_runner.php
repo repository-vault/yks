@@ -27,7 +27,12 @@ class interactive_runner {
         $this->className = get_class($this->obj);
     }
 
-    $reflector = $this->reflection_scan($this->className, $this->className, $this->obj);
+    if(is_a($this->obj, 'SoapClient')) {
+
+        $reflector = $this->reflection_scan_wsdl($this->obj, $this->className);
+    } else {
+        $reflector = $this->reflection_scan($this->className, $this->className, $this->obj);
+    }
 
     $mode_str = is_null($this->obj) ? "auto-instanciation" : "std";
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
@@ -196,7 +201,10 @@ class interactive_runner {
 
 
       try {
-        call_user_func_array($command_callback, $command_args);
+        $res =  call_user_func_array($command_callback, $command_args);
+        if($res !== null)
+            cli::box("Response", $res);
+
       } catch(Exception $e){
         echo CRLF;
         $msg = $e->getTraceAsString();
@@ -205,6 +213,29 @@ class interactive_runner {
         continue;
       }
 
+    }
+
+  }
+
+
+  private function reflection_scan_wsdl($instance, $command_ns){
+    $methods = $instance->__getFunctions();
+    foreach($methods as $method_sign){
+        $out = null;
+        if(!preg_match("#(.*?)\s+(.*?)\((.*?)\)#", $method_sign, $out)) continue;
+        list(,$method_type, $method_name, $method_args_str) = $out;
+
+        $method_args = array();
+        if(preg_match_all('#([^\s]*)\s+\$([^,\s]*)#', $method_args_str, $out)) {
+            $method_args = array_combine($out[2], $out[1]);
+        }
+
+        $callback = array($instance, $method_name);
+        $usage = array('params'=>array());
+        foreach($method_args as $arg_name => $arg_type)
+            $usage['params'][$arg_name] = array('type' => $arg_type);
+
+        $this->command_register($command_ns, $method_name, $callback, $usage);
     }
 
   }
