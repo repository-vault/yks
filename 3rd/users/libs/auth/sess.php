@@ -73,6 +73,7 @@ class sess  {
 
   static function load($user_id, $users_tree){
     sess::$sess     = new user($user_id, $users_tree);
+    sess::$sess->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
     sess::$_storage = array();
     self::status_check();
   }

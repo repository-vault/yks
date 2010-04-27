@@ -19,12 +19,14 @@ class _user extends _sql_base {
 
   function __toString(){ return $this->user_name; }
 
-  function get_users_tree(){ return $this->users_tree = users::get_parents($this->user_id); }
+  function get_users_tree(){
+    return $this->users_tree = users::get_parents($this->user_id);
+  }
 
   function __construct($user_id){
     $this->user_id = (int)$user_id;
     if(!$this->user_id || !$this->users_tree)
-        throw new Exception("Unable to load user '$this->user_id'");
+        throw new Exception("Unable to load user #{$this->user_id}");
     $this->computed = array(); $this->users_types = array();
     foreach(users::get_infos($this->users_tree,"*") as $line){
         $this->users_types[$line['user_type']] = $line['user_id'];

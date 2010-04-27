@@ -13,13 +13,14 @@ class user extends _user {
     user::register("auth_password", "ks_auth_password");
   }
 
-  function __construct($user_id, $auth_tree){
-    $this->users_tree = $auth_tree;
+  function __construct($user_id, $forced_tree = false){
+    if($forced_tree !== false)
+        $this->users_tree = $forced_tree;
+
     parent::__construct($user_id);
-    $this->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
 
     $this->user_access = auth::get_access($this->users_tree);
-    $this->user_flags  = explode(',',$this->user_flags);
+    $this->user_flags  = array_filter(explode(',',$this->user_flags));
   }
 
   function register($key, $table_name){
