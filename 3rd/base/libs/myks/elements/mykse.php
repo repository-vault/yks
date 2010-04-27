@@ -40,11 +40,13 @@ abstract class mykse_base  {
        if($birth_root['name']==(string)$table['name']
         && $this->depth==1
         && ($field_xml['type']==$this->field_def['Field']
-            || $field_xml['key'] == "primary") ){
+            || $field_xml['key'] == "primary")
+        && $field_xml['key'] != "unique"  ){
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth = true;
             if($this->field_def['Null']) $this->field_def['Null']=false; //pas de null dans le birth
-      } else  $this->fk($field_xml, $birth_root);
+      } elseif($birth_root['name']!=(string)$table['name']) //?
+        $this->fk($field_xml, $birth_root);
     }
 
     $this->get_def(); 
