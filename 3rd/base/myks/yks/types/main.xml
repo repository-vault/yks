@@ -28,6 +28,9 @@
   <mykse type="price">
     <int size="float"/>
   </mykse>
+  <mykse type="file_size">
+    <int size="big"/>
+  </mykse>
   <mykse type="count" null="null">
     <int/>
   </mykse>
