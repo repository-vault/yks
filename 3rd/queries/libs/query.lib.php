@@ -32,6 +32,10 @@ class query {
 
   }
 
+  public function print_html_table_data(){
+    echo exyks_renderer_excel::build_table($this->data_results);
+  }
+
 
   public static function fast_export($sql_query, $multiline = false){
     $query = new self($sql_query);
