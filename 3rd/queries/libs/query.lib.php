@@ -33,7 +33,11 @@ class query {
   }
 
   public function print_html_table_data(){
-    echo exyks_renderer_excel::build_table($this->data_results);
+    $multiline = false;
+    if(!$multiline)
+        $styles = "tr {mso-height-source:userset;height:12.0pt }";
+    echo "<xls:style xmlns:xls='excel'>$styles</xls:style>";
+    echo exyks_renderer_excel::build_table($this->data_results, false, $multiline);
   }
 
 
