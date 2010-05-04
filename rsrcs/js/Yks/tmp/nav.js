@@ -1,7 +1,10 @@
 var Nav_bar = new Class({
 
   initialize:function(id){
-    var depth,sel;
+    var depth,sel, anchor;
+    if(! (anchor = $(id)) )
+        return;
+
     for(depth=0,tmp='#'+id ; depth<=1 ; depth++, tmp+='>li>ul')
         $$([tmp, tmp+'>li', tmp+'>li>a'].join(',')).addClass('d_'+depth);
 
