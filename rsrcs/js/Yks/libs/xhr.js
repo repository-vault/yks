@@ -20,7 +20,7 @@ function http_lnk(options,url,data,async_func){
             val = this.responseXML;//prepare serialize for later, no other chance after here (BB)
             if(!val.xml && !window.XMLSerializer) val.xml = this.responseText;
         }
-        async_func(val, http_lnk.split_headers(this.getAllResponseHeaders()) );
+        async_func(val);
     }; lnk.onreadystatechange = state_change.bind(lnk);
 
     if(options.method=='post'){
