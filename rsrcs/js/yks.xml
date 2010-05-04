@@ -1,82 +1,96 @@
 <?xml version="1.0"?>
-<config>
+<js>
+  <package name="yks">
+    <package name="yks.core">
+      <module key="path://yks.root/constants.js">
+        <dep key="yks.libs"/>
+        <description>yks constants</description>
+      </module>
+      <package name="yks.libs">
+        <module key="path://yks.libs/xhr.js">
+          <description>http_lnk callback function</description>
+        </module>
+        <module key="path://yks.libs/xslt.js">
+          <description>XSLT rendering engine</description>
+        </module>
+        <module key="path://yks.libs/urls.js">
+          <description>URI management lib</description>
+        </module>
+        <module key="path://yks.libs/urls.js">
+          <description>URI management lib</description>
+        </module>
+      </package>
+    </package>
+    <package name="yks.classes">
+      <dep key="yks.core"/>
+      <module key="path://yks/Doms.js">
+        <description>yks DOM controler/autoload manager</description>
+      </module>
+      <module key="path://yks/Jsx/Jsx.js">
+        <dep key="path://yks/Doms.js"/>
+        <description>Jsx controler</description>
+      </module>
+      <module key="path://yks/Jsx/Rbx.js">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <description>Result boxes</description>
+      </module>
+      <module key="path://yks/Jsx/Forms.js" expose="Jsx.Form" matches="form.jsx_form">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <description>Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer</description>
+      </module>
+      <module key="path://yks/Jsx/Uploader.js" expose="Uploader">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <description>Deal with uploaded stuffs</description>
+      </module>
+      <module key="path://yks/Jsx/Links.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <dep key="path://yks/Jsx/Box.js"/>
+        <dep key="path://yks/Jsx/Screen.js"/>
+        <description>Extend basic links and add support for [target] attribute, working with Boxes</description>
+      </module>
+      <module key="path://yks/Jsx/Screen.js">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <description>Global Screen controler</description>
+      </module>
+      <module key="path://yks/Jsx/Box.js" expose="Box" matches="Doms.box_mask">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <dep key="path://yks/Jsx/Screen.js"/>
+        <description>Root of the Ex/Yks JS layer, defined a virtual container, act as an 'iframe'</description>
+      </module>
+    </package>
+    <package name="yks.interface">
+      <dep key="yks.classes"/>
+      <module key="path://yks/Utilities/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date">
+        <dep key="yks.core"/>
+        <description>Extend a basic text input into a small but usefull calendar</description>
+      </module>
+      <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie">
+        <dep key="yks.core"/>
+        <description>Provide a very light Rich Text Editor for editing html contents</description>
+      </module>
+      <module key="path://yks/Utilities/Completer.js" expose="Completer">
+        <dep key="yks.core"/>
+        <description>Autocomplete</description>
+      </module>
+      <module key="path://yks/Interface/Forms.nullable.js" expose="Jsx.Form.Nullable" matches="form.nullable">
+        <dep key="yks.core"/>
+        <description>Nullable forms</description>
+      </module>
 
-<module key="mt://yks.libs/xhr" mandatory="true"/>
-<module key="mt://yks.libs/xslt" mandatory="true"/>
-<module key="mt://yks.libs/urls" mandatory="true"/>
-<module key="mt://yks.root/constants" mandatory="true">
-  <dep key="mt://mt.core/Native/String"/>
-</module>
+      <module key="path://yks/Interface/Switcher.js" expose="Switcher">
+        <dep key="yks.core"/>
+      </module>
+
+      <module key="path://yks/Interface/Toggler.js" expose="Toggler" matches="div.toggle_zone">
+        <dep key="yks.core"/>
+        <description>Toggler is a very light Accordion like</description>
+      </module>
 
 
-<module key="mt://yks/Doms" mandatory="true">
-  <dep key="mt://mt.core/Element/Element"/>
-  <dep key="mt://mt.core/Class/Class"/>
-</module>
-
-<module key="mt://yks/Jsx/Rbx" mandatory="true">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-<module key="mt://yks/Jsx/Jsx" mandatory="true">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-<!-- Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer -->
-<module key="mt://yks/Jsx/Forms" mandatory="true" class="Jsx.Form" match="'form.jsx_form'">
-  <dep key="mt://yks/Jsx/Jsx"/>
-</module>
-
-<!--Deal with uploaded stuffs-->
-<module key="mt://yks/Jsx/Uploader" mandatory="true" class="Uploader">
-  <dep key="mt://yks/Jsx/Jsx"/>
-</module>
-
-<!--Extend basic links and add support for [target] attribute, working with Boxes-->
-<module key="mt://yks/Jsx/Links" mandatory="true" class="Jsx.A" match="*[href]:not(.ext):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
-  <dep key="mt://yks/Jsx/Jsx"/>
-</module>
-
-<module key="mt://yks/Jsx/Screen" mandatory="true">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-<!-- Root of the Ex/Yks JS layer, defined a virtual container, act as an 'iframe'-->
-<module key="mt://yks/Jsx/Box" mandatory="true" class="Box" match="Doms.box_mask">
-  <dep key="mt://yks/Jsx/Screen"/>
-</module>
+  </package>
 
 
 
-<!--Extend a basic text input into a small but usefull calendar-->
-<module key="mt://yks/Utilities/DatePicker" class="DatePicker" match="input.input_time">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-<!--Provide a very light Rich Text Editor for editing html contents-->
-<module key="mt://yks/Utilities/Rte/Wyzzie" class="Wyzzie" match="textarea.wyzzie">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-<!--Autocompleter-->
-<module key="mt://yks/Utilities/Completer" class="Wyzzie" match="textarea.wyzzie">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-
-<!--Toggler is a very light Accordion like-->
-<module key="mt://yks/Interface/Toggler" class="Completer">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-
-<module key="mt://yks/Interface/ShowCase" mandatory="true">
-  <dep key="mt://yks/Doms"/>
-</module>
-<module key="mt://yks/Math/Matrix" mandatory="true">
-  <dep key="mt://yks/Doms"/>
-</module>
-
-
-
-</config>
+    <dep key="mootools.lite"/>
+  </package>
+</js>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<js>
+  <package name="yks.maths">
+    <module key="path://yks/Math/Matrix.js"/>
+    <module key="path://yks/Math/Matrix.Functions.js"/>
+    <module key="path://yks/Canvas/Canvas.js"/>
+    <module key="path://yks/Canvas/Projection.js"/>
+    <module key="path://yks/Math/Functions.js"/>
+  </package>
+  <package name="yks.interface">
+    <module key="path://yks/Interface/ShowCase.js" expose="ShowCase">
+      <dep key="yks.core"/>
+      <dep key="yks.maths"/>
+      <description>A cool showcase</description>
+    </module>
+    <module key="path://yks/Utilities/Imgs/Thumbnailer.avatar.js" expose="Thumbnailer">
+      <description>A tiny image thumbnailer</description>
+    </module>
+    <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio">
+      <description>Add a custom design for checkboxes</description>
+    </module>
+    <module key="path://yks/Interface/Title.js" expose="Title" match="img.button.effects">
+      <description>Title</description>
+    </module>
+  </package>
+</js>

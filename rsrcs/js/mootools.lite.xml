@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<js>
+  <package name="mootools.lite">
+<!-- core min -->
+    <dep key="Core"/>
+    <dep key="Native"/>
+    <dep key="Class"/>
+    <dep key="Element"/>
+    <dep key="path://mt.core/Utilities/Selectors.js"/>
+    <dep key="path://mt.core/Utilities/DomReady.js"/>
+    <dep key="path://mt.core/Utilities/JSON.js"/>
+    <dep key="Fx"/>
+<!-- more min -->
+    <dep key="path://mt.more/Class/Class.Binds.js"/>
+    <dep key="path://mt.more/Native/Array.Extras.js"/>
+    <dep key="path://mt.more/Fx/Fx.Elements.js"/>
+    <dep key="path://mt.more/Utilities/Assets.js"/>
+  </package>
+</js>

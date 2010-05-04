@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<js>
+  <package name="yks">
+    <dep key="path://mt.more/Drag/Drag.Move.js" head="true"/>
+  </package>
+</js>
