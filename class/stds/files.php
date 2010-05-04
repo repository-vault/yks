@@ -110,6 +110,13 @@ class files {
 
   public static function download($file, $filename = false, $mime_type = false ){
 
+        //http://support.microsoft.com/kb/812935
+    header_remove("Set-Cookie");  header_remove("Pragma"); header_remove("Cache-Control");
+
+    //header("Accept-Ranges: bytes"); //no need
+    //header("Content-Transfer-Encoding: binary"); //no need
+    //header(sprintf("Content-Length:%d",filesize($file))); //force !chunked
+
     if($mime_type)
         header($mime_type===true //auto-detection
             ? "Content-Type: text/".self::ext($filename).";charset=UTF-8"

@@ -39,7 +39,11 @@ function bool($val,$str=false){
 }
 
 
-
+if(!function_exists("header_remove")) {
+  function header_remove($header_name) { //5.3
+    header("$header_name:", true);
+  }
+}
 
 function ip2int($ip){return sprintf("%u",ip2long($ip));}
 function vals($enum,$chld="val"){
