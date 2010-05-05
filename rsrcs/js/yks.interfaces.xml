@@ -8,19 +8,47 @@
     <module key="path://yks/Math/Functions.js"/>
   </package>
   <package name="yks.interface">
-    <module key="path://yks/Interface/ShowCase.js" expose="ShowCase">
+    <dep key="yks.classes"/>
+    <module key="path://yks/Utilities/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date" head="true">
+      <dep key="yks.core"/>
+      <description>Extend a basic text input into a small but usefull calendar</description>
+    </module>
+    <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie" head="true">
+      <dep key="yks.core"/>
+      <description>Provide a very light Rich Text Editor for editing html contents</description>
+    </module>
+    <module key="path://yks/Utilities/Completer.js" expose="Completer" head="true">
+      <dep key="yks.core"/>
+      <description>Autocomplete</description>
+    </module>
+    <module key="path://yks/Interface/Forms.nullable.js" expose="Jsx.Form.Nullable" matches="form.nullable" head="true">
+      <dep key="yks.core"/>
+      <description>Nullable forms</description>
+    </module>
+    <module key="path://yks/Interface/Switcher.js" expose="Switcher" head="true">
+      <dep key="yks.core"/>
+    </module>
+    <module key="path://yks/Interface/Toggler.js" expose="Toggler" matches="div.toggle_zone" head="true">
+      <dep key="yks.core"/>
+      <description>Toggler is a very light Accordion like</description>
+    </module>
+    <module key="path://yks/Interface/ShowCase.js" expose="ShowCase" head="true">
       <dep key="yks.core"/>
       <dep key="yks.maths"/>
       <description>A cool showcase</description>
     </module>
-    <module key="path://yks/Utilities/Imgs/Thumbnailer.avatar.js" expose="Thumbnailer">
+    <module key="path://yks/Utilities/Imgs/Thumbnailer.avatar.js" expose="Thumbnailer" head="true">
       <description>A tiny image thumbnailer</description>
     </module>
-    <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio">
+    <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio" head="true">
       <description>Add a custom design for checkboxes</description>
     </module>
-    <module key="path://yks/Interface/Title.js" expose="Title" match="img.button.effects">
+    <module key="path://yks/Interface/Title.js" expose="Title" match="img.button.effects" head="true">
       <description>Title</description>
     </module>
+    <dep key="path://mt.more/Fx/Fx.Accordion.js" head="true"/>
+    <dep key="path://mt.core/Utilities/Cookie.js" head="true"/>
+    <dep key="path://mt.more/Drag/Slider.js" head="true"/>
+    <dep key="path://mt.more/Fx/Fx.Scroll.js" head="true"/>
   </package>
 </js>

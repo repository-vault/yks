@@ -2,6 +2,7 @@
 <js>
   <package name="yks">
     <package name="yks.core">
+      <dep key="mootools.lite"/>
       <module key="path://yks.root/constants.js">
         <dep key="yks.libs"/>
         <description>yks constants</description>
@@ -52,45 +53,13 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Global Screen controler</description>
       </module>
-      <module key="path://yks/Jsx/Box.js" expose="Box" matches="Doms.box_mask">
+<!-- Doms.box_mask -->
+      <module key="path://yks/Jsx/Box.js" expose="Box" matches=".box">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>
         <description>Root of the Ex/Yks JS layer, defined a virtual container, act as an 'iframe'</description>
       </module>
     </package>
-    <package name="yks.interface">
-      <dep key="yks.classes"/>
-      <module key="path://yks/Utilities/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date">
-        <dep key="yks.core"/>
-        <description>Extend a basic text input into a small but usefull calendar</description>
-      </module>
-      <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie">
-        <dep key="yks.core"/>
-        <description>Provide a very light Rich Text Editor for editing html contents</description>
-      </module>
-      <module key="path://yks/Utilities/Completer.js" expose="Completer">
-        <dep key="yks.core"/>
-        <description>Autocomplete</description>
-      </module>
-      <module key="path://yks/Interface/Forms.nullable.js" expose="Jsx.Form.Nullable" matches="form.nullable">
-        <dep key="yks.core"/>
-        <description>Nullable forms</description>
-      </module>
-
-      <module key="path://yks/Interface/Switcher.js" expose="Switcher">
-        <dep key="yks.core"/>
-      </module>
-
-      <module key="path://yks/Interface/Toggler.js" expose="Toggler" matches="div.toggle_zone">
-        <dep key="yks.core"/>
-        <description>Toggler is a very light Accordion like</description>
-      </module>
-
-
-  </package>
-
-
-
-    <dep key="mootools.lite"/>
+    <dep key="yks.interface"/>
   </package>
 </js>
