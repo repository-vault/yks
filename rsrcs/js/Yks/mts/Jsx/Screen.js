@@ -23,7 +23,7 @@ var Screen = {
   },
 
   boxer:function(anchor, options){
-    var old = this.boxes_list[options.box_name],tmp = false;
+    var old = this.getBox(options.box_name) , tmp = false;
     if(old){
         $(old).fireEvent('unload');
         tmp = new Box( anchor.replaces( $(old) ), $merge(options,
@@ -39,6 +39,9 @@ var Screen = {
     return tmp;
   },
 
+  getBox:function(box_name){
+    return this.boxes_list[box_name];
+  },
 
 
   modaler:function(box){

@@ -15,7 +15,8 @@ var Jsx = new Class({
 
   initialize:function(options,anchor){
     this.setOptions(options);
-    this.box=(this.anchor=$(anchor)).getBox();
+    this.box= (this.anchor=$(anchor)).getBox() || Screen.getBox(options.target);
+ 
     var tmp = this.anchor.retrieve('jsx');
     if(tmp) this.rbx = tmp.rbx;
  },
