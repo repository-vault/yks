@@ -1,5 +1,9 @@
 
 Window.implement({
+  $: function(el, nc){
+    if(el && el.toElement) return el.toElement();
+    return document.id(el, nc, this.document);
+  },
 
   $E: function(selector,filter){
     return ($(filter) || $(this.document.documentElement)).getElement(selector);

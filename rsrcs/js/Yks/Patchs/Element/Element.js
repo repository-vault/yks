@@ -2,6 +2,7 @@
 Element.implement({
   dispose: function(){
     if(this.fireEvent) $(this).fireEvent("onRemove");
+        //legacy code here
     return (this.parentNode) ? this.parentNode.removeChild(this): this;
   },
 
@@ -19,6 +20,7 @@ Element.implement({
 
   get: function(prop,force){
     if(force) return this.getAttribute(prop, 2);
+    //legacy code here
     var property = Element.Properties.get(prop);
     return (property && property.get) ? property.get.apply(this, Array.slice(arguments, 1)) : this.getProperty(prop);
   },
