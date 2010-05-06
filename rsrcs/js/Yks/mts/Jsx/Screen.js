@@ -25,8 +25,8 @@ var Screen = {
   boxer:function(anchor, options){
     var old = this.boxes_list[options.box_name],tmp = false;
     if(old){
-        old.anchor.fireEvent('unload');
-        tmp = new Box( anchor.replaces(old), $merge(options,
+        $(old).fireEvent('unload');
+        tmp = new Box( anchor.replaces( $(old) ), $merge(options,
             old.fly?{modal_box:old.modal_box,fly:true,place:old.getPosition()}:{fly:false},
             old.opener && (options.opener.box_name==options.box_name)?{opener:old.opener}:false
         ));
