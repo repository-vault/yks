@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<js>
+  <package name="yks.tmp">
+    <module key="path://yks.root/tmp/nav.js"/>
+  </package>
+</js>
