@@ -29,7 +29,7 @@ class js_packer {
   public function feed($files){
     if(!is_array($files)) $files = array($files);
 
-    $files = array_map(array($this, 'resolve'), $files); //comment this ?
+    $files = array_combine($files, array_map(array($this, 'resolve'), $files)); //comment this ?
     $this->files_list = array_merge($this->files_list, $files);
   }
 
