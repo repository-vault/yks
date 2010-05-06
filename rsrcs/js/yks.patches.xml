@@ -18,5 +18,10 @@
     <module key="path://patch/Native/String.js"/>
 <!-- Elements -->
     <module key="path://patch/Element/Element.js"/>
+    <module key="path://patch/Interface/Style.js"/>
+    <module key="path://patch/Utilities/Assets.js">
+      <dep key="yks.libs"/>
+      <dep key="path://mt.more/Utilities/Assets.js"/>
+    </module>
   </package>
 </js>

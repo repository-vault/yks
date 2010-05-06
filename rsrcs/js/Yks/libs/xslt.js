@@ -29,7 +29,8 @@ function transformer_xslt(xsl_lnk){
                 return this.proc.transformToFragment(xml_doc,document);
         } return XML.makesoup(xml_doc.transformNode(this.xsl_xml));
     }
-}
+};
+
 
 
 function transformer_dummy(){
@@ -38,4 +39,5 @@ function transformer_dummy(){
         var ret = XML.makesoup(str);
         return ret;
     }
-}
+};
+

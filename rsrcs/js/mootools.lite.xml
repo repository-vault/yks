@@ -14,6 +14,5 @@
     <dep key="path://mt.more/Class/Class.Binds.js"/>
     <dep key="path://mt.more/Native/Array.Extras.js"/>
     <dep key="path://mt.more/Fx/Fx.Elements.js"/>
-    <dep key="path://mt.more/Utilities/Assets.js"/>
   </package>
 </js>
