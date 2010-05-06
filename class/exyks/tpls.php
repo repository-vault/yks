@@ -80,7 +80,10 @@ class tpls {
     self::$entities = array_merge(self::$entities, $vals);
  }
 
- static function js_add($href,$defer=false){
+ static function js_add($href, $defer=false){
+    if($href == "/?/Yks/Scripts/Js")
+        $href .= "//".substr(data::fetch("JS_CACHE_KEY"),0,5);
+
     $tmp = exyks::$head->scripts->addChild("js");
     if($defer)$tmp['defer']="true";
     $tmp['src']=$href;
