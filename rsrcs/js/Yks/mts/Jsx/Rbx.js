@@ -1,11 +1,13 @@
 
 var Rbx = new Class({
-  Declare : ['Rbx'],
+  Occlude : 'Rbx',
   fx:false,
 
   initialize:function(anchor, box){
     anchor= anchor || $('rbx') || $("container") || $E("body");
-    if(Rbx.extended(anchor)) return;
+
+    if(this.occlude(anchor)) return;
+
     this.anchor = anchor;
     if(box) { this.box = box; return ; }
 

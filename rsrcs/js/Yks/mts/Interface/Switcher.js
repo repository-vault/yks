@@ -1,6 +1,6 @@
 
 var Switcher = new Class ({
-  Declare : ['Switcher'],
+  Declare : 'Switcher',
 
   anchor:false,
   children:false,

@@ -1,6 +1,6 @@
 
 var DatePicker = new Class({
-  Declare : ['DatePicker'],
+  Occlude : 'DatePicker',
   Binds : ['create', 'destroy', 'close', 'outClick'],
 
   options:{
@@ -17,7 +17,9 @@ var DatePicker = new Class({
   active:false,
   old_value:null,
 
-  initialize: function(anchor){ if(DatePicker.extended(anchor)) return;
+  initialize: function(anchor){
+    if(this.occlude(anchor)) return;
+
     this.anchor = anchor;
     if(this.anchor.hasClass('input_time')) {
         this.options.date_format = 'dd/mm/yyyy hh:ii';

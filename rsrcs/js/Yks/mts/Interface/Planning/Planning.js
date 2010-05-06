@@ -1,6 +1,6 @@
 var Planning = new Class({
   Binds: ['brush_lambda_apply', 'brush_select', 'stop'],
-  Declare:['Planning'],
+  Declare: 'Planning',
 
   paint_area_mask:".cell",
 
@@ -88,10 +88,12 @@ var Planning = new Class({
     if($type(brush_key) == 'Brush') brush_key = brush_key.key;
     if(!(brush = this.brushes_list[brush_key])) return false;
     this.brush = brush;
-  }
+  },
 
+  toElement:function(){
+    return this.anchor;
+  }
 
 });
 
 
-$.Planning = function(planning){ return planning.anchor; }

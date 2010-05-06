@@ -1,5 +1,5 @@
 var Brush = new Class({
-  Declare : ['Brush'],
+  Declare : 'Brush',
 
   initialize:function(key, use){
     this.key = key;

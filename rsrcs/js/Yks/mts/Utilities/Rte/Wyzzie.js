@@ -1,7 +1,7 @@
 var blank_frame;
 
 var Wyzzie = new Class({
-  Declare : ['Wyzzie'],
+  Declare : 'Wyzzie',
 
   focus: function() { (this.designed ?  this.win : this.area).focus(); },
 

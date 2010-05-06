@@ -4,9 +4,11 @@ As for Jsx.Form, initialize should be minimal, and fire only when necessary
 
 Jsx.A = new Class({
   Extends: Jsx,
-  Declare : ['Jsx.A'],
+  Occlude : 'Jsx.A',
 
-  initialize:function(el){  if(Jsx.A.extended(el)) return;
+  initialize:function(el){
+    if(this.occlude(el)) return;
+
     if(el.get('tag')!='a') el.addClass('click');
     this.anchor = el.addEvent('click', this.click.bind(this));
   },

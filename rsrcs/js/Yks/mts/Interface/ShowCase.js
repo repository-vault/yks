@@ -1,5 +1,5 @@
 var ShowCase = new Class({
-  Declare : ['ShowCase'],
+  Declare : 'ShowCase',
 
   canvas:null,
   ctx:null,

@@ -5,7 +5,7 @@
  */
 
 var Canvas = new Class({
-  Declare:['Canvas'],
+  Declare: 'Canvas',
 
   canvas:null,
   ctx:null,
@@ -212,8 +212,10 @@ var Canvas = new Class({
   perspective:function(points){
     this.points = points;
     if(this.image) this.update();
+  },
+
+  toElement:function(){
+    return this.canvas;
   }
 
 });
-
-$.Canvas = function(canvas){ return canvas.canvas; }

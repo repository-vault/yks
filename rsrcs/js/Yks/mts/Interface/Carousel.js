@@ -1,7 +1,7 @@
 // Caroussel is the main application, while Showcase is only a viewport
 
 var Carousel = new Class({
-  Declare : ['Carousel'],
+  Declare : 'Carousel',
   Implements: [Events],
 
   movies_urls:[],

@@ -5,12 +5,15 @@
 */
 
 var Reflection = new Class({
-  Declare : ['Reflection'],
+  Occlude : 'Reflection',
   options: {
     height: 0.33,
     opacity: 0.8
   },
-  initialize: function(img, options){ if(Reflection.extended(img))return;
+  initialize: function(img, options){
+
+    if(this.occlude(img)) return;
+
     this.options=$merge(this.options,options);
     this.img=img;
     var loader= {bind:this};

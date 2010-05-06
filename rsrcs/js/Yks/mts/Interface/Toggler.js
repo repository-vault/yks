@@ -1,5 +1,5 @@
 var Toggler = new Class({
-  Declare : ['Toggler'],
+  Declare : 'Toggler',
 
   anchor:false,
   zone:false,

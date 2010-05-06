@@ -1,6 +1,10 @@
 
 var CheckBox = new Class({
-  initialize:function(el){ if(CheckBox.extended(el)) return;
+
+  Occlude: 'CheckBox',
+
+  initialize:function(el){
+    if(this.occlude(el)) return;
 
     el.setStyle('display', 'none');
 

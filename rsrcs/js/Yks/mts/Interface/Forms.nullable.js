@@ -1,6 +1,9 @@
 Jsx.Form.Nullable = new Class({
+  Occlude: 'Jsx.Form.Nullable',
+
   initialize:function(form){
-    if(Jsx.Form.Nullable.extended(form)) return;
+
+    if(this.occlude(form)) return;
 
     form.getInputs().each(function(el){
         var togglable = el.type == 'text' || el.get('tag') == 'select';

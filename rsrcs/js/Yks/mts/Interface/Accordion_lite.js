@@ -1,6 +1,6 @@
 
 var Accordion_lite=new Class({
-  Declare : ['Accordion_lite'],
+  Declare : 'Accordion_lite',
 
   options:{},
   active_index:0,

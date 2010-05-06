@@ -4,9 +4,12 @@
 
 Jsx.Form = new Class({
   Extends: Jsx,
-  Declare : ['Jsx.Form'],
+  Occlude : 'Jsx.Form',
   action_image:false,
-  initialize:function(form){  if(Jsx.Form.extended(form)) return;
+  initialize:function(form){
+
+    if(this.occlude(form)) return;
+
     this.anchor = form.store('jsx',this).addEvent('submit',this.submit.bind(this));
     var self = this;
     form.getElements('input[type=image]').addEvent('click',function(event){

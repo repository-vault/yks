@@ -1,17 +1,20 @@
 var Box = new Class({
   Implements: [Events],
-  Declare : ['Box'],
+  Occlude : 'Box',
 
   box_name:'',
   url:'',
   rbx:false,
   opener:false,
 
-  initialize:function(anchor,options){  if(Box.extended(anchor)) return;
+  initialize:function(anchor,options){
+
+    if (this.occlude(anchor)) return ;
 
     options = options || {};
     this.anchor = anchor.store('box',this);
     this.box_name = options.box_name || anchor.id || Screen.get_lambda_box();
+
     this.fly = $defined(options.fly)?options.fly: (this.anchor.hasClass('fly') ||false);
 
     var src = anchor.getAttribute('src');
@@ -111,12 +114,15 @@ var Box = new Class({
         if(this.opener) this.opener.focus();
     }.bind(this));
     return false;
+  },
+
+  toElement:function(){
+    return this.anchor;
   }
 
 });
 
 
-$.Box = function(box){ return box.anchor; }
 
 
 Element.implement({
@@ -128,3 +134,4 @@ Element.implement({
     this.store('box', box);
     return box;
 }});
+

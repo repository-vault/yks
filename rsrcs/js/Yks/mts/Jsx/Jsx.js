@@ -1,6 +1,6 @@
 var Jsx = new Class({
- Implements: [Events, Options],
-  Declare : ['Jsx'],
+  Implements: [Events, Options],
+  Declare : 'Jsx',
   rbx:false,
   
   options: {

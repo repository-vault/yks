@@ -1,14 +1,16 @@
 
 var Thumbnailer=new Class({
   Implements:[Events],
-  Declare : ['Thumbnailer'],
+  Occlude : 'Thumbnailer',
 
   resize_mode:false,
   move_mode:false,
   limits:{w:20,h:20},
   clip:{xr:0,xl:0,yu:0,yd:0},
 
-  initialize:function(img, options){  if(Thumbnailer.extended(img)) return;
+  initialize:function(img, options){
+    if(this.occlude(img)) return;
+
     this.options=options||{};
     this.img=img;
 
