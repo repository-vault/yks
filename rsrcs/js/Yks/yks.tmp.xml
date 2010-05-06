@@ -2,5 +2,6 @@
 <js>
   <package name="yks.tmp">
     <module key="path://yks.root/tmp/nav.js"/>
+    <module key="path://yks.root/tmp/nav2.js"/>
   </package>
 </js>
