@@ -48,6 +48,19 @@ function mask_join($glue,$array,$mask){
 }
 
 
+
+function json_encode_lite($json){
+    $json = json_encode($json);
+    $json = preg_replace("#\\\/(?!script)#", "/", $json);
+
+    $json = preg_replace("#([\"])([0-9]+)\\1#","$2",$json);//dequote ints
+    $json = unicode_decode($json);
+    $json = str_replace("&quot;","\\\"",$json);
+
+    return $json;
+}
+
+
 function array_extract($array, $col, $clean=false){
     $ret=array();
     if(is_array($col)) foreach($array as $k=>$v) $ret[$k] = array_sort($v, $col);

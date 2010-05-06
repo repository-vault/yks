@@ -38,12 +38,9 @@ class jsx {
         $eval = jsx::JS_EVAL.':function(jsx){'.$eval.'}';
     }
 
-    $json = str_replace(array('<\/','\/>'),array('</','/>'),json_encode($var));
+    $json = json_encode_lite($var);
+    //eval'd code is untouched
     if($eval){if($var)$json=substr($json,0,-1).",$eval}"; else $json='{'.$eval.'}';}
-
-    $json = preg_replace("#([\"])([0-9]+)\\1#","$2",$json);//dequote ints
-    $json = unicode_decode($json);
-    $json = str_replace("&quot;","\\\"",$json);
 
     return locales_manager::translate($json);
   }
