@@ -5,11 +5,11 @@ $uids = array_filter(explode("," , $argv0));
 $compress = false;
 
 classes::register_class_paths(array(
-   "js_node"      => CLASS_PATH."/dsp/js/node.php",
-   "js_module"    => CLASS_PATH."/dsp/js/module.php",
-   "js_package"   => CLASS_PATH."/dsp/js/package.php",
-   "js_packager"  => CLASS_PATH."/dsp/js/packager.php",
-   "js_packer"    => CLASS_PATH."/dsp/js/packer.php",
+   "js_node"      => CLASS_PATH."/exts/js_loader/node.php",
+   "js_module"    => CLASS_PATH."/exts/js_loader/module.php",
+   "js_package"   => CLASS_PATH."/exts/js_loader/package.php",
+   "js_packager"  => CLASS_PATH."/exts/js_loader/packager.php",
+   "js_packer"    => CLASS_PATH."/exts/js_loader/packer.php",
 ));
 
 $yks_root = RSRCS_PATH."/js/Yks";
