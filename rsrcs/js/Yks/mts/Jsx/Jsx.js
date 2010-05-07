@@ -32,7 +32,7 @@ var Jsx = new Class({
         tmp = tmp?Urls.jsx_eval(tmp.firstChild.nodeValue):(this.options.box||{});
         if(chain) tmp.chain = chain; chain = false;
 
-        this.transform(tmp, render_side );
+        this.transform(tmp, headers['yks-render-side'] );
       } else if($type(ret)=="object") {
          this.js_valid(ret);
       }if(chain && !(ret.error||ret.stop)) chain();

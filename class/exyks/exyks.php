@@ -189,12 +189,11 @@ class exyks {
 
     if(!JSX) {
         jsx::set(array(
-          "render_side" => exyks::retrieve('RENDER_SIDE'),
-          "xsl_engine"  => XSL_ENGINE,
-          "site_code"   => SITE_CODE,
-          "cache_path"  => CACHE_REL,
-          "href_fold"   => "?$href_fold",
-          "screen_id"   => 10
+          "xsl_engine" => XSL_ENGINE,
+          "site_code"  => SITE_CODE,
+          "cache_path" => CACHE_REL,
+          "href_fold"  => "?$href_fold",
+          "screen_id"  => 10
         ));
 
         $meta = self::$head->addChild("meta");
@@ -224,6 +223,7 @@ class exyks {
 
     header(self::$headers[$render_style]);
     header("Cache-Control: no-cache");
+    header("Yks-Render-Side: $render_side");
 
     if(true || self::$customs || $render_side=="server"){ // || optim XML
         $doc = xml::load_string($str);
