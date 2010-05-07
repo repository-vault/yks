@@ -1,6 +1,7 @@
 var XHTML = "http://www.w3.org/1999/xhtml",
     amp = '&';
 
+var CRLF = "\r\n";
 
 if(!document.location)
     document.location = window.location; 
