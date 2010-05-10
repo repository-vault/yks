@@ -8,16 +8,16 @@
         <description>yks constants</description>
       </module>
       <package name="yks.libs">
-        <module key="path://yks.libs/xhr.js">
+        <module key="path://yks.root/libs/xhr.js">
           <description>http_lnk callback function</description>
         </module>
-        <module key="path://yks.libs/xslt.js">
+        <module key="path://yks.root/libs/xslt.js">
           <description>XSLT rendering engine</description>
         </module>
-        <module key="path://yks.libs/urls.js">
+        <module key="path://yks.root/libs/urls.js">
           <description>URI management lib</description>
         </module>
-        <module key="path://yks.libs/urls.js">
+        <module key="path://yks.root/libs/urls.js">
           <description>URI management lib</description>
         </module>
       </package>

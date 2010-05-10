@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <js>
   <package name="yks.interface">
-    <module key="path://patch/Drag/Drag.Move.js" head="true">
+    <module key="path://yks.root/Patchs/Drag/Drag.Move.js" head="true">
       <dep key="path://mt.more/Drag/Drag.Move.js" patch="true"/>
     </module>
   </package>
   <package name="yks.core">
-    <module key="path://patch/Utilities/Cookie.js" head="true">
+    <module key="path://yks.root/Patchs/Utilities/Cookie.js" head="true">
       <dep key="path://mt.core/Utilities/Cookie.js" patch="true"/>
     </module>
-    <module key="path://patch/Class/Class.Occlude.js"/>
-    <module key="path://patch/Core/Window.js"/>
+    <module key="path://yks.root/Patchs/Class/Class.Occlude.js"/>
+    <module key="path://yks.root/Patchs/Core/Window.js"/>
 <!-- Extends Natives and provides new functions -->
-    <module key="path://patch/Native/Array.js"/>
-    <module key="path://patch/Native/Hash.js"/>
-    <module key="path://patch/Native/Number.js"/>
-    <module key="path://patch/Native/String.js"/>
+    <module key="path://yks.root/Patchs/Native/Array.js"/>
+    <module key="path://yks.root/Patchs/Native/Hash.js"/>
+    <module key="path://yks.root/Patchs/Native/Number.js"/>
+    <module key="path://yks.root/Patchs/Native/String.js"/>
 <!-- Elements -->
-    <module key="path://patch/Element/Element.js"/>
-    <module key="path://patch/Interface/Style.js"/>
-    <module key="path://patch/Utilities/Assets.js">
+    <module key="path://yks.root/Patchs/Element/Element.js"/>
+    <module key="path://yks.root/Patchs/Interface/Style.js"/>
+    <module key="path://yks.root/Patchs/Utilities/Assets.js">
       <dep key="yks.libs"/>
       <dep key="path://mt.more/Utilities/Assets.js"/>
     </module>
