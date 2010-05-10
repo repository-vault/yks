@@ -35,13 +35,10 @@ $package_root = "yks";
 
 
 $packer  = new js_packer();
-$packer->register("mt.core", "$mt_root/core");
-$packer->register("mt.more", "$mt_root/more");
-$packer->register("yks.root", $yks_root);
-$packer->register("yks.libs", "$yks_root/libs");
-$packer->register("yks", "$yks_root/mts");
-$packer->register("patch", "$yks_root/Patchs");
-
+$packer->register("mt.core",  "$mt_root/core");
+$packer->register("mt.more",  "$mt_root/more");
+$packer->register("yks.root", "$yks_root");
+$packer->register("yks",      "$yks_root/mts");
 
 if($uids) {
 
