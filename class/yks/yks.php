@@ -24,24 +24,42 @@ class yks
     if($load_config) self::load_config(SERVER_NAME);
   }
 
-  public static function load_config($host = SERVER_NAME){
 
-    define('YKS_CONFIG_CACHE', isset($_SERVER['YKS_CONFIG_CACHE']));
-    define('YKS_CONFIG_FORCE', isset($_SERVER['YKS_CONFIG_FORCE']));
-
-
-    self::$get = new yks();
-
+  private static function find_config_file($host){
+    static $hashkey = false;
     if(preg_match("#[^a-z0-9_.-]#", $host))
         yks::fatality(yks::FATALITY_CONFIG, "Invalid host name");
 
     self::$config_file = CONFIG_PATH."/$host.xml";
 
+    if(is_file(self::$config_file))
+      return;
+
+    $files = array_map('basename', glob(CONFIG_PATH."/*.xml")); rsort($files);
+    foreach($files as $file_name) {
+        if(!soft_match($file_name, "$host.xml")) continue;
+        self::$config_file = CONFIG_PATH."/$file_name";
+        break;
+    }
+
     if(!is_file(self::$config_file))
         yks::fatality(yks::FATALITY_CONFIG, self::$config_file." not found");
+
+  }
+
+  public static function load_config($host = SERVER_NAME){
+
+    define('YKS_CONFIG_CACHE', isset($_SERVER['YKS_CONFIG_CACHE']));
+    define('YKS_CONFIG_FORCE', isset($_SERVER['YKS_CONFIG_FORCE']));
+
+    self::find_config_file($host);
+
+    self::$get = new yks();
+
     $GLOBALS['config'] = $config =  yks::$get->config;
     if(!is_a($config, "config"))
         yks::fatality(yks::FATALITY_CONFIG, "\$config is no config");
+
 
         //******************** Usefull constants **************
 
