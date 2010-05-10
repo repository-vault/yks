@@ -11,11 +11,6 @@ function paths_merge($path_root, $path, $default="."){
     return realpath("$path_root/$path");
 }
 
-function soft_match($mask, $str, $full = true){
-    $mask = strtr($mask, array('.'=> '\.', '*'=>'.*'));
-    $mask = sprintf($full?'#^%s$#':'#%s#', $mask);
-    return preg_match($mask, $str);
-}
 
     //return the first non empty value
 function pick(){ $args = func_get_args(); return reset(array_filter($args)); }

@@ -30,20 +30,14 @@ class yks
     if(preg_match("#[^a-z0-9_.-]#", $host))
         yks::fatality(yks::FATALITY_CONFIG, "Invalid host name");
 
-    self::$config_file = CONFIG_PATH."/$host.xml";
-
-    if(is_file(self::$config_file))
-      return;
-
-    $files = array_map('basename', glob(CONFIG_PATH."/*.xml")); rsort($files);
-    foreach($files as $file_name) {
-        if(!soft_match($file_name, "$host.xml")) continue;
-        self::$config_file = CONFIG_PATH."/$file_name";
-        break;
+    $host  = explode(".", $host);
+    for($a = count($host); $a>0; $a--) {
+        $host_part = join('.', array_slice($host, -$a));
+        self::$config_file = CONFIG_PATH."/$host_part.xml";
+        if(is_file(self::$config_file))
+            return;
     }
-
-    if(!is_file(self::$config_file))
-        yks::fatality(yks::FATALITY_CONFIG, self::$config_file." not found");
+    yks::fatality(yks::FATALITY_CONFIG, self::$config_file." not found");
 
   }
 
