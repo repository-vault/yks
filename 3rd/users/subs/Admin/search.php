@@ -2,7 +2,7 @@
 
 if($action=="user_filter")try {
     $q=$_POST['user_name']; $pattern  = $q;
-    $mask = bool($_POST['search_strict'])?"LIKE '%s'":"LIKE '%%%s%%'";
+    $mask = bool($_POST['search_strict'])?"ILIKE '%s'":"ILIKE '%%%s%%'";
     if($pattern) $pattern= sprintf($mask,$pattern);
 
     $data=array();
@@ -12,7 +12,6 @@ if($action=="user_filter")try {
 	$data['user_name'] = array('sql'=>$pattern);
     }
     $data = array_filter($data);
-    error_log(print_r($data,1));
     $user_filter['depth']=(bool)$_POST['search_deep'];
 
     $user_filter['where']=$data;
