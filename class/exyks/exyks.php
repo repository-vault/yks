@@ -37,7 +37,7 @@ class exyks {
     include CLASS_PATH."/exyks/browser.php"; //define $engine
 
     $default = ROBOT||PLATFORM_MOBILE ? "html" : DEFAULT_MODE;
-    $mode =  isset($_SERVER['HTTP_SCREEN_ID']) || isset($_POST['jsx']) ?  "jsx" : $default;
+    $mode =  isset($_SERVER['HTTP_YKS_JSX']) || isset($_POST['jsx']) ?  "jsx" : $default;
     define('JSX', $mode == "jsx");
 
     define('XSL_ENGINE', $engine);
