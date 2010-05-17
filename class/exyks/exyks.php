@@ -42,6 +42,7 @@ class exyks {
 
     define('XSL_ENGINE', $engine);
 
+    self::store("USER_TZ", IDATEZ);
     self::store('RENDER_MODE', JSX?"jsx":"full");
     self::store('RENDER_SIDE', ($mode=="html"||PLATFORM_MOBILE)?"server":"client" ); //rbx is a render_side too
 

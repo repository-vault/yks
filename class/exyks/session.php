@@ -32,8 +32,20 @@ class exyks_session {
 
   public static function connect(){
     if(self::$sess_loaded)
-        return sess::connect();
-    session_start();
+        sess::connect();
+    else session_start();
+
+    $user_tz = $_SESSION['client']['tz'];
+
+    if(is_null($user_tz)) {
+        $_SESSION['client']['tz']  = IDATEZ;
+    } elseif($_SERVER['HTTP_YKS_CLIENT_TZ']) {
+        $_SESSION['client']['tz']  = (int)$_SERVER['HTTP_YKS_CLIENT_TZ'];
+    }
+
+    $user_tz  = $_SESSION['client']['tz'];
+    exyks::store("USER_TZ", $user_tz);
+
   }
 
   public static function load(){

@@ -145,20 +145,10 @@ class dsp{
   }
 
   static function datef($date=_NOW,$format=DATE_MASK){
-    return self::date($date, preg_replace("#[a-z]#i",'$$0', $format));
+    return date::sprintfc($date, preg_replace("#[a-z]#i",'$$0', $format));
   }
   static function date($date=_NOW,$format=DATE_DAY,$format_rel=false){
-
-    if(is_null($date)) return "&date.undefined;";
-    static $rs=false; if(!$rs) $rs=array(
-            date('z/Y',_NOW)=>'&date.today;',
-            date('z/Y',_NOW-86400)=>'&date.yesterday;');
-    list($d,$m,$n,$Y,$H,$i,$s,$z,$N,$O)=explode(',',date("d,m,n,Y,H,i,s,z,N,O",$date));
-    if($z<79 or $z>354)$a=4; elseif($z<172)$a=1; elseif($z<265)$a=2;else $a=3; //a = season
-    if('0/1970'=="$z/$Y") return "&date.0;";
-    if($date==2147483647) return "&date.never;";
-    $t=ceil($n/3); $rel=$rs["$z/$Y"]; 
-    return preg_replace(VAR_MASK,VAR_REPL,$rel&&$format_rel?$format_rel:$format);
+    return date::sprintfc($date, $format, $format_rel);
   }
 
   // Find documentation in the manual

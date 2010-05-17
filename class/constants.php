@@ -81,3 +81,6 @@ define('ATTR_MASK', '%2$s="%1$s"');    //Join masks
 
 define('MASK_INVALID_ENTITIES', "#&(?!lt;|gt;|\#[0-9]+;|quot;|amp;)#");
 
+define('IDATEZ', idate('Z'));
+date_default_timezone_set('UTC');
+
