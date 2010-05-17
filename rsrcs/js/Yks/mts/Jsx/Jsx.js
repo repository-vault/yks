@@ -22,7 +22,7 @@ var Jsx = new Class({
  },
 
   fire:function(chain){
-    this.options.headers = {'Screen-Id':Screen.screen_id};
+    this.options.headers = {'Yks-Jsx':1};
     if(this.options.target) this.options.headers['Content-Target'] = this.options.target;
     http_lnk(this.options, this.options.url, this.options.data, function(ret, headers){
 
