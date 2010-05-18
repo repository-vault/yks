@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="concat" type="string">
+    <param type="string"/>
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+DECLARE
+BEGIN
+   return coalesce($1,'') || coalesce($2,'') || coalesce($3,'');
+END
+</def>
+  </procedure>
+</myks>
