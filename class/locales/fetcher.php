@@ -52,6 +52,12 @@ class locales_fetcher {
     if(!$languages_order) return $done;
 
     $entities = array();
+
+        //register site-specifics errors messages
+    foreach(yks::$get->config->site->errors->iterate("err") as $err)
+        $entities["&err_{$err['code']};"] = $err['sys'];
+
+
     foreach($languages_order as $lang_key){
         $flag_full = "entities_$lang_key";
         $entities = self::load_entities((string)$lang_key, $entities);
@@ -63,6 +69,8 @@ class locales_fetcher {
   private static function load_entities($lang_key, $entities=array()){ 
 
     $files = array();
+
+
     foreach(self::$locale_paths as $path)
         $files = array_merge($files, files::find($path,'\.xml$',files::FIND_FOLLOWLINK));
 
@@ -72,6 +80,7 @@ class locales_fetcher {
     foreach(self::$locale_tables as $table_name)
         $entities = array_merge($entities, locales_sql_scanner::scan_all($table_name, $lang_key));
 
+    
     return $entities;
   }
 
