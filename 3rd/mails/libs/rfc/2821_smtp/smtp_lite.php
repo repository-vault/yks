@@ -37,14 +37,16 @@ class smtp_lite {
     fputs($sock, "EHLO ".$smtp_config['host'].CRLF);
     self::server_sync($sock, "250");
 
-    fputs($sock, "AUTH LOGIN".CRLF);
-    self::server_sync($sock, "334");
+    if($smtp_config['login'] ) {
+        fputs($sock, "AUTH LOGIN".CRLF);
+        self::server_sync($sock, "334");
 
-    fputs($sock, base64_encode($smtp_config['login']).CRLF);
-    self::server_sync($sock, "334");
+        fputs($sock, base64_encode($smtp_config['login']).CRLF);
+        self::server_sync($sock, "334");
 
-    fputs($sock, base64_encode($smtp_config['pass']).CRLF);
-    self::server_sync($sock, "235");
+        fputs($sock, base64_encode($smtp_config['pass']).CRLF);
+        self::server_sync($sock, "235");
+    }
 
     fputs($sock, "MAIL FROM: <$smtp_sender>".CRLF);
     self::server_sync($sock, "250");
