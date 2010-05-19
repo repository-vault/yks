@@ -17,10 +17,11 @@ Vous êtes ici : <?=$parent_path?><br/>
     </thead>
 <?
 $root_zone = false;
-foreach($access_zones as $access_zone=>$zone_info){
+foreach($access_zones as $access_zone=>$zone_infos){
+
     //root zones are their own parent
-    $current_root = $zone_info['access_zone_parent'] == $access_zone
-        ?'root':$zone_info['access_zone_parent'];
+    $current_root = $zone_infos['access_zone_parent'] == $access_zone
+        ?'root':$zone_infos['access_zone_parent'];
 
     if($root_zone!=$current_root){
         if($root_zone) echo "<tr><td colspan='4'>---</td></tr></tbody>";
@@ -33,9 +34,9 @@ foreach($access_zones as $access_zone=>$zone_info){
     $tmp="<tr class='line_pair'>
         <td class='center'>$access_zone</td>";
     foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl){
-        $parent_value=isset($access[$access_zone][$access_lvl]);
+        $parent_value=isset($access[ $zone_infos['access_zone_path'] ][$access_lvl]);
         $readonly=$parent_value?" disabled='disabled'":'';
-        $checked=$parent_value || isset($user_access[$access_zone][$access_lvl]);
+        $checked=$parent_value || isset($user_access[ $zone_infos['access_zone_path'] ][$access_lvl]);
         $checked=$checked?" checked='checked'":'';
         $tmp.="<td class='align_center'><input type='checkbox' name='access[{$access_zone}][{$access_lvl}]' $checked $readonly/></td>";
     }

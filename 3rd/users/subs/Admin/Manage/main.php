@@ -1,10 +1,6 @@
 <?
 
-
-sql::select("ks_access_zones",true,"*","
-    ORDER BY access_zone=access_zone_parent
-    DESC,access_zone_parent,  access_zone ASC
-"); $access_zones = sql::brute_fetch("access_zone");
+$access_zones = auth::get_access_zones();
 
 $user_infos=users::get_infos_unique($user_id,array('user_name','user_type','auth_type'));
 $user_infos=array_merge($user_infos,sql::row('ks_auth_password',$verif_user));

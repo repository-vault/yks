@@ -3,15 +3,20 @@
 
 class auth {
 
-  private static function get_access_zones(){
-    static $zone_paths = false; if($zone_paths) return $zone_paths;
+  public static function get_access_zones(){
+
+    static $access_zones = false; if($access_zones) return $access_zones;
+
     sql::select("ks_access_zones", true, "
-            access_zone,
+            *,
             IF(access_zone_parent IN(access_zone, 'yks'),
                 access_zone,
                 CONCAT(access_zone_parent,':',access_zone)
-            ) AS access_zone_path");
-    return $zone_paths = sql::brute_fetch("access_zone", "access_zone_path");
+            ) AS access_zone_path",
+            "ORDER BY access_zone=access_zone_parent DESC,
+        access_zone_parent, access_zone ASC");
+
+    return $access_zones = sql::brute_fetch("access_zone");
   }
 
 
@@ -66,10 +71,10 @@ class auth {
   public static function get_access($users_tree = false){
     $access_zones = self::get_access_zones();
 
-    if($users_tree===false)$users_tree = (array)sess::$sess['users_tree'];
+    if($users_tree===false) $users_tree = (array)sess::$sess['users_tree'];
     sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
     $access = array();while(extract(sql::fetch())) {
-        $zone_path = $access_zones[$access_zone];
+        $zone_path = $access_zones[$access_zone]['access_zone_path'];
         $access[$zone_path]=array_merge_numeric(
             $access[$zone_path]?$access[$zone_path]:array(),
             array_flip(array_filter(explode(',',"$access_lvl")))
