@@ -49,7 +49,9 @@ class config extends KsimpleXMLElement {
 
     $file_path = paths_merge(ROOT_PATH, $file_path);
     if(! file_exists($file_path)) return $tmp;
-    $ret = self::load($file_path)->search($search, true); //autocreate
+    $ret = self::load($file_path);
+    if($search) $ret = $ret->search($search, true); //autocreate
+
     foreach($tmp->attributes() as $k=>$v)
         if($k != self::xattr) $ret[$k] = $v; //merge args
 
