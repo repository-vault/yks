@@ -1,4 +1,5 @@
 <?php
+$valid_exts = preg_split( VAL_SPLITTER, $upload_def['exts'],  -1,  PREG_SPLIT_NO_EMPTY);
 
 if(!sess::$connected && !DEBUG){
     jsx::$rbx = true;
@@ -6,49 +7,49 @@ if(!sess::$connected && !DEBUG){
 }
 
 if(!$upload_def){
-    jsx::$rbx=true;
+    jsx::$rbx = true;
     return rbx::error("Unable to load '$upload_type' config, please check config.xml ");
 }
 
 
 if($action=="upload_tmp")try {
-  do {
-    $file=$_FILES['user_file'];
-    if(!is_file($file['tmp_name']))
-        break rbx::error("Le fichier est invalide");
-    if(($file['size']/1024)>$upload_def['size'])
-        break rbx::error("Votre fichier est trop lourd, il ne peut excéder {$upload_def['size']} Ko");
-    $file_ext=strtolower(preg_clean("a-z0-9",strrchr($file['name'],'.')));
-    if(!strpos(",,{$upload_def['exts']},",",$file_ext,"))
-        break rbx::error("Le format de votre fichier n'est pas valide.<br /> Les extensions acceptées sont : {$upload_def['exts']}");
 
+    $file       = $_FILES['user_file'];
+    $file_ext   = files::ext($file['name']);
 
-    $dir=files::create_dir(users::get_tmp_path(sess::$sess['user_id']));
+    if( !is_file($file['tmp_name']) )
+        throw rbx::error("Le fichier est invalide");
+    if( ($file['size']/1024) > $upload_def['size'] )
+        throw rbx::error("Votre fichier est trop lourd, il ne peut excéder {$upload_def['size']} Ko");
+    if(!in_array($file_ext, $valid_exts))
+        throw rbx::error("Le format de votre fichier n'est pas valide.<br />".
+            "Les extensions acceptées sont : ".join(', ', $valid_exts));
 
-    $dest="$upload_type.$upload_flag.$file_ext";
-
+    $dir  = files::create_dir(users::get_tmp_path(sess::$sess['user_id']));
+    $dest = "$upload_type.$upload_flag.$file_ext";
     move_uploaded_file($file['tmp_name'], "$dir/$dest");
-    $data=array(
+
+    rbx::$rbx['upload'] = array(
         'src'         => $upload_src,
         'name'        => $file['name'],
         'ext'         => $file_ext,
         'upload_flag' => $upload_flag,
         'size'        => $file['size'],
-    ); rbx::$rbx['upload'] = $data;
+    );
 
-    apc_delete("upload_$upload_flag");
-    rbx::ok("Le fichier a correctement été envoyé");
-  } while(false);
-}catch(Exception $e){ 
+    storage::delete("upload_$upload_flag");
+    rbx::ok("Le fichier «{$file['name']}» a été attaché");
+} catch(rbx $e) {
+} catch(Exception $e){ 
   error_log($e);
   rbx::error("Upload failure");
 }
 
 
-if($action == "upload_tmp" && rbx::$rbx){
-  if(!JSX)
-      die("<script>window.parent.Doms.wake('Uploader').end('$upload_flag',".json_encode(rbx::$rbx).")</script>");
-}
+if($action == "upload_tmp" && rbx::$rbx &&!JSX)
+  die("<script>with(window.parent){Uploader.end_upload_static('$upload_flag',"
+        .json_encode(rbx::$rbx).", Screen.getBox('upload_file').anchor.getElement('form'))}</script>");
+
 
 
 

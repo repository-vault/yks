@@ -71,7 +71,7 @@ class sess  {
     return true;
   }
 
-  static function load($user_id, $users_tree){
+  static function load($user_id, $users_tree){ //private ? - no, force tree
     sess::$sess     = new user($user_id, $users_tree);
     sess::$sess->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
     sess::$_storage = array();
