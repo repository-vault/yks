@@ -24,9 +24,9 @@ Element.implement({
     var property = Element.Properties.get(prop);
     return (property && property.get) ? property.get.apply(this, Array.slice(arguments, 1)) : this.getProperty(prop);
   },
-    
-  toQueryString: function(){
-    var queryString = [];
+  
+  toQueryList: function(){
+    var queryList = [];
     this.getInputs(false, true).each(function(el){
       if (!el.name || el.disabled) return;
       var tmp, value = (el.tagName.toLowerCase() == 'select')
@@ -34,10 +34,16 @@ Element.implement({
              && tmp.length ? tmp : [''] )
         : ((el.type == 'radio' || el.type == 'checkbox') && !el.checked) ? null : el.value;
       $splat(value).each(
-        function(val){ queryString.push(el.name + '=' + encodeURIComponent(val)); }
+        function(val){ queryList.push({key:el.name,value:val}); }
       );
     });
-    return queryString.join('&');
+    return queryList;
+  },
+
+
+  toQueryString: function(){
+    //better implementation of form specials (input/image & submit & co)
+    return Jsx.Form.encode(this.toQueryList());
   }
 
 });

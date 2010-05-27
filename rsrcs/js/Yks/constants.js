@@ -8,7 +8,7 @@ if(!document.location)
 
 var url = Urls.parse(document.location.href); 
   Urls.base = url; //cache
-  http_lnk.security_flag = ks_flag;
+  Jsx.security_flag = ks_flag;
 
 
 var site_url    = url.site_url, 

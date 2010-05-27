@@ -1,47 +1,78 @@
+
+
 var Jsx = new Class({
   Implements: [Events, Options],
   Declare : 'Jsx',
+
   rbx:false,
-  
+  chain:false,
+  data:[],
+
   options: {
     url: '',
-    data: '',
     rbx:false,
 
     headers: {},
     async: true,
-    method: 'post'
+    method: 'POST'
   },
 
-  initialize:function(options,anchor){
+  initialize:function(options, anchor){
     this.setOptions(options);
     this.box= (this.anchor=$(anchor)).getBox() || Screen.getBox(options.target);
  
     var tmp = this.anchor.retrieve('jsx');
     if(tmp) this.rbx = tmp.rbx;
- },
+  },
+
+  data_reset:function(){
+    this.data = [];
+  },
+
+  hash_stack:function(hash){
+    $H(hash).each(function(value, key){
+        this.data_stack({key:key,value:value});
+    }.bind(this));
+    return this;
+  },
+
+  data_stack:function(data){
+    //sauf si data est deja array, just merge
+    this.data.push(data);
+    return this;
+  },
 
   fire:function(chain){
-    this.options.headers = {'Yks-Jsx':1, 'Yks-Client-TZ':-(new Date()).getTimezoneOffset()*60};
-    if(this.options.target) this.options.headers['Content-Target'] = this.options.target;
-    http_lnk(this.options, this.options.url, this.options.data, function(ret, headers){
+    var xhr = new Xhr(this.options.async, this.options.encoding);
+    xhr.addHeaders({'Yks-Jsx':1, 'Yks-Client-TZ':-(new Date()).getTimezoneOffset()*60 });
+    xhr.addEvent('success', this.process_http_response.bind(this));
 
+    if(this.options.method == 'POST')
+        this.data_stack({key:'ks_flag', value:Jsx.security_flag});
+
+    this.chain = chain;
+    xhr.request(this.options.url, this.options.method, this.data);
+
+    return false;
+  },
+
+//this cannot be bound by using Binds mutator
+  process_http_response:function(ret, headers){
     if(!!($type(ret)=="document" || ret.xml)) {
         this.xml_body = ret;
         var tmp = ret.getElementsByTagName("rbx")[0];
         tmp = tmp?Urls.jsx_eval(tmp.firstChild.nodeValue):(this.options.box||{});
-        if(chain) tmp.chain = chain; chain = false;
-
         this.transform(tmp, headers['yks-render-side'] );
-      } else if($type(ret)=="object") {
-         this.js_valid(ret);
-      }if(chain && !(ret.error||ret.stop)) chain();
-    }.bind(this)); return false;
- },
+    } else if($type(ret)=="object") {
+        this.js_valid(ret);
+    } if(this.chain && !(ret.error||ret.stop))
+        this.consume_chain(ret);
 
- js_valid:function (rbx,anchor){ var tmp;
+  },
+
+  js_valid:function (rbx, anchor){
     if( $pick(rbx.ok, rbx.error, rbx.walk)!=null ){
-        this.rbx=this.rbx || this.box.getRbx();
+        this.rbx = this.rbx || this.box.getRbx();
     } else if(this.rbx.close) this.rbx.close();
 
     if(rbx.walk) this.rbx.walk(rbx.walk);
@@ -49,19 +80,21 @@ var Jsx = new Class({
     if(rbx.error) this.rbx.msg('error',rbx.error);
     if(rbx.alert) alert(rbx.alert);
     if(rbx.jsx_eval) rbx.jsx_eval.bind(anchor||this.anchor)(this);
-    if(rbx.set) for(key in rbx.set)window[key]=rbx.set[key];
-    if(rbx.go && (tmp=(''+rbx.go).trim())) Urls.reloc(tmp=='parent'?href_ks:tmp);
+    if(rbx.set) for(key in rbx.set) window[key] = rbx.set[key];
+    if(rbx.go) {
+         var tmp = (''+rbx.go).trim();
+         Urls.reloc(tmp == 'parent' ? href_ks : tmp);
+    }
+  },
 
- },
-
- xsl_prepare:function(rbx){
-    http_lnk('get',xsl_path,{},function(xsl){
+  xsl_prepare:function(rbx){
+    Xhr.http_lnk('get',xsl_path,{},function(xsl){
         window.store('transformer',new transformer_xslt(xsl));
         this.transform(rbx);
     }.bind(this));
- },
+  },
 
- transform:function(rbx, render_side){
+  transform:function(rbx, render_side){
     var transformer = window.retrieve("transformer");
     if(!transformer){
         if(render_side=='client')
@@ -86,43 +119,19 @@ var Jsx = new Class({
         url:this.options.url,
         opener:this.box
     },rbx));
+
     Doms.context = anchor;
     if(scripts.length) $exec(scripts);
     this.js_valid(rbx, anchor);
     this.fireEvent('onPlaced');
-    if(rbx.chain) rbx.chain();
- }
+    this.consume_chain(rbx);
+  },
+
+  consume_chain:function(rbx){
+    if(!this.chain) return;
+    this.chain(rbx);
+    this.chain = false;
+  }
 
 });
-
-
-
-Jsx.dd_load = function(data, bind, dest){
-    var box = $(bind).getBox(), url=data.url || box.url; delete data.url; data.jsx=true;
-
-    http_lnk('post', url, data, function(txt){
-        this.empty();
-        Hash.each(txt, function(html,key){
-          $n('option',{html:html, value:key}).inject(this);
-        }.bind(this));
-        this.fireEvent('change');
-    }.bind($(dest)) );
-}
-
-Jsx.action = function(data, bind, confirm, chain){
-    if(!bind && $type(data)=='element'){
-        bind = data; data = {data:bind.toQueryString()};
-    }else if($type(data)=='string') data = {ks_action:data};
-
-    var box = $(bind).getBox(), txt= ($type(confirm)=='boolean'?$(bind).get('text'):confirm)+' ?';
-    if(confirm && !window.confirm(txt)) return false;
-    var url = data.url || box.url; delete data.url;
-    new Jsx({url:url, target:data.target || box.box_name, data:data.data || data}, $(bind))
-        .fire(chain);
-}
-
-Jsx.open = function(url, target, bind, chain){
-    if(!target ) { var box = $(bind).getBox(); target = box.box_name; }
-    return new Jsx({url:url, target:target, method:'get'}, $(bind)).fire(chain);
-}
 

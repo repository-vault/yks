@@ -30,6 +30,10 @@ Window.implement({
 
   encodeURIComponent: function(str) {
     return (''+str).areplace(URIescaped);
+  },
+
+  $uniqueID:function(length){
+    return ("abcdef0123456789"+$time()).split('').shuffle().join('').substr(0,length||8);
   }
 
 });

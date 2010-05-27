@@ -10,6 +10,7 @@
       <dep key="path://mt.core/Utilities/Cookie.js" patch="true"/>
     </module>
     <module key="path://yks.root/Patchs/Class/Class.Occlude.js"/>
+    <module key="path://yks.root/Patchs/Class/Events.js"/>
     <module key="path://yks.root/Patchs/Core/Window.js"/>
 <!-- Extends Natives and provides new functions -->
     <module key="path://yks.root/Patchs/Native/Array.js"/>

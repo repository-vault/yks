@@ -1,12 +1,30 @@
-var Uploader = {
+var Uploader =  {
   flags:{},
-  end:function(upload_flag,rbx){
-    var upload, form = this.flags[upload_flag];
-    if(rbx.error) return form.js_valid(rbx);
 
-    upload = rbx.upload;
-    $(upload.src).form.retrieve('jsx').js_valid(rbx);
+/*
+  handleFile:function(file) {  
+     var imageType = /image./;  
+       
+     if (false && !file.type.match(imageType)) 
+       return;
 
+     //var img = document.createElement("img");  
+     //img.classList.add("obj");  
+     //img.file = file;  
+     preview.appendChild(img);  
+       
+     var reader = new FileReader();  
+     reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);  
+     reader.readAsDataURL(file);  
+   } 
+  },
+*/
+
+ end_upload:function(upload_flag, rbx){
+    var input  = this.flags[upload_flag];
+    var upload = rbx.upload;
+
+    input.form.retrieve('jsx').js_valid(rbx);
 
     var container_id = 'label_'+upload.src;
     var reset = function(){
@@ -16,30 +34,43 @@ var Uploader = {
 
     $(upload.src).set('value', upload.upload_flag+'.'+upload.ext).fireEvent('change');
 
-    var head = "<tr><th>File</th><th>Size</th><th>Action</th></tr>";
-    var upload_table = $n('table', {id:container_id, 'class':'upload_table',html:head});
-    upload_table.inject($(upload.src),'after');
+    var upload_table = $n('table', {
+        id:container_id,
+        'class':'upload_table',
+        html:"<tbody><tr><th>File</th><th>Size</th><th>Action</th></tr></tbody>"
+    }).inject($(upload.src),'after').getElement('tr').getParent();
     var line = $n('tr').inject(upload_table);
     $n('td',{text:upload.name}).inject(line);
-    $n('td',{text:FileUtils.file_size(upload.size)}).inject(line);
+    $n('td',{text:FileUtils.format_size(upload.size)}).inject(line);
     $n('td',{text:"[remove]"}).inject(line).addEvent('click', reset);
 
-    form.box.close();
-    return;
+ },
 
-    $n('div',{
-        id:container_id,
-        html:"Fichier : "+upload.name+" ("+FileUtils.file_size(upload.size)+")"
-    }).inject($(upload.src),'after');
-    form.box.close();
-  }
-};
+ /* modal callback, two possibles cases
+    -failure : stay on modal form
+    -sucess : close box & pass to Uploader.jsx
+ */
+ end_upload_static:function(upload_flag, rbx, form){
+    var success = !!rbx.upload;
+    if(!success) {
+        form.retrieve('jsx').js_valid(rbx);
+    } else {
+        form.getBox().close();
+        this.end_upload(upload_flag, rbx);
+    }
+ },
 
+ start_upload:function(input, file){
 
-var FileUtils = {
-  file_size:function(size){
-    return (size>>30)?(size/(1<<30)).round(2)+' Go':
-        ((size>>20)?(size/(1<<20)).round(2)+' Mo':
-            ((size>>10)?(size/(1<<10)).round(2)+' Ko':size+" octets"));
-  }
+    var jsx = new Jsx( {url:input.upload_url, encoding:"multipart"}, input.form);
+    jsx.data_stack({key:'APC_UPLOAD_PROGRESS',value:input.upload_flag});
+    jsx.data_stack({key:'ks_action',value:'upload_tmp'});
+    jsx.data_stack({key:'user_file',value:file});
+
+    jsx.fire( function(rbx){
+        this.end_upload(input.upload_flag, rbx);
+    }.bind(this));
+
+ }
+
 };

@@ -68,7 +68,7 @@ var Completer = new Class ({
 
   fire:function(){
     var data = {ks_action:this.options.action, q:this.input.value};
-    http_lnk('post', this.options.url, data, this.populate.bind(this));
+    Xhr.http_lnk('post', this.options.url, data, this.populate.bind(this));
   },
 
   populate:function(data){

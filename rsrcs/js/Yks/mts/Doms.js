@@ -46,8 +46,7 @@ var Doms = {
         var infos = this.loaders[uid];
         if(infos['class'] != name)continue;
         var url ='/?/Yks/Scripts/Js|'+uid;
-        http_lnk({method:'get', async:false},url , '', $exec);
-
+        (new Xhr(false)).addEvent('success', $exec).request( url);
         var tmp = $take(window, name.split('.'));
         if(!tmp) return false;
         this.loaders[uid]['class'] = tmp;

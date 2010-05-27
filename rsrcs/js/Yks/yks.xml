@@ -3,21 +3,26 @@
   <package name="yks">
     <package name="yks.core">
       <dep key="mootools.lite"/>
-      <module key="path://yks.root/constants.js">
-        <dep key="yks.libs"/>
-        <description>yks constants</description>
-      </module>
       <package name="yks.libs">
-        <module key="path://yks.root/libs/xhr.js">
-          <description>http_lnk callback function</description>
+        <module key="path://yks.root/libs/Xhr.js">
+          <description>Xhr.http_lnk callback function</description>
+        </module>
+        <module key="path://yks.root/libs/Xhr.Http.js">
+          <dep key="path://yks.root/libs/Xhr.js"/>
+          <description>Misc Http (statics) handlers</description>
+        </module>
+        <module key="path://yks.root/libs/Xhr.Utils.js">
+          <dep key="path://yks.root/libs/Xhr.js"/>
+          <description>Compatibility Xhr handlers</description>
+        </module>
+        <module key="path://yks.root/libs/Xhr.Upload.js" head="true">
+          <dep key="path://yks.root/libs/Xhr.js"/>
+          <description>Xhr multipart and upload handler</description>
         </module>
         <module key="path://yks.root/libs/xslt.js">
           <description>XSLT rendering engine</description>
         </module>
-        <module key="path://yks.root/libs/urls.js">
-          <description>URI management lib</description>
-        </module>
-        <module key="path://yks.root/libs/urls.js">
+        <module key="path://yks.root/libs/Urls.js">
           <description>URI management lib</description>
         </module>
       </package>
@@ -31,6 +36,10 @@
         <dep key="path://yks/Doms.js"/>
         <description>Jsx controler</description>
       </module>
+      <module key="path://yks/Jsx/Jsx.Utils.js">
+        <dep key="path://yks/Jsx/Jsx.Utils.js"/>
+        <description>Jsx utils</description>
+      </module>
       <module key="path://yks/Jsx/Rbx.js">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Result boxes</description>
@@ -39,9 +48,20 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer</description>
       </module>
-      <module key="path://yks/Jsx/Uploader.js" expose="Uploader">
-        <dep key="path://yks/Jsx/Jsx.js"/>
+
+      <module key="path://yks/Jsx/Uploader.js" expose="Uploader" head="true">
+        <dep key="path://yks.root/libs/Xhr.Upload.js"/>
         <description>Deal with uploaded stuffs</description>
+      </module>
+
+      <module key="path://yks/Jsx/Jsx.Form.File.js" expose="Jsx.Form.File" head="true" matches=".input_upload">
+        <dep key="path://yks/Jsx/Uploader.js"/>
+        <dep key="path://yks/Jsx/Forms.js"/>
+        <description>Deal with uploaded files input</description>
+      </module>
+      <module key="path://yks/File/File.Utils.js">
+        <dep key="path://yks/Jsx/Jsx.js"/>
+        <description>Expose misc files management utilities</description>
       </module>
       <module key="path://yks/Jsx/Links.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
         <dep key="path://yks/Jsx/Jsx.js"/>
@@ -53,13 +73,18 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Global Screen controler</description>
       </module>
-<!-- Doms.box_mask -->
+      <!-- Doms.box_mask -->
       <module key="path://yks/Jsx/Box.js" expose="Box" matches=".box">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>
         <description>Root of the Ex/Yks JS layer, defined a virtual container, act as an 'iframe'</description>
       </module>
     </package>
+    <module key="path://yks.root/constants.js">
+      <dep key="yks.libs"/>
+      <dep key="yks.classes"/>
+      <description>yks constants</description>
+    </module>
     <dep key="yks.interface"/>
   </package>
 </js>

@@ -9,7 +9,7 @@ Asset.css = function(source, properties){
         'media': 'screen', 'type': 'text/css'
     }).inject(document.head);
     
-    http_lnk('get',source,{},function(txt){
+    Xhr.http_lnk('get',source,{},function(txt){
         if (this.styleSheet) this.styleSheet.cssText = txt;
         else this.appendChild(document.createTextNode(txt));
         onload();
@@ -21,7 +21,7 @@ Asset.javascript = function(source, properties){
     var onload = properties.onload || $empty;
     delete properties.onload;
 
-    http_lnk('get', source, {}, function(txt){
+    Xhr.http_lnk('get', source, {}, function(txt){
         $exec(txt);
         onload();
     });
