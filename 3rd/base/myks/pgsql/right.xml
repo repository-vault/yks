@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="right" type="string">
+    <param type="string"/>
+    <param type="int"/>
+    <def>
+BEGIN
+
+RETURN SUBSTR($1,LENGTH($1)-$2+1);
+
+END;
+</def>
+  </procedure>
+</myks>
