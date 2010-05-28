@@ -23,6 +23,14 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     return $element;
   }
 
+  protected function replace($element, $old){
+    $element->name = $old->name;
+    foreach($this->children as &$n) {
+        if($n===$old) $n=$element; 
+    }
+    return $element;
+  }
+
 
   
   private function is_empty(){
@@ -107,6 +115,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
   public function offsetSet($key, $value){
     if(is_numeric($key))
         throw new Exception("Not implemented");
+
     $this->attrs[$key] = $value;
   }
 
