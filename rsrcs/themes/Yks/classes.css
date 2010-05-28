@@ -65,4 +65,7 @@ p.emp { font-weight:bold;}
   border:2px dashed green;
   clear:both;
   overflow:hidden;
+  background-image:url('bgs/drag_drop.png');
+  background-repeat:no-repeat;
+  background-position:right top;
 }
