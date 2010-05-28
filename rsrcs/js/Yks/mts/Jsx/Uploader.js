@@ -1,25 +1,6 @@
 var Uploader =  {
   flags:{},
 
-/*
-  handleFile:function(file) {  
-     var imageType = /image./;  
-       
-     if (false && !file.type.match(imageType)) 
-       return;
-
-     //var img = document.createElement("img");  
-     //img.classList.add("obj");  
-     //img.file = file;  
-     preview.appendChild(img);  
-       
-     var reader = new FileReader();  
-     reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);  
-     reader.readAsDataURL(file);  
-   } 
-  },
-*/
-
  end_upload:function(upload_flag, rbx){
     var input  = this.flags[upload_flag];
     var upload = rbx.upload;

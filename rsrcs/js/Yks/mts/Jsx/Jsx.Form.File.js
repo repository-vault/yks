@@ -21,10 +21,11 @@ Jsx.Form.File = new Class({
   drop:function(e){
     (new Event(e)).stop();
     var dt = e.dataTransfer;  
-    var files = dt.files;  
-    var file = files[0];
 
-    Uploader.start_upload(this, file);
+    if(dt.files.length == 0)
+        return;
+
+    Uploader.start_upload(this, dt.files[0]);
   },
 
 
