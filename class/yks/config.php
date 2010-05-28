@@ -43,17 +43,21 @@ class config extends KsimpleXMLElement {
   function __get($key){
     $tmp = parent::__get($key);
     
+    if(!isset($tmp[self::xattr]))
+        return $tmp;
 
-    if(!isset($tmp[self::xattr])) return $tmp;
     list($file_path, $search) = explode(" ", $tmp[self::xattr]); //!
-
     $file_path = paths_merge(ROOT_PATH, $file_path);
-    if(! file_exists($file_path)) return $tmp;
+    if(! file_exists($file_path))
+        return $tmp;
+
     $ret = self::load($file_path);
     if($search) $ret = $ret->search($search, true); //autocreate
 
     foreach($tmp->attributes() as $k=>$v)
         if($k != self::xattr) $ret[$k] = $v; //merge args
+
+    $this->replace($ret, $tmp);
 
     return $ret;
   }
