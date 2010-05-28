@@ -60,3 +60,9 @@ p.emp { font-weight:bold;}
 .line_fail td { text-align:center; }
 .line_focus { background-color:#c5ffc5; }
 .line_head {background-color:#d7d7d7; }
+.droppable_ready {
+  padding:3px;
+  border:2px dashed green;
+  clear:both;
+  overflow:hidden;
+}
