@@ -7,9 +7,6 @@ Xhr.implement({
 
   encode: function(hash){
 
-    var test = "test";
-    alert(test.repeat);
-
     var boundary = ("-").repeat(10) + $uniqueID(10);
 
     var str = "";

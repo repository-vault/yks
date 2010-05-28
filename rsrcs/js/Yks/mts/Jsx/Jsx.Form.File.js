@@ -14,7 +14,7 @@ Jsx.Form.File = new Class({
 
   drag_enter:function(e){
     this.form.addClass('upload_ready');
-    document.title= print_r(e);
+    //document.title= print_r(e);
     (new Event(e)).stop();
   },
 
@@ -44,9 +44,16 @@ Jsx.Form.File = new Class({
 
     Uploader.flags[this.upload_flag] = this;
 
-    if(false) return; //manage JSX Upload here
     this.button = this.anchor.getParent().getElement('a[target=upload_file]');
     this.button.set('href', this.upload_url);
+
+    if(!Browser.Features.files)
+        return; //manage JSX Upload here
+
+
+    this.anchor.getParent('p').addClass('droppable_ready');
+
+
 
     //this.upload_flag = this.anchor.APC_UPLOAD_PROGRESS.value;
 

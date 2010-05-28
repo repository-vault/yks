@@ -1,3 +1,4 @@
+Browser.Features.files = !!window.File;
 
 Window.implement({
   $: function(el, nc){
