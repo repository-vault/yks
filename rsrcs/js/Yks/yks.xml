@@ -44,19 +44,17 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Result boxes</description>
       </module>
-      <module key="path://yks/Jsx/Forms.js" expose="Jsx.Form" matches="form.jsx_form">
+      <module key="path://yks/Jsx/Jsx.Form.js" expose="Jsx.Form" matches="form.jsx_form">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer</description>
       </module>
-
       <module key="path://yks/Jsx/Uploader.js" expose="Uploader" head="true">
         <dep key="path://yks.root/libs/Xhr.Upload.js"/>
         <description>Deal with uploaded stuffs</description>
       </module>
-
       <module key="path://yks/Jsx/Jsx.Form.File.js" expose="Jsx.Form.File" head="true" matches=".input_upload">
         <dep key="path://yks/Jsx/Uploader.js"/>
-        <dep key="path://yks/Jsx/Forms.js"/>
+        <dep key="path://yks/Jsx/Jsx.Form.js"/>
         <description>Deal with uploaded files input</description>
       </module>
       <module key="path://yks/File/File.Utils.js">
@@ -73,7 +71,7 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Global Screen controler</description>
       </module>
-      <!-- Doms.box_mask -->
+<!-- Doms.box_mask -->
       <module key="path://yks/Jsx/Box.js" expose="Box" matches=".box">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>
