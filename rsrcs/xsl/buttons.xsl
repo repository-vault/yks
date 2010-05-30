@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:template match="button[not(@href) and not(@ext)]" name="button">
     <xsl:param name="value" select="."/>
-    <input alt="{$value}" class="button {@class}" type="image" title="{$value}" src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}">
+    <input alt="{$value}" class="button {@class}" type="image" title="{$value}" src="?/Yks/Scripts/Imgs/titles//{@theme}:action|{$value}">
       <xsl:if test="@confirm">
         <xsl:attribute name="onclick">return window.confirm(<xsl:value-of select="@confirm"/>+' ?')</xsl:attribute>
       </xsl:if>
@@ -23,7 +23,7 @@
         <xsl:attribute name="class">ext</xsl:attribute>
       </xsl:if>
       <xsl:copy-of select="@onclick|@style"/>
-      <img src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}" class="button {@class} {@effects} {name(@effects)}" theme="{@theme}" alt="{$value}" title="{$value}">
+      <img src="?/Yks/Scripts/Imgs/titles//{@theme}:link|{$value}" class="button {@class} {@effects} {name(@effects)}" theme="{@theme}" alt="{$value}" title="{$value}">
         <xsl:copy-of select="@src"/>
       </img>
     </a>

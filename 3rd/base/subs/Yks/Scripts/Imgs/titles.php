@@ -1,9 +1,8 @@
 <?php
 
 $theme_name   = $sub0;
-$is_title     = (bool)$sub1;
+$bypass_cache = (bool)$sub1;
 $title_text   = $argv0;
-$bypass_cache = (bool)$sub2;
 
 if(!$title_text) $title_text = "Default title";
 
@@ -15,7 +14,7 @@ $img_path = "$titles_cache_path/$hash.png";
 
 if($bypass_cache || !is_file($img_path)) try {
 
-    $img = dsp_titles::draw($theme_name, $title_text, $is_title);
+    $img = dsp_titles::draw($theme_name, $title_text);
     files::create_dir($titles_cache_path);
     if(!imagepng($img, $img_path))
         throw rbx::error("Image generation failed");
