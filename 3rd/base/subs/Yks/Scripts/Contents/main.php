@@ -26,5 +26,10 @@ if($ext == "png") {
     files::delivers($full);
 }
 
+if(in_array($ext, array("jpeg", "jpg"))) {
+    header(TYPE_JPEG);
+    files::delivers($full);
+}
+
 
 die;
