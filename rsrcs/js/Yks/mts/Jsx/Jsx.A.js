@@ -17,7 +17,7 @@ Jsx.A = new Class({
   extended:function(){
     this.box = this.anchor.getBox();
 
-    var url = Urls.parse(this.anchor.get('href',true));
+    var href = this.anchor.get('href',true), url = Urls.parse(href);
     if(url.domain!=site_domain) return false;
     var target = this.anchor.get('target',true) || this.box.box_name;
     if(target=='::new')   target = Screen.get_lambda_box();
@@ -28,6 +28,7 @@ Jsx.A = new Class({
 
     this.setOptions({
         url:url.full,
+        href:href,
         method:'get',
         target:target,
 
@@ -37,7 +38,9 @@ Jsx.A = new Class({
 
   click:function(event){ event.stop();
     if(!$defined(this.xtd)) this.xtd = this.extended();
-
+    var href = this.anchor.get('href',true);
+    if(href != this.options.href)
+        this.options.url = href;
 
     if(this.base_options) {
         this.setOptions(this.base_options);

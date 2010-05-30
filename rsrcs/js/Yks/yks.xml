@@ -61,7 +61,7 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Expose misc files management utilities</description>
       </module>
-      <module key="path://yks/Jsx/Links.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
+      <module key="path://yks/Jsx/Jsx.A.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([href^='mailto:'])">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Box.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>
@@ -71,7 +71,7 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Global Screen controler</description>
       </module>
-<!-- Doms.box_mask -->
+      <!-- Doms.box_mask -->
       <module key="path://yks/Jsx/Box.js" expose="Box" matches=".box">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>

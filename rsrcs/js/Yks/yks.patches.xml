@@ -12,12 +12,13 @@
     <module key="path://yks.root/Patchs/Class/Class.Occlude.js"/>
     <module key="path://yks.root/Patchs/Class/Events.js"/>
     <module key="path://yks.root/Patchs/Core/Window.js"/>
-<!-- Extends Natives and provides new functions -->
+    <!-- Extends Natives and provides new functions -->
     <module key="path://yks.root/Patchs/Native/Array.js"/>
     <module key="path://yks.root/Patchs/Native/Hash.js"/>
     <module key="path://yks.root/Patchs/Native/Number.js"/>
     <module key="path://yks.root/Patchs/Native/String.js"/>
-<!-- Elements -->
+    <module key="path://yks.root/Patchs/Native/Function.js"/>
+    <!-- Elements -->
     <module key="path://yks.root/Patchs/Element/Element.js"/>
     <module key="path://yks.root/Patchs/Interface/Style.js"/>
     <module key="path://yks.root/Patchs/Utilities/Assets.js">

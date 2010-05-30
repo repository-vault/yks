@@ -25,41 +25,39 @@ Jsx.Form.File = new Class({
     if(dt.files.length == 0)
         return;
 
-    Uploader.start_upload(this, dt.files[0]);
+    for(var i=0;i<dt.files.length;i++) {
+        this.uid();
+        Uploader.start_upload( this, dt.files[i]);
+    }
   },
 
-
-  initialize:function(el){
-    if(this.occlude(el)) return;
-    this.anchor = el;
-    this.form   = this.anchor.getParent('form');
-
+  uid:function(){
     this.upload_flag = $uniqueID();
-    this.upload_name = this.anchor.get("name");
-    this.upload_type = this.anchor.get("upload_type");
-
 
     this.upload_url  = "/?/Yks/Wysiwyg//"
         + [this.upload_flag, this.upload_name, this.upload_type].join(';')
         + "/upload";
 
     Uploader.flags[this.upload_flag] = this;
+    this.button.set('href', this.upload_url );
+  },
 
+  initialize:function(el){
+    if(this.occlude(el)) return;
+    this.anchor = el;
+    this.form   = this.anchor.getParent('form');
+
+    this.upload_name = this.anchor.get("id");
+    this.upload_type = this.anchor.get("upload_type");
+    this.upload_multiple = this.upload_name.substr(-2) == "[]";
     this.button = this.anchor.getParent().getElement('a[target=upload_file]');
-    this.button.set('href', this.upload_url);
+    this.uid(); //initial link
 
     if(!Browser.Features.files)
         return; //manage JSX Upload here
 
 
     this.anchor.getParent('p').addClass('droppable_ready');
-
-
-
-    //this.upload_flag = this.anchor.APC_UPLOAD_PROGRESS.value;
-
-
-    //var jsx = .retrieve('jsx');
 
     this.form.addEventListener("dragleave", this.drag_leave, false);
     this.form.addEventListener("dragenter", this.drag_enter, false);
