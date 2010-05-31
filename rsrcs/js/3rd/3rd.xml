@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<js>
+  <package name="3rd">
+    <module key="path://3rd/Arian/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date" head="true">
+      <description>datepicker.js - MooTools Datepicker class</description>
+      <dep key="mootools.lite"/>
+    </module>
+  </package>
+</js>

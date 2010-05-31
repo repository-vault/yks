@@ -14,19 +14,19 @@ classes::register_class_paths(array(
 
 $yks_root = RSRCS_PATH."/js/Yks";
 $mt_root  = RSRCS_PATH."/js/Mootools";
+$trd_root = RSRCS_PATH."/js/3rd";
 
 
 
 $packager = new js_packager();
 
+$manifests_list = array_merge(
+    glob("$mt_root/*.xml"),
+    glob("$yks_root/*.xml"),
+    glob("$trd_root/*.xml")
+);
 
-$mt_files  = glob("$mt_root/*.xml");
-$yks_files = glob("$yks_root/*.xml");
-
-
-foreach($mt_files as $file_path)
-    $packager->manifest_register($file_path);
-foreach($yks_files as $file_path)
+foreach($manifests_list as $file_path)
     $packager->manifest_register($file_path);
 
 //packager is now ready 
@@ -38,6 +38,7 @@ $packer  = new js_packer();
 $packer->register("mt.core",  "$mt_root/core");
 $packer->register("mt.more",  "$mt_root/more");
 $packer->register("yks.root", "$yks_root");
+$packer->register("3rd",      "$trd_root");
 $packer->register("yks",      "$yks_root/mts");
 
 if($uids) {

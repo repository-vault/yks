@@ -3,6 +3,7 @@
 	font-size: 10px;
 	font-family: Tahoma, sans-serif;
 	color: #000;
+        z-index:99;
 	line-height: normal;
 	width: 172px;
 	height: 135px;
