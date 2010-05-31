@@ -41,24 +41,21 @@ class dsp_titles {
         $theme_config =  $theme_xml->attributes();
 
         if($theme_pseudo)
-            return array_merge($theme_config,
-                self::parse_theme_config($themes_list, $theme_pseudo));
+            return array_merge($theme_config, self::parse_theme_config($themes_list, $theme_pseudo));
 
         return $theme_config;
     }
 
-    return array();
+    throw rbx::error("Unaccessible theme : '$theme_name'");
   }
 
 
-  public static function draw($theme_name, $title_text) {
+  public static function draw($theme_name, $title_text, $is_title) {
 
     $themes_list = self::$themes_config->titles;
     $theme_name  = $theme_name?$theme_name:$themes_list[$is_title?'base_title':'base'];
 
     $theme_config = self::parse_theme_config($themes_list, $theme_name);
-    if(!$theme_config)
-        throw rbx::error("Unaccessible theme : '$theme_name'");
 
     $font_name    = "{$theme_config['font']}.ttf";
 

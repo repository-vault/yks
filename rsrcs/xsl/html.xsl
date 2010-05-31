@@ -6,7 +6,7 @@
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
-  <!-- IE create additionnal closing elements if you try to add (apply-templates) contents on an empty one -->
+<!-- IE create additionnal closing elements if you try to add (apply-templates) contents on an empty one -->
   <xsl:template match="base | meta | link | hr | br | param | img | area | input | col">
     <xsl:element name="{name()}">
       <xsl:copy-of select="@*"/>
@@ -18,7 +18,7 @@
     </title>
   </xsl:template>
   <xsl:template match="title">
-    <img src="?/Yks/Scripts/Imgs/titles//{@theme}:title|{.}" class="title_{@theme} title" alt="{.}">
+    <img src="?/Yks/Scripts/Imgs/titles//{@theme};title|{.}" class="title_{@theme} title" alt="{.}">
       <xsl:copy-of select="@*"/>
     </img>
   </xsl:template>
