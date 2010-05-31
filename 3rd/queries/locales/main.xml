@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale xml:lang="en-us">
+  <item key="param_type.query">Requête</item>
+  <item key="param_type.char">Texte simple</item>
+  <item key="param_type.mykse">Myks Element</item>
+  <item key="param_type.int">Entier simple</item>
+  <item key="param_type.date">Date</item>
+</locale>
