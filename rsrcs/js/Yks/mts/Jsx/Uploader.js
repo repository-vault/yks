@@ -9,6 +9,7 @@ var Uploader =  {
     input.form.retrieve('jsx').js_valid(rbx);
 
     var reset = function(){
+        if(!input.upload_table)return;
         input.upload_table.dispose();
         input.upload_table = false;
     };
