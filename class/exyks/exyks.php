@@ -22,16 +22,25 @@ class exyks {
 
   static function init() {
 
+
+    include CLASS_PATH."/functions.php";
+
+
+    global $action;
+
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return; //exyks::init can be called
 
-    global $action, $config;
 
-    if(!$config)
+    if(bool((string)yks::$get->config->site['closed'])) {
+        if(!DEBUG) yks::fatality(yks::FATALITY_SITE_CLOSED);
+    }
+
+    if(!yks::$get->config)
         yks::fatality(yks::FATALITY_CONFIG, "Exyks configuration not found");
 
     $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 
-    $tmp = (string)$config->site['default_mode'];
+    $tmp = (string)yks::$get->config->site['default_mode'];
     define('DEFAULT_MODE', $tmp?$tmp:"xml");
 
     include CLASS_PATH."/exyks/browser.php"; //define $engine
@@ -56,12 +65,12 @@ class exyks {
     );
 
     self::store('LANGUAGES',
-        preg_split(VAL_SPLITTER, $config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
+        preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
 
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
-    define('FLAG_UPLOAD',    $config->flags['upload'].FLAG_DOMAIN);
-    define('USERS_ROOT',     (int)$config->users['root']);
-    define('BASE_CC',        $config->lang['country_code']);
+    define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
+    define('USERS_ROOT',     (int)yks::$get->config->users['root']);
+    define('BASE_CC',        yks::$get->config->lang['country_code']);
     define('ERROR_PAGE',     '/'.SITE_BASE.'/error');
     define('ERROR_404',      "Location: /?".ERROR_PAGE.'//404');
     define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
@@ -77,8 +86,6 @@ class exyks {
 
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
 
-    include CLASS_PATH."/functions.php";
-
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
@@ -90,7 +97,7 @@ class exyks {
         'manifest' => "path://yks/3rd/base",
     ));
 
-    foreach($config->modules->iterate("module") as $module)
+    foreach(yks::$get->config->modules->iterate("module") as $module)
       self::$modules_list[] = new exyks_module($module);
 
     self::extends_include_path();
@@ -151,6 +158,9 @@ class exyks {
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load();
 
+
+    if(bool((string)yks::$get->config->site['closed']))
+        tpls::css_add("/css/".SITE_BASE."/off.css"); //not mandatory.., but could help
 
 
     if(JSX){

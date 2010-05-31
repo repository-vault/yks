@@ -80,12 +80,6 @@ class exyks_session {
         rbx::error("Unable to start user session.");
     }
 
-
-    if(bool((string)yks::$get->config->site['closed'])){
-        if(!auth::verif("admin","admin")) yks::fatality(yks::FATALITY_SITE_CLOSED);
-        else tpls::css_add("/css/".SITE_BASE."/off.css"); //not mandatory.., but could help
-    }
-
   }
 
 }
