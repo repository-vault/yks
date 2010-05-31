@@ -14,6 +14,7 @@ class exyks_paths {
     self::register("yks", YKS_PATH);
 
     self::register("skin", RSRCS_PATH."/themes/Yks");
+    self::register("skin.js", RSRCS_PATH."/js");
     self::register("here", ROOT_PATH);
     self::register("public", PUBLIC_PATH);
 
