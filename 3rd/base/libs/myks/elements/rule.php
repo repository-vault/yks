@@ -56,7 +56,7 @@ abstract class rule_base extends myks_base {
 
   function delete_def(){
     return array(
-        "DROP RULE IF EXISTS {$this->rule_name['safe']} ON {$this->parent->name['safe']}"
+        "DROP RULE IF EXISTS {$this->rule_name['name']} ON {$this->parent->name['safe']}"
     );
   }
 
