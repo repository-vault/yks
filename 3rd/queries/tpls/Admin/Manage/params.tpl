@@ -33,6 +33,8 @@ foreach($params_list as $param_id=>$param) {
 
     <ks_form ks_action="params_add" submit="Creation du parametre">
         <field type="param_key" title="Clée du parametre"/>
+
+        <field type="string" name="param_descr" title="Description"/>
 <hr/>
 
         <field type="bool" name="param_nullable" title="Nullable"/>

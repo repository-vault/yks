@@ -1,3 +1,3 @@
 <box>
-Le type char ne requiert aucun parametrage
+Le type char ne requiert aucun paramétrage
 </box>

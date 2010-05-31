@@ -21,10 +21,11 @@ if($action == "param_trash") try {
 
 if($action == "params_add") try {
     $data = array(    
-        'param_key'  => $_POST['param_key'],
-        'param_type' => $_POST['param_type'],
-        'param_nullable'=> bool($_POST['param_nullable']),
-        'param_multiple'=> bool($_POST['param_multiple']),
+        'param_key'      => $_POST['param_key'],
+        'param_type'     => $_POST['param_type'],
+        'param_descr'    => $_POST['param_descr'],
+        'param_nullable' => bool($_POST['param_nullable']),
+        'param_multiple' => bool($_POST['param_multiple']),
     ); $query_param = query_param::create($data, $_POST);
 
     jsx::$rbx = false;

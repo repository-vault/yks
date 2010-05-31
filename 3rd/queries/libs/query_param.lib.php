@@ -35,11 +35,9 @@ class query_param extends _sql_base {
 
   public function verify_input($data, $_POST){
     $param_type = $data['param_type'];
+
     if($param_type == 'query')
         self::valid_query($data, $_POST);
-    if($param_type == 'char') ;
-    else 
-        throw rbx::error("Unsupported param type");
 
     return $data;
   }
@@ -59,14 +57,28 @@ class query_param extends _sql_base {
         throw rbx::error("Votre sous requete a echoué");
   }
 
+  public function  format_value($unsafe_value){
+    if($this->param_type == 'date') 
+        return date::validate($unsafe_value);
+    return $unsafe_value;
+  }
 
   public function format_input(){
 
     $param_nullable = bool($this->param_multiple);
     $param_multiple = bool($this->param_multiple);
 
-    if($this->param_type == 'char') {
-        $str = "<field title='{$this->param_key}' name='{$this->param_key}'";
+
+    $title = pick($this->query_usage['param_context'], $this->param_key);
+    $name  = $this->query_usage['param_uid'];
+
+    if($this->param_type =='date') {
+        $str .="<field title='$title' name='$name' type='date'/>";
+    }elseif($this->param_type == 'int') {
+        $str .="<field title='$title' name='$name' type='string'/>";
+
+    }elseif($this->param_type == 'char') {
+        $str = "<field title='$title' name='$name'";
 
         if($param_multiple)
             $str .= " type='textarea'/><p>Vous pouvez specifier une valeur par ligne</p>";
@@ -77,13 +89,12 @@ class query_param extends _sql_base {
         sql::query($query);
         $values = sql::brute_fetch('value', 'title');
         asort($values);
-        $str = "<field title='{$this->param_key}'>";
+        $str = "<field title='$title'>";
         if($param_multiple) {
-            $size = min(10, count($values));
-            $str .= "<select name='{$this->param_key}[]' size='$size'>";
-        } else $str .= "<select name='{$this->param_key}'>";
+            $size = min(4, count($values));
+            $str .= "<select name='{$name}[]' size='$size' multiple='multiple'>";
+        } else $str .= "<select name='$name'>&select.choose;";
 
-        if($param_nullable) $str .= "&select.choose;";
 
         $str .= dsp::dd($values);
         $str .= "</select></field>";

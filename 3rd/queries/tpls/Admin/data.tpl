@@ -12,6 +12,7 @@ else {?>
 </div>
 Parametrage de la requete en cours<blink>…</blink>
 
-<b>Veuillez specifier les paramètres suivants : <?=join(',',array_keys($query->params_list))?></b>
+
+<b>Veuillez specifier les paramètres suivants : <?=join(',',array_extract($query->params_list, "param_title"))?></b>
 <?}?>
 </box>

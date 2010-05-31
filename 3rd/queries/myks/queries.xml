@@ -1,34 +1,13 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <table name="ks_queries_list">
-    <fields>
-      <field type="query_id"/>
-      <field type="title" name="query_name"/>
-      <field type="text" name="query_def"/>
-      <field type="text" name="query_descr"/>
-      <field type="time" name="query_create"/>
-    </fields>
-  </table>
-  <table name="ks_queries_params_list">
-    <fields>
-      <field type="param_id"/>
-      <field type="param_key"/>
-      <field type="query_id"/>
-      <field type="param_type"/>
-      <field type="boolean" name="param_multiple"/>
-      <field type="boolean" name="param_nullable"/>
-<!-- param 0 devrait suffire ... -->
-      <field type="text" name="param_arg0"/>
-      <field type="text" name="param_arg1"/>
-      <field type="text" name="param_arg2"/>
-    </fields>
-  </table>
   <mykse type="param_type">
     <enum>
       <val>query</val>
       <val>char</val>
       <val>mykse</val>
+      <val>int</val>
+      <val>date</val>
     </enum>
   </mykse>
   <mykse type="query_id" null="null" birth="ks_queries_list">

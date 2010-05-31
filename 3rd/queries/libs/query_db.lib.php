@@ -19,14 +19,12 @@ class query_db  extends _sql_base {
 
     $ready = true;
 
-    foreach($this->params_list as $param) {
-        $param_key = $param['param_key'];
-
-        $ready &= isset($params_values[$param_key]);
+    foreach($this->params_list as $param_uid=>$param) {
+        $ready &= isset($params_values[$param_uid]);
         $str = '';
         if($param->query_usage['param_field'])
-            $str = sql::conds($param->query_usage['param_field'], $params_values[$param_key]);
-        else $str = sql::clean($params_values[$param_key]);
+            $str = sql::conds($param->query_usage['param_field'], $params_values[$param_uid]);
+        else $str = sql::clean($params_values[$param_uid]);
 
         $sql_query = str_replace($param->query_usage['search_mask'], $str, $sql_query);
     }
