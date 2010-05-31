@@ -23,7 +23,7 @@ class exyks {
   static function init() {
 
 
-    include CLASS_PATH."/functions.php";
+    include_once CLASS_PATH."/functions.php";
 
 
     global $action;
@@ -32,7 +32,8 @@ class exyks {
 
 
     if(bool((string)yks::$get->config->site['closed'])) {
-        if(!DEBUG) yks::fatality(yks::FATALITY_SITE_CLOSED);
+        error_log($_SERVER['REMOTE_ADDR']);
+        if(PHP_SAPI!='cli' && !DEBUG) yks::fatality(yks::FATALITY_SITE_CLOSED);
     }
 
     if(!yks::$get->config)
