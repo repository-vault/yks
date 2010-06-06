@@ -25,7 +25,7 @@ if($action=="upload_tmp")try {
         throw rbx::error("Le format de votre fichier n'est pas valide.<br />".
             "Les extensions acceptées sont : ".join(', ', $valid_exts));
 
-    $dir = files::create_dir(users::get_tmp_path(sess::$sess['user_id']));
+    $dir = users::get_tmp_path(sess::$sess['user_id'], true);
     move_uploaded_file($file['tmp_name'], "$dir/$upload_type.$upload_flag.$file_ext");
 
     rbx::$rbx['upload'] = array(

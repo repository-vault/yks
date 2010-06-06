@@ -121,7 +121,12 @@ class users  {
   }
 
   static function get_root_path($user_id){ return 'files/'.crpt($user_id,FLAG_FILE,10);}
-  static function get_tmp_path($user_id){ return TMP_PATH.'/'.crpt($user_id,FLAG_FILE,10);}
+
+  static function get_tmp_path($user_id, $create = false){
+    $path  = TMP_PATH.'/'.crpt($user_id,FLAG_FILE,10);
+    if($create && !is_dir($path)) files::create_dir($path);
+    return $path;
+  }
 
   static function show($user_infos){
     if(!$avatar=$user_infos['user_avatar'])$avatar="/imgs/blank.png";
