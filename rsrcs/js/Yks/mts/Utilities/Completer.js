@@ -1,7 +1,7 @@
 
 var Completer = new Class ({
   Implements:[Options],
-  Declare : 'Completer',
+  Occlude: 'Completer',
 
   index:-1,
   vals:[],
