@@ -20,7 +20,7 @@ Xhr.extend( {
     (new Xhr(options.async))
     .addEvent('success', async_func)
     .addHeaders(options.headers)
-    .request(url, options.method, [data] );
+    .request(url, options.method, [data, {key:'ks_flag', value:Jsx.security_flag}] );
   }
 });
 
