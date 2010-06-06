@@ -15,12 +15,12 @@ Xhr.extend( {
     if($type(options)!="object")
         options = {method:options,async:true};
     if($type(data)=="object")
-        data = Urls.serial_post(data);
+        data = $H(data);
 
     (new Xhr(options.async))
     .addEvent('success', async_func)
     .addHeaders(options.headers)
-    .request(url, options.method, data);
+    .request(url, options.method, [data] );
   }
 });
 

@@ -18,9 +18,9 @@ var Xhr = new Class({
     if(!encoder)
         throw "Unknow encoder";
 
-    this.lnk.open(method||'GET', url, this.async);
+    this.lnk.open( method||'GET' , url, this.async);
 
-    data = this.data_cleanup(data||[]);
+    data = this.data_cleanup(data||[]); //data is a list
     data = encoder.encode.call(this, data);
 
     this.headers.each(function(val, key){
@@ -42,6 +42,21 @@ var Xhr = new Class({
   isSuccess: function(){
     return this.lnk.readyState == 4
            && ((this.lnk.status >= 200) && (this.lnk.status < 300));
+  },
+
+
+    //prepare data as a list of {key:key,value:value} pairs, ready to be encoded
+  data_cleanup:function(data){
+    var ret = [];
+    data.each(function(data){
+      switch ($type(data)){
+        case 'string' : data = data.split('=',2); ret.push({key:data[0],value:data[1]});break;
+        case 'element': ret.extend(document.id(data).toQueryList()); break;
+        case 'hash': ret.extend(Hash.toQueryList(data));break;
+        case 'object':ret.push(data);break; //default
+      }
+    });
+    return ret;
   },
 
 
