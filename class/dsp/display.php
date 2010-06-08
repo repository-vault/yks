@@ -107,7 +107,8 @@ class dsp{
 
 
     foreach($list as $k=>$v){
-        if( ! (is_array($v)||is_object($v)) ) $v = array("value"=>$v);
+        if( !is_array($v) || is_object($v) )
+            $v = array("value"=>$v);
 
         if($opts['mask']) 
             $str = str_evaluate($opts['mask'], $v);
