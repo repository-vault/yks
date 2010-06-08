@@ -10,7 +10,10 @@ class pgsql_auto_inc_sync {
         $base_type = (string) $mykse_xml['type'];
 
         if(!$birth) continue;
-        if($base_type != 'int') continue;
+        if($base_type != 'int') {
+            rbx::ok("$birth $base_type != 'int', skipping");
+            continue;
+        }
 
             //mykse_type is not always the table_field, but it's the only on field of this type
         $table_keys = array_flip(fields($tables_xml->$birth, "primary")); //liste des primary
@@ -18,7 +21,10 @@ class pgsql_auto_inc_sync {
 
         $sql_max = sql::value($birth, "true", "MAX($primary_field)");
         $auto_inc = sql::auto_indx($birth);
-        if($sql_max == $auto_inc) continue; //nothing to do
+        if($sql_max == $auto_inc) {
+            rbx::ok("$birth ($base_type) up to date #$sql_max, skipping");
+            continue; //nothing to do
+        }
 
         $table_infos = sql::resolve($birth);
         $table_name  = $table_infos['name'];
