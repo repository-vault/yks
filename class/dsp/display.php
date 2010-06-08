@@ -39,7 +39,7 @@ class dsp{
 
   // Find documentation in the manual
   static function pages($max,$by,$page_id,$href,$target=false,$step=true){ $str="";
-    for($a=0;$a<$max;$a+=$by){
+    if($by) for($a=0;$a<$max;$a+=$by){
         $b=$a/$by;$tmp=$b+1;$total=ceil($max/$by);
         if($b==$page_id)$tmp="[$tmp]";
         if($step && $b>4 && $b<$page_id-2){
@@ -184,4 +184,5 @@ class dsp{
  }
 
 }
+
 

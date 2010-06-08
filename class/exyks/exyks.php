@@ -113,8 +113,11 @@ class exyks {
 
 
   static function bench($key) { return self::store("time_$key", microtime(true)); }
-  static function tick($key,$now=false) {
-    return ($now?self::bench($now):microtime(true)) - self::retrieve("time_$key");
+  static function tick($key,$now=false, $flag = false) {
+    $time = ($now?self::bench($now):microtime(true)) - self::retrieve("time_$key");
+    if($flag)
+        echo "$flag : $time\r\n";
+    return $time;
   }
 
 

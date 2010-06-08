@@ -13,6 +13,6 @@
     <string length="128"/>
   </mykse>
   <mykse type="increment_value">
-    <int/>
+    <int size="big"/>
   </mykse>
 </myks>

@@ -93,6 +93,7 @@ class yks
     define('TMP_PATH',       ROOT_PATH."/tmp");
     define('LIBRARIES_PATH', paths_merge(YKS_PATH, $config->site['libraries_path'], ".."));
 
+    define ('PCLZIP_TEMPORARY_DIR', TMP_PATH);
 
         //********************************************************
 
@@ -143,6 +144,7 @@ class yks
 
   public function __get($key){ return $this->get($key);  }
 }
+
 
 
 
