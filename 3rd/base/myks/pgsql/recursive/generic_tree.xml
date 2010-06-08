@@ -8,7 +8,6 @@
     <param type="int"/>
     <def>
 DECLARE
-
  myrec record;
  myrec2 record;
  d INTEGER;
@@ -19,13 +18,13 @@ BEGIN
   -- RAISE INFO '%', query;
   
   FOR  myrec IN EXECUTE query LOOP
-  	return NEXT myrec;
+    RETURN NEXT myrec; -- stack return
     IF(myrec.id = $3) THEN
-    	continue;
-   END IF;
+        CONTINUE;
+    END IF;
     
-  	FOR  myrec2 IN  (SELECT * FROM ivs_generic_tree($1,$2, myrec.id, d+ 1) AS func(id INTEGER, parent INTEGER, depth INTEGER) )LOOP
-  		return NEXT myrec2;
+    FOR  myrec2 IN  (SELECT * FROM `ks_generic_tree`($1,$2, myrec.id, d+ 1) AS func(id INTEGER, parent INTEGER, depth INTEGER) ) LOOP
+        RETURN NEXT myrec2; --stack return
     END LOOP;
 
   END LOOP;
