@@ -32,7 +32,8 @@ var Uploader =  {
         value:upload_flag+'.'+upload.ext
     }).inject($n('td',{text:upload.name}).inject(line));
 
-    input.anchor.fireEvent('change')
+    input.anchor.fireEvent('change');
+
 
     $n('td',{text:FileUtils.format_size(upload.size)}).inject(line);
     $n('td',{text:"[remove]"}).inject(line).addEvent('click',  function(){
