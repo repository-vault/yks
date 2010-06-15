@@ -103,7 +103,8 @@ class users  {
   }
 
     //this implementation only works for postgres 
-  static function get_children_infos($parent_id, $where=true, $cols=array()){
+    //but it's cool !!! useit !
+  static function get_children_infos($parent_id, $where=true, $cols=array(), $sort = false){
     $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
     if(!$parent_id) return array();
     if(!is_array($parent_id)) $parent_id = array((int)$parent_id);
@@ -115,8 +116,10 @@ class users  {
     sql::query($query);
     $users_list = sql::brute_fetch('user_id');
     if($cols)
-        $users_list = array_merge_numeric($users_list,
-            self::get_infos(array_keys($users_list), $cols));
+        $users_list = array_merge_numeric(
+            self::get_infos(array_keys($users_list), $cols, array("true"), $sort),
+            $users_list
+         );
     return $users_list;
   }
 
