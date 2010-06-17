@@ -5,7 +5,7 @@ var XML = {
     return el.xml;
   },
   makesoup:function(xml_str){
-    return $n("div").set('html', xml_str).getFirst();
+    return $n("div").set('html', xml_str);//.getFirst(); //dont <null><br/><box/></null>
   }
 };
 
