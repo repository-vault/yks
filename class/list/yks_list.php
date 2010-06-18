@@ -16,9 +16,11 @@ class yks_list {
 
 
   function __sleep(){
-    foreach($this->tables_xml as $table_name=>$table_xml)
-        $this->tables_xml[$table_name] = $table_xml->asXML();
+    foreach($this->tables_xml as $table_name=>$table_xml) {
+        if($table_xml instanceOf SimpleXMLElement) 
+           $this->tables_xml[$table_name] = $table_xml->asXML();
 
+    }
     $unexport = array( 'by', 'page_id');
     $me = new ReflectionObject($this); $props = array();
     foreach($me->getProperties() as $prop)
@@ -98,4 +100,5 @@ class yks_list {
     return dsp::pages($this->results_nb, $this->by, $this->page_id, "$this->href//", $this->target);
   }
 }
+
 

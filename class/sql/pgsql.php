@@ -130,7 +130,7 @@ class sql {
     if(is_string($v)) return "$k='$v'";
     if(is_int($v))    return "$k=$v";
     if(is_null($v))   return "$k IS NULL";
-    if(is_bool($v))   return $v?"$k":"!$k";
+    if(is_bool($v))   return $v?"$k":"not($k)";
   }
   
  static function insert($table,$vals=false, $auto_indx=false, $keys=false){
@@ -214,10 +214,18 @@ class sql {
   }
 
   static function limit_rows(){
-    $query=end(sql::$queries);
-    $query=preg_replace('#SELECT (.*?) FROM (.*?)(\s*(?:ORDER BY|LIMIT).*)$#is',"SELECT COUNT(*) as nb_line FROM $2",$query);$ret=sql::qrow($query);
-    return $ret['nb_line'];
-}
+    $query = end(sql::$queries);
+    $begin_at = strpos($query, "FROM");
+    $query = "SELECT  COUNT(*) as nb_line ".substr($query, $begin_at);
+    $remove_from = min(strripos($query, "ORDER"), strripos($query, "LIMIT"));
+    if($remove_from)
+            $query = substr($query, 0, $remove_from);
+            
+    //preg_replace messed up with big strings
+    //$query=preg_replace('#SELECT (.*?) FROM (.*?)(\s*(?:ORDER BY|LIMIT).*)$#is',"SELECT COUNT(*) as nb_line FROM $2",$query);
+    return sql::qvalue($query);
+  }
+  
   static function unfix($str){
     $str = preg_replace( self::$pfx['search'], self::$pfx['replace'],$str);
     return $str;
@@ -227,6 +235,7 @@ class sql {
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }
+  static function qvalue($query) { return current(sql::qrow($query)); }
   static function value(){ $arg=func_get_args(); return reset(call_user_func_array(array(__CLASS__, 'row'), $arg)); }
   static function rows($lnk=false){ return  pg_num_rows($lnk?$lnk:self::$result); }
   static function auto_indx($table){
@@ -255,5 +264,6 @@ class sql {
 
 
 }
+
 
 

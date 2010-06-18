@@ -134,7 +134,7 @@
             </xsl:when>
             <xsl:otherwise>
               <select name="{$name}">
-                <xsl:copy-of select="@disabled"/>
+                <xsl:copy-of select="@disabled|@multiple"/>
                 <xsl:if test="$mykse/@set">
                   <xsl:attribute name="multiple">multiple</xsl:attribute>
                   <xsl:attribute name="name"><xsl:value-of select="$name"/>[]</xsl:attribute>
