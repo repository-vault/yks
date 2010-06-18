@@ -13,6 +13,7 @@ class dsp{
     else return $field_value;
   }
 
+    //goto mykses, thx
   static function field_input($field_type, $field_name, $field_value=false, $batch_mode = false){
     $type_xml = yks::$get->types_xml->$field_type;
     if($birth_table_name = (string) $type_xml['birth']) {
@@ -32,6 +33,16 @@ class dsp{
               .dsp::dd($birth_description, $options)
               ."</select></field>";
           return $str;
+      } else {
+         $nbs = sql::value($birth_table_name, true, "COUNT(*)");
+         if($nbs<20) {
+              sql::select($birth_table_name, true, $field_type, "ORDER BY $field_type ASC");
+              $birth_description = sql::brute_fetch($field_type, $field_type);
+              $str = "<field title='$field_name'><select name='$field_name' $options_str>$default_str"
+                  .dsp::dd($birth_description, $options)
+                  ."</select></field>";
+              return $str;
+        }
       }
     } return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'/>";
   }
