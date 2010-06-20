@@ -52,6 +52,7 @@ class cli {
     $options = count($args)%2==1?array_pop($args) : array();
 
     $dotrim = in_array('trim', $options);
+    $dotrim = true;
 
     for($a=1;$a<count($args);$a+=2) {
       $msg= &$args[$a];
@@ -61,7 +62,7 @@ class cli {
 
       if($dotrim)
         foreach($msg as &$tmp_line)
-            $tmp_line = preg_replace('#&[^;]*?$#m','...',mb_strimwidth($tmp_line,0,self::pad-2,'...'));
+            $tmp_line = preg_replace('#&[^;]*?$#m','…',mb_strimwidth($tmp_line,0,self::pad-2,'…'));
 
       $pad_len = max($pad_len, max(array_map('mb_strlen', $msg))+2); //2 chars enclosure
     }
