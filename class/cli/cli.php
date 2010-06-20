@@ -57,6 +57,8 @@ class cli {
       $msg= &$args[$a];
       if(!is_string($msg)) $msg = print_r($msg, 1);
       $msg = explode("\n", trim($msg));
+      $msg = str_replace("	", "    ", $msg);
+
       if($dotrim)
         foreach($msg as &$tmp_line)
             $tmp_line = preg_replace('#&[^;]*?$#m','...',mb_strimwidth($tmp_line,0,self::pad-2,'...'));

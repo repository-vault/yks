@@ -6,13 +6,14 @@ class json_parser {
   const pad = " \t\n\r";
   public static function parse($str){
     try {
-      return self::walk($str);
+      $i = 0;
+      return self::walk($str, $i);
     } catch(Exception $e){
       return null;
     }
   }
   
-  private static function walk($str, &$i = 0){
+  private static function walk($str, &$i){
     $i += strspn($str, self::pad, $i);
 
     if($str{$i} == '{')
