@@ -8,6 +8,18 @@ class css_parser {
   const COMMENTS = "/\*.*?\*/";
   const KEYWORD = "([!]?[a-z-]+)";
 
+  public static function init(){
+
+    classes::register_class_paths(array(
+        "at_rule"                => "dsp/css/at_rule.php",
+        "css_block"              => "dsp/css/block.php",
+        "css_ruleset"            => "dsp/css/ruleset.php",
+        "css_declarations_block" => "dsp/css/declarations.php",
+        "css_declaration"        => "dsp/css/declaration.php",
+    ));
+
+  }
+
   public static function parse($str){
     try {
       $i = 0;
@@ -17,6 +29,11 @@ class css_parser {
       rbx::error($e->getMessage());
       return null;
     }
+  }
+
+  public static function from_xml($str){
+    $tree = simplexml_load_string($str);
+    return css_block::fromXML($tree);
   }
 
     //comments are semanticaly equals to whitespaces
@@ -48,26 +65,6 @@ class css_parser {
   }
 
 
-  private static function parse_declarations($str, &$i){
-
-    if($str{$i++} != "{")
-        throw new Exception("Invalid declarations block".substr($str, $i));
-
-    $block = new css_declarations_block();
-    do {
-        $declaration = self::parse_declaration($str, $i);
-        if(!$declaration)
-            break;
-        $block->stack_declaration($declaration);
-    } while($str{$i}!="}" && $str{$i}!="");
-
-    if($str{$i}=="}")
-        $i++;
-
-    $i += strspn($str, self::pad, $i);
-    return $block;
-
-  }
 
   private static function parse_declaration($str, &$i){
 
@@ -97,8 +94,15 @@ class css_parser {
     return $declaration;
   }
 
-  private static function parse_value($str, &$i){
+  public static function split_values($str){
+    $i=0; $values = array();
+    while(!is_null($tmp = self::parse_value($str, $i)))
+        $values []= $tmp;
+    return $values;
+  }
 
+
+  private static function parse_value($str, &$i){
     $i += strspn($str, self::pad, $i);
     $all = array(
         self::STRING,                //string
@@ -110,7 +114,7 @@ class css_parser {
     ); $mask = "#^(?:".join('|', $all).")#i";
 
     if(!preg_match($mask, substr($str, $i), $out))
-        throw new Exception("Invalid $mask property value=".substr($str, $i));
+          return null; //throw new Exception("Invalid property value=".substr($str, $i));
     $value = $out[0]; //until more is needed
     $i += strlen($value);
     $i += strspn($str, self::pad, $i);
@@ -148,10 +152,27 @@ class css_parser {
         throw new Exception("Invalid ruleset" . substr($str, $i));
 
     list(, $selector) = $out;
-    $i+=strlen($out[0])-1;
-    $block = self::parse_declarations($str, $i);
 
-    return new css_ruleset($selector, $block);
+    $i += strlen($out[0])-1;
+
+    $ruleset = new css_ruleset($selector);
+
+        //declarations block
+    if($str{$i++} != "{")
+        throw new Exception("Invalid declarations block".substr($str, $i));
+
+    do {
+        $declaration = self::parse_declaration($str, $i);
+        if(!$declaration)
+            break;
+        $ruleset->stack_declaration($declaration);
+    } while($str{$i}!="}" && $str{$i}!="");
+
+    if($str{$i}=="}")
+        $i++;
+
+    $i += strspn($str, self::pad, $i);
+    return $ruleset;
   }
 
 

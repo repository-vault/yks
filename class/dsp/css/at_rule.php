@@ -32,7 +32,27 @@ class at_rule {
     } else $str .= ";";
 
     return $str;
+  }
 
+  static function fromXML($xml){
+    $tmp = new self((string)$xml['keyword']);
+    foreach(css_parser::split_values((string)$xml->expression) as $value)
+        $tmp->stack_expression($value);
+    if($xml->style)
+        $tmp->set_block(css_block::fromXML($xml->style));
+    return $tmp;
+  }
+
+  function outputXML(){
+                   
+    $str = "<atblock keyword=\"{$this->at_keyword}\">";
+    if($this->at_expression)
+        $str .= "<expression>".join(" ", $this->at_expression)."</expression>";
+
+    if(!is_null($this->at_statements))
+        $str .= $this->at_statements->outputXML();
+    $str.="</atblock>";
+    return $str;
   }
 
 }
