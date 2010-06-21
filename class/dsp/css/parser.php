@@ -31,10 +31,6 @@ class css_parser {
     }
   }
 
-  public static function from_xml($str){
-    $tree = simplexml_load_string($str);
-    return css_block::fromXML($tree);
-  }
 
     //comments are semanticaly equals to whitespaces
   private static function strip_comments($str){
@@ -219,6 +215,54 @@ class css_parser {
     $rule->set_block($block);
     
     return $rule;
-    
   }
+
+/******** XML ***********/
+
+
+  public static function from_xml($str){
+    $tree = simplexml_load_string($str);
+    return self::parse_block_XML($tree);
+  }
+
+  private static function parse_declaration_XML($xml){
+    $tmp = new css_declaration((string)$xml['name']);
+    if($xml['alternative']=='alternative') $tmp->set_alternative();
+    foreach(self::split_values((string)$xml) as $value)
+        $tmp->stack_value($value);
+    return $tmp;
+  }
+
+  private static function parse_ruleset_XML($xml){
+    $tmp = new css_ruleset((string)$xml['selector']);
+    foreach($xml->rule as $rule)
+        $tmp->stack_declaration(self::parse_declaration_XML($rule));
+    return $tmp;
+  }
+
+
+  private static function parse_at_XML($xml){
+    $tmp = new at_rule((string)$xml['keyword']);
+    foreach(self::split_values((string)$xml->expression) as $value)
+        $tmp->stack_expression($value);
+    if($xml->style)
+        $tmp->set_block(self::parse_block_XML($xml->style));
+    return $tmp;
+  }
+
+  private static function parse_block_XML($xml){
+    $embraced = $xml['exposed']=='exposed';
+    $tmp = new css_block($embraced);
+    foreach($xml->children() as $child) {
+        if($child->getName() == "style")
+            $tmp->stack_statement(self::parse_block_XML($child));
+        elseif($child->getName() == "ruleset")
+            $tmp->stack_statement(self::parse_ruleset_XML($child));
+        elseif($child->getName() == "atblock")
+            $tmp->stack_statement(self::parse_at_XML($child));
+    }
+    return $tmp;
+  }
+
+
 }

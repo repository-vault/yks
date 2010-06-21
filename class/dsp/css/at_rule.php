@@ -34,14 +34,7 @@ class at_rule {
     return $str;
   }
 
-  static function fromXML($xml){
-    $tmp = new self((string)$xml['keyword']);
-    foreach(css_parser::split_values((string)$xml->expression) as $value)
-        $tmp->stack_expression($value);
-    if($xml->style)
-        $tmp->set_block(css_block::fromXML($xml->style));
-    return $tmp;
-  }
+
 
   function outputXML(){
                    

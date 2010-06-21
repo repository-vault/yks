@@ -24,21 +24,6 @@ class css_block {
   }
 
 
-  static function fromXML($xml){
-    $embraced = $xml['exposed']=='exposed';
-    $tmp = new self($embraced);
-    foreach($xml->children() as $child) {
-        if($child->getName() == "style")
-            $tmp->stack_statement(css_block::fromXML($child));
-        elseif($child->getName() == "ruleset")
-            $tmp->stack_statement(css_ruleset::fromXML($child));
-        elseif($child->getName() == "atblock")
-            $tmp->stack_statement(at_rule::fromXML($child));
-
-    }
-    return $tmp;
-  }
-
   function outputXML(){
     $exposed = $this->embraced ? "exposed='exposed'":"";
     $str = "<style $exposed>";

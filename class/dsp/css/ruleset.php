@@ -31,14 +31,6 @@ class css_ruleset {
     return $str;
   }
 
-  static function fromXML($xml){
-    $tmp = new self((string)$xml['selector']);
-    foreach($xml->rule as $rule)
-        $tmp->stack_declaration(css_declaration::fromXML($rule));
-    return $tmp;
-  }
-
-
   function outputXML(){
     $selector = specialchars_encode($this->selector);
     $str = "<ruleset selector=\"$selector\">";
