@@ -21,6 +21,9 @@ class exyks_paths {
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
         self::register($ns['name'], self::resolve($ns['path']));
 
+
+    stream_wrapper_register("path", "ExyksPathsResolver");
+
     self::$consts_cache = retrieve_constants();
   }
 
@@ -85,3 +88,29 @@ class exyks_paths {
 
 
 }
+
+
+
+
+
+class ExyksPathsResolver { //implements streamWrapper
+    private $file_path;
+    private $fp;
+    function stream_open($path, $mode, $options, &$opened_path)
+    {
+        $this->file_path = exyks_paths::resolve($path);
+        $this->fp        = fopen($this->file_path, $mode);
+        $this->position = 0;
+        return true;
+    }
+
+    function stream_read($count) {  return fread($this->fp, $count); }
+    function stream_write($data) {  return fwrite($this->fp, $data); }
+    function stream_stat()       {  return stat($this->file_path); }
+    function stream_tell()       {  return ftell($this->fp); }
+    function stream_eof()        {  return feof($this->fp); }
+    function stream_seek($offset, $whence) { return fseek($this->fp, $offset, $whence); }
+}
+
+
+
