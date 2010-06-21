@@ -1,53 +1,42 @@
 <?
 
+class css_boxes {
+  private $box_theme;
 
-class at_rule {
-    //rule is @[keyword] [expression];|{
-
-  private $at_keyword;
-  private $at_expression;
-  private $at_statements;
-
-}
-
-
-class box_expander {
-
-  private $box_image;
   private $box_grid;
+  private $box_image;
+  private $css;
 
-  function set_image($image){
+  function set_image($css_target){
+        $uri = css_parser::split_string($css_target);$uri = $uri['uri'];
+        $val = exyks_paths::merge(dirname($this->css->get_path()).'/', $uri);
+        header(TYPE_PNG);
+        echo file_get_contents($val);die;
+die($val);die;
+        $val = exyks_paths::expose($val);
+    $this->box_image = $image;
 
+  }
+
+  function fromXML($css, $xml){
+    $tmp = new self();
+    $tmp->css = $css;
+
+    foreach($xml->rule as $rule) {
+        if($rule['name'] == 'box-image')
+            $tmp->set_image((string)$rule);
+        if(starts_with($rule['name'],'box-grid'))
+            $tmp->set_grid(trim(strip_start($rule['name'],'box-grid'),'-'), (string)$rule);
+    }
+    return $tmp;
   }
 
   function set_grid($space, $values){
-    $this->box_grid[$space] = $values;
-
+    $this->box_grid[$space] = explode(' ', $values);
   }
-
 
 /*
 
-
-.mocha_lu {background-image:url(lu);}
-.mocha_ld {background-image:url(ld);}
-.mocha_lm {background-image:url(lm);}
-.mocha_ru {background-image:url(ru);}
-.mocha_rm {background-image:url(rm);}
-.mocha_rd {background-image:url(rd);}
-.mocha_mu {background-image:url(mu);}
-.mocha_md {background-image:url(md);}
-.mocha_mm {background-image:url(mm);}
-.mocha_lm {width:14px;} .mocha_rm {width:14px;}
-.mocha_mu {height:30px;} .mocha_md {height:30px;}
- 
-*/
-
-  function render(){
-
-  }
-
-  $out_path="css/".SITE_BASE."/boxs";
 
 foreach($themes_config->themes->children() as $theme_name=>$theme_data) try {
 	$theme_src="$out_path/$theme_name.png";
@@ -96,6 +85,9 @@ foreach($themes_config->themes->children() as $theme_name=>$theme_data) try {
 	rbx::ok("Génération $theme_name terminée");
 
 }catch(rbx $e){}
+*/
+
+
 
 
 }

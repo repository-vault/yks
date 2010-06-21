@@ -102,20 +102,30 @@ class css_parser {
   }
 
 
-  private static function parse_value($str, &$i){
-    $i += strspn($str, self::pad, $i);
+  public static function split_string($str){
     $all = array(
-        self::STRING,                //string
+        self::STRING,                 //string
         "(\#[0-9A-F]+)",              //hexacolor
         "(-?[0-9.]+)(%|[a-z]{2,3})",  //unit value
         "(-?[0-9.]+)",                //simple number
-        self::URI,                   //URI
-        self::KEYWORD,                 //keyword
+        self::URI,                    //URI
+        self::KEYWORD,                //keyword
     ); $mask = "#^(?:".join('|', $all).")#i";
 
-    if(!preg_match($mask, substr($str, $i), $out))
+    if(!preg_match($mask, $str, $out))
           return null; //throw new Exception("Invalid property value=".substr($str, $i));
-    $value = $out[0]; //until more is needed
+
+    return array('full' => $out[0], 'uri' => pick($out[9]) );
+  }
+
+
+  private static function parse_value($str, &$i){
+    $i += strspn($str, self::pad, $i);
+
+    $infos = self::split_string(substr($str, $i));
+    if(is_null($infos)) return null;
+
+    $value = $infos['full']; //until more is needed
     $i += strlen($value);
     $i += strspn($str, self::pad, $i);
 

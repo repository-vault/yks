@@ -14,6 +14,10 @@ class css_block {
     $this->file_path = $file_path;
   }
 
+  function get_path(){
+    return $this->file_path;
+  }
+
   function stack_statement($statement){
     $this->statements[] = $statement;
   }
