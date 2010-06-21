@@ -20,11 +20,12 @@ class css_parser {
 
   }
 
-  public static function parse($str){
+  public static function parse_file($file_path){
     try {
       $i = 0;
+      $str = file_get_contents($file_path);
       $str = self::strip_comments($str);
-      return self::parse_block($str, $i);
+      return self::parse_block($str, $i, $file_path);
     } catch(Exception $e){
       rbx::error($e->getMessage());
       return null;
@@ -40,11 +41,14 @@ class css_parser {
   }
 
 
-  private static function parse_block($str, &$i){
+  private static function parse_block($str, &$i, $file_path = false){
 
     $i += strspn($str, self::pad, $i); $start = $i;
     $embraced = $str{$i} == "{";
     $block = new css_block($embraced);
+    if($file_path)
+        $block->set_path($file_path);
+
     if($embraced) $i++;
 
     do {
@@ -252,7 +256,12 @@ class css_parser {
 
   private static function parse_block_XML($xml){
     $embraced = $xml['exposed']=='exposed';
+    $path     = (string)$xml['file_path'];
+
     $tmp = new css_block($embraced);
+    if($path)
+        $tmp->set_path($path);
+
     foreach($xml->children() as $child) {
         if($child->getName() == "style")
             $tmp->stack_statement(self::parse_block_XML($child));

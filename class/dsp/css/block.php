@@ -4,10 +4,14 @@
 class css_block {
 
   private $statements = array();
-  private $embraced = true;
+  private $embraced   = true;
+  private $file_path  = false;
 
   function __construct($embraced = true){
     $this->embraced = $embraced;
+  }
+  function set_path($file_path){
+    $this->file_path = $file_path;
   }
 
   function stack_statement($statement){
@@ -26,7 +30,8 @@ class css_block {
 
   function outputXML(){
     $exposed = $this->embraced ? "exposed='exposed'":"";
-    $str = "<style $exposed>";
+    $path    = $this->file_path ? "path=\"{$this->file_path}\"":"";
+    $str = "<style $exposed $path>";
     foreach($this->statements as $statement)
         $str.=$statement->outputXML();
 
