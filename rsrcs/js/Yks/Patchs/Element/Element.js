@@ -43,7 +43,7 @@ Element.implement({
 
   toQueryString: function(){
     //better implementation of form specials (input/image & submit & co)
-    return Jsx.Form.encode(this.toQueryList());
+    return Xhr.encode_urlencode(this.toQueryList());
   }
 
 });
