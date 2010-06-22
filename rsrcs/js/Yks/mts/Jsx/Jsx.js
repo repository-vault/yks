@@ -30,7 +30,8 @@ var Jsx = new Class({
   },
 
   hash_stack:function(hash){
-    if($type(hash) == 'string' || $type(hash) =='element' || $type(hash) == 'array')
+    var mytype = $type(hash);
+    if( mytype == 'string' || mytype =='element' || mytype == 'array' || mytype == 'hash' )
         return this.data_stack(hash);
 
     $H(hash).each(function(value, key){

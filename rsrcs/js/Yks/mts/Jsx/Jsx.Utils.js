@@ -2,7 +2,7 @@
 Jsx.action = function(data, bind, confirm, chain){
     if(!bind && $type(data)=='element'){
         bind = data; data = {data:bind.toQueryString()};
-    }else if($type(data)=='string') data = {ks_action:data};
+    } else if($type(data)=='string') data = {ks_action:data};
 
     var box = $(bind).getBox(), txt= ($type(confirm)=='boolean'?$(bind).get('text'):confirm)+' ?';
     if(confirm && !window.confirm(txt)) return false;
