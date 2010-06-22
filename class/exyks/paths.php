@@ -99,6 +99,10 @@ class ExyksPathsResolver { //implements streamWrapper
     function stream_open($path, $mode, $options, &$opened_path)
     {
         $this->file_path = exyks_paths::resolve($path);
+        if(!is_file($this->file_path)) {
+             trigger_error ("Invalid file path resolution {$this->file_path}", E_USER_WARNING);
+             return false;
+        }
         $this->fp        = fopen($this->file_path, $mode);
         $this->position = 0;
         return true;

@@ -10,7 +10,9 @@ classes::register_class_paths(array(
    "js_package"   => CLASS_PATH."/exts/js_loader/package.php",
    "js_packager"  => CLASS_PATH."/exts/js_loader/packager.php",
    "js_packer"    => CLASS_PATH."/exts/js_loader/packer.php",
+   "exyks_js_packer" => CLASS_PATH."/dsp/js/packer.php",
 ));
+
 
 $yks_root = RSRCS_PATH."/js/Yks";
 $mt_root  = RSRCS_PATH."/js/Mootools";
@@ -18,6 +20,7 @@ $trd_root = RSRCS_PATH."/js/3rd";
 
 
 
+$packer   = new exyks_js_packer();
 $packager = new js_packager();
 
 $manifests_list = array_merge(
@@ -34,7 +37,6 @@ foreach($manifests_list as $file_path)
 $package_root = "yks";
 
 
-$packer  = new js_packer();
 $packer->register("mt.core",  "$mt_root/core");
 $packer->register("mt.more",  "$mt_root/more");
 $packer->register("yks.root", "$yks_root");
