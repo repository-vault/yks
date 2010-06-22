@@ -34,12 +34,10 @@ exyks::$head->title = "Gestion des utilisateurs"; //$user_infos["user_name"] ...
 
 
 
-
-
 if($action=="users_manage")try{
-    $users_move=(bool)$_POST['where_id'];
-    $users_delete=(bool)$_POST['users_delete'];
-    $users_id=array_keys((array)$_POST['users_id']);
+    $users_move   = (bool)$_POST['where_id'];
+    $users_delete = (bool)$_POST['users_delete'];
+    $users_id = array_keys((array)$_POST['users_id']);
     if(!$users_id && ($user_id=$_POST['user_id']))$users_id=array($user_id);
     if($users_delete){
         foreach($users_id as $user_id)

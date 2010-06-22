@@ -72,10 +72,10 @@ Pour la selection : <br/>
 Deplacer vers<br/>
 <box src="?&href_fold;/check_name//where_id"/>
 <br/>
-<span onclick="Jsx.action({data:$('users_manage').toQueryString()},$('users_manage'))">Deplacer</span><br/>
+<span onclick="Jsx.action({data:$('users_manage')},$('users_manage'))">Deplacer</span><br/>
 
 
-    <span onclick="Jsx.action({data:$('users_manage').toQueryString()+'&amp;users_delete=1'},$('users_manage'),this.innerHTML)">Supprimer</span>
+    <span onclick="Jsx.action({data:[$('users_manage'),$H({users_delete:1})]},$('users_manage'),this.innerHTML)">Supprimer</span>
 <?}?>
 
 <div class='align_right'>
