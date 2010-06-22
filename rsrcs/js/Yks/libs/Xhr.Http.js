@@ -1,7 +1,8 @@
 Xhr.encode_urlencode = function(hash){
     var str = [];
     hash.each(function(val){
-        str.push(val.key + '=' + encodeURIComponent(val.value));
+        if($type(val) == 'string') str.push(val);
+        else str.push(val.key + '=' + encodeURIComponent(val.value));
     });
     return str.join('&');
 };

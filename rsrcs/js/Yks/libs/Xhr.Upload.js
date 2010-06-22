@@ -12,6 +12,12 @@ Xhr.implement({
     var str = "";
 
     hash.each(function(val) {
+
+       if($type(val) == 'string') {
+            val = data.split('=', 2);
+            val = {key:val[0],value:val[1]};
+        }
+
         str += "--"+boundary+CRLF;
         str += "Content-Disposition: form-data; name=\""+val.key+"\"; ";
 

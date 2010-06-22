@@ -30,6 +30,9 @@ var Jsx = new Class({
   },
 
   hash_stack:function(hash){
+    if($type(hash) == 'string' || $type(hash) =='element' || $type(hash) == 'array')
+        return this.data_stack(hash);
+
     $H(hash).each(function(value, key){
         this.data_stack({key:key,value:value});
     }.bind(this));
@@ -37,8 +40,9 @@ var Jsx = new Class({
   },
 
   data_stack:function(data){
-    //sauf si data est deja array, just merge
-    this.data.push(data);
+    if($type(data) == 'array') {
+        this.data.extend(data);
+    } else this.data.push(data);
     return this;
   },
 

@@ -50,7 +50,7 @@ var Xhr = new Class({
     var ret = [];
     data.each(function(data){
       switch ($type(data)){
-        case 'string' : data = data.split('=',2); ret.push({key:data[0],value:data[1]});break;
+        case 'string' : ret.push(data);break;
         case 'element': ret.extend(document.id(data).toQueryList()); break;
         case 'hash': ret.extend(Hash.toQueryList(data));break;
         case 'object':ret.push(data);break; //default
