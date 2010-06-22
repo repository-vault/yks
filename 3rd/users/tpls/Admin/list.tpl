@@ -19,7 +19,7 @@ if($addrs_list)echo "<clear/><hr/>";
 ?>
 
 
-<ks_form ks_action="users_manage" id="users_manage">
+<ks_form id="users_manage">
 Pages : <?=$pages?><br/>
 <table style='width:100%' class='table'>
   <tr class='line_head'>
@@ -72,15 +72,12 @@ Pour la selection : <br/>
 Deplacer vers<br/>
 <box src="?&href_fold;/check_name//where_id"/>
 <br/>
-<span onclick="Jsx.action({data:$('users_manage')},$('users_manage'))">Deplacer</span><br/>
-
-
-    <span onclick="Jsx.action({data:[$('users_manage'),$H({users_delete:1})]},$('users_manage'),this.innerHTML)">Supprimer</span>
+    <button name="ks_action[users_move]">Deplacer</button>
+    <button confirm="this.alt" name="ks_action[users_delete]">Supprimer</button>
 <?}?>
 
 <div class='align_right'>
 <button theme="action"  target="user_manage" href="/?/Admin/Users//<?=$parent_id?>/manage">Ajouter un utilisateur ici</button>
-
 <button theme="action" target="addr_manage" href="/?/Admin/Users//<?=$parent_id?>/Manage/Addrs/manage">Ajouter des coordonnees ici</button>
 </div>
 
@@ -90,8 +87,7 @@ Deplacer vers<br/>
 
 function user_delete(user_id){
   Jsx.action({
-	ks_action:'users_manage',
-	'users_delete':1,
+	ks_action:'users_delete',
 	user_id:user_id
   }, $('users_manage'), 'Supprimer');
 }

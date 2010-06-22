@@ -34,26 +34,28 @@ exyks::$head->title = "Gestion des utilisateurs"; //$user_infos["user_name"] ...
 
 
 
-if($action=="users_manage")try{
-    $users_move   = (bool)$_POST['where_id'];
-    $users_delete = (bool)$_POST['users_delete'];
-    $users_id = array_keys((array)$_POST['users_id']);
-    if(!$users_id && ($user_id=$_POST['user_id']))$users_id=array($user_id);
-    if($users_delete){
-        foreach($users_id as $user_id)
-            sql::delete("ks_users_tree",compact("user_id"));
-        return jsx::js_eval("Jsx.open('/?$href_fold//$parent_id/list','users_list',this)");
-    }
+if($action == "users_move") try {
+    $parent_id=(int)$_POST['where_id'];
+    if(!$parent_id)	throw rbx::error("Impossible de deplacer les elements");
 
-    if($users_move) {
-        $parent_id=(int)$_POST['where_id'];
-        if(!$parent_id)	throw rbx::error("Impossible de deplacer les elements");
-        $data=compact("parent_id");
-        foreach($users_id as $user_id)
-            sql::update("ks_users_tree",$data,compact('user_id'));
-        return jsx::js_eval("Jsx.open('/?$href_fold//$parent_id/list','users_list',this)");
-    }
-    
+    $users_id = array_keys((array)$_POST['users_id']);
+    if(!$users_id && ($user_id=$_POST['user_id'])) $users_id = array($user_id);
+
+    $data=compact("parent_id");
+    foreach($users_id as $user_id)
+        sql::update("ks_users_tree",$data,compact('user_id'));
+    return jsx::js_eval("Jsx.open('/?$href_fold//$parent_id/list','users_list',this)");
+}catch(rbx $e){}
+
+
+if($action=="users_delete")try{
+    $users_id = array_keys((array)$_POST['users_id']);
+    if(!$users_id && ($user_id=$_POST['user_id'])) $users_id = array($user_id);
+
+    foreach($users_id as $user_id)
+        sql::delete("ks_users_tree",compact("user_id"));
+
+    return jsx::js_eval("Jsx.open('/?$href_fold//$parent_id/list','users_list',this)");
 }catch(rbx $e){}
 
 
