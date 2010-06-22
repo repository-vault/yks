@@ -41,6 +41,9 @@
     <module key="path://yks/Utilities/Imgs/Thumbnailer.avatar.js" expose="Thumbnailer" head="true">
       <description>A tiny image thumbnailer</description>
     </module>
+    <module key="path://yks/Utilities/Imgs/Thumbnailer.js" expose="Thumbnailer" head="true">
+      <description>A tiny image thumbnailer</description>
+    </module>
     <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio" head="true">
       <description>Add a custom design for checkboxes</description>
     </module>
