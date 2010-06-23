@@ -55,17 +55,25 @@ class locales_manager {
     return $str;
   }
 
+    //additionnal ponderation for first language (e.g it,en;q=0.9,en-us;q=0.8,fr; => it-it)
+  const DEFAULT_ADDITIONNAL_WEIGHT = 1.3;
+    //retro-ponderation for no-country-specifics languages (e.g it,en;q=0.9,en-us;q=0.8,fr; => it-it)
+  const COUNTRYLESS_WEIGHT = 0.8;
 
   public static function find_best_lang($accept_language, $lang_list){
+
+        //dummy fallbacks
     if(!$lang_list) return 'en-us';
     $langs_nb = count($lang_list)-1;
     if(!$langs_nb) return $lang_list[0];
 
-    $lang_filtered=array(); $lang_order=array();
+    $lang_filtered = array();
+    $lang_order    = array();
 
     $accept_language_mask='#([a-z]{2}(?:-[a-z]{2})?)(?:\s*;q=([0-9.]+))?\s*,#';
     if(preg_match_all($accept_language_mask,strtolower("$accept_language,"),$out)) {
         if(!$out[2][0]) $out[2][0]=1;     //defaut q=1
+        if($out[2][0] == 1) $out[2][0] *= self::DEFAULT_ADDITIONNAL_WEIGHT;
         $lang_order=array_combine($out[1],$out[2]);arsort($lang_order);
         foreach($lang_order as &$pow) $pow+=1;
              //weights <1 are bad since they cannt be easily multiplied
@@ -78,11 +86,12 @@ class locales_manager {
             $lang_key_root = substr($lang_key,0,2);
 
             if($lang_want == $lang_key) $lang_filtered[$lang_key][]=$lang_weight;
-            elseif($lang_key_root == $lang_want_root)$lang_filtered[$lang_key][]=0.8*$lang_weight;
+            elseif($lang_key_root == $lang_want_root)
+                $lang_filtered[$lang_key][] = $lang_weight * self::COUNTRYLESS_WEIGHT;
             else $lang_filtered[$lang_key][]=($langs_nb-$lang_order)/$langs_nb; 
         }
     }
-    $lang_filtered=array_map( "max", $lang_filtered);
+    $lang_filtered = array_map("max", $lang_filtered);
     return $lang_filtered?array_search( max($lang_filtered),$lang_filtered):'en-us';
          //last fallback (bad config)
   }
