@@ -45,6 +45,14 @@ class sql_func {
 
 
 
+//***************** Metas *******************
+  static function table_infos($table_name){
+    $name = sql::resolve($table);
+    $where=array('table_schema'=>$name['schema'], 'table_name'=>$name['name']);
+    return sql::row("information_schema.tables",$where);
+ }
+
+
 }
 
 
