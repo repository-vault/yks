@@ -57,26 +57,9 @@ class ksql extends isql {
     return $tmp?$tmp:array();
   }
   
-  static function brute_fetch($id=false, $val=false){
-    $tmp=array();$c=0;
-    while($l = pg_fetch_assoc(self::$result)))
-        $tmp[$id?$l[$id]:$c++] = $val?$l[$val]:$l;
-    ksql::free();
-    return $tmp;
-  }
 
   static function fetch_all(){
     return pg_fetch_all_columns(self::$result);
-  }
-
-  static function partial_fetch($id, $val, $start, $by) {
-    $tmp=array();$c=0;$line=0;
-    pg_result_seek(self::$result,$start);
-    while(($l=pg_fetch_assoc(self::$result))&& ($line++<$by))
-        $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
-    $rows = ksql::rows();
-    ksql::free();
-    return array($tmp, $rows);
   }
 
 
@@ -87,7 +70,6 @@ class ksql extends isql {
     return false;
   }
 
-  
 
   static function rows($r=false){ return  pg_num_rows(pick($r, self::$result)); }
   static function auto_indx($table){

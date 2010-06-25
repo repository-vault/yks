@@ -221,6 +221,25 @@ class isql {
   }
 
 
+  static function brute_fetch($id=false, $val=false){
+    $tmp=array();$c=0;
+    while($l = ksql::fetch() )
+        $tmp[$id?$l[$id]:$c++] = $val?$l[$val]:$l;
+    ksql::free();
+    return $tmp;
+  }
+
+  static function partial_fetch($id, $val, $start, $by) {
+    $tmp=array();$c=0;$line=0;
+    pg_result_seek(self::$result,$start);
+    while(($l=ksql::fetch())&& ($line++<$by))
+        $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
+    $rows = ksql::rows();
+    ksql::free();
+    return array($tmp, $rows);
+  }
+
+
   static function limit_rows(){
     $query    = end(ksql::$queries);
     $begin_at = strpos($query, "FROM");
