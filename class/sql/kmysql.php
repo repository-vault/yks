@@ -1,5 +1,6 @@
 <?php
 
+
 class ksql extends isql {
 
 
@@ -36,14 +37,14 @@ class ksql extends isql {
     ksql::$result = mysql_query($query, $lnk);
 
     if(ksql::$log) ksql::$queries[] = $query;
-var_dump(ksql::$result);
+
     if(ksql::$result===false) {
         $error = ksql::error(htmlspecialchars($query));
         return $error;
     }
 
     if($arows) {
-        $arows = mysql_affected_rows(ksql::$result);
+        $arows = mysql_affected_rows($lnk);
         return $arows; 
     }
     return ksql::$result;
@@ -70,9 +71,8 @@ var_dump(ksql::$result);
 
 
   static function rows($r=false){ return  mysql_num_rows(pick($r, ksql::$result)); }
-  static function auto_indx($table){
-    $name = ksql::resolve($table);
-    return (int)ksql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
+  static function auto_indx(){
+    return (int)mysql_insert_id(ksql::$links[ksql::$link]);
   }
 
   static function query_raw($query){
@@ -85,4 +85,4 @@ var_dump(ksql::$result);
 }
 
 
-
+class sql extends ksql {}
