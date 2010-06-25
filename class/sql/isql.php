@@ -15,15 +15,16 @@ class isql {
 
 
   static function init(){
-    ksql::$config = yks::$get->config->search('sql');
-    ksql::set_lnk('db_link');
+    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
+    self::$config = yks::$get->config->search('sql');
+    self::set_link('db_link');
 
 
-    if(ksql::$servs->search('prefixs'))
-    foreach(ksql::$servs->prefixs->attributes() as $prefix=>$trans)
-        ksql::$pfx["#(?<!\.)`{$prefix}_([a-z0-9_-]+)`#"] = '`'.str_replace('.', '`.`', $trans).'$1`';
+    if(self::$config->search('prefixs'))
+    foreach(self::$config->prefixs->attributes() as $prefix=>$trans)
+        self::$pfx["#(?<!\.)`{$prefix}_([a-z0-9_-]+)`#"] = '`'.str_replace('.', '`.`', $trans).'$1`';
 
-    ksql::$pfx = array('search'=> array_keys(ksql::$pfx), 'replace'=>array_values(ksql::$pfx));
+    self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
   }
 
 
@@ -33,13 +34,13 @@ class isql {
   }
 
   public static function set_link($link){
-    ksql::$link = $link;
-    if(!ksql::$links_xml->search(ksql::$link))
+    self::$link = $link;
+    if(!self::$config->links->search(self::$link))
       throw rbx::error("Unable to load sql configuration.");
   }
 
 
-//***************** Basics *******************
+/***************** Basics *******************/
 
   static function select($table, $where='TRUE', $cols="*", $extra=''){
     $query = "SELECT $cols ".ksql::from($table).' '.ksql::where($where, $table)." $extra";
@@ -71,12 +72,12 @@ class isql {
   }
 
   static function truncate($table){
-    $query = 'DELETE FROM '.'.ksql::fromf($table);
+    $query = 'DELETE FROM '.ksql::fromf($table);
     return ksql::query($query);
   }
 
 
-//***************** Extended *******************
+/***************** Extended *******************/
 
 
   static function row($table, $where='TRUE', $cols='*', $extras=''){
@@ -99,7 +100,7 @@ class isql {
   }
 
 
-//***************** Data helpers *******************
+/***************** Data helpers *******************/
 
   static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
@@ -122,7 +123,7 @@ class isql {
 
   static function from($tables){
     if(!is_array($tables))
-        return 'FROM '.(preg_match('#[^a-z0-9_.-]#', $tables)? $tables : ksql"::fromf($tables));
+        return 'FROM '.(preg_match('#[^a-z0-9_.-]#', $tables)? $tables : ksql::fromf($tables));
 
     $ret  = 'FROM '.ksql::fromf(array_shift($tables));
     foreach($tables as $k=>$table)
@@ -168,7 +169,7 @@ class isql {
 
 
 
-//***************** Transactions *******************
+/***************** Transactions *******************/
 
   static function begin(){ ksql::$transaction=true; ksql::query('BEGIN');  }
   static function commit($msg = false){
@@ -186,7 +187,7 @@ class isql {
   }
 
 
-//***************** Internals *******************
+/***************** Internals *******************/
 
     //unespace tables prefixes
   static function unfix($str){ return preg_replace(ksql::$pfx['search'], ksql::$pfx['replace'] ,$str);}
@@ -207,7 +208,7 @@ class isql {
 
 
 
-//***************** Generics *******************
+/***************** Generics *******************/
 
     //This function works the same way array_reindex does, please refer to the manual
   static function brute_fetch_depth(){
