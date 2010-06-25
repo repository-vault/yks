@@ -4,7 +4,7 @@
     Server Side
 */
 
-class mediawiki_auth_api {
+class exyks_auth_api {
   /**
    * @param string $user_login
    * @param string $user_pswd
