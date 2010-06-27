@@ -3,12 +3,12 @@
 class exyks_js_packer extends js_packer {
 
   const ns = "js ns"; //namespace js \o/
-  private $JS_CACHE_PATH;
+  protected $cache_path;
 
 
   function __construct(){
     parent::__construct();
-    $this->JS_CACHE_PATH = CACHE_PATH."/js";
+    $this->cache_path = "path://cache/js";
   }
 
   public function register($prefix, $path) {
@@ -31,8 +31,8 @@ class exyks_js_packer extends js_packer {
 
   public function build($compress, $etag = false){
     $hash         = $this->gen_hash();
-    $cache_full   = "{$this->JS_CACHE_PATH}/{$hash}.uncompressed.js";
-    $cache_packed = "{$this->JS_CACHE_PATH}/{$hash}.packed.js";
+    $cache_full   = "{$this->cache_path}/{$hash}.uncompressed.js";
+    $cache_packed = "{$this->cache_path}/{$hash}.packed.js";
     $cache_file   = $compress ? $cache_packed : $cache_full;
     //if(is_file($cache_file)) return array($cache_file, $hash);
 
@@ -42,8 +42,8 @@ class exyks_js_packer extends js_packer {
         $contents.=file_get_contents($file_path);
     } $contents .= $this->additional_script;
 
-    //files::delete_dir(JS_CACHE_PATH,false);
-    files::create_dir($this->JS_CACHE_PATH);
+    //files::delete_dir(cache_path,false);
+    files::create_dir($this->cache_path);
 
     file_put_contents($cache_full, $contents);
     $cmd = JAVA_PATH." -jar ".YUI_COMPRESSOR_PATH.

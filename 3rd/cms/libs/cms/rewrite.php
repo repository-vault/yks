@@ -17,7 +17,7 @@ class cms_rewrite {
     self::$mask_from = $cms_config->rewrite['from'];
     self::$mask_to   = $cms_config->rewrite['to'];
 
-    self::$map_file  = CACHE_PATH."/map.txt";
+    self::$map_file  = "path://cache/map.txt";
     self::$map      = data::fetch(self::DATA_KEY);
     if(!self::$map) {
 

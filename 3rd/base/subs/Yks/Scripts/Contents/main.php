@@ -5,10 +5,19 @@ $path = $argv0;
 
 //expose only themes' files (css/png)
 
+
+$path_infos = parse_url($path);
+$domain = $path_infos['host'];
+
+
+$exposed_domains = array('public', 'skin', 'cache');
+if(!in_array($domain, $exposed_domains))
+    die("Unaccessible path $path");
+
+
 $full = exyks_paths::resolve($path);
 
-$check = crpt("$path/$full", FLAG_FILE);
-if($check != $hash) die("Invalid hash");
+
 
 $ext = files::ext($full);
 

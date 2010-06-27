@@ -7,11 +7,10 @@
 define('Ex/yks', 'A cloudy tool');
 
 
-
       //first thing first, where am i
   if(!defined('PUBLIC_PATH')) {
     if(PHP_SAPI == 'cli') {
-        define('PUBLIC_PATH', '.');
+        define('PUBLIC_PATH', realpath('.'));
     } else {
         $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
             //remove relatives paths

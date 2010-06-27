@@ -17,6 +17,7 @@ class exyks_paths {
     self::register("skin.js", RSRCS_PATH."/js");
     self::register("here", ROOT_PATH);
     self::register("public", PUBLIC_PATH);
+    self::register("cache", CACHE_PATH);
 
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
         self::register($ns['name'], self::resolve($ns['path']));
@@ -34,10 +35,7 @@ class exyks_paths {
 
 
   public static function expose($path){
-
-    $full = self::resolve($path);
-    $hash = crpt("$path/$full", FLAG_FILE);
-    return "/?/Yks/Scripts/Contents//$hash|$path";  //absolute here, might be a pref ?
+    return "/?/Yks/Scripts/Contents|$path";
 
   }
 
@@ -94,26 +92,39 @@ class exyks_paths {
 
 
 class ExyksPathsResolver { //implements streamWrapper
-    private $file_path;
-    private $fp;
-    function stream_open($path, $mode, $options, &$opened_path)
-    {
-        $this->file_path = exyks_paths::resolve($path);
-        if(!is_file($this->file_path)) {
-             trigger_error ("Invalid file path resolution {$this->file_path}", E_USER_WARNING);
-             return false;
-        }
-        $this->fp        = fopen($this->file_path, $mode);
-        $this->position = 0;
-        return true;
-    }
+  private $file_path;
+  private $fp;
 
-    function stream_read($count) {  return fread($this->fp, $count); }
-    function stream_write($data) {  return fwrite($this->fp, $data); }
-    function stream_stat()       {  return stat($this->file_path); }
-    function stream_tell()       {  return ftell($this->fp); }
-    function stream_eof()        {  return feof($this->fp); }
-    function stream_seek($offset, $whence) { return fseek($this->fp, $offset, $whence); }
+
+    //r, r+, w, w+, a, a+, x, x+
+  private static $write_modes = array('r+', 'w', 'w+', 'a+', 'x+');
+
+  function stream_open($path, $mode, $options, &$opened_path) {
+    $write = in_array(trim($mode, 'bt'), self::$write_modes);
+    $this->file_path = exyks_paths::resolve($path);
+    
+    if(!$write && !is_file($this->file_path)) {
+        trigger_error ("Invalid file path resolution {$this->file_path}", E_USER_WARNING);
+        return false;
+    }
+    $this->fp        = fopen($this->file_path, $mode);
+    $this->position = 0;
+    return true;
+  }
+
+  static function url_stat($path, $flags) { 
+    //if($flags & STREAM_URL_STAT_QUIET)
+    $path = exyks_paths::resolve($path);
+    return stat($path);
+  }
+
+  function mkdir($path)        {  echo "mk"; die($path); }       
+  function stream_read($count) {  return fread($this->fp, $count); }
+  function stream_write($data) {  return fwrite($this->fp, $data); }
+  function stream_stat()       {  return stat($this->file_path); }
+  function stream_tell()       {  return ftell($this->fp); }
+  function stream_eof()        {  return feof($this->fp); }
+  function stream_seek($offset, $whence) { return fseek($this->fp, $offset, $whence); }
 }
 
 

@@ -77,10 +77,12 @@ class exyks {
     define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
 
 
-    $client_xsl =                   "xsl/{$engine}_client.xsl"; // relative
-    self::store('XSL_URL',         CACHE_URL.'/'.$client_xsl);
-    self::store('XSL_SERVER_PATH', CACHE_PATH."/xsl/{$engine}_server.xsl");
-    self::store('XSL_CLIENT_PATH', CACHE_PATH.'/'.$client_xsl);
+
+    self::store('XSL_URL',         CACHE_URL."/xsl/{$engine}_client.xsl");
+
+    self::store('XSL_SERVER_PATH', "path://cache/xsl/{$engine}_server.xsl");
+    self::store('XSL_CLIENT_PATH', "path://cache/xsl/{$engine}_client.xsl");
+
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
 
