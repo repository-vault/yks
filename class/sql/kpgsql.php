@@ -2,9 +2,9 @@
 
 class ksql extends isql {
 
-  static function init(){
-    ksql::$pfx['search']  = "#`(.*?)`#";
-    ksql::$pfx['replace'] = "\"$1\"";
+  static function init() {
+    ksql::$pfx['search'][]  = "#`(.*?)`#";
+    ksql::$pfx['replace'][] = "\"$1\"";
   }
 
   static function connect(){
@@ -84,5 +84,6 @@ class ksql extends isql {
 
 }
 
+class sql extends ksql {}
 
 
