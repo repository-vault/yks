@@ -22,12 +22,9 @@ class exyks_auth_api {
     if(!$auth_success)
         return "Invalid login/password ( $user_login, $user_pswd) ";
 
-    $data = array(
-        'user_name'    => sess::$sess['user_name'],
-        'user_mail'    => sess::$sess['user_mail'],
-        'users_tree'   => sess::$sess['users_tree'],
-        'user_id'      => sess::$sess['user_id'],
-    );
+    $data = sess::$sess->computed;
+    $data['users_tree'] =  sess::$sess['users_tree'];
+
     return self::output($data);
   }
 
@@ -42,6 +39,21 @@ class exyks_auth_api {
     return auth::verif($access_zone, $access_lvl);
   }
 
+
+
+
+  public function getAccesses(){
+    sess::connect();
+    $data = sess::$sess->user_access;
+
+    return self::output($data);
+  }
+
+  public function update($field_name, $field_value){
+    sess::connect();
+    $data = array($field_name => $field_value);
+    return sess::$sess->update($data);
+  }
 
     //les données ne peuvent pas être de type complexe en retour d'un Webservice, on serialize
   private function output($data){ return serialize($data); }
