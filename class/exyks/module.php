@@ -38,6 +38,11 @@ class exyks_module {
     exyks_paths::register("here", $this->module_root, $this->ns);
     exyks_paths::register($this->key, $this->module_root);
 
+    foreach($this->manifest_xml->paths->iterate("ns") as $domain) {
+        $path   = exyks_paths::resolve($domain['path'], $this->ns);
+        $public = $domain['public']=='public';
+        exyks_paths::register($domain['name'], $path , exyks_paths::default_ns, $public );
+    }
 
     $this->process_classes();
  

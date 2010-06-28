@@ -2,7 +2,7 @@
 
 auth::verif("yks", "admin", 403);
 
-tpls::css_add("path://users/www/users.css");
+tpls::css_add("path://skin.users/users.css");
 
 $tables_xml = data::load("tables_xml");
 
