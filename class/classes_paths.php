@@ -32,6 +32,9 @@ classes::register_class_paths(array(
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
     "exyks_auth_api"      => CLASS_PATH."/apis/AuthApi.php",
 
+    "yksauthdrupal"       => CLASS_PATH."/apis/drupal/AuthDrupal.php",
+
+
     "xsl_cache"           => CLASS_PATH."/xsl/generator.php",
 
 
