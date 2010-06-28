@@ -20,9 +20,9 @@ class css_processor {
     $this->file_name      = basename($file);
     $this->file_directory = dirname($file);
 
-    //if(!$contents) $contents = file_get_contents($this->file_path);
-
-    $this->css            = css_parser::parse_file($this->file_uri);
+    if($contents) 
+        $this->css    = css_parser::load_string($contents, $this->file_uri);
+    else $this->css   = css_parser::load_file($this->file_uri);
   }
 
 
@@ -36,7 +36,7 @@ class css_processor {
     $this->resolve_boxes();
     $this->resolve_imports();
     $this->resolve_externals();
-    echo $this->css->output();
+    return $this->css->output();
   }
 
   private function resolve_boxes(){
