@@ -7,10 +7,11 @@ $bypass_cache = (bool)$sub2;
 
 if(!$title_text) $title_text = "Default title";
 
-$titles_cache_path = "path://cache/imgs/titles";
+$titles_cache_path = CACHE_PATH."/imgs/titles";
 
 $hash     = md5("$theme_name, $title_text, ".SITE_CODE.", $is_title");
 $img_path = "$titles_cache_path/$hash.png";
+
 
 
 if($bypass_cache || !is_file($img_path)) try {

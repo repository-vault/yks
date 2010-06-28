@@ -129,7 +129,8 @@ class ExyksPathsResolver { //implements streamWrapper
   static function url_stat($path, $flags) { 
     //if($flags & STREAM_URL_STAT_QUIET)
     $path = exyks_paths::resolve($path);
-    return stat($path);
+    if(file_exists($path)) return stat($path);
+    return false;
   }
 
   function mkdir($path)        {  echo "mk"; die($path); }       
