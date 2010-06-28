@@ -13,14 +13,16 @@ class exyks_paths {
 
     self::register("yks", YKS_PATH);
 
-    self::register("skin", RSRCS_PATH."/themes/Yks");
-    self::register("skin.js", RSRCS_PATH."/js");
     self::register("here", ROOT_PATH);
-    self::register("public", PUBLIC_PATH);
-    self::register("cache", CACHE_PATH);
+
+    self::register("skin", RSRCS_PATH."/themes/Yks", self::default_ns, true);
+    self::register("skin.js", RSRCS_PATH."/js", self::default_ns, true);
+    self::register("public", PUBLIC_PATH, self::default_ns, true);
+    self::register("cache", CACHE_PATH, self::default_ns, true);
+
 
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
-        self::register($ns['name'], self::resolve($ns['path']));
+        self::register($ns['name'], self::resolve($ns['path']), self::default_ns, $ns['public']=='public' );
 
 
     stream_wrapper_register("path", "ExyksPathsResolver");
@@ -28,9 +30,10 @@ class exyks_paths {
     self::$consts_cache = retrieve_constants();
   }
 
-  public static function register($key, $dest, $ns = self::default_ns){
+  public static function register($key, $dest, $ns = self::default_ns, $public = false){
+
     //"ns/key" index prevents double declaration (could have been [] as key is irrevelant
-    self::$paths["$ns/$key"] = compact('key', 'dest', 'ns');
+    self::$paths["$ns/$key"] = compact('key', 'dest', 'ns', 'public');
   }
 
 
@@ -47,6 +50,17 @@ class exyks_paths {
     $path0 = '/'.strip_start($path0, "path://");
     $path = files::paths_merge($info['path'], $path1);
     return "path://{$info['host']}/".ltrim($path, '/');
+  }
+
+  public static function resolve_public($path, $ns = self::default_ns){
+    $path_infos = parse_url($path);
+    $domain = $path_infos['host'];
+
+    $domain_public = self::$paths["$ns/$domain"]['public'];
+    if(!$domain_public)
+        throw new Exception("Unaccessible path $path");
+
+    return self::resolve($path);
   }
 
   public static function resolve($path, $ns = false){

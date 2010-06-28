@@ -1,43 +1,33 @@
 <?
 
-$hash = $sub0;
 $path = $argv0;
 
 //expose only themes' files (css/png)
 
-
-$path_infos = parse_url($path);
-$domain = $path_infos['host'];
-
-
-$exposed_domains = array('public', 'skin', 'cache');
-if(!in_array($domain, $exposed_domains))
-    die("Unaccessible path $path");
+$full = exyks_paths::resolve_public($path);
+if(!is_file($full))
+    die("No file here");
 
 
-$full = exyks_paths::resolve($path);
-
-
-
-$ext = files::ext($full);
-
-if($ext == "css") {
+switch(files::ext($full)) {
+  case 'css':
     header(TYPE_CSS);
     files::highlander();
-    //css_processor might be able to compress ?
-    $process = new css_processor($path);
-    echo $process->output();
-    die;
-}
-
-if($ext == "png") {
+    try {
+        css_processor::delivers($path);
+    } catch(Exception $e){
+        error_log($e->getMessage());
+        files::delivers($full);
+    }
+    break;
+  case 'png':
     header(TYPE_PNG);
     files::delivers($full);
-}
-
-if(in_array($ext, array("jpeg", "jpg"))) {
+    break; 
+  case 'jpeg': case 'jpg' :
     header(TYPE_JPEG);
     files::delivers($full);
+    break; 
 }
 
 
