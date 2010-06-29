@@ -13,6 +13,20 @@ class xml {
     );
   }
 
+
+  static function load_html($str, $first_element=false){
+    libxml_use_internal_errors(true);
+    $doc = new DomDocument("1.0", "UTF-8");
+    $doc->loadHTML($str);
+    libxml_clear_errors(); libxml_use_internal_errors();
+    $res = simplexml_import_dom($doc);
+    if($first_element)
+        return reset($res->xpath("//$first_element"));
+    else return $res;
+  }
+
+
+
   static function load_file($file_path, $FLAGS = LIBXML_YKS, $FPI = false){
 
     if(!$FPI) {

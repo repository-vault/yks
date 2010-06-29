@@ -9,12 +9,12 @@ class _user extends _sql_base {
   private $storage = array();
 
 
-  static function from_where($where){
-    return parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
+  static function from_where($class, $where){
+    return parent::from_where($class, self::sql_table, self::sql_key, $where);
   }
 
-  static function from_ids($ids){
-    return parent::from_ids(__CLASS__, self::sql_table, self::sql_key, $ids);
+  static function from_ids($class, $ids){
+    return parent::from_ids($class, self::sql_table, self::sql_key, $ids);
   }
 
   function __toString(){ return $this->user_name; }
@@ -23,7 +23,15 @@ class _user extends _sql_base {
     return $this->users_tree = users::get_parents($this->user_id);
   }
 
+
+  function get_children_list(){
+    return $this->children_list = users::get_children($this->user_id);
+  }
+
   function __construct($user_id){
+    if(!is_numeric($user_id))
+        $user_id = $user_id[self::sql_key];
+    
     $this->user_id = (int)$user_id;
     if(!$this->user_id || !$this->users_tree)
         throw new Exception("Unable to load user #{$this->user_id}");
