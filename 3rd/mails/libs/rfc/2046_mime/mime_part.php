@@ -30,18 +30,14 @@ class mime_part {
     $this->children[] = $child;
   }
 
-  function apply_context(){
-    if(!$this->is_textual()) return ;
+  private function apply_context(){
+    if(!$this->is_textual())
+        return $this->contents;
 
-    $context = (array) $this->mail->vars_list; 
-
-    $this->contents = str_evaluate($this->contents, $context, array(VAR_MASK)  );
-    if($this->type_extension=="plain") //escape in no longer necessary
-        $this->contents = specialchars_decode($this->contents);
-
-        //not here
-    $this->contents = locales_manager::translate($this->contents);
-
+        //escape in no longer necessary
+    $special_chars_decode = $this->type_extension=="plain";
+    
+    return $this->mail->apply_context($this->contents, $special_chars_decode);
   }
 
   function add_file($file_path, $file_name=false){
@@ -95,21 +91,20 @@ class mime_part {
 */
   function encode($raw = false){
 
-    $str="";
-    if(!$raw)
-        $str.=$this->headers_output();
+    $str = "";
+    if(!$raw) $str.=$this->headers_output();
 
     if($this->is_composed()){
-        $str.="There is no contents in a multipart";
+        if(!$raw) $str.="There is no contents in a multipart";
 
         foreach($this->children as $child_part ){
-            $str.=CRLF."--$this->boundary".CRLF;
+            if(!$raw) $str.=CRLF."--$this->boundary".CRLF;
             $str.=$child_part->encode($raw);
         }
     } else {
-        $this->apply_context();
-        if($raw) $str.= $this->contents;
-        else $str .= rfc_2047::encoding_encode($this->contents, $this->transfer_encoding);
+        $contents = $this->apply_context();
+        if(!$raw) $contents = rfc_2047::encoding_encode($contents, $this->transfer_encoding);
+        $str.= $contents;
     } return $str;
   }
 

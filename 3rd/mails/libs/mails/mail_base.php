@@ -1,7 +1,7 @@
 <?php
 
 abstract class mail_base {
-  public $vars_list;
+  protected $vars_list;
   protected $subject;
   protected $from;
   protected $to = array();
@@ -10,11 +10,16 @@ abstract class mail_base {
 
   abstract function send($to=false);
 
-
-  function encode(){
+/**
+* raw : n'applique aucun encoding, ni headers, retourne uniquement le contenu
+*/
+  function encode($raw = false){
     $str = "";
-    $str.= $this->output_headers();
-    $str.= $this->first_part->encode();
+
+    if(!$raw)
+        $str.= $this->output_headers();
+
+    $str.= $this->first_part->encode($raw);
     
     return $str;
   }
@@ -56,5 +61,16 @@ abstract class mail_base {
   function contextualize($vars_list){
     $this->vars_list =  $vars_list;
   }
+
+  public function apply_context($contents, $special_chars_decode = true){
+    $context = (array) $this->vars_list; 
+    $contents = str_evaluate($contents, $context, array(VAR_MASK) );
+
+    if($special_chars_decode) //escape in no longer necessary
+        $contents = specialchars_decode($contents);
+
+    return locales_manager::translate($contents);
+  }
+
 
 }

@@ -4,9 +4,11 @@
 class mail extends mime {
 
 
-  function __construct($mail_name){
+  function __construct($from){
 
-    $verif_mail = compact('mail_name');
+    $verif_mail =  is_numeric($from)
+        ? array('mail_id'   => (int)$from)
+        : array('mail_name' => (string) $from);
 
     $mail_infos = sql::row("ks_mails_list", $verif_mail);
 
