@@ -43,6 +43,7 @@ define('XML_DOCTYPE','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "
 define('XML_EMPTY', '<![CDATA[]]>');
 
 define('XHTML',"http://www.w3.org/1999/xhtml");
+define('SITEMAP', "http://www.sitemaps.org/schemas/sitemap/0.9");
 
 
 define('LIBXML_YKS',LIBXML_DTDLOAD|LIBXML_DTDATTR
