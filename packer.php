@@ -2,12 +2,12 @@
 
 class js_packer {
 
-  private $JS_CACHE_PATH;
+  protected $cache_path;
   protected $files_list;
   protected $additional_script;
 
   function __construct(){
-    $this->JS_CACHE_PATH = sys_get_temp_dir();
+    $this->cache_path = sys_get_temp_dir();
     $this->files_list = array();
     $this->additional_script = "";
   }
@@ -38,8 +38,8 @@ class js_packer {
 
   public function build($compress, $etag = false){
     $hash         = $this->gen_hash();
-    $cache_full   = "{$this->JS_CACHE_PATH}/{$hash}.uncompressed.js";
-    $cache_packed = "{$this->JS_CACHE_PATH}/{$hash}.packed.js";
+    $cache_full   = "{$this->cache_path}/{$hash}.uncompressed.js";
+    $cache_packed = "{$this->cache_path}/{$hash}.packed.js";
     $cache_file   = $compress ? $cache_packed : $cache_full;
     //if(is_file($cache_file)) return array($cache_file, $hash);
 
