@@ -58,7 +58,7 @@ class css_box extends ibase {
     $todo = array(
         'lu' => array(0, 0, $box_xl, $box_yu),
         'ld' => array(0, $box_h-$box_yd, $box_xl, $box_yd),
-        'lm' => array(0, $box_yu, $box_xr, $box_ym),
+        'lm' => array(0, $box_yu, $box_xl, $box_ym),
 
         'ru' => array($box_w-$box_xr, 0, $box_xr, $box_yu),
         'rm' => array($box_w-$box_xr, $box_yu, $box_xr, $box_ym),
