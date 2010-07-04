@@ -6,7 +6,7 @@ class css_parser {
   const STRING = "(?:\"([^\"]*)\"|'([^']*)')";
   const URI    = "url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)";
   const COMMENTS = "/\*.*?\*/";
-  const KEYWORD = "([!]?[a-z-]+)";
+  const KEYWORD = "([!]?[a-z0-9-]+)";
 
   public static function init(){
 
@@ -81,17 +81,20 @@ class css_parser {
     list(, $property_name) = $out; $i+= strlen($out[0]);
     $declaration = new css_declaration($property_name);
 
+    $gid = 0; //groupId
     do {
         $value = self::parse_value($str, $i);
         if(is_null($value))
             break;
         ///die("THIS IS $value");
 
+
+        $declaration->stack_value($value, $gid);
+
         if($str{$i}==',') {
-            $i++; $declaration->set_alternative(); //$declaration->something();     
+            $i++; $gid++;
         }
 
-        $declaration->stack_value($value);       
     } while($str{$i}!=';' && $str{$i}!='}' && $str{$i}!="");
 
     $i += strspn($str, self::pad.';', $i);
@@ -246,9 +249,8 @@ class css_parser {
 
   private static function parse_declaration_XML($xml){
     $tmp = new css_declaration((string)$xml['name']);
-    if($xml['alternative']=='alternative') $tmp->set_alternative();
-    foreach($xml->val as $value)
-        $tmp->stack_value((string)$value);
+    foreach($xml->valuegroup as $gid=>$group) foreach($xml->val as $value)
+        $tmp->stack_value((string)$value, $gid);
     return $tmp;
   }
 
