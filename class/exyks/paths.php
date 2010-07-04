@@ -133,7 +133,12 @@ class ExyksPathsResolver { //implements streamWrapper
     return false;
   }
 
-  function mkdir($path)        {  echo "mk"; die($path); }       
+  static function mkdir($path)        {
+    $path = exyks_paths::resolve($path);
+    files::create_dir($path);
+    return file_exists($path);
+  }
+
   function stream_read($count) {  return fread($this->fp, $count); }
   function stream_write($data) {  return fwrite($this->fp, $data); }
   function stream_stat()       {  return stat($this->file_path); }
