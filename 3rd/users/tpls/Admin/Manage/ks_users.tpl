@@ -12,7 +12,7 @@ foreach($dsp_profile as $field_name=>$field_type){
 }
 ?>
 
-<hr/>
+<hr class="clear"/>
 
 
 

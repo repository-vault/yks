@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:template name="box_attribute">
-    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if><xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"><xsl:value-of select="@theme"/>_table </xsl:if></xsl:attribute>
+    <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if><xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if> <xsl:if test="@theme"><xsl:value-of select="@theme"/>_table <xsl:value-of select="@theme"/>_box </xsl:if></xsl:attribute>
     <xsl:copy-of select="@style|@id|@src"/>
   </xsl:template>
   <xsl:template match="box">
@@ -23,7 +23,7 @@
           <xsl:call-template name="box_attribute"/>
           <tr class="{$theme}_u">
             <td class="{$theme}_lu"> </td>
-            <td class="{$theme}_mu"><xsl:apply-templates select="mu/node()"/><xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme}|{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if>
+            <td class="{$theme}_mu"><xsl:if test="@caption"><img src="?/Yks/Scripts/Imgs/titles//box_{@theme}|{@caption}" class="{$theme}_caption" alt="{@caption}"/></xsl:if><xsl:if test="mu/node()"><div class="{$theme}_mu_contents"><xsl:apply-templates select="mu/node()"/></div></xsl:if>
                  </td>
             <td class="{$theme}_ru"> </td>
           </tr>
