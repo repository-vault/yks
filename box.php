@@ -6,7 +6,7 @@ class css_box extends ibase {
   private $box_grid;
   private $box_image;
   private $css;
-
+  private $box_crops = array();
 
   function __construct($stylesheet, $ruleset) {
     $this->css = $stylesheet;
@@ -19,6 +19,9 @@ class css_box extends ibase {
             $this->set_image((string)$rule);
         if(starts_with($rule['name'], 'box-grid'))
             $this->set_grid(trim(strip_start($rule['name'],'box-grid'),'-'), (string)$rule);
+
+        if($rule['name'] == 'box-crop') //key from, x, y, w, h
+            $this->box_crops[] = $rule->values;
     }
     $this->set_theme($theme_name);
 
@@ -55,6 +58,7 @@ class css_box extends ibase {
     list($box_xl, $box_xm, $box_xr) = $this->box_grid['x'];
     list($box_yu, $box_ym, $box_yd) = $this->box_grid['y'];
 
+
     $todo = array(
         'lu' => array(0, 0, $box_xl, $box_yu),
         'ld' => array(0, $box_h-$box_yd, $box_xl, $box_yd),
@@ -65,9 +69,19 @@ class css_box extends ibase {
         'rd' => array($box_w-$box_xr, $box_h-$box_yd, $box_xr, $box_yd),
 
         'mu' => array($box_xl,0,$box_xm,$box_yu),
-        'md' => array($box_xl,$box_h-$box_yd,$box_xm,$box_yd),
+        'md' => array($box_xl, $box_h-$box_yd, $box_xm, $box_yd),
         'mm' => array($box_xl,$box_yu,$box_xm,$box_ym),
     );
+        //extras parts
+    foreach($this->box_crops as $crop_infos){
+        $crop_key = $crop_base = $crop_x = $crop_y = $crop_w = $crop_h = null;
+        list($crop_key, $crop_base, $crop_x, $crop_y, $crop_w, $crop_h) = $crop_infos;
+        $box = array($crop_x, $crop_y, $crop_w, $crop_h);
+        if($from = $todo[$crop_base]) 
+            $box = array(pick($crop_x, $from[0]) + $from[0], pick($crop_y, $from[1]),
+                         pick($crop_w, $from[2]) - $crop_x, pick($crop_h, $from[3]));
+        $todo[$crop_key] = $box;
+    }
 
     $theme_css = "";
     foreach($todo as $key=>$data) {
