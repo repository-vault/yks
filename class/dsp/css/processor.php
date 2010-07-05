@@ -58,10 +58,9 @@ class css_processor {
   }
 
   private function resolve_externals(){
-    $externals = $this->css->xpath("//val[starts-with(.,'url')]/parent::*"); //!
+    $externals = $this->css->xpath("//val[starts-with(.,'url')]/ancestor::rule"); // yeah
     foreach($externals as $external) {
-
-        foreach($external->values as $i=>$value) {
+        foreach($external->values_groups as $gid=>$values) foreach($values as $i=>$value) {
             $mask  = "#url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)#";
             if(!preg_match($mask, (string)$value, $out))
                 continue;
@@ -69,7 +68,7 @@ class css_processor {
             $val = exyks_paths::merge(dirname($this->file_uri).'/', $url);
             $val = exyks_paths::expose($val);
             $val = "url(\"$val\")";
-            $external->set_value($val, $i);
+            $external->set_value($val, $i, $gid);
         }
      }
   }
