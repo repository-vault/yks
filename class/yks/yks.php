@@ -72,10 +72,11 @@ class yks
 
     define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
 
+    $site_code = strtr($config->site['code'],'.','_');
     define('SQL_DRIVER',     pick($config->sql['driver'], 'pgsql'));
-    define('SITE_CODE',      strtolower(strtr($config->site['code'],'.','_')));
+    define('SITE_CODE',      strtolower($site_code));
     define('SITE_URL',       $config->site['url']);
-    define('SITE_BASE',      ucfirst(SITE_CODE));
+    define('SITE_BASE',      ucfirst($site_code));
     define('SITE_DOMAIN',    $domain['host']);
     define('SESS_DOMAIN',    pick($config->site->sess['domain'], SITE_DOMAIN) );
 
