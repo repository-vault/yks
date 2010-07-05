@@ -25,7 +25,7 @@
       ?>
     </tr>
 <?
-$users_list_buff = $users_list;
+
 foreach($users_list as $user_id=>$user){
   
     //On ignore l'utilisateur 'racine', il se connecte à chaque utilisateur anonyme, il n'est donc pas pertinent.
@@ -35,7 +35,9 @@ foreach($users_list as $user_id=>$user){
     $parents_tree = $user['parent_tree'];
 
     // On récupère les parents, on les reordonnes et on joint sur le tableau des détails
-    $path = array_extract(array_sort($users_list,  $parents_tree), "user_name"); unset($path[USERS_ROOT]);//yeah 
+
+    $users_from_tree_infos = array_intersect_key($users_list,  array_flip($parents_tree)); // NECESSAIRE pour les performance (sort sur 5 éléments au lieu de 500+)
+    $path = array_extract(array_sort($users_from_tree_infos,  $parents_tree), "user_name"); unset($path[USERS_ROOT]);//yeah 
     $users_path = join(' &gt; ', array_merge($path, array("<b>{$user['user_name']}</b>")));
     
     $can_auth = (bool)($user['auth_type']);
