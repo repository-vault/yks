@@ -66,7 +66,7 @@ class exyks_urls {
     preg_match_all("#/([^/]+)(?://([^/]*))?#", $href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
-         $url_tree= array(array(1=>ucfirst(SITE_CODE)));
+         $url_tree= array(array(1=>SITE_BASE));
         //rajout systematique d'une feuille pour ne pas finir sur un noeud
     $url_tree[] = array();
 
