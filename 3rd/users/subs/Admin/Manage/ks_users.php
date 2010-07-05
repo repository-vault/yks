@@ -31,7 +31,8 @@ if($action=="user_edit")try {
         if($data['auth_type']=='auth_password'){
             try {
                 $data = mykses::validate($_POST, array('user_login','user_pswd'));
-                users::update_password($verif_user, $data['user_login'], $data['user_pswd']);
+                if($data['user_pswd']) 
+                    users::update_password($verif_user, $data['user_login'], $data['user_pswd']);
             } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
 
         }elseif($data['auth_type']=='') {
