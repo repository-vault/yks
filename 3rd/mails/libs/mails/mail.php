@@ -20,6 +20,8 @@ class mail extends mime {
 
     if($cc = $mail_infos['mail_cc']) $this->cc($cc);
 
+    if($cci = $mail_infos['mail_cci']) $this->cci($cci);
+
     $this->first_part = mails::load_children( $this, $mail_infos['mail_first_part'] );
 
 

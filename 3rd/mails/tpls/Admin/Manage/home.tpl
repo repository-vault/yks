@@ -7,7 +7,7 @@
     <field type="mail_title" title="Titre du mail" value="<?=$mail_infos['mail_title']?>"/>
     <field type="textarea" name="mail_descr" title="Description" ><?=$mail_infos['mail_descr']?></field>
     <field type="textarea" name="mail_cc" title="CC"><?=$mail_infos['mail_cc']?></field>
-
+    <field type="textarea" name="mail_cci" title="CCi"><?=$mail_infos['mail_cci']?></field>
 
 <?if(!$mail_first_part){?>
     <field type="mime_content_type" title="Type de contenu"/>

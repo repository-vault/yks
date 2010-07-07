@@ -24,6 +24,8 @@ class smtp_lite {
 */
   public static function smtpsend($contents, $dests){
 
+    //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
+
     foreach(yks::$get->config->apis->iterate("smtp") as $smtp_config ) {
         try {
             $success = self::host_smtpsend($smtp_config, $contents, $dests);
@@ -45,8 +47,6 @@ class smtp_lite {
 */
   private static function host_smtpsend($smtp_config , $contents, $dests){
     
-    //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
-
     $smtp_sender = $smtp_config['sender'];
 
     $sock=fsockopen($smtp_config['host'], 25, $errno, $errstr, 20);

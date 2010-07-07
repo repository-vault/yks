@@ -10,10 +10,11 @@ if($mail_id )  {
 
 if($action=="mail_manage")try {
     $data=array(
-        'mail_name'=>$_POST['mail_name'],
-        'mail_title'=>$_POST['mail_title'],
-        'mail_descr'=>$_POST['mail_descr'],
-        'mail_cc'=>$_POST['mail_cc'],
+        'mail_name'    => $_POST['mail_name'],
+        'mail_title'   => $_POST['mail_title'],
+        'mail_descr'   => $_POST['mail_descr'],
+        'mail_cc'      => $_POST['mail_cc'],
+        'mail_cci'     => $_POST['mail_cci'],
     );
     if(!$data['mail_name'])
         throw rbx::warn("Veuillez specifier un nom pour le modèle de mail","mail_name");

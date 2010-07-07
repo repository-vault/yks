@@ -54,6 +54,10 @@ abstract class mail_base {
     return $this->dest_add("cc", $cc);
   }
 
+  public function cci($cci){ 
+    return $this->dest_add("cci", $cci);
+  }
+
 /**
     Enregistre dans la classe une liste de variable qui seront utilisée pour parametrer les contenus textuels du mail
 */

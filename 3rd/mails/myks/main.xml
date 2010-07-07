@@ -10,6 +10,7 @@
       <field type="mail_title"/>
       <field type="part_id" name="mail_first_part" delete="set_null"/>
       <field type="user_mail" name="mail_cc"/>
+      <field type="user_mail" name="mail_cci"/>
     </fields>
   </table>
   <mykse type="mail_title">
