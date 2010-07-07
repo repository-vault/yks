@@ -18,10 +18,9 @@ if($action=="bug_report") try {
     $constants=get_defined_constants(true);$constants=$constants['user'];
     $report_contents.= CRLF.print_r($constants,1);
 
-    $res = smtp_lite::smtpmail($report_to, "[".SITE_DOMAIN."] Bug report", $report_contents);
-    if(!$res) 
-        throw rbx::error("Error while reporting bug report.");
+    smtp_lite::smtpmail($report_to, "[".SITE_DOMAIN."] Bug report", $report_contents);
 
-    rbx::ok("Bug report has been sucessfully sent");
+    rbx::ok("Bug report has been sucessfully sent to &lt;$report_to&gt;");
 
 }catch(rbx $e){}
+catch(Exception $e){ rbx::error("Error while reporting bug report."); }

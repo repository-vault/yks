@@ -22,12 +22,29 @@ class smtp_lite {
 /**
 * $dests is ALL recipients list (TO/CC/CCi)
 */
-  public function smtpsend($contents, $dests){
-    $smtp_config = yks::$get->config->apis->smtp;
-    if(!$smtp_config)
-        return false;
+  public static function smtpsend($contents, $dests){
 
+    foreach(yks::$get->config->apis->iterate("smtp") as $smtp_config ) {
+        try {
+            $success = self::host_smtpsend($smtp_config, $contents, $dests);
+            break;
+        } catch(Exception $e){
+            error_log("Smtp host : {$smtp_config['host']} failure ($e), continue");
+            $success = false;
+        }
+    }
 
+    if(!$success)
+        throw new Exception("Unable to send mail, general smtp failure");
+
+    return true;
+  }
+
+/**
+* $dests is ALL recipients list (TO/CC/CCi)
+*/
+  private static function host_smtpsend($smtp_config , $contents, $dests){
+    
     //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
 
     $smtp_sender = $smtp_config['sender'];
