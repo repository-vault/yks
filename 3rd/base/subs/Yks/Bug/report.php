@@ -20,7 +20,7 @@ if($action=="bug_report") try {
 
     smtp_lite::smtpmail($report_to, "[".SITE_DOMAIN."] Bug report", $report_contents);
 
-    rbx::ok("Bug report has been sucessfully sent to &lt;$report_to&gt;");
+    rbx::ok("Bug report has been sucessfully sent to «".specialchars_encode($report_to)."»");
 
 }catch(rbx $e){}
 catch(Exception $e){ rbx::error("Error while reporting bug report."); }
