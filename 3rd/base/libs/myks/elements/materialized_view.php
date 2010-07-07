@@ -88,7 +88,7 @@ class materialized_view extends myks_installer {
     extract($data_help); //'key', 'updates_fields', 'rkey'
 
     return array(
-      'insert' => array(
+      "insert_{$rkey}" => array(
         'type'  => 'trigger',
         'query' => "BEGIN".CRLF
             ."INSERT INTO {$this->table->name['safe']}".CRLF
@@ -145,6 +145,8 @@ class materialized_view extends myks_installer {
         }
     }
 
+    rbx::ok("Materialized view check_procedures ");
+
     return $procedures;
   }
 
@@ -159,16 +161,21 @@ class materialized_view extends myks_installer {
       foreach(array('insert', 'delete', 'update') as $event) {
         $pid    = "{$event}_{$rkey}";
         $name = $this->procedures->retrieve($pid)->name;
-        if($name) $xml .= "<trigger name='{$name['name']}' on='$event' procedure='{$name['name']}'/>";
+        if($name) {
+            $proc_name = "{$name['schema']}.{$name['name']}";
+            $xml .= "<trigger name='{$name['name']}' on='$event' procedure='$proc_name'/>";
+        }
+        //else rbx::error("Cannot resolve procedure behind $pid in {$table['name']}");
       }
       $xml .= "</triggers>";
 
       $triggers_collection = simplexml_load_string($xml)->xpath("./trigger");
-
       $triggers = new myks_triggers($table, $triggers_collection);
 
       $table_triggers[$table['name']] = $triggers;
     }
+    rbx::ok("Materialized view check_triggers");
+
     return $table_triggers;
   }
 
