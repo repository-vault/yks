@@ -147,6 +147,11 @@ class imgs {
   }
 
 
+  static function imagecross($img, $cx,$cy, $ray = 10, $color = 0) {
+    imageline($img, $cx-$ray, $cy, $cx+$ray, $cy, $color);
+    imageline($img, $cx, $cy-$ray, $cx, $cy+$ray, $color);
+    imageellipse ($img, $cx , $cy , $ray, $ray, $color );
+  }
 
 
 /** Create a new image, respecting alpha channels */

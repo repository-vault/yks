@@ -44,6 +44,16 @@ Element.implement({
   toQueryString: function(){
     //better implementation of form specials (input/image & submit & co)
     return Xhr.encode_urlencode(this.toQueryList());
+  },
+
+
+  blink:function(times){
+    if(!times) return;
+    this.setStyle('visibility', 'hidden');
+    (function(){
+        this.setStyle('visibility', 'visible');
+        this.blink.delay(200, this, times-1);
+    }).delay(200, this);
   }
 
 });
