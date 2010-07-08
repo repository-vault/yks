@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_geodecode_cache">
+    <fields>
+      <field type="geodetic_hash"/>
+      <field type="text" name="geodetic_addr"/>
+      <field type="gps_coord" name="geodetic_lat"/>
+      <field type="gps_coord" name="geodetic_lon"/>
+    </fields>
+  </table>
+  <mykse type="gps_coord">
+    <int size="float"/>
+  </mykse>
+  <mykse type="geodetic_hash" birth="ks_geodecode_cache">
+    <mykse type="md5"/>
+  </mykse>
+</myks>

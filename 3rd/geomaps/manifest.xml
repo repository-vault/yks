@@ -7,5 +7,6 @@
   <classes>
     <class name="geomaps" path="path://here/libs/geomaps.php"/>
     <class name="user_geomaps" path="path://here/libs/user_geomaps.php"/>
+    <class name="geotools" path="path://here/libs/geotools.php"/>
   </classes>
 </module>
