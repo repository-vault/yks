@@ -1,4 +1,6 @@
 <?
+/** http://doc.exyks.org/wiki/Source:ext/css **/
+
 
 class css_ruleset extends ibase  {
   private $selector; //string for now

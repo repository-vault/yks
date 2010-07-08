@@ -1,5 +1,5 @@
 <?
-
+/** http://doc.exyks.org/wiki/Source:ext/css **/
 
 class css_block extends ibase {
 

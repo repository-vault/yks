@@ -1,4 +1,6 @@
 <?
+/** http://doc.exyks.org/wiki/Source:ext/css **/
+
 
 class css_declaration extends ibase  {
   private $property_name;

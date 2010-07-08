@@ -1,6 +1,5 @@
 <?
-
-
+/** http://doc.exyks.org/wiki/Source:ext/css **/
 
 class at_rule extends ibase {
     //rule is @[keyword] [expression];|{
