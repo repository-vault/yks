@@ -52,7 +52,8 @@ class geotools {
         'geodetic_addr' => $data_str,
         'geodetic_lat'  => $geodetic['lat'],
         'geodetic_lon'  => $geodetic['lon'],
-    );// sql::insert("ks_geodecode_cache", $data);
+        'resolution_score' => $geodetic['quality'],
+    ); sql::insert("ks_geodecode_cache", $data);
 
     return $geodetic;
   }
@@ -90,7 +91,7 @@ class geotools {
 
     $lat = (float)$xml->result->latitude;
     $lon = (float)$xml->result->longitude;
-    return compact('lat', 'lon');
+    return compact('lat', 'lon', 'quality');
   }
 
 }
