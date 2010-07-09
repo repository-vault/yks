@@ -126,6 +126,26 @@ class imgs {
     );
   }
 
+  static function colorsblend($colors_set){
+    $shares = 0;
+    $red = $green = $blue = 0;
+
+    foreach($colors_set as $color_set) {
+        list($color, $share) = array(self::colordec($color_set[0]), $color_set[1]);
+        if($share <= 0) continue;
+
+        $red   += $share * $color['red'];
+        $green += $share * $color['green'];
+        $blue  += $share * $color['blue'];
+        $shares += $share;
+    }
+    
+    $red   = round($red / $shares);
+    $green = round($green / $shares);
+    $blue  = round($blue / $shares);
+    return self::colorget(compact('red', 'green', 'blue'));
+  }
+
  /* return the color 'value' (from 0 to 1), based on gray level & considering alpha
     use this for setting alpha level :   (1-self::colorvalue($color))*127;
     or for setting a gray level :        self::colorvalue($color) * 255
