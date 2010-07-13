@@ -153,14 +153,19 @@ class cli {
     }
   }
   
-  function exec_distant($cmd_mask, $cmds, $file_tick, $wd = false){
+  function exec_distant($cmd_mask, $cmds, $file_tick = false){
+    cli::box("Commandes", $cmds);
+
+    $survey = (bool)$file_tick;
   
-    if(!$wd) $wd = dirname($file_tick);
+    if(!$survey)
+        $file_tick = files::tmppath("chk");
+
+    $wd = dirname($file_tick);
 
     $cmds["ok"] = 'echo "ok">'.$file_tick;
     $dist_file = files::tmppath("bat");
 
-    cli::box("Commandes", $cmds);
     $dist_contents = join(CRLF, $cmds);
     file_put_contents($dist_file, $dist_contents);
 
@@ -171,17 +176,22 @@ class cli {
     rbx::ok($cmd);
     cli::exec($cmd);
 
-    $wd_cyg = cli::cygpath($wd);
         //waiting for smartassembly
     do {
       sleep(1);
-      if(!file_exists($wd))
-          continue;
-      $size = preg_reduce("#([0-9.]+[A-Z]{1,2})#", 
-        trim(`du -hs $wd_cyg`));
-      echo cli::pad( "\rWatching folder : $size ".date('H:i:s'), " ");
+      $msg = date('[H:i:s]')." Watching folder";
 
-    } while(!file_exists($file_tick));
+      if(file_exists($file_tick))
+          break;
+
+      if($survey && file_exists($wd)) {
+        $wd_cyg = cli::cygpath($wd);
+        $size = preg_reduce("#([0-9.]+[A-Z]{1,2})#",  trim(`du -hs $wd_cyg`));
+        $msg .= " : $size";
+      }
+      echo "\r".cli::pad($msg, " ", STR_PAD_RIGHT);
+
+    } while(true);
     echo CRLF;
 
   }
