@@ -153,6 +153,40 @@ class cli {
     }
   }
   
+  function exec_distant($cmd_mask, $cmds, $file_tick, $wd = false){
+  
+    if(!$wd) $wd = dirname($file_tick);
+
+    $cmds["ok"] = 'echo "ok">'.$file_tick;
+    $dist_file = files::tmppath("bat");
+
+    cli::box("Commandes", $cmds);
+    $dist_contents = join(CRLF, $cmds);
+    file_put_contents($dist_file, $dist_contents);
+
+    if(file_exists($file_tick))
+        unlink($file_tick);
+    
+    $cmd = sprintf($cmd_mask, $dist_file);
+    rbx::ok($cmd);
+    cli::exec($cmd);
+
+    $wd_cyg = cli::cygpath($wd);
+        //waiting for smartassembly
+    do {
+      sleep(1);
+      if(!file_exists($wd))
+          continue;
+      $size = preg_reduce("#([0-9.]+[A-Z]{1,2})#", 
+        trim(`du -hs $wd_cyg`));
+      echo cli::pad( "\rWatching folder : $size ".date('H:i:s'), " ");
+
+    } while(!file_exists($file_tick));
+    echo CRLF;
+
+  }
+  
+  
   public static function winpath($path){
     return self::cygpath($path, "-w");
   }
