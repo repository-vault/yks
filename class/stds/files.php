@@ -30,6 +30,17 @@ class files {
     } return ($path{0}=='/'?'/':'').join('/', $out);
   }
 
+
+  public static function localize($file_path, $entities, $file_dest = false) {
+    if(!$file_dest) $file_dest = $file_path;
+    $str = file_get_contents($file_path); $tmp = null;
+    while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);}
+    $str=$tmp;
+    file_put_contents($file_dest, $str);
+    return true;
+  }
+
+
   public static function find($dir, $pattern = '.', $opts = self::FIND_DEFAULT){
     $files=array(); if(!is_dir($dir)) return array();
     foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
