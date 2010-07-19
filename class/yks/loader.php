@@ -14,6 +14,7 @@ define('Ex/yks', 'A cloudy tool');
       //first thing first, where am i
   if(!defined('PUBLIC_PATH')) {
     if(PHP_SAPI == 'cli') {
+        if(!$_SERVER['SERVER_NAME']) $_SERVER['SERVER_NAME'] = 'cli';
         define('PUBLIC_PATH', realpath($public_root));
         define('ROOT_PATH',   PUBLIC_PATH);
     } else {

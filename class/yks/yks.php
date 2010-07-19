@@ -62,11 +62,8 @@ class yks
     if(!$domain['host']){
         $domain['host'] = SERVER_NAME;
         $config->site['url']="http://{$domain['host']}";
-
         if(!$config->site['code'])
-            $config->site['code']=join('.',array_slice(explode(".",$domain['host']),0,-2));
-        if(!((string)$config->site['code'])) 
-            yks::fatality(yks::FATALITY_CONFIG, "site code cannot be resolved");
+            $config->site['code'] = pick(join('.',array_slice(explode(".",$domain['host']),0,-2)), SERVER_NAME);
     }
 
 
