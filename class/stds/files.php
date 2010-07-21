@@ -188,6 +188,29 @@ class files {
   public static function tmppath($ext= 'tmp') {return tempnam(sys_get_temp_dir(), "$ext-").".$ext"; }
 
 
+
+  public static function csv_parse($file_path,  $has_headers = true) {
+    $handle   = fopen($file_path, "r");
+    $data     = array();
+    $maxlines = 0;
+
+    while (($line = fgetcsv($handle, 0, ";")) !== FALSE) {
+        $data[] = $line;
+        $maxlines = max($maxlines, count($line));
+    }
+    if(!$has_headers)
+        return $data;
+
+    $headers = array_shift($data);
+    for($a=0;$a<$maxlines;$a++)
+        if(!isset($headers[$a])||false) $headers[$a] = "col_{$a}";
+
+    foreach($data as &$line)
+      $line = array_combine($headers, array_pad ($line, $maxlines, ""));
+
+    return $data;
+  }
+
   public static function extract($archive_file, $extract_path = "."){
     if(!extension_loaded("zip")) dl("zip.so");
     $zip = new ZipArchive();
