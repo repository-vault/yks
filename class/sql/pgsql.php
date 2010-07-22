@@ -232,6 +232,7 @@ class sql {
   }
 
 
+  static function lines($table){ return sql::value($table, true, "COUNT(*)");}
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
   static function qrow($query,$lnk=false){ self::query($query,$lnk); return self::fetch(); }

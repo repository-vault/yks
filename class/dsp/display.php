@@ -14,39 +14,63 @@ class dsp{
   }
 
     //goto mykses, thx
-  static function field_input($field_type, $field_name, $field_value=false, $batch_mode = false){
-    $type_xml = yks::$get->types_xml->$field_type;
-    if($birth_table_name = (string) $type_xml['birth']) {
-      $options = array('selected'=>$field_value, 'truncate'=>20);
-      $options_str = $batch_mode?"size='10' multiple='multiple'":"";
-      $default_str = $batch_mode?"":"&select.choose;";
-      if($batch_mode) $field_name.="[]";
-
-      $birth_xml = yks::$get->tables_xml->$birth_table_name;
-      $birth_fields = fields($birth_xml);
-          //look for a "_name" field in birth table
-      $birth_name = reset(preg_split('#_id|_key$#', $field_type))."_name";
-      if($birth_fields[$birth_name]) { //!!We have a birth field description
-          sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
-          $birth_description = sql::brute_fetch($field_type, $birth_name);
-          $str = "<field title='$field_name'><select name='$field_name' $options_str>$default_str"
-              .dsp::dd($birth_description, $options)
-              ."</select></field>";
-          return $str;
-      } else {
-         $nbs = sql::value($birth_table_name, true, "COUNT(*)");
-         if($nbs<20) {
-              sql::select($birth_table_name, true, $field_type, "ORDER BY $field_type ASC");
-              $birth_description = sql::brute_fetch($field_type, $field_type);
-              $str = "<field title='$field_name'><select name='$field_name' $options_str>$default_str"
-                  .dsp::dd($birth_description, $options)
-                  ."</select></field>";
-              return $str;
+  static function field_input($field_type, $field_name, $field_value=false, $extras = "", $batch_mode = false){
+    static $classes_map = false;
+    if($classes_map === false ) {
+        $classes_map = array();
+        foreach(yks::$get->config->myks->class_map->iterate("class") as $class) {
+            $mykse     = $class['mykse'];
+            $mykse_xml = yks::$get->types_xml->$mykse;
+            $classes_map[$mykse] = array(
+                'class' => $class['name'],
+                'mykse' => $mykse,
+                'table' => (string) $mykse_xml['birth'],
+            );
         }
-      }
-    } return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'/>";
-  }
+    }
 
+    $type_xml = yks::$get->types_xml->$field_type;
+    $birth_table_name = (string) $type_xml['birth'];
+    if(!$birth_table_name)
+        return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'  $extras/>";
+
+    $options = array('selected'=>$field_value, 'truncate'=>20);
+    $options_str = $batch_mode?"size='10' multiple='multiple'":"";
+    $default_str = $batch_mode?"":"&select.choose;";
+    if($batch_mode) $field_name.="[]";
+
+    $birth_xml = yks::$get->tables_xml->$birth_table_name;
+    $birth_fields = fields($birth_xml);
+      //look for a "_name" field in birth table
+    $birth_name = reset(preg_split('#_id|_key$#', $field_type))."_name";
+    $nbs = sql::lines($birth_table_name);
+
+    if($birth_fields[$birth_name]) { //!!We have a birth field description
+      sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
+      $birth_description = sql::brute_fetch($field_type, $birth_name);
+      $str = "<field title='$field_name' $extras><select name='$field_name' $options_str>$default_str"
+          .dsp::dd($birth_description, $options)
+          ."</select></field>";
+      return $str;
+    } elseif (isset($classes_map[$field_type])){
+        $class_infos = $classes_map[$field_type];
+        $options = array('selected'=>$field_value);
+        $elemes = call_user_func(array($class_infos['class'], 'from_where'), true);
+        $str = "<field title='$field_name' $extras><select name='$field_name' $options_str>$default_str"
+            .dsp::dd($elemes, $options)
+            ."</select></field>";
+        return $str;
+    } elseif($nbs<20) {
+        sql::select($birth_table_name, true, $field_type, "ORDER BY $field_type ASC");
+        $birth_description = sql::brute_fetch($field_type, $field_type);
+        $str = "<field title='$field_name' $extras><select name='$field_name' $options_str>$default_str"
+          .dsp::dd($birth_description, $options)
+          ."</select></field>";
+        return $str;
+    }
+
+    return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'  $extras/>";
+  }
 
   // Find documentation in the manual
   static function pages($max,$by,$page_id,$href,$target=false,$step=true){ $str="";

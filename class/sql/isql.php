@@ -89,6 +89,10 @@ class isql {
     return reset(ksql::row($table, $where,  $cols, $extras));
   }
 
+  static function lines($table){
+    return sql::value($table, true, "COUNT(*)");
+  }
+
   static function qrow($query)   { ksql::query($query); return ksql::fetch(); }
   static function qvalue($query) { return reset(ksql::qrow($query)); }
 

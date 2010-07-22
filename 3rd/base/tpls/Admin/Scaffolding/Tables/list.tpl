@@ -49,7 +49,7 @@ if($data) {
   foreach($table_fields as $field_name=>$field_type){
     if($field_name == $key_name) continue;
     $disabled = is_null($data[$field_name]) ? "disabled='disabled'" : "";
-    echo "<field $disabled title='$field_name' type='$field_type' name='$field_name' value='{$data[$field_name]}'/>";
+    echo dsp::field_input($field_type, $field_name, $data[$field_name], $disabled);
   }
     echo "</ks_form>";
 
