@@ -21,6 +21,17 @@ class YksAuthDrupal {
 
         //exyks login
     $user_infos = $ws->login($user_login, $user_pswd);
+
+        //second chance
+    if(!$user_infos && bool($drupal_config['allow_fallback'])) {
+        $verif_account = array(
+            'name' => $user_login,
+            'pass' => md5($user_pswd)
+        ); $uid = sql::value("users", $verif_account, "uid");
+        return array($uid);
+    }
+
+
     if(!$user_infos)
         throw new Exception("Invalid login/pswd");
 
@@ -39,6 +50,8 @@ class YksAuthDrupal {
         ); $uid = sql::insert("users", $data, true);
         $ws->update($drupal_config['drupal_id'], $uid);
     }
+
+
 
     if(!$uid) 
         throw new Exception("Invalid drupal id");
