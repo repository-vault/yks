@@ -13,6 +13,7 @@ classes::register_class_paths(array(
     "files"               => CLASS_PATH."/stds/files.php",
     "date"                => CLASS_PATH."/stds/date.php",
     "data"                => CLASS_PATH."/stds/data.php",
+    "crypt"               => CLASS_PATH."/stds/crypt.php",
 
     "dsp"                 => CLASS_PATH."/dsp/display.php",
     "css_processor"       => CLASS_PATH."/dsp/css/processor.php",

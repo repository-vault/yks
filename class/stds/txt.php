@@ -56,3 +56,8 @@ function rte_clean($str){
     return $str;
 }
 
+function hex2bin($h) {
+  $r='';
+  for ($a=0, $max = strlen($h); $a<$max; $a+=2)  $r.=chr(hexdec($h{$a}.$h{($a+1)}));
+  return $r;
+}

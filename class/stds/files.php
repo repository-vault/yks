@@ -75,6 +75,21 @@ class files {
     } return $dir;
   }
 
+  public static function encrypt($file_path, $key, $file_out = false){
+    if(!$file_out) $file_out = $file_path;
+    $contents = file_get_contents($file_path);
+    $str      = crypt::encrypt($contents, $key);
+    file_put_contents($file_out, $str);        
+  }
+
+  public static function decrypt($file_path, $key, $file_out = false){
+    if(!$file_out) $file_out = $file_path;
+    $contents = file_get_contents($file_path);
+    $str      = crypt::decrypt($contents, $key);
+    file_put_contents($file_out, $str);        
+  }
+
+
   public static function delete_dir($dir, $rm_root=true, $depth=0){
     if(!is_dir($dir)) return false;
     foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
