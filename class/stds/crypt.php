@@ -2,29 +2,39 @@
 
 class crypt {
 
-  static function encrypt($clearText, $passphrase, $outhex = false) {
-    $cipher  = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-    $iv_size = mcrypt_enc_get_iv_size($cipher);
+  private static function cypherInit($passphrase){
+    $algo    = MCRYPT_RIJNDAEL_128;
+//    $algo    = MCRYPT_DES;
 
+    $cipher  = mcrypt_module_open($algo, '', MCRYPT_MODE_CBC, '');
     $key256 = md5($passphrase);
+
+    $iv_size  = mcrypt_enc_get_iv_size($cipher);
+    $key_size = mcrypt_enc_get_key_size($cipher);
+
+    var_dump(mcrypt_enc_get_block_size($cipher));
+
+    $key    = substr($key256, 0, $key_size);
     $iv     = substr($key256, 0, $iv_size);
 
-    mcrypt_generic_init($cipher, $key256, $iv);
-    $cipherText = mcrypt_generic($cipher, $clearText);
+    mcrypt_generic_init($cipher, $key, $iv);
+    return $cipher;
+  }
 
-    if($outhex) $cipherText = bin2hex($cipherText);
+
+  static function encrypt($clearText, $passphrase, $out64 = false) {
+    $cipher  = self::cypherInit($passphrase);
+    //$clearText = self::pad($clearText);
+
+    $cipherText = mcrypt_generic($cipher, $clearText);
+    if($out64) $cipherText = base64_encode($cipherText);
     return $cipherText;
   }
 
-  static function decrypt($cipherText, $passphrase, $inhex = false) {
-    $cipher  = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-    $iv_size = mcrypt_enc_get_iv_size($cipher);
+  static function decrypt($cipherText, $passphrase, $in64 = false) {
+    $cipher  = self::cypherInit($passphrase);
 
-    $key256 = md5($passphrase);
-    $iv     = substr($key256, 0, $iv_size);
-
-    mcrypt_generic_init($cipher, $key256, $iv);
-    if($inhex) $cipherText = hex2bin($cipherText);
+    if($in64) $cipherText = base64_decode($cipherText);
     $cleartext = mdecrypt_generic($cipher, $cipherText);
     return $cleartext ;
   }
