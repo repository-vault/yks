@@ -86,7 +86,6 @@ class exyks {
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
 
-
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
 
     data::register('types_xml',   array('myks', 'get_types_xml'));
@@ -94,8 +93,11 @@ class exyks {
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
 
+    
     self::$modules_list = array();
-    self::$modules_list[] = new exyks_module(array(
+    $load_start_module = !bool(yks::$get->config->site['standalone']);
+    if($load_start_module) 
+      self::$modules_list[] = new exyks_module(array(
         'key'      => "base",
         'manifest' => "path://yks/3rd/base",
     ));
