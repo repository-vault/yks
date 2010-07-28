@@ -89,6 +89,35 @@ function attributes_to_assoc($x, $ns=null, $prefix = false){$r=array(); //php 5.
 function array_sublinearize($a,$c){$ret=array();foreach($a as $k=>$val)$ret[$k]=$val[$c];return $ret;}
 
 
+//thx cagret 
+
+function array_msort($array, $cols) {
+    $colarr = array();
+    foreach ($cols as $col => $order) {
+        $colarr[$col] = array();
+        foreach ($array as $k => $row) { $colarr[$col]['_'.$k] = strtolower($row[$col]); }
+    }
+    $params = array();
+    foreach ($cols as $col => $order) {
+        $params[] =& $colarr[$col];
+        $params = array_merge($params, (array)$order);
+    }
+    call_user_func_array('array_multisort', $params);
+    $ret = array();
+    $keys = array();
+    $first = true;
+    foreach ($colarr as $col => $arr) {
+        foreach ($arr as $k => $v) {
+            if ($first) { $keys[$k] = substr($k,1); }
+            $k = $keys[$k];
+            if (!isset($ret[$k])) $ret[$k] = $array[$k];
+            $ret[$k][$col] = $array[$k][$col];
+        }
+        $first = false;
+    }
+    return $ret;
+}
+
 
 function linearize_tree($tree,$depth=0){
     $ret=array();
