@@ -44,7 +44,7 @@ define('Ex/yks', 'A cloudy tool');
 
 include "$class_path/constants.php";
 include "$class_path/stds/classes.php";
-include "$class_path/zero_functions.php";
+include "$class_path/stds/zero_functions.php";
 include "$class_path/yks/yks.php";
 
 

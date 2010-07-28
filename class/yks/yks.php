@@ -84,9 +84,15 @@ class yks
     define('FLAG_SESS',      $config->flags['sess'].SESS_DOMAIN);
 
 
+    $consts = array_mask($_ENV, "%s", "{%s}");
+
     define('CACHE_REL',      'cache/'.FLAG_DOMAIN);
     define('CACHE_URL',      SITE_URL.'/'.CACHE_REL);
-    define('CACHE_PATH',     PUBLIC_PATH.'/'.CACHE_REL);
+
+    $paths = $config->search("paths");
+    define('CACHE_PATH', $paths['cache_path'] 
+        ? str_set($paths['cache_path'], $consts)
+        : PUBLIC_PATH.'/'.CACHE_REL);
 
     define('ROOT_PATH',      paths_merge(PUBLIC_PATH, $config->site['root_path'],".."));
     define('TMP_PATH',       ROOT_PATH."/tmp");

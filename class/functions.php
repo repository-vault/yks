@@ -10,4 +10,4 @@ require CLASS_PATH."/stds/rbx.php";
 require CLASS_PATH."/stds/txt.php";
 require CLASS_PATH."/stds/jsx.php";
 require CLASS_PATH."/stds/arrays.php";
-require CLASS_PATH."/stds/generics.php";
+require CLASS_PATH."/stds/classics.php";

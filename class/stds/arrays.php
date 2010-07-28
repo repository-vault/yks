@@ -34,8 +34,7 @@ function array_sort($array,$keys){
     return array_intersect_key(array_merge_numeric($keys, $array),$keys,$array);
 }
 
-    //!!dont sprintf($v,$k) ! bad thing © use mask_join else
-function array_mask($array,$mask){ foreach($array as &$v)$v=sprintf($mask,$v);return $array; }
+
 
 function array_key_map($callback, $array){
     return array_combine(array_map($callback, array_keys($array)), $array);

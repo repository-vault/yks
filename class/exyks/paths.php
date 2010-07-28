@@ -15,10 +15,10 @@ class exyks_paths {
 
     self::register("here", ROOT_PATH);
 
-    self::register("skin", RSRCS_PATH."/themes/Yks", self::default_ns, true);
+    self::register("skin",    RSRCS_PATH."/themes/Yks", self::default_ns, true);
     self::register("skin.js", RSRCS_PATH."/js", self::default_ns, true);
-    self::register("public", PUBLIC_PATH, self::default_ns, true);
-    self::register("cache", CACHE_PATH, self::default_ns, true);
+    self::register("public",  PUBLIC_PATH, self::default_ns, true);
+    self::register("cache",   CACHE_PATH, self::default_ns, true);
 
 
     foreach(yks::$get->config->paths->iterate("ns") as $ns)
@@ -26,6 +26,11 @@ class exyks_paths {
 
 
     stream_wrapper_register("path", "ExyksPathsResolver");
+
+    self::$consts_cache = array_merge(
+        retrieve_constants(),
+        array_mask($_ENV, "%s", "{%s}")
+    );
 
     self::$consts_cache = retrieve_constants();
   }
@@ -65,7 +70,7 @@ class exyks_paths {
 
   public static function resolve($path, $ns = false){
 
-    $path  = strtr($path, self::$consts_cache);
+    $path  = str_set($path, self::$consts_cache);
     
         //namespace list resolution order
     if(!$ns) $ns_list = array_values(array_extract(self::$paths, "ns", true));

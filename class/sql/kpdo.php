@@ -10,7 +10,11 @@ class ksql extends isql {
   static function connect(){
     $serv = ksql::$config->links->search(ksql::$link);
 
-    $sql_dsn = $serv["dsn"];
+    list($sqlite_scheme, $sqlite_path)  = explode(':', $serv["dsn"], 2);
+    $sqlite_path = exyks_paths::resolve($sqlite_path);
+    $sql_dsn = "$sqlite_scheme:$sqlite_path";
+
+
     ksql::$links[ksql::$link] =  new pdo($sql_dsn);
     if(!ksql::$links[ksql::$link])
       throw new Exception("Unable to load link #{".ksql::$link."} configuration");
