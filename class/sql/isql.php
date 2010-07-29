@@ -43,32 +43,39 @@ class isql {
 /***************** Basics *******************/
 
   static function select($table, $where='TRUE', $cols="*", $extra=''){
-    $query = "SELECT $cols ".ksql::from($table).' '.ksql::where($where, $table)." $extra";
-    return ksql::query($query);
+    list($where, $params) = ksql::where($where, $table);
+    $query = "SELECT $cols ".ksql::from($table)." $where $extra";
+    return ksql::query($query, $params);
   }
 
   static function insert($table, $vals=array(), $auto_indx=false, $keys=false){
     if(is_array($keys)) $vals = array_intersect_key($vals, array_flip($keys));
 
-    $vals = $vals ? ksql::format($vals,false) : 'VALUES (DEFAULT)';
+    if(!$vals) $format = 'VALUES (DEFAULT)';
+    else list($format, $vals) = ksql::format_prepare($vals,false);
 
-    $query  = 'INSERT INTO '.ksql::fromf($table).' '.$vals;
-    $result = ksql::query($query, true);
+    $query  = 'INSERT INTO '.ksql::fromf($table)." $format";
+
+    $result = ksql::query($query, $vals);
     return $auto_indx && $result ? ksql::auto_indx($table) : $result;
   }
 
 
   static function update($table, $vals, $where='', $extras="") {
     if(!$vals) return false;
-    $query  = 'UPDATE '.ksql::fromf($table).' '.ksql::format($vals)
-             .' '.ksql::where($where, $table).' '.$extras;
-    return ksql::query($query, true);
+    list($format, $params) = ksql::format_prepare($vals);
+    list($where, $vher)  = ksql::where($where, $table);
+
+    if($vher) $params = array_merge($params, $vher);
+    $query  = 'UPDATE '.ksql::fromf($table)." $format $where $extras";
+    return ksql::query($query, $params);
   }
 
   static function delete($table, $where, $extras=''){
     if(!$where) return false;
-    $query = 'DELETE FROM '.ksql::fromf($table).' '.ksql::where($where, $table).' '.$extras;
-    return ksql::query($query, true);
+    list($where, $params) = ksql::where($where, $table);
+    $query = 'DELETE FROM '.ksql::fromf($table)." $where $extras";
+    return ksql::query($query, $params,true);
   }
 
   static function truncate($table){
@@ -106,24 +113,20 @@ class isql {
 
 /***************** Data helpers *******************/
 
-  static function clean($str){ return is_numeric($str)?$str:addslashes($str); }
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
 
 
-  static function format($vals, $set=true){ $r='';
-    $vals = array_map(array('ksql','vals') ,$vals);
-    if($set) return "SET ".mask_join(',',$vals,'`%2$s`=%1$s');
-    return "(`".join('`,`',array_keys($vals))."`) VALUES(".join(',',$vals).")";
+  static function format_prepare($data, $set=true){ $r='';
+    $keys = array_keys($data);
+    $vals = array_combine($keys, array_mask($keys, ":i%s"));
+    if($set) $format = "SET ".mask_join(',',$vals,'`%2$s`=%1$s');
+    else $format = "(`".join('`,`',array_keys($vals))."`) VALUES(".join(',',$vals).")";
+
+    $vals = array_combine($vals, $data);
+    return array($format, $vals);
   }
 
-    //format values
-  static function vals($v){
-    if(is_null($v))  return 'NULL';
-    if(is_int($v))   return $v;
-    if(is_bool($v))  return $v?"TRUE":"FALSE";
-    return "'".ksql::clean($v)."'";
-  }
 
   static function from($tables){
     if(!is_array($tables))
@@ -137,14 +140,13 @@ class isql {
 
 
     //format conditions
-  static function conds($k, $v){
-    if(is_array($v)) {
-        list($type,$val) = each($v);
-        if($type === "sql") return "$k $val";
-        return $v ? ksql::in_join($k,$v) : "FALSE";
+  static function conds($k, $v, &$params = null){
+    if(is_array($v))  return ksql::in_join($k,$v);
+
+    if(is_string($v) || is_int($v)) {
+        $params[":w$k"] = $v;
+        return "$k=:w$k";
     }
-    if(is_string($v)) return "$k='$v'";
-    if(is_int($v))    return "$k=$v";
     if(is_null($v))   return "$k IS NULL";
     if(is_bool($v))   return $v?"$k":"not($k)";
   }
@@ -152,12 +154,12 @@ class isql {
 
   static function where($cond, $table=false, $mode='AND'){
     if(is_bool($cond) || !$cond)
-        return $cond?'':'WHERE FALSE';
+        return array($cond?'':'WHERE FALSE');
 
     if(is_object($cond)) $cond = array($cond);
 
     if(!is_array($cond))
-        return $cond && starts_with($cond, "WHERE") ? $cond : "WHERE $cond";
+        return array($cond && starts_with($cond, "WHERE") ? $cond : "WHERE $cond");
 
     foreach(array_filter($cond, 'is_object') as $k=>$obj){
         if(!method_exists($obj, '__sql_where'))continue;
@@ -165,9 +167,11 @@ class isql {
     }
     $slice = array_filter(array_keys($cond), 'is_numeric');
     $conds = array_intersect_key($cond, array_flip($slice));
+
+    $params = array();
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
-       $conds[]= ksql::conds($k, $v);
-    return $conds?"WHERE ".join(" $mode ",$conds):'';
+       $conds[]= ksql::conds($k, $v, $params);
+    return array($conds?"WHERE ".join(" $mode ",$conds):'', $params);
   }
 
 

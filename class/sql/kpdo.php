@@ -34,7 +34,7 @@ class ksql extends isql {
   }
 
 
-  static function query($query, $arows=false){
+  public static function query($query, $params=null, $arows=false){
 
     if(!$lnk = ksql::get_lnk()) return false;
 
@@ -46,7 +46,7 @@ class ksql extends isql {
         $error = ksql::error($query);
         return $error;
     }
-    $success =  ksql::$result->execute(); //ksql::$result
+    $success =  ksql::$result->execute($params); //ksql::$result
     if($success === false) {
         $error = ksql::error($query);
         return $error;
