@@ -25,32 +25,8 @@ class table extends table_base {
 
 
 
-
-
-
  function table_fields(){
-
-    sql::query("SHOW FULL COLUMNS FROM {$this->table_name['safe']}");
-    $test = sql::brute_fetch('Field');
-    $table_cols=array();
-
-    foreach($test as $column_name=>$column){
-
-        $data=array(
-            'Extra'=>$column['Extra'],
-            'Default'=>$column['Default']?"'{$column['Default']}'":$column['Default'],
-            'Field'=>$column_name,
-            'Type'=> $column['Type'],
-            'Null'=>($column['Null']=="YES"),
-        );
-        if($data['Default']==='' || ($data['Type']=='text' && !$data['Null']) ){
-            $type = reset(explode('(',$data['Type']));
-            if($type=="enum" || $type=="set") $data['Default']=null;
-            else  $data['Default']="''";
-        }
-        $table_cols[$column_name]=$data;
-
-    } return $table_cols;
+    //SELECT sql FROM sqlite_master WHERE type="table"
   }
 
   function create() {

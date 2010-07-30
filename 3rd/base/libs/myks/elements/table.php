@@ -3,6 +3,7 @@
 
 
 abstract class table_base  extends myks_installer {
+  protected $escape_char="`";
 
   protected $table_name;
 
@@ -157,8 +158,80 @@ abstract class table_base  extends myks_installer {
 
 
 
-  function alter_fields(){ return array(); }
-  function alter_keys(){ return array(); }
+  function alter_fields() {
+    $ec = $this->escape_char;
+
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
+    $todo = array();
+    //fields sync
+    foreach($this->fields_xml_def as $field_name=>$field_xml){
+        $field_sql = $this->fields_sql_def[$field_name]; 
+        if($field_sql){
+            unset($this->fields_sql_def[$field_name]);
+            if($field_sql==$field_xml) continue;
+
+            $diff = array_diff_assoc($field_xml,$field_sql);
+            foreach($diff as $diff_type=>$new_value){
+                if($diff_type=="Null"){
+                    if(!$new_value && !is_null($field_xml['Default']))
+                        $todo[] = "UPDATE {$this->table_name['safe']} "
+                            ."SET {$ec}$field_name{$ec}={$field_xml['Default']} WHERE {$ec}$field_name{$ec} IS NULL";
+                    $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} "
+                              .($new_value?"DROP NOT NULL":"SET NOT NULL");
+                }elseif($diff_type == "Type")
+                    $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} TYPE $new_value";
+                elseif($diff_type == "Default"){
+                    $value="SET DEFAULT $new_value";
+                    if(is_null($new_value))$value="DROP DEFAULT";
+                    $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} $value";
+                } else { rbx::error("-- UNKNOW type of diff : $diff_type"); }
+            }
+        } else { //ajout de colonne
+            $todo[] = "$table_alter ADD COLUMN {$ec}$field_name{$ec} {$field_xml['Type']}";
+            if(!is_null($field_xml['Default'])){
+                $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} "
+                          ." SET DEFAULT {$field_xml['Default']}";
+                $todo[] = "UPDATE {$this->table_name['safe']} SET {$ec}$field_name{$ec}={$field_xml['Default']}";
+            }
+            $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} "
+                .($field_xml['Null']?"DROP NOT NULL":"SET NOT NULL");
+        }
+
+    } foreach(array_keys($this->fields_sql_def) as $field_name)
+        $todo[]="$table_alter DROP {$ec}$field_name{$ec}";
+
+    return $todo;
+  }
+
+  function alter_keys(){
+    $ec = $this->escape_char;
+    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
+    $todo = array();
+    if($this->keys_xml_def == $this->keys_sql_def) return $todo;
+
+    foreach($this->keys_sql_def as $key=>$def){
+        if($this->keys_xml_def[$key] != $def)
+            array_unshift($todo, $drop = "$table_alter DROP ".
+                (($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
+                    "CONSTRAINT {$ec}$key{$ec}"
+                    :"INDEX {$ec}$key{$ec}") );
+        else unset($this->keys_xml_def[$key]);
+    }
+
+    foreach($this->keys_xml_def as $key=>$def){
+        $members=' ("'.join('","',$def['members']).'")';$type=$def['type'];
+        $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
+        elseif($type=="FOREIGN"){
+            $add.=" REFERENCES ".table::output_ref($def['refs'])." ";
+            if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
+            if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
+            if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
+        } $todo[]="$table_alter $add";
+    }
+    return $todo;
+  }
+
 
 
   protected function table_keys(){
