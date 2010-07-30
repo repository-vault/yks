@@ -21,16 +21,16 @@ class config extends KsimpleXMLElement {
 
 
     $config = YKS_CONFIG_FORCE ? false 
-        : ( self::$_cache[$key] ? self::$_cache[$key] : self::$_cache[$key] = storage::fetch($key) );
+        : ( self::$_cache[$key] ? self::$_cache[$key] : self::$_cache[$key] = config_storage::fetch($key) );
     if(!$config) {
         $config = self::load($file_path, false);
-        storage::store($key, $config);
+        config_storage::store($key, $config);
         syslog(LOG_INFO, "Reloading config for $key");
 
         //keep hash up to date
         $hash_key = self::hash_key();
-        $hash = array_filter((array)storage::fetch($hash_key)); $hash[$key] = $file_path; //infos ?
-        storage::store($hash_key, $hash);
+        $hash = array_filter((array)config_storage::fetch($hash_key)); $hash[$key] = $file_path; //infos ?
+        config_storage::store($hash_key, $hash);
     }
     return $config;
   }
@@ -63,3 +63,17 @@ class config extends KsimpleXMLElement {
   }
 
 }
+
+
+if(PHP_SAPI == 'cli') { class config_storage { //speed
+  private static $data = array();
+  static function store($k, $v, $ttl=0) { return self::$data[$k] = $v; }
+  static function fetch($k)           {   return self::$data[$k]; }
+  static function delete($k)          {   unset(self::$data[$k]); }
+}} else { class config_storage { //on apc
+  static function store($k, $v, $ttl=0) { return apc_store($k, $v, $ttl)?$v:false; }
+  static function fetch($k)           { return apc_fetch($k); }
+  static function delete($k)          { return apc_delete($k); }
+}}
+
+
