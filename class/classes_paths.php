@@ -31,6 +31,7 @@ classes::register_class_paths(array(
     "urls"                => CLASS_PATH."/exts/http/urls.php",
     "sock"                => CLASS_PATH."/exts/http/sock.php",
     "http_proxy"          => CLASS_PATH."/exts/http/proxy.php",
+    "http_cb_proxy"       => CLASS_PATH."/exts/http/proxy_callback.php",
 
     "exyks_paths"         => CLASS_PATH."/exyks/paths.php",
     "tpls"                => CLASS_PATH."/exyks/tpls.php",
