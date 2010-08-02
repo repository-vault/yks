@@ -86,7 +86,7 @@ class ksql extends isql {
 
   static function query_raw($query){
     if(!$lnk = ksql::get_lnk()) return false;
-    return pg_query($lnk, $query);
+    return $lnk->query($query);
   }
 
 }
