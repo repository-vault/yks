@@ -1,6 +1,7 @@
 <?php
 
 class ksql extends isql {
+  const true = '1';
 
   static function init() {
     ksql::$pfx['search'][]  = "#`(.*?)`#";

@@ -2,6 +2,7 @@
 
 class isql {
 
+   const true  = 'TRUE';
    protected static $transaction = false;
    protected static $pfx = array();
 
@@ -42,7 +43,7 @@ class isql {
 
 /***************** Basics *******************/
 
-  static function select($table, $where='TRUE', $cols="*", $extra=''){
+  static function select($table, $where = sql::true, $cols="*", $extra=''){
     list($where, $params) = ksql::where($where, $table);
     $query = "SELECT $cols ".ksql::from($table)." $where $extra";
     return ksql::query($query, $params);
@@ -75,7 +76,7 @@ class isql {
     if(!$where) return false;
     list($where, $params) = ksql::where($where, $table);
     $query = 'DELETE FROM '.ksql::fromf($table)." $where $extras";
-    return ksql::query($query, $params,true);
+    return ksql::query($query, $params, true);
   }
 
   static function truncate($table){
@@ -87,12 +88,12 @@ class isql {
 /***************** Extended *******************/
 
 
-  static function row($table, $where='TRUE', $cols='*', $extras=''){
+  static function row($table, $where = sql::true, $cols='*', $extras=''){
     ksql::select($table, $where, $cols, "$extras LIMIT 1");
     return ksql::fetch();
   }
 
-  static function value($table, $where='TRUE', $cols='*', $extras=''){
+  static function value($table, $where = sql::true, $cols='*', $extras=''){
     return reset(ksql::row($table, $where,  $cols, $extras));
   }
 
