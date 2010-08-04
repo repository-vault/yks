@@ -16,11 +16,12 @@ class ksql extends isql {
     $sql_dsn = "$sqlite_scheme:$sqlite_path";
 
 
-    ksql::$links[ksql::$link] =  new pdo($sql_dsn);
-    if(!ksql::$links[ksql::$link])
+    ksql::$links[ksql::$link] = $lnk = new pdo($sql_dsn);
+    if(!$lnk)
       throw new Exception("Unable to load link #{".ksql::$link."} configuration");
 
-    return ksql::$links[ksql::$link];
+    $lnk->query("PRAGMA foreign_keys=1;");
+    return $lnk;
   }
 
   static function close($link = false){
@@ -80,7 +81,10 @@ class ksql extends isql {
 
   static function rows($r=false){ return  pg_num_rows(pick($r, ksql::$result)); }
   static function auto_indx($table){
+    if(!$lnk = ksql::get_lnk()) return false;
+    return $lnk->lastInsertId();
     $name = ksql::resolve($table);
+    //SELECT * FROM SQLITE_SEQUENCE
     return (int)ksql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
   }
 

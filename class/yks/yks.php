@@ -72,7 +72,7 @@ class yks
     $site_code = strtr($config->site['code'],'.','_');
 
     define('SQL_DRIVER',      pick($config->sql['driver'], 'pgsql'));
-    define('STORAGE_DRIVER',  pick($config->storage['driver'], 'apc'));
+    define('STORAGE_DRIVER',  pick($config->storage['driver'], PHP_SAPI=='cli'?'var':'apc'));
 
     define('SITE_CODE',      strtolower($site_code));
     define('SITE_URL',       $config->site['url']);
