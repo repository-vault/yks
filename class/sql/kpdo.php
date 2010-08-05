@@ -11,16 +11,19 @@ class ksql extends isql {
   static function connect(){
     $serv = ksql::$config->links->search(ksql::$link);
 
-    list($sqlite_scheme, $sqlite_path)  = explode(':', $serv["dsn"], 2);
-    $sqlite_path = exyks_paths::resolve($sqlite_path);
-    $sql_dsn = "$sqlite_scheme:$sqlite_path";
+    list($pdo_driver, $pdo_dsn)  = explode(':', $serv["dsn"], 2);
 
+    if($pdo_driver=="sqlite")
+      $pdo_dsn = exyks_paths::resolve($pdo_dsn);
 
-    ksql::$links[ksql::$link] = $lnk = new pdo($sql_dsn);
+    $sql_dsn = "$pdo_driver:$pdo_dsn";
+
+    ksql::$links[ksql::$link] = $lnk = new pdo($sql_dsn, $serv['user'], $serv['pass']);
     if(!$lnk)
       throw new Exception("Unable to load link #{".ksql::$link."} configuration");
 
-    $lnk->query("PRAGMA foreign_keys=1;");
+    if($pdo_driver=="sqlite")
+      $lnk->query("PRAGMA foreign_keys=1;");
     return $lnk;
   }
 
