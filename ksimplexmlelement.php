@@ -129,7 +129,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
   }
     //*********************************************
 
-  public function asXML(){
+  public function asXML($tmp = false){
     $str = "<{$this->name}";
     if(count($this->attrs)) $str .= ' '.self::join_args($this->attrs);
 
@@ -138,7 +138,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     $str .= ">";
 
     if(is_null($this->contents)) foreach($this->children() as $children)
-        $str .= $children->asXML();
+        $str .= $children->asXML($tmp);
     else
         $str .= $this->contents;
     $str.= "</{$this->name}>";
