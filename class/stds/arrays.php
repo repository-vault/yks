@@ -29,9 +29,14 @@ function array_step($array,$val,$way=1,$loop=true){
     return $array[$loop?(($tmp+count($array))%count($array)):$tmp];
 }
 
-function array_sort($array,$keys){
-    $keys = array_flip(is_array($keys)?$keys:array_slice(func_get_args(),1));
-    return array_intersect_key(array_merge_numeric($keys, $array),$keys,$array);
+function array_sort($array, $keys){
+    $keys = is_array($keys)?$keys:array_slice(func_get_args(),1);
+    if(is_object($array)) {
+        $tmp = array(); foreach($keys as $k) if(isset($array[$k]))$tmp[$k] = $array[$k];
+        return $tmp;
+    }
+    $keys = array_flip($keys);
+    return array_intersect_key(array_merge_numeric($keys, $array), $keys, $array);
 }
 
 
