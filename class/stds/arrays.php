@@ -161,3 +161,24 @@ function array_reindex($array,$cols=array()){
       $tmp=$v;
     }return $res;
 }
+
+
+
+function xml_to_constants($xml, $pfx){
+    $ret  = array();
+    $name = strtoupper($xml->getName());
+    if($pfx) $name = $pfx.$name;
+
+    $children = $xml->children();
+    if(!$children)
+        $ret[$name] = (string)$xml;
+    foreach($xml->attributes() as $k=>$v)
+        $ret["{$name}_".strtoupper($k)] = (string)$v;
+        
+    foreach($children as $child)
+        $ret = array_merge($ret, xml_to_constants($child, $name.'_'));
+    return $ret;
+}
+
+
+

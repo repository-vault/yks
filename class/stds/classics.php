@@ -1,5 +1,11 @@
 <?php
 
+function sys_end($generation_time,$display_time=0){
+    return sprintf("\n<!-- powerdé by exyks in - subs : %0-5Fs - tpls : %0-5Fs %s-->",
+        $generation_time,$display_time,"");//,
+    ;
+}
+
 function abort($code) {
     $dest=ERROR_PAGE."//$code";
     if($code==404 && $dest==exyks::$href_ks) yks::fatality(yks::FATALITY_404);
@@ -28,3 +34,4 @@ function fields($table, $key=false){
     return $res;
 }
  
+

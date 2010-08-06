@@ -47,11 +47,6 @@ function alist($args){
     return array_fill_keys(array_keys($args), array());
 }
 
-function sys_end($generation_time,$display_time=0){
-    return sprintf("\n<!-- powerdé by exyks in - subs : %0-5Fs - tpls : %0-5Fs %s-->",
-        $generation_time,$display_time,"");//,
-    ;
-}
 
     // return boolean state of a variable ( in string mode if asked )
 function bool($val,$str=false){
