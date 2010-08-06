@@ -86,20 +86,24 @@ class yks
     define('FLAG_FILE',      $config->flags['file'].FLAG_DOMAIN);
     define('FLAG_SESS',      $config->flags['sess'].SESS_DOMAIN);
 
-
-    $consts = array_mask($_ENV, "%s", "{%s}");
-
     define('CACHE_REL',      'cache/'.FLAG_DOMAIN);
     define('CACHE_URL',      SITE_URL.'/'.CACHE_REL);
 
-    $paths = $config->search("paths");
-    define('CACHE_PATH', $paths['cache_path'] 
-        ? str_set($paths['cache_path'], $consts)
-        : PUBLIC_PATH.'/'.CACHE_REL);
+    $consts = array_merge(array_mask($_ENV, "%s", "{%s}"), retrieve_constants("#_PATH$#"));
+    define('ROOT_PATH',      paths_merge(PUBLIC_PATH, ".."));
 
-    define('ROOT_PATH',      paths_merge(PUBLIC_PATH, $config->site['root_path'],".."));
-    define('TMP_PATH',       ROOT_PATH."/tmp");
-    define('LIBRARIES_PATH', paths_merge(YKS_PATH, $config->site['libraries_path'], ".."));
+    $defs  = array(
+        'libraries_path' => realpath(YKS_PATH.DIRECTORY_SEPARATOR.".."),
+        'cache_path'     => PUBLIC_PATH.DIRECTORY_SEPARATOR.CACHE_REL,
+        'tmp_path'       => ROOT_PATH.DIRECTORY_SEPARATOR."tmp",
+    ); $attrs = $config->paths->attributes();
+    $attrs = array_merge(array_diff_key($defs, $attrs), $attrs);
+
+    foreach($attrs as $k=>$v){
+        $k = strtoupper($k); $v = str_set($v, $consts);
+        $v = paths_merge(ROOT_PATH, $v);
+        define($k, $v); $consts["{{$k}}"] = $v;
+    }
 
     define ('PCLZIP_TEMPORARY_DIR', TMP_PATH);
 

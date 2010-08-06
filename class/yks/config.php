@@ -40,12 +40,18 @@ class config extends KsimpleXMLElement {
     return $tmp->{$this->getName()};  //document != documentElement
   }
 
-  function __get($key){
-    $tmp = parent::__get($key);
+  function search($key, $autocreate = false){
+    $tmp = parent::search($key, $autocreate);
     
     if(!isset($tmp[self::xattr]))
         return $tmp;
 
+    $ret = self::resolve($tmp);
+    $this->replace($ret, $tmp);
+    return $ret;
+  }
+
+  private static function resolve($tmp){
     list($file_path, $search) = explode(" ", $tmp[self::xattr]); //!
     $file_path = paths_merge(ROOT_PATH, $file_path);
     if(! file_exists($file_path))
@@ -56,10 +62,19 @@ class config extends KsimpleXMLElement {
 
     foreach($tmp->attributes() as $k=>$v)
         if($k != self::xattr) $ret[$k] = $v; //merge args
-
-    $this->replace($ret, $tmp);
-
     return $ret;
+  }
+
+  
+  public function asSimpleXML(){
+    return simplexml_load_string($this->asXML(true));
+  }
+
+  public function asXML($resolve = false){
+    if(!$resolve || !isset($this[self::xattr]))
+        return parent::asXML($resolve);
+    $ret = self::resolve($this);
+    return $ret->asXML($resolve);
   }
 
 }
