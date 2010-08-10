@@ -41,6 +41,7 @@ class browser {
 
     file_put_contents($file, $srz);
   }
+
   function session_load($session_key){
     $this->session_key = $session_key;
     $file = "$session_key.srz";
@@ -54,8 +55,8 @@ class browser {
   }
 
 
-  function get_cookies($url){
-    return $this->cookiejar->retrieve($url);
+  function get_cookies($url, $cookie_name = false){
+    return $this->cookiejar->retrieve($url, $cookie_name);
   }
 
     // public 

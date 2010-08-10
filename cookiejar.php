@@ -9,13 +9,14 @@ class cookiejar {
     $this->cookies_list = array();
   }
 
-  function retrieve($url){
+  function retrieve($url, $cookie_name = false){
     $cookies = array();
     foreach($this->cookies_list as $cookie) {
         if(!$cookie->match($url)) continue;
+        if($cookie_name && $cookie_name != $cookie->name) continue;
         $cookies[] = $cookie;
     }
-
+    if($cookie_name) return $cookies[0];
     return $cookies;
 
   }

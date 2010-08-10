@@ -11,6 +11,9 @@ class window extends __native {
 
   }
 
+  function get_cookies($name = false) {
+    return $this->browser->get_cookies($this->url, $name);
+  }
 
   function extract_url($from){
 
