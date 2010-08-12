@@ -22,6 +22,7 @@ classes::register_class_paths(array(
     "ksql"                => CLASS_PATH."/sql/k".SQL_DRIVER.".php", //prototype
 
     "storage"             => CLASS_PATH."/stds/storage/".STORAGE_DRIVER.".php",
+    "timeout"             => CLASS_PATH."/stds/timeout.php",
 
     "sql_func"            => CLASS_PATH."/sql/functions.php",
     "yks_list"            => CLASS_PATH."/list/yks_list.php",

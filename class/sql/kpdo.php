@@ -1,7 +1,8 @@
 <?php
 
 class ksql extends isql {
-  const true = '1';
+  const true  = '1';
+  const false = '0';
 
   static function init() {
     ksql::$pfx['search'][]  = "#`(.*?)`#";
@@ -68,7 +69,7 @@ class ksql extends isql {
   
 
   static function fetch_all(){
-    return pg_fetch_all_columns(ksql::$result);
+    return ksql::$result->fetchAll(PDO::FETCH_COLUMN,0);
   }
 
 

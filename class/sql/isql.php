@@ -3,6 +3,7 @@
 class isql {
 
    const true  = 'TRUE';
+   const false = 'FALSE';
    protected static $transaction = false;
    protected static $pfx = array();
 
@@ -155,7 +156,7 @@ class isql {
 
   static function where($cond, $table=false, $mode='AND'){
     if(is_bool($cond) || !$cond)
-        return array($cond?'':'WHERE FALSE');
+        return array($cond?'':'WHERE '.ksql::false);
 
     if(is_object($cond)) $cond = array($cond);
 
