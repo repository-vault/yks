@@ -3,6 +3,7 @@
 
 class classes {
   static $classes_paths   = array();
+  static $classes_aliases = array();
 
   private static $_call_init      = false;
   private static $inited_classes  = array();
@@ -27,6 +28,14 @@ class classes {
     return true;
   }
 
+  static function register_aliases($aliases){
+    self::$classes_aliases = array_merge(self::$classes_aliases, $classes_aliases);
+  }
+
+  static function alias($class_oldname, $class_newname){
+    eval("class $class_newname extends $class_oldname {}");
+  }
+
   static function call_init($status){
     self::$_call_init = (bool) $status;
   }
@@ -40,6 +49,12 @@ class classes {
     if(!$class_name) return false;
 
     $class_name = strtolower($class_name);
+    if(isset(self::$classes_aliases[$class_name])){
+        self::alias($class_name, self::$classes_aliases[$class_name]);
+        self::init($class_name);
+        return;
+    }
+
     if(isset(self::$classes_paths[$class_name]))
          $file = self::$classes_paths[$class_name];
     else if(strpos($class_name, "_") )
