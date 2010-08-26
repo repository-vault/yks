@@ -30,10 +30,12 @@ class ksql extends isql {
   }
 
 
-  static function query($query, $arows=false){
-    if(!$lnk = ksql::get_lnk()) return false;
+  public static function query($query, $params=null, $arows=false){
 
+    if(!$lnk = ksql::get_lnk()) return false;
     $query = ksql::unfix($query);
+    $query = ksql::prepare_raw_query($lnk, $query, $params);
+
     ksql::$result = mysql_query($query, $lnk);
 
     if(ksql::$log) ksql::$queries[] = $query;
@@ -67,6 +69,12 @@ class ksql extends isql {
     $msg = "<b>".htmlspecialchars($error)."</b> in $msg";
     if(DEBUG && !ksql::$transaction) error_log($msg);
     return false;
+  }
+
+  static function clean($str){
+    if(is_numeric($str)) return $str;
+    if(!$lnk = ksql::get_lnk()) return false;
+    return mysql_real_escape_string($str, $lnk);
   }
 
 

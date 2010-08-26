@@ -85,6 +85,18 @@ class isql {
     return ksql::query($query);
   }
 
+/***************** Version classic ************/
+    //format values
+    //you'll need an sql::clean implementation to use this
+  static function prepare_raw_query($lnk, $query, $params){
+    foreach($params as $k=>&$v) {
+        if(is_null($v))  $v = 'NULL';
+        elseif(is_int($v));
+        elseif(is_bool($v)) $v = $v?sql::true:sql::false;
+        else $v = "'".ksql::clean($v)."'";
+    }
+    return strtr($query, $params);
+  }
 
 /***************** Extended *******************/
 

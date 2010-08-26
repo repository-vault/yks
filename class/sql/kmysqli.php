@@ -28,10 +28,13 @@ class ksql extends isql {
   }
 
 
-  static function query($query, $arows=false){
-    if(!$lnk = ksql::get_lnk()) return false;
 
+  public static function query($query, $params=null, $arows=false){
+    
+    if(!$lnk = ksql::get_lnk()) return false;
     $query = ksql::unfix($query);
+    $query = ksql::prepare_raw_query($lnk, $query, $params);
+
     ksql::$result = mysqli_query($lnk, $query);
 
     if(ksql::$log) ksql::$queries[] = $query;
@@ -67,6 +70,12 @@ class ksql extends isql {
   }
 
 
+  static function clean($str){
+    if(is_numeric($str)) return $str;
+    if(!$lnk = ksql::get_lnk()) return false;
+    return mysqli_real_escape_string($lnk, $str);
+  }
+
   static function rows($r=false){ return  mysqli_num_rows(pick($r, ksql::$result)); }
   static function auto_indx($table){
     $name = ksql::resolve($table);
@@ -84,3 +93,5 @@ class ksql extends isql {
 
 
 
+
+class sql extends ksql {}
