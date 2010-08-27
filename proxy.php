@@ -57,9 +57,10 @@ class http_proxy {
          die('could not fork');
          return;
     } else if ($pid) {
-        //pcntl_wait($status);//DONT
+        pcntl_wait($c_status,WNOHANG);
         fclose($client);
         return; //waitagain
+
     } else {
         $this->serve_client($client);
         die;
