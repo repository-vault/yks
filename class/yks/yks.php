@@ -105,7 +105,7 @@ class yks
         define($k, $v); $consts["{{$k}}"] = $v;
     }
 
-    define ('PCLZIP_TEMPORARY_DIR', TMP_PATH);
+    define ('PCLZIP_TEMPORARY_DIR', TMP_PATH.'/'); //!!!
 
         //********************************************************
 
