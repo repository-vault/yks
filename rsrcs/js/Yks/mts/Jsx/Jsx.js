@@ -1,5 +1,4 @@
 
-
 var Jsx = new Class({
   Implements: [Events, Options],
   Declare : 'Jsx',
