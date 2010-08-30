@@ -22,6 +22,10 @@ abstract class table_base  extends myks_installer {
     'FOREIGN'=>"%s_%s_%s",
   );
 
+
+  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
+  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
+
   function get_name(){
     return $this->table_name;
   }
