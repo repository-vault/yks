@@ -14,6 +14,14 @@ abstract class table_base  extends myks_installer {
   protected $fields_sql_def = array();
   private $abstract;
 
+
+  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
+  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
+
+  protected $key_mask=array("PRIMARY"=>"PRIMARY KEY","INDEX"=>"INDEX `%s`","UNIQUE"=>"UNIQUE `%s`");
+
+  protected $key_update=array("PRIMARY"=>"PRIMARY KEY", "UNIQUE"=>"UNIQUE ");
+
   private $tmp_key;
 
   protected $keys_name = array(        // $this->table_name, $field, $type
@@ -23,8 +31,6 @@ abstract class table_base  extends myks_installer {
   );
 
 
-  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
-  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
 
   function get_name(){
     return $this->table_name;
@@ -228,7 +234,7 @@ abstract class table_base  extends myks_installer {
         if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
         elseif($type=="FOREIGN"){
             $add.=" REFERENCES ".table::output_ref($def['refs'])." ";
-            if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
+            if($def['delete']) $add.=" ON DELETE ".table::$fk_actions_out[$def['delete']];
             if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
             if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
         } $todo[]="$table_alter $add";
