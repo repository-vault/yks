@@ -15,6 +15,7 @@ abstract class isql {
    public static public $queries=array();
    public static $log=true;
 
+   private static $_tmp_rows;
 
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
@@ -87,10 +88,7 @@ abstract class isql {
     //format values
     //you'll need an sql::clean implementation to use this
   static function format_raw_query($query, $params, $lnk = null){
-    if(!$params ) {
-        error_log($query);
-        error_log(print_r($params,1));
-    }
+
     foreach($params as $k=>&$v) {
         if(is_null($v))  $v = 'NULL';
         elseif(is_int($v));
@@ -263,16 +261,22 @@ abstract class isql {
 
   static function partial_fetch($id, $val, $start, $by) {
     $tmp=array();$c=0;$line=0;
-    pg_result_seek(self::$result,$start);
-    while(($l=ksql::fetch())&& ($line++<$by))
+    pg_result_seek(self::$result, $start);
+    while(($l=ksql::fetch())&&  ($by!==false?$line++<$by:true)   )
         $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
-    $rows = ksql::rows();
+    self::$_tmp_rows = ksql::rows();
     ksql::free();
-    return array($tmp, $rows);
+    return array($tmp, self::$_tmp_rows);
   }
 
 
   static function limit_rows(){
+    if(self::$_tmp_rows!==null) {
+        $tmp = self::$_tmp_rows;
+        self::$_tmp_rows = null;
+        return $tmp;
+    }
+
     $query    = end(ksql::$queries);
     $begin_at = strpos($query, "FROM");
     $query = "SELECT  COUNT(*) as nb_line ".substr($query, $begin_at);

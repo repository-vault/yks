@@ -84,6 +84,16 @@ class sql {
     } return $result;
   }
 
+  static function partial_fetch($id, $val, $start, $by) {
+    $tmp=array();$c=0;$line=0;
+    pg_result_seek(self::$result, $start);
+    while(($l=sql::fetch())&&  ($by!==false?$line++<$by:true)  )
+        $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
+    $_tmp_rows = sql::rows();
+    sql::free();
+    return array($tmp, $_tmp_rows);
+  }
+
   static function brute_fetch($id=false,$val=false,$start=false,$by=false){
     $tmp=array();$c=0;$line=0;
     if($start)pg_result_seek(self::$result,$start);
