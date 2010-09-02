@@ -7,7 +7,7 @@ class auth {
 
     static $access_zones = false; if($access_zones) return $access_zones;
 
-    sql::select("ks_access_zones", true, "
+    sql::select("ks_access_zones", sql::true, "
             *,
             IF(access_zone_parent IN(access_zone, 'yks'),
                 access_zone,

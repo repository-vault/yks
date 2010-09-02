@@ -28,9 +28,9 @@ $children_infos = users::get_infos($children_list, $cols, $where, $sort, $start,
 
 
 
-$max = $where?sql::$rows:count($children_list);
+$max = $where?sql::limit_rows():count($children_list);
 
-$pages=dsp::pages($max,$by,$page_id,"/?/Admin/Users//$user_id/list//","users_list",true);
+$pages=dsp::pages($max, $by, $page_id, "/?/Admin/Users//$user_id/list//","users_list",true);
 
 
 

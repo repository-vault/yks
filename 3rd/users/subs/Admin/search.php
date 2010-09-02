@@ -3,13 +3,13 @@
 if($action=="user_filter")try {
     $q=$_POST['user_name']; $pattern  = $q;
     $mask = bool($_POST['search_strict'])?"ILIKE '%s'":"ILIKE '%%%s%%'";
-    if($pattern) $pattern= sprintf($mask,$pattern);
+    if($pattern) $pattern = sprintf($mask, $pattern);
 
     $data=array();
     if(is_numeric($q)) {
         $data['user_id'] = $q;
     }elseif($pattern){
-	$data['user_name'] = array('sql'=>$pattern);
+        $data[] = "user_name $pattern";
     }
     $data = array_filter($data);
     $user_filter['depth']=(bool)$_POST['search_deep'];

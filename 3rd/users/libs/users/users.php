@@ -69,7 +69,7 @@ class users  {
     if($where) $limit=""; else $start=$by=false;
 
     $tables_used=array_diff(array_unique($tables_used),array('ks_users_list'));
-    $where=sql::where(array_merge(array('user_id'=>$users),$where));
+    $where = sql::where(array_merge(array('user_id'=>$users),$where));
 
     if($sort) {
         if(!self::$cols_def[$sort]) $order="ORDER BY $sort";
@@ -81,7 +81,7 @@ class users  {
         .CRLF."FROM `ks_users_list` "
         .CRLF.mask_join(CRLF, $tables_used, "LEFT JOIN `%s` USING(`user_id`) ")
         .CRLF." $where $order $limit"
-    ); $users_infos=sql::brute_fetch('user_id',false,$start,$by);
+    ); list($users_infos) = sql::partial_fetch('user_id', false, $start, $by);
 
     if(!$sort)
         $users_infos=array_filter(array_merge_numeric(array_flip($users),$users_infos),'is_array');
