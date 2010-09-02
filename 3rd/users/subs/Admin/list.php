@@ -1,8 +1,8 @@
 <?
+$by = 20;
 
-$page_id=(int)$sub0;
-$by=20;
-$start=$page_id*$by;
+$page_id = (int)$sub0;
+$start   = $page_id*$by;
 
 
 $depth=$user_filter['depth'] ?-1:1;
@@ -31,7 +31,6 @@ $children_infos = users::get_infos($children_list, $cols, $where, $sort, $start,
 $max = $where?sql::limit_rows():count($children_list);
 
 $pages=dsp::pages($max, $by, $page_id, "/?/Admin/Users//$user_id/list//","users_list",true);
-
 
 
 sql::select("ks_users_addrs",$verif_user,"addr_id");

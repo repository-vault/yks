@@ -12,9 +12,8 @@ if($action=="user_filter")try {
         $data[] = "user_name $pattern";
     }
     $data = array_filter($data);
-    $user_filter['depth']=(bool)$_POST['search_deep'];
-
-    $user_filter['where']=$data;
-    jsx::js_eval("Jsx.open('/?$href_fold/list//{$user_filter['user_id']}','users_list',this)");
+    $user_filter['depth'] = (bool)$_POST['search_deep'];
+    $user_filter['where'] = $data;
+    jsx::js_eval("Jsx.open('/?$href_fold//{$user_filter['user_id']}/list','users_list',this)");
 
 }catch(rbx $e){}
