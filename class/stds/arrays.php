@@ -162,6 +162,21 @@ function array_reindex($array,$cols=array()){
     }return $res;
 }
 
+function array_filter_criteria($list, $criteria){
+    $result = array(); 
+    if(!$criteria) return $result;
+    foreach($list as $k=>$v) {
+        $match = true;
+        foreach($criteria as $criteria_name=>$value) {
+            if(is_array($v[$criteria_name]) && !is_array($value)) $match &= in_array($value, $v[$criteria_name]);
+            elseif(is_array($value) && !is_array($v[$criteria_name])) $match &= in_array($v[$criteria_name], $value);
+            else $match &= $v[$criteria_name] == $value;
+        }
+        if($match) $result[$k] = $v;
+    }
+    return $result;
+}
+
 
 
 function xml_to_constants($xml, $pfx){

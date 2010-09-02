@@ -2,14 +2,6 @@
 
 
 
-function array_colsum($array,$col){
-    $ret=0;
-    foreach($array as $tmp)
-        $ret+=$tmp[$col];
-    return $ret;
-}
-
-
 class Table {
     private $drawing_areas=array();
     private $current_page=0;
@@ -84,7 +76,7 @@ class Table {
   function ponderate()
   {
     if(!$this->cols) $this->cols=array(array('weight'=>1));
-    $weight =  array_colsum($this->cols, "weight");
+    $weight =  self::array_colsum($this->cols, "weight");
     $x=$this->x; //margin+border
     foreach($this->cols as &$col){
         $col['width']=$this->w * ($col['weight']/$weight);
@@ -186,6 +178,13 @@ class Table {
   function setEndPage($str)
   {
   
+  }
+
+  private static function array_colsum($array,$col){
+    $ret=0;
+    foreach($array as $tmp)
+        $ret+=$tmp[$col];
+    return $ret;
   }
   
 }

@@ -1,26 +1,6 @@
 <?php
 
-function mm($mm){
-    return $mm*2.88;
-}
 
-
-function zend_color($color){
-    $tmp = imgs::colordec($color);
-    return new Zend_Pdf_Color_Rgb(
-        $tmp['red']/255,
-        $tmp['green']/255,
-        $tmp['blue']/255
-    );
-}
-
-
-function utf16_decode($str){
-    return mb_convert_encoding($str,"UTF-8","UTF-16");
-}
-
- 
- 
         
 class Page  {
 
@@ -32,29 +12,29 @@ class Page  {
   
   function drawRectangle($x,$y, $w, $h, $color=null){
         
-        $yu = $this->zend_h - mm($y);
-        $yd = $this->zend_h - mm( $y+$h );
+        $yu = $this->zend_h - pdf::mm($y);
+        $yd = $this->zend_h - pdf::mm( $y+$h );
         
-        $xl = mm($x);
-        $xr = mm($x+$w);
+        $xl = pdf::mm($x);
+        $xr = pdf::mm($x+$w);
         
         $mode = Zend_Pdf_Page::SHAPE_DRAW_STROKE;
         
         if($color) {
-            $this->zend_page->setFillColor(zend_color($color));
+            $this->zend_page->setFillColor(pdf::zend_color($color));
             $mode = Zend_Pdf_Page::SHAPE_DRAW_FILL;
         }
         
         $this->zend_page->drawRectangle($xl, $yu, $xr, $yd, $mode );
         
         if($color){
-                $this->zend_page->setFillColor(zend_color(0));
+                $this->zend_page->setFillColor(pdf::zend_color(0));
         }
   }
   
   function drawText($str,$x,$y){
-    $y = $this->zend_h - ( mm($y) + $this->zend_page->getFontSize() );
-    $this->zend_page->drawText($str,mm($x), $y,'UTF-8');
+    $y = $this->zend_h - ( pdf::mm($y) + $this->zend_page->getFontSize() );
+    $this->zend_page->drawText($str, pdf::mm($x), $y,'UTF-8');
   }
   
   function setFont($font,$size){
