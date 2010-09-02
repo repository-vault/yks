@@ -33,13 +33,20 @@ class ksql extends isql {
   }
 
 
-  static function query($query, $arows=false){
+
+  static function query($query, $params = array(), $arows=false){
+
+
     if(!$lnk = ksql::get_lnk()) return false;
 
     $query = ksql::unfix($query);
-    ksql::$result = pg_query($lnk, $query);
+    $query = ksql::format_raw_query($query, $params, $lnk);
 
     if(ksql::$log) ksql::$queries[] = $query;
+
+
+    ksql::$result = pg_query($lnk, $query);
+
     if(ksql::$result===false) {
         $error = ksql::error(htmlspecialchars($query));
         return $error;
@@ -77,8 +84,15 @@ class ksql extends isql {
     return (int)ksql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
   }
 
-  static function query_raw($query){
+
+  static function clean($str){
+    if(is_numeric($str)) return $str;
     if(!$lnk = ksql::get_lnk()) return false;
+    return pg_escape_string($lnk, $str);
+  }
+
+  static function query_raw($query, $lnk = false){
+    if(!$lnk = pick($lnk, ksql::get_lnk())) return false;
     return pg_query($lnk, $query);
   }
 

@@ -33,7 +33,7 @@ class ksql extends isql {
     
     if(!$lnk = ksql::get_lnk()) return false;
     $query = ksql::unfix($query);
-    $query = ksql::prepare_raw_query($lnk, $query, $params);
+    $query = ksql::format_raw_query($query, $params, $lnk);
 
     ksql::$result = mysqli_query($lnk, $query);
 

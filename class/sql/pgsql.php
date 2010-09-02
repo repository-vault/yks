@@ -13,6 +13,10 @@ class sql {
           '#&&#' => 'AND' // || is for concatenation !
    );
 
+
+  const true  = 'TRUE';
+  const false = 'FALSE';
+
    static private $lnks = array();
 
   static function init(){
@@ -104,7 +108,7 @@ class sql {
     pg_close($serv);unset(self::$lnks[$lnk]);
   }
     /** move the #nth item down */
-  static function set_order($table,$col,$nth,$where='TRUE'){
+  static function set_order($table,$col,$nth,$where=sql::true){
     sql::query("SET @pos:=0,@down:=$nth;");
     return sql::query("UPDATE $table SET
         $col = IF((@pos:=@pos+1)=@down, @pos+1,IF(@pos=@down+1,@down,@pos))
@@ -117,7 +121,7 @@ class sql {
         return ( $type==="sql" ? $val : '' );
     if(is_null($v)) return 'NULL';
     if(is_int($v)) return $v;
-    if(is_bool($v)) return $v?"TRUE":"FALSE";
+    if(is_bool($v)) return $v?sql::true:sql::false;
     return "'".self::clean($v)."'";
   }
     //format conditions
@@ -162,10 +166,10 @@ class sql {
   static function delete($table,$where,$extras=''){
     return sql::query("DELETE FROM `$table` ".sql::where($where, $table)." $extras",false,true);
   }
-  static function select($table,$where='TRUE',$cols="*",$extra=''){
+  static function select($table,$where=sql::true,$cols="*",$extra=''){
     return sql::query("SELECT $cols ".sql::from($table).' '.sql::where($where, $table)." $extra");
   }
-  static function row($table,$where='TRUE',$cols="*",$extras=''){
+  static function row($table,$where=sql::true,$cols="*",$extras=''){
     sql::select($table, $where, $cols, " $extras LIMIT 1"); return sql::fetch();
   }
   static function where($cond, $table=false, $mode='&&'){

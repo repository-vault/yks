@@ -1,6 +1,6 @@
 <?
 
-class isql {
+abstract class isql {
 
    const true  = 'TRUE';
    const false = 'FALSE';
@@ -29,8 +29,6 @@ class isql {
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
   }
 
-
-
   protected static function get_lnk(){
     return  isset(ksql::$links[ksql::$link]) ? ksql::$links[ksql::$link] : ksql::connect();
   }
@@ -45,7 +43,7 @@ class isql {
 /***************** Basics *******************/
 
   static function select($table, $where = sql::true, $cols="*", $extra=''){
-    list($where, $params) = ksql::where($where, $table);
+    list($where, $params) = ksql::iwhere($where, $table);
     $query = "SELECT $cols ".ksql::from($table)." $where $extra";
     return ksql::query($query, $params);
   }
@@ -66,7 +64,7 @@ class isql {
   static function update($table, $vals, $where='', $extras="") {
     if(!$vals) return false;
     list($format, $params) = ksql::format_prepare($vals);
-    list($where, $vher)  = ksql::where($where, $table);
+    list($where, $vher)  = ksql::iwhere($where, $table);
 
     if($vher) $params = array_merge($params, $vher);
     $query  = 'UPDATE '.ksql::fromf($table)." $format $where $extras";
@@ -75,7 +73,7 @@ class isql {
 
   static function delete($table, $where, $extras=''){
     if(!$where) return false;
-    list($where, $params) = ksql::where($where, $table);
+    list($where, $params) = ksql::iwhere($where, $table);
     $query = 'DELETE FROM '.ksql::fromf($table)." $where $extras";
     return ksql::query($query, $params, true);
   }
@@ -88,7 +86,11 @@ class isql {
 /***************** Version classic ************/
     //format values
     //you'll need an sql::clean implementation to use this
-  static function prepare_raw_query($lnk, $query, $params){
+  static function format_raw_query($query, $params, $lnk = null){
+    if(!$params ) {
+        error_log($query);
+        error_log(print_r($params,1));
+    }
     foreach($params as $k=>&$v) {
         if(is_null($v))  $v = 'NULL';
         elseif(is_int($v));
@@ -165,15 +167,22 @@ class isql {
     if(is_bool($v))   return $v?"$k":"not($k)";
   }
 
+  static function where($cond, $table = false, $mode = 'AND') {
+    list($where_str, $args) = ksql::iwhere($cond, $table, $mode);
+    $where_str = ksql::format_raw_query($where_str, $args);
+    return $where_str;
+  }
 
-  static function where($cond, $table=false, $mode='AND'){
+ //return array(str, args)
+  protected static function iwhere($cond, $table=false, $mode='AND'){
+
     if(is_bool($cond) || !$cond)
-        return array($cond?'':'WHERE '.ksql::false);
+        return array($cond?'':'WHERE '.ksql::false, array());
 
     if(is_object($cond)) $cond = array($cond);
 
     if(!is_array($cond))
-        return array($cond && starts_with($cond, "WHERE") ? $cond : "WHERE $cond");
+        return array($cond && starts_with($cond, "WHERE") ? $cond : "WHERE $cond", array());
 
     foreach(array_filter($cond, 'is_object') as $k=>$obj){
         if(!method_exists($obj, '__sql_where'))continue;
