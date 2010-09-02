@@ -5,8 +5,8 @@ $page_id = (int)$sub0;
 $start   = $page_id*$by;
 
 
-$depth=$user_filter['depth'] ?-1:1;
-$children_list=users::get_children($user_id,$depth);
+$depth         = $user_filter['depth'] ?-1:1;
+$children_list = users::get_children($user_id,$depth);
 
 
 if($action=="user_remove") try {
@@ -23,6 +23,7 @@ if($user_id==USERS_ROOT)
 $sort   = "user_type<>'{$user_infos['user_type']}' ,user_name";
 $where  = $user_filter['where']?$user_filter['where']:array();
 $cols   = array('user_name', 'user_type', 'auth_type');
+
 
 $children_infos = users::get_infos($children_list, $cols, $where, $sort, $start, $by);
 
