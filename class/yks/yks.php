@@ -137,7 +137,7 @@ class yks
 
 
   public function get($key, $args = false){ //dont use it as a static, use yks::$get->get(
-    $flag = $args?"$key_$args":$key;
+    $flag = $args?"{$key}_{$args}":$key;
     if(isset($this->$flag)) return $this->$flag;
     if($key == "tables_xml")
         $this->$flag = data::load($key);
