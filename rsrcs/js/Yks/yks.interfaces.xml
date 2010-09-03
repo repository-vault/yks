@@ -14,6 +14,7 @@
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
     </module>
+    <dep key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js" head="true"/>
     <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie" head="true">
       <dep key="yks.core"/>
       <description>Provide a very light Rich Text Editor for editing html contents</description>
