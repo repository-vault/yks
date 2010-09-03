@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<js>
+  <package name="3rd">
+    <module key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js" expose="MooRainbow" matches="input.input_time,input.input_date" head="true">
+      <description>MooRainbow.js - Color picker</description>
+      <dep key="mootools.lite"/>
+    </module>
+  </package>
+</js>
