@@ -77,7 +77,7 @@ class exyks_urls {
     $href_fold = "";
     $href_base = "";
 
-    $zero_args = array(substr($href_ks, 0,strcspn($href_ks, "/"))); //should be expode ;
+    $zero_args = self::parse_args(substr($href_ks, 0,strcspn($href_ks, "/"))); //should be expode ;
     $result_path[] = array($subs_path, $subs_fold, "main", $zero_args);
 
     $value = strtok("|");
