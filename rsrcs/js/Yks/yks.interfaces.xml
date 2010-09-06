@@ -9,12 +9,14 @@
   </package>
   <package name="yks.interface">
     <dep key="yks.classes"/>
+    <dep key="path://mt.more/Utilities/Color.js"/>
     <module key="path://3rd/usage/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date" head="true">
       <dep key="yks.core"/>
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
     </module>
     <dep key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js" head="true"/>
+    <dep key="path://3rd/ColorRoller/ColorRoller.js" head="true"/>
     <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie" head="true">
       <dep key="yks.core"/>
       <description>Provide a very light Rich Text Editor for editing html contents</description>
@@ -48,7 +50,7 @@
     <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio" head="true">
       <description>Add a custom design for checkboxes</description>
     </module>
-    <module key="path://yks/Interface/Title.js" expose="Title" match="img.button.effects" head="true">
+    <module key="path://yks/Interface/Title.js" expose="Title" matches="img.button.effects" head="true">
       <description>Title</description>
     </module>
     <dep key="path://mt.more/Fx/Fx.Accordion.js" head="true"/>
