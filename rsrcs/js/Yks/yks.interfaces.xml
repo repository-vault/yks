@@ -10,14 +10,11 @@
   <package name="yks.interface">
     <dep key="yks.classes"/>
     <dep key="path://mt.more/Utilities/Color.js"/>
-
-      <module key="path://yks/Jsx/Jsx.Mailto.js" expose="Jsx.Mailto" matches="a.mailto[secured]">
-        <dep key="path://yks/Jsx/Jsx.A.js"/>
-        <description>Extend secured mailto links</description>
-      </module>
-
+    <module key="path://yks/Jsx/Jsx.Mailto.js" expose="Jsx.Mailto" matches="a.mailto[secured]">
+      <dep key="path://yks/Jsx/Jsx.A.js"/>
+      <description>Extend secured mailto links</description>
+    </module>
     <module key="path://3rd/usage/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date" head="true">
-      <dep key="yks.core"/>
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
     </module>
