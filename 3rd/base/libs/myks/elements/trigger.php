@@ -106,11 +106,17 @@ class myks_trigger extends myks_installer {
 
   function modified(){
 
+//    echo "Check modified {$this->name['name']}".CRLF;
     $modified = $this->sql_def != $this->xml_def;
+//print_r($this->sql_def);
+//print_r($this->xml_def);
+
 
     if($this->procedure)
         $modified |= $this->procedure->modified();
 
+
+//    echo "Check modified {$this->name['name']} :$modified".CRLF;
     return $modified;
   }
 

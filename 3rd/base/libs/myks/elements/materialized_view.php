@@ -69,7 +69,10 @@ class materialized_view extends myks_installer {
         'query' => "BEGIN".CRLF
             ."UPDATE {$this->table->name['safe']}".CRLF
             ."SET $updates_fields".CRLF
-            ."WHERE $key = OLD.$rkey;".CRLF
+            ."FROM  {$this->view->name['safe']} AS ghost".CRLF
+            ."WHERE {$this->table->name['safe']}.$rkey = OLD.$rkey".CRLF
+            ."AND ghost.$key = NEW.$rkey".CRLF
+            .";".CRLF
             ."RETURN NULL;".CRLF
             ."END"),
       'sync' => array(
@@ -174,7 +177,7 @@ class materialized_view extends myks_installer {
 
       $table_triggers[$table['name']] = $triggers;
     }
-    rbx::ok("Materialized view check_triggers");
+    rbx::ok("Materialized view check_triggers ".join(',', array_keys($table_triggers)));
 
     return $table_triggers;
   }
