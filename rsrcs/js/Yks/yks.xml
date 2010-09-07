@@ -44,6 +44,10 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Result boxes</description>
       </module>
+      <module key="path://yks/Utilities/Crypt.js" expose="Crypt" head="true">
+        <dep key="path://yks/Doms.js"/>
+        <description>Crypt</description>
+      </module>
       <module key="path://yks/Jsx/Jsx.Form.js" expose="Jsx.Form" matches="form.jsx_form">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Extend and submit all forms via AJAX, designed to be used in a Ex/yks layer</description>

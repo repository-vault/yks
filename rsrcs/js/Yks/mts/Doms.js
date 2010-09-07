@@ -31,8 +31,8 @@ var Doms = {
   
   wake: function(klass){
     var args = Array.slice(arguments, 1);
-    if($type(klass)=='string' && ( window[klass] || Doms.autoload(klass)) )
-        return window[klass];
+    if($type(klass)=='string' && ( $take(window, name.split('.')) || Doms.autoload(klass)) )
+        return $take(window, klass.split('.'));
     //throw
   },
 
