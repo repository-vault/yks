@@ -108,11 +108,12 @@ class dsp{
   }
 
 
-  static function mailto($str, $subject=false){
+  static function mailto($str, $subject=false, $contents = false){
     $to = specialchars_decode($str);
     $name = preg_match("#(.*?)\s*<.*?>#",$to,$out)?$out[1]:$to;
     $subject = $subject?"?subject=".mailto_escape($subject):'';
-    return "<a href='mailto:".mailto_escape($str).$subject."'>$name</a>";
+    if(!$contents) $contents = $name;
+    return "<mailto secured=\"".base64_encode(mailto_escape($str).$subject)."\">$contents</mailto>";
   }
 
     //find doc in the manual

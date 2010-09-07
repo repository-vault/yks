@@ -95,9 +95,39 @@ function input_check($v){return $v==null || $v=="\0"?null:$v;}
 function specialchars_encode($v){ return htmlspecialchars($v,ENT_QUOTES,'utf-8'); }
 function specialchars_decode($str){ return htmlspecialchars_decode($str,ENT_QUOTES); }
 function specialchars_deep($v){return is_array($v)?array_map(__FUNCTION__,$v):specialchars_encode($v);}
-function mailto_escape($str){ return rawurlencode(utf8_decode(specialchars_decode($str))); }
+function mailto_escape($str){ return rawurlencode((specialchars_decode($str)) ); }
 function mail_valid($mail){ return (bool) filter_var($mail, FILTER_VALIDATE_EMAIL ); }
 
+
+
+
+function html_entity_encode_numeric($str) {
+    $res = "";
+    for($i=0,$len=strlen($str);$i<$len;$i++) {
+        $h = ord($str[$i]);
+        if ($h <= 0x7F) {
+            $res .= $str[$i];
+        } elseif ($h < 0xC2) {
+            $res .= $str[$i];
+        } elseif ($h <= 0xDF) {
+            $h = ($h & 0x1F) << 6
+            | (ord($str[++$i]) & 0x3F);
+            $res.= "&#$h;";
+        } elseif ($h <= 0xEF) {
+            $h = ($h & 0x0F) << 12
+            | (ord($str[++$i]) & 0x3F) << 6
+            | (ord($str[++$i]) & 0x3F);
+            $res.= "&#$h;";
+        } elseif ($h <= 0xF4) {
+            $h = ($h & 0x0F) << 18
+            | (ord($str[++$i]) & 0x3F) << 12
+            | (ord($str[++$i]) & 0x3F) << 6
+            | (ord($str[++$i]) & 0x3F);
+            $res .= "&#$h;";
+        }
+    }
+    return $res;
+}
 
 function strip_end($str, $end){
     return ends_with($str, $end) ? substr($str, 0,-strlen($end)): $str;
