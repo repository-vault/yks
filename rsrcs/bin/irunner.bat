@@ -1,7 +1,7 @@
 @echo off
 :start
 
-call php -r "include 'yks/cltools/runner.php';" %*
+call php -r "include 'yks/cltools/irunner.php';" %*
 
 if NOT "%ERRORLEVEL%" == "0" goto :error
 goto :end
