@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <js>
   <package name="3rd">
-    <module key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js" expose="MooRainbow" matches="input.input_color" head="true">
-    <dep key="mootools.lite"/>
+    <module key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js" expose="MooRainbow" head="true">
+      <dep key="mootools.lite"/>
+      <dep key="path://mt.more/Drag/Drag.Move.js"/>
+      <dep key="path://mt.more/Drag/Sortables.js"/>
       <description>MooRainbow.js - Color picker</description>
     </module>
   </package>
