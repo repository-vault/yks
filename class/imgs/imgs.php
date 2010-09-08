@@ -184,9 +184,10 @@ class imgs {
   }
 
 /** Create a new image from a file, regarless its extension */
-  static function imagecreatefromfile($file){
+  static function imagecreatefromfile($file, $force_ext = false){
     $img_supported_ext=array('png'=>'png','jpg'=>'jpeg','gif'=>'gif','jpeg'=>'jpeg');
-    if(!$ext=$img_supported_ext[trim(strtolower(strrchr($file,'.')),'.')]) return false;
+    $ext = pick($force_ext, trim(strtolower(strrchr($file,'.')),'.'));
+    if(!$ext=$img_supported_ext[$ext]) return false;
     $func="imagecreatefrom$ext";
     if(!($img=@$func($file))) return false;
     imagealphablending($img,false);
