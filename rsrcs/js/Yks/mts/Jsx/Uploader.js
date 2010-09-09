@@ -26,11 +26,20 @@ var Uploader =  {
     }
 
     var line = $n('tr').inject(input.upload_table);
-    $n('input',{
-        name:input.upload_name,
+
+    var infotd = $n('td',{text:upload.name}).inject(line);
+    var upload_pfx = input.upload_name; // + '['+upload_flag+']';
+    $n('input', {
+        name:upload_pfx + '[path]',
         type:'hidden',
         value:upload_flag+'.'+upload.ext
-    }).inject($n('td',{text:upload.name}).inject(line));
+    }).inject(infotd);
+
+    $n('input', {
+        name:upload_pfx + '[basename]',
+        type:'hidden',
+        value:upload.name
+    }).inject(infotd);
 
     input.anchor.fireEvent('change');
 
