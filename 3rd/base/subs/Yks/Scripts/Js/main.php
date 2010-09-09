@@ -24,13 +24,14 @@ $packer   = new exyks_js_packer();
 $packager = new js_packager();
 
 $manifests_list = array_merge(
-    glob("$mt_root/*.xml"),
-    glob("$yks_root/*.xml"),
-    glob("$trd_root/*.xml")
+    files::find($mt_root,  '\.xml$'),
+    files::find($yks_root, '\.xml$'),
+    files::find($trd_root, '\.xml$')
 );
 
-foreach($manifests_list as $file_path)
+foreach($manifests_list as $file_path) {
     $packager->manifest_register($file_path);
+}
 
 //packager is now ready 
 
@@ -56,12 +57,17 @@ if($uids) {
 //    $packer->feed( $packager->output_node($uid, $package_root) );
 //
 } else {
-    $packer->feed( $packager->output_node($package_root) );
+//debugbreak();
+
+    $files_list = $packager->output_node($package_root);
+//    print_r($files_list);
+    $packer->feed( $files_list );
 
     if(DEBUG)
         $packer->feed("path://yks.root/tmp/trash/trace.js");
 
     $headers = $packager->output_headers($package_root);
+//    print_r($headers);
 
     $packer->feed_var("Doms.loaders", $headers);
     $packer->feed_script("window.addEvent('domready', Screen.initialize);");

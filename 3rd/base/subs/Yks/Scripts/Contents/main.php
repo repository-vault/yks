@@ -24,6 +24,10 @@ switch(files::ext($full)) {
     header(TYPE_PNG);
     files::delivers($full);
     break; 
+  case 'gif':
+    header("Content-type:image/gif");
+    files::delivers($full);
+    break; 
   case 'jpeg': case 'jpg' :
     header(TYPE_JPEG);
     files::delivers($full);
