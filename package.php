@@ -30,7 +30,7 @@ class js_package extends js_node {
     foreach($xml_contents->module as $module_xml){
         $module_key  = (string) $module_xml['key'];
         $head_only   = bool((string)$module_xml['head']);
-        $module = $this->packager->module_retrieve($module_key, true);
+        $module = new js_module($this->packager, $module_key);
         $module->parse_xml($module_xml);
         $this->stack_dependency($module, $head_only);
     }
