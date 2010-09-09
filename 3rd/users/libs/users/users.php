@@ -221,8 +221,10 @@ class users  {
     returns compact('tmp_file', 'file_ext');
 */
   static function upload_check($upload_type, $upload_file){
+    $upload_path = $upload_file['path'];
+
     $tmp_path = users::get_tmp_path(sess::$sess['user_id']); //tmp upload dir
-    $tmp_file = "$upload_type.$upload_file";
+    $tmp_file = "$upload_type.$upload_path";
 
     if(!preg_match(FILE_MASK,$tmp_file)|| !is_file($tmp_file="$tmp_path/$tmp_file") )
         return false;
