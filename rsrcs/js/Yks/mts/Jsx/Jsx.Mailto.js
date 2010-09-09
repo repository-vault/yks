@@ -10,6 +10,5 @@ Jsx.Mailto = new Class({
     str0 = Doms.wake("Crypt").Base64.decode(str);
 
     el.href="mailto:"+str0;
-  },
-
+  }
 });
