@@ -11,6 +11,7 @@ classes::register_class_paths(array(
     "xsl"                 => CLASS_PATH."/stds/xsl.php",
     "xml"                 => CLASS_PATH."/stds/xml.php",
     "files"               => CLASS_PATH."/stds/files.php",
+    "mime_types"          => CLASS_PATH."/stds/mime/types.php",
     "date"                => CLASS_PATH."/stds/date.php",
     "data"                => CLASS_PATH."/stds/data.php",
     "crypt"               => CLASS_PATH."/stds/crypt.php",

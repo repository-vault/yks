@@ -128,8 +128,13 @@ class files {
     header(HTTP_CACHED_FILE);
   }
 
-  public static function delivers($file){
+  public static function delivers($file, $send_content_type = false){
     self::highlander();
+    if($send_content_type) {
+        $content_type = self::content_type($file);
+        header("Content-Type: $content_type");
+    }
+
     readfile($file);
     die;
   }
@@ -158,6 +163,11 @@ class files {
     readfile($file);
     die;
 
+  }
+
+  public static function content_type($file_path){
+    $ext = self::ext($file_path);
+    return mime_types::get_content_type($ext);
   }
 
   public static function paths_merge($path_root, $path){
