@@ -115,6 +115,17 @@ class files {
     return $from_file;
   }
 
+
+    //fix windows DST issue
+  function touch($file_path, $mtime){
+    touch($file_path, $mtime); clearstatcache();
+    $mtime_touched = filemtime($file_path); //clearstatcache();
+    if($mtime != $mtime_touched) {
+      $diff = ($mtime - $mtime_touched);
+      touch($file_path, $mtime + $diff); //clearstatcache();
+    }
+  }
+
   public static function locate($file, $paths) {
     foreach($paths as $path)
         if(is_file($tmp = "$path/$file")) return $tmp;
