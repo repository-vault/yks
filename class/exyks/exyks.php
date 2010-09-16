@@ -22,13 +22,11 @@ class exyks {
 
   static function init() {
 
+    if(!defined('YKS_FUNCTIONS'))
+      require CLASS_PATH."/functions.php";
 
-    include_once CLASS_PATH."/functions.php";
-
-
-    global $action;
-
-    if(class_exists('classes') && !classes::init_need(__CLASS__)) return; //exyks::init can be called
+    if(class_exists('classes') && !classes::init_need(__CLASS__))
+        return; //exyks::init can be called
 
 
     if(bool((string)yks::$get->config->site['closed'])) {
@@ -38,6 +36,80 @@ class exyks {
 
     if(!yks::$get->config)
         yks::fatality(yks::FATALITY_CONFIG, "Exyks configuration not found");
+
+
+    chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
+
+    data::register('types_xml',   array('myks', 'get_types_xml'));
+    data::register('tables_xml',  array('myks', 'get_tables_xml'));
+    data::register('entities',    array('locales_fetcher', 'retrieve'));
+
+
+    self::$modules_list = array();
+    $load_start_module = !bool(yks::$get->config->site['standalone']);
+    if($load_start_module) 
+      self::$modules_list[] = new exyks_module(array(
+        'key'      => "base",
+        'manifest' => "path://yks/3rd/base",
+    ));
+
+    foreach(yks::$get->config->modules->iterate("module") as $module)
+      self::$modules_list[] = new exyks_module($module);
+
+    self::extends_include_path();
+  }
+
+
+
+  public static function wsserve() {
+
+    header(TYPE_XML);
+    set_time_limit(90);
+
+    rbx::$output_mode = 0;
+
+    $WSClasses = array();
+    foreach(yks::$get->config->wsdls->iterate("class") as $class)
+        $WSClasses[] = $class['name'];
+
+    $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
+
+    $class_name = $_GET['class'];
+    if(!in_array($class_name, $WSClasses)) {
+        if($_SERVER['HTTP_SOAPACTION'])
+            throw new SoapFault("server", "No valid class selected");
+        header(TYPE_TEXT);
+        die("No valid class selected");
+    }
+
+    $wsdl_file = "$wsdls_path/$class_name.wsdl";
+
+
+    if($_SERVER['REQUEST_METHOD']=='GET') {
+        readfile($wsdl_file);
+        die;
+    }
+
+    if(DEBUG) ini_set('soap.wsdl_cache_enabled ', 1);
+    $options = array('actor' => SITE_CODE, 'classmap' =>array());
+    $server = new SoapServer($wsdl_file, $options);
+    $server->setClass($class_name);
+    $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
+//      use_soap_error_handler(true);
+    $server->handle();
+  }
+
+
+
+
+
+
+
+
+
+  private static function web_init(){
+
+    global $action;
 
     $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 
@@ -76,37 +148,14 @@ class exyks {
     define('ERROR_404',      "Location: /?".ERROR_PAGE.'//404');
     define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
 
-
-
     self::store('XSL_URL',         CACHE_URL."/xsl/{$engine}_client.xsl");
 
     self::store('XSL_SERVER_PATH', "path://cache/xsl/{$engine}_server.xsl");
     self::store('XSL_CLIENT_PATH', "path://cache/xsl/{$engine}_client.xsl");
 
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
-
-
-    chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
-
-    data::register('types_xml',   array('myks', 'get_types_xml'));
-    data::register('tables_xml',  array('myks', 'get_tables_xml'));
-    data::register('entities',    array('locales_fetcher', 'retrieve'));
-
-
-    
-    self::$modules_list = array();
-    $load_start_module = !bool(yks::$get->config->site['standalone']);
-    if($load_start_module) 
-      self::$modules_list[] = new exyks_module(array(
-        'key'      => "base",
-        'manifest' => "path://yks/3rd/base",
-    ));
-
-    foreach(yks::$get->config->modules->iterate("module") as $module)
-      self::$modules_list[] = new exyks_module($module);
-
-    self::extends_include_path();
   }
+
 
   private static function extends_include_path(){
     $base = array_extract(yks::$get->config->paths->iterate("include"), "path");

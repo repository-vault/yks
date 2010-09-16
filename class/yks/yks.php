@@ -157,43 +157,6 @@ class yks
   public function __get($key){ return $this->get($key);  }
 
 
-  public static function wsserve() {
-
-    if(!defined('YKS_FUNCTIONS'))
-      require CLASS_PATH."/functions.php";
-
-    header(TYPE_XML);
-    set_time_limit(90);
-
-    rbx::$output_mode = 0;
-
-    $WSClasses = array();
-    foreach(yks::$get->config->wsdls->iterate("class") as $class)
-        $WSClasses[] = $class['name'];
-
-    $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
-
-    $class_name = $_GET['class'];
-    if(!in_array($class_name, $WSClasses)) {
-        header(TYPE_TEXT);
-        die("No valid class selected");
-    }
-
-    $wsdl_file = "$wsdls_path/$class_name.wsdl";
-
-
-    if($_SERVER['REQUEST_METHOD']=='GET') {
-        readfile($wsdl_file);
-        die;
-    }
-
-    $options = array('actor' => SITE_CODE, 'classmap' =>array());
-    $server = new SoapServer($wsdl_file, $options);
-    $server->setClass($class_name);
-    $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
-//      use_soap_error_handler(true);
-    $server->handle();
-  }
 
 }
 

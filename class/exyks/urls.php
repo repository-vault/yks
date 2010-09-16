@@ -61,8 +61,8 @@ class exyks_urls {
 */
 
   static function parse($url){
-
-    $href_ks = htmlspecialchars(strtok(urldecode($url), "|"),ENT_QUOTES,'UTF-8');
+    $url = explode("|", urldecode($url), 2);
+    $href_ks = htmlspecialchars($url[0],ENT_QUOTES,'UTF-8');
     preg_match_all("#/([^/]+)(?://([^/]*))?#", $href_ks, $url_tree, PREG_SET_ORDER);
 
     if(!$url_tree) //FALLBACK si url = '/'
@@ -77,11 +77,11 @@ class exyks_urls {
     $href_fold = "";
     $href_base = "";
 
-    $zero_args = self::parse_args(substr($href_ks, 0,strcspn($href_ks, "/"))); //should be expode ;
+    $zero_args = self::parse_args(substr($href_ks, 0,strcspn($href_ks, "/")));
     $result_path[] = array($subs_path, $subs_fold, "main", $zero_args);
 
-    $value = strtok("|");
 
+    $value = $url[1];
     foreach($url_tree as $tmp){
         list($node_name, $args_str) = array($tmp[1],$tmp[2]); 
         $args = self::parse_args($args_str);
@@ -123,7 +123,6 @@ class exyks_urls {
         $node_name = &exyks::$page_def;
 
     $result_path[] = array($subs_path, $subs_fold, &$node_name, $args, $href_fold, $href_base);
-
 
         /* $result_path, $href, $href_ks, $context_depths */
     $res = array($result_path, $href, $href_ks, count($result_path) - 1, $value);
