@@ -157,7 +157,7 @@ class yks
   public function __get($key){ return $this->get($key);  }
 
 
-  public static function wsserver() {
+  public static function wsserve() {
 
     if(!defined('YKS_FUNCTIONS'))
       require CLASS_PATH."/functions.php";
