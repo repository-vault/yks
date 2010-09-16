@@ -42,7 +42,9 @@ class interactive_runner {
     $this->help();
 
     if(is_null($this->obj))
-        $this->obj = $reflector->newInstanceArgs($args);
+        $this->obj = is_null($args)
+                     ? $reflector->newInstance()
+                     : $reflector->newInstanceArgs($args);
   }
 
 
