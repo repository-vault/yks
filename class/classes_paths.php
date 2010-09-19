@@ -19,10 +19,16 @@ classes::register_class_paths(array(
     "dsp"                 => CLASS_PATH."/dsp/display.php",
     "css_processor"       => CLASS_PATH."/dsp/css/processor.php",
     "isql"                => CLASS_PATH."/sql/isql.php",
-    "sql"                 => CLASS_PATH."/sql/".SQL_DRIVER.".php",
-    "ksql"                => CLASS_PATH."/sql/k".SQL_DRIVER.".php", //prototype
 
-    "storage"             => CLASS_PATH."/stds/storage/".STORAGE_DRIVER.".php",
+    "_sql_pdo"            => CLASS_PATH."/sql/kpdo.php",
+    "_sql_pgsql"          => CLASS_PATH."/sql/kpgsql.php",
+    "_sql_mysqli"         => CLASS_PATH."/sql/kmysqli.php",
+    "_sql_mysql"          => CLASS_PATH."/sql/kmysql.php",
+
+    "_storage_apc"        => CLASS_PATH."/stds/storage/apc.php",
+    "_storage_var"        => CLASS_PATH."/stds/storage/var.php",
+    "_storage_sql"        => CLASS_PATH."/stds/storage/sql.php",
+
     "timeout"             => CLASS_PATH."/stds/timeout.php",
 
     "sql_func"            => CLASS_PATH."/sql/functions.php",
@@ -62,3 +68,7 @@ classes::register_class_paths(array(
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
 ));
+
+
+classes::register_alias("sql",     "_sql_".SQL_DRIVER);
+classes::register_alias("storage", "_storage_".STORAGE_DRIVER);

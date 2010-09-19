@@ -31,7 +31,7 @@ abstract class isql {
   }
 
   protected static function get_lnk(){
-    return  isset(ksql::$links[ksql::$link]) ? ksql::$links[ksql::$link] : ksql::connect();
+    return  isset(sql::$links[sql::$link]) ? sql::$links[sql::$link] : sql::connect();
   }
 
   public static function set_link($link){
@@ -44,44 +44,44 @@ abstract class isql {
 /***************** Basics *******************/
 
   static function select($table, $where = sql::true, $cols="*", $extra=''){
-    list($where, $params) = ksql::iwhere($where, $table);
-    $query = "SELECT $cols ".ksql::from($table)." $where $extra";
-    return ksql::query($query, $params);
+    list($where, $params) = sql::iwhere($where, $table);
+    $query = "SELECT $cols ".sql::from($table)." $where $extra";
+    return sql::query($query, $params);
   }
 
   static function insert($table, $vals=array(), $auto_indx=false, $keys=false){
     if(is_array($keys)) $vals = array_intersect_key($vals, array_flip($keys));
 
     if(!$vals) $format = 'VALUES (DEFAULT)';
-    else list($format, $vals) = ksql::format_prepare($vals,false);
+    else list($format, $vals) = sql::format_prepare($vals,false);
 
-    $query  = 'INSERT INTO '.ksql::fromf($table)." $format";
+    $query  = 'INSERT INTO '.sql::fromf($table)." $format";
 
-    $result = ksql::query($query, $vals);
-    return $auto_indx && $result ? ksql::auto_indx($table) : $result;
+    $result = sql::query($query, $vals);
+    return $auto_indx && $result ? sql::auto_indx($table) : $result;
   }
 
 
   static function update($table, $vals, $where='', $extras="") {
     if(!$vals) return false;
-    list($format, $params) = ksql::format_prepare($vals);
-    list($where, $vher)  = ksql::iwhere($where, $table);
+    list($format, $params) = sql::format_prepare($vals);
+    list($where, $vher)  = sql::iwhere($where, $table);
 
     if($vher) $params = array_merge($params, $vher);
-    $query  = 'UPDATE '.ksql::fromf($table)." $format $where $extras";
-    return ksql::query($query, $params);
+    $query  = 'UPDATE '.sql::fromf($table)." $format $where $extras";
+    return sql::query($query, $params);
   }
 
   static function delete($table, $where, $extras=''){
     if(!$where) return false;
-    list($where, $params) = ksql::iwhere($where, $table);
-    $query = 'DELETE FROM '.ksql::fromf($table)." $where $extras";
-    return ksql::query($query, $params, true);
+    list($where, $params) = sql::iwhere($where, $table);
+    $query = 'DELETE FROM '.sql::fromf($table)." $where $extras";
+    return sql::query($query, $params, true);
   }
 
   static function truncate($table){
-    $query = 'DELETE FROM '.ksql::fromf($table);
-    return ksql::query($query);
+    $query = 'DELETE FROM '.sql::fromf($table);
+    return sql::query($query);
   }
 
 /***************** Version classic ************/
@@ -93,7 +93,7 @@ abstract class isql {
         if(is_null($v))  $v = 'NULL';
         elseif(is_int($v));
         elseif(is_bool($v)) $v = $v?sql::true:sql::false;
-        else $v = "'".ksql::clean($v)."'";
+        else $v = "'".sql::clean($v)."'";
     }
     return strtr($query, $params);
   }
@@ -102,26 +102,26 @@ abstract class isql {
 
 
   static function row($table, $where = sql::true, $cols='*', $extras=''){
-    ksql::select($table, $where, $cols, "$extras LIMIT 1");
-    return ksql::fetch();
+    sql::select($table, $where, $cols, "$extras LIMIT 1");
+    return sql::fetch();
   }
 
   static function value($table, $where = sql::true, $cols='*', $extras=''){
-    return reset(ksql::row($table, $where,  $cols, $extras));
+    return reset(sql::row($table, $where,  $cols, $extras));
   }
 
   static function lines($table){
     return sql::value($table, true, "COUNT(*)");
   }
 
-  static function qrow($query)   { ksql::query($query); return ksql::fetch(); }
-  static function qvalue($query) { return reset(ksql::qrow($query)); }
+  static function qrow($query)   { sql::query($query); return sql::fetch(); }
+  static function qvalue($query) { return reset(sql::qrow($query)); }
 
   static function replace($table, $vals, $where=array(), $auto_indx=false){
-    $data = ksql::row($table, $where);
+    $data = sql::row($table, $where);
     if(!$data)
-        return ksql::insert($table, array_merge($vals, $where), $auto_indx);
-    return ksql::update($table, $vals, $where);
+        return sql::insert($table, array_merge($vals, $where), $auto_indx);
+    return sql::update($table, $vals, $where);
   }
 
 
@@ -144,18 +144,18 @@ abstract class isql {
 
   static function from($tables){
     if(!is_array($tables))
-        return 'FROM '.(preg_match('#[^a-z0-9_.-]#', $tables)? $tables : ksql::fromf($tables));
+        return 'FROM '.(preg_match('#[^a-z0-9_.-]#', $tables)? $tables : sql::fromf($tables));
 
-    $ret  = 'FROM '.ksql::fromf(array_shift($tables));
+    $ret  = 'FROM '.sql::fromf(array_shift($tables));
     foreach($tables as $k=>$table)
-      $ret .= is_numeric($k) ? $table : "INNER JOIN ".ksql::fromf($table)." USING($k)";
+      $ret .= is_numeric($k) ? $table : "INNER JOIN ".sql::fromf($table)." USING($k)";
     return $ret;
   }
 
 
     //format conditions
   static function conds($k, $v, &$params = null){
-    if(is_array($v))  return ksql::in_join($k,$v);
+    if(is_array($v))  return sql::in_join($k,$v);
 
     if(is_string($v) || is_int($v)) {
         $params[":w$k"] = $v;
@@ -166,8 +166,8 @@ abstract class isql {
   }
 
   static function where($cond, $table = false, $mode = 'AND') {
-    list($where_str, $args) = ksql::iwhere($cond, $table, $mode);
-    $where_str = ksql::format_raw_query($where_str, $args);
+    list($where_str, $args) = sql::iwhere($cond, $table, $mode);
+    $where_str = sql::format_raw_query($where_str, $args);
     return $where_str;
   }
 
@@ -175,7 +175,7 @@ abstract class isql {
   protected static function iwhere($cond, $table=false, $mode='AND'){
 
     if(is_bool($cond) || !$cond)
-        return array($cond?'':'WHERE '.ksql::false, array());
+        return array($cond?'':'WHERE '.sql::false, array());
 
     if(is_object($cond)) $cond = array($cond);
 
@@ -191,7 +191,7 @@ abstract class isql {
 
     $params = array();
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
-       $conds[]= ksql::conds($k, $v, $params);
+       $conds[]= sql::conds($k, $v, $params);
     return array($conds?"WHERE ".join(" $mode ",$conds):'', $params);
   }
 
@@ -200,18 +200,18 @@ abstract class isql {
 
 /***************** Transactions *******************/
 
-  static function begin(){ ksql::$transaction=true; ksql::query('BEGIN');  }
+  static function begin(){ sql::$transaction=true; sql::query('BEGIN');  }
   static function commit($msg = false){
-    ksql::$transaction = false;
-    $result = ksql::query('COMMIT');
+    sql::$transaction = false;
+    $result = sql::query('COMMIT');
     if(!$result)
         throw new Exception("Transaction commit failed");
     if($msg) rbx::ok($msg);    
   }
 
   static function rollback($error = false){
-    if(ksql::$transaction) ksql::query('ROLLBACK');
-    ksql::$transaction = false;
+    if(sql::$transaction) sql::query('ROLLBACK');
+    sql::$transaction = false;
     return $error ? rbx::error($error) : false;
   }
 
@@ -219,7 +219,7 @@ abstract class isql {
 /***************** Internals *******************/
 
     //unespace tables prefixes
-  static function unfix($str){ return preg_replace(ksql::$pfx['search'], ksql::$pfx['replace'] ,$str);}
+  static function unfix($str){ return preg_replace(sql::$pfx['search'], sql::$pfx['replace'] ,$str);}
 
   protected static function fromf($table) {
     return ' `'.str_replace('.','`.`',$table).'` ';
@@ -229,7 +229,7 @@ abstract class isql {
     // return an unquoted associative array of schema , name, safe name
   static function resolve($raw){
     if(!$raw) return array();
-    $tmp  = explode('.', str_replace('"', '', ksql::unfix("`$raw`")) , 2);
+    $tmp  = explode('.', str_replace('"', '', sql::unfix("`$raw`")) , 2);
     $name = array_pop($tmp); $schema = $tmp[0]; if(!$schema) $schema = "public";
     $safe = sprintf('"%s"."%s"', $schema, $name ); $hash = str_replace('"','', $safe);
     return compact('name', 'schema', 'safe', 'raw', 'hash');
@@ -243,7 +243,7 @@ abstract class isql {
   static function brute_fetch_depth(){
     $result = array(); $cols = func_get_args();
     if($end = (end($cols)==false)) array_pop($cols);
-    while(($l = ksql::fetch())) {
+    while(($l = sql::fetch())) {
           $tmp = &$result;
           foreach($cols as $col) $tmp=&$tmp[$l[$col]];
           $tmp = $end?$l[$col]:$l;
@@ -253,19 +253,19 @@ abstract class isql {
 
   static function brute_fetch($id=false, $val=false){
     $tmp=array();$c=0;
-    while($l = ksql::fetch() )
+    while($l = sql::fetch() )
         $tmp[$id?$l[$id]:$c++] = $val?$l[$val]:$l;
-    ksql::free();
+    sql::free();
     return $tmp;
   }
 
   static function partial_fetch($id, $val, $start, $by) {
     $tmp=array();$c=0;$line=0;
     pg_result_seek(self::$result, $start);
-    while(($l=ksql::fetch())&&  ($by!==false?$line++<$by:true)   )
+    while(($l=sql::fetch())&&  ($by!==false?$line++<$by:true)   )
         $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
-    self::$_tmp_rows = ksql::rows();
-    ksql::free();
+    self::$_tmp_rows = sql::rows();
+    sql::free();
     return array($tmp, self::$_tmp_rows);
   }
 
@@ -277,13 +277,13 @@ abstract class isql {
         return $tmp;
     }
 
-    $query    = end(ksql::$queries);
+    $query    = end(sql::$queries);
     $begin_at = strpos($query, "FROM");
     $query = "SELECT  COUNT(*) as nb_line ".substr($query, $begin_at);
     $remove_from = min(strripos($query, "ORDER"), strripos($query, "LIMIT"));
     if($remove_from)
         $query = substr($query, 0, $remove_from);
-    return ksql::qvalue($query);
+    return sql::qvalue($query);
   }
 
 

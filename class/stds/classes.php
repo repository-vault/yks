@@ -28,11 +28,15 @@ class classes {
     return true;
   }
 
+  static function register_alias($alias_name, $from_class){
+    self::$classes_aliases[$alias_name] = $from_class;
+  }
+
   static function register_aliases($aliases){
     self::$classes_aliases = array_merge(self::$classes_aliases, $classes_aliases);
   }
 
-  static function alias($class_oldname, $class_newname){
+  static function alias($class_newname, $class_oldname){
     eval("class $class_newname extends $class_oldname {}");
   }
 

@@ -1,16 +1,19 @@
 <?php
 
-class ksql extends isql {
+/**
+*  @alias sql
+**/
+class _sql_pdo extends isql {
   const true  = '1';
   const false = '0';
 
   static function init() {
-    ksql::$pfx['search'][]  = "#`(.*?)`#";
-    ksql::$pfx['replace'][] = "\"$1\"";
+    self::$pfx['search'][]  = "#`(.*?)`#";
+    self::$pfx['replace'][] = "\"$1\"";
   }
 
   static function connect(){
-    $serv = ksql::$config->links->search(ksql::$link);
+    $serv = sql::$config->links->search(sql::$link);
 
     list($pdo_driver, $pdo_dsn)  = explode(':', $serv["dsn"], 2);
 
@@ -19,9 +22,9 @@ class ksql extends isql {
 
     $sql_dsn = "$pdo_driver:$pdo_dsn";
 
-    ksql::$links[ksql::$link] = $lnk = new pdo($sql_dsn, $serv['user'], $serv['pass']);
+    sql::$links[sql::$link] = $lnk = new pdo($sql_dsn, $serv['user'], $serv['pass']);
     if(!$lnk)
-      throw new Exception("Unable to load link #{".ksql::$link."} configuration");
+      throw new Exception("Unable to load link #{".sql::$link."} configuration");
 
     if($pdo_driver=="sqlite")
       $lnk->query("PRAGMA foreign_keys=1;");
@@ -29,76 +32,72 @@ class ksql extends isql {
   }
 
   static function close($link = false){
-    if(!$link) $link = ksql::$link;
-    if(!($serv = ksql::$links[$link])) return;
-    pg_close($serv); unset(ksql::$links[$link]);
+    if(!$link) $link = sql::$link;
+    if(!($serv = sql::$links[$link])) return;
+    pg_close($serv); unset(sql::$links[$link]);
   }
 
   static function free(&$r=null){
-    $r=$r?$r:ksql::$result;
+    $r=$r?$r:sql::$result;
     return $r=null;
   }
 
 
   public static function query($query, $params=null, $arows=false){
 
-    if(!$lnk = ksql::get_lnk()) return false;
+    if(!$lnk = sql::get_lnk()) return false;
 
-    $query = ksql::unfix($query);
+    $query = sql::unfix($query);
     
     
-    ksql::$result = $lnk->prepare($query);
-    if(ksql::$result === false) {
-        $error = ksql::error($query);
+    sql::$result = $lnk->prepare($query);
+    if(sql::$result === false) {
+        $error = sql::error($query);
         return $error;
     }
-    $success =  ksql::$result->execute($params); //ksql::$result
+    $success =  sql::$result->execute($params); //sql::$result
     if($success === false) {
-        $error = ksql::error($query);
+        $error = sql::error($query);
         return $error;
     }
     
 
-    return ksql::$result;
+    return sql::$result;
   }
 
   static function fetch($r=false){
-    $tmp = ksql::$result->fetch(PDO::FETCH_ASSOC);
+    $tmp = sql::$result->fetch(PDO::FETCH_ASSOC);
     return $tmp?$tmp:array();
   }
   
 
   static function fetch_all(){
-    return ksql::$result->fetchAll(PDO::FETCH_COLUMN,0);
+    return sql::$result->fetchAll(PDO::FETCH_COLUMN,0);
   }
 
 
   static function error($msg=''){
-    $lnk = ksql::$links[ksql::$link];
+    $lnk = sql::$links[sql::$link];
     $error = json_encode($lnk->errorInfo());
     $msg = ($error)." in $msg";
     
-    if(!ksql::$transaction) error_log($msg);
+    if(!sql::$transaction) error_log($msg);
     return false;
   }
 
 
-  static function rows($r=false){ return  pg_num_rows(pick($r, ksql::$result)); }
+  static function rows($r=false){ return  pg_num_rows(pick($r, sql::$result)); }
   static function auto_indx($table){
-    if(!$lnk = ksql::get_lnk()) return false;
+    if(!$lnk = sql::get_lnk()) return false;
     return $lnk->lastInsertId();
-    $name = ksql::resolve($table);
+    $name = sql::resolve($table);
     //SELECT * FROM SQLITE_SEQUENCE
-    return (int)ksql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
+    return (int)sql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
   }
 
   static function query_raw($query){
-    if(!$lnk = ksql::get_lnk()) return false;
+    if(!$lnk = sql::get_lnk()) return false;
     return $lnk->query($query);
   }
 
 }
-
-class sql extends ksql {}
-
-

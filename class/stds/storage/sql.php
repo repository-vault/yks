@@ -1,6 +1,9 @@
 <?php
 
-class storage {
+/**
+*  @alias storage
+**/
+class _storage_sql {
   private static $config;
   static function init() {
     $xml = yks::$get->config->storage;
