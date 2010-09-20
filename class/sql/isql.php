@@ -12,7 +12,7 @@ abstract class isql {
    protected static $config = null;
    protected static $result;
 
-   public static public $queries=array();
+   public static $queries=array();
    public static $log=true;
 
    private static $_tmp_rows;
