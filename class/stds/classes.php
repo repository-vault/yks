@@ -53,18 +53,17 @@ class classes {
     if(!$class_name) return false;
 
     $class_name = strtolower($class_name);
-    if(isset(self::$classes_aliases[$class_name])){
-        self::alias($class_name, self::$classes_aliases[$class_name]);
-        self::init($class_name);
-        return;
-    }
 
-    if(isset(self::$classes_paths[$class_name]))
-         $file = self::$classes_paths[$class_name];
-    else if(strpos($class_name, "_") )
-        $file = strtr($class_name, array('_'=>'/') ).".php";
-    else return ; //leave it to the spl_autoload(); , yeap ?
-    include $file;
+    if(isset(self::$classes_paths[$class_name])) {
+        $file = self::$classes_paths[$class_name]; //direct path
+        include $file;
+    } elseif(isset(self::$classes_aliases[$class_name])){
+        self::alias($class_name, self::$classes_aliases[$class_name]);
+    } elseif(strpos($class_name, "_") ) {
+        $file = strtr($class_name, array('_'=>'/') ).".php"; //include_path
+        include $file;
+    } else return ; //leave it to the spl_autoload(); , yeap ?
+
     self::init($class_name);
   }
 
