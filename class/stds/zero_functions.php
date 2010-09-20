@@ -23,7 +23,10 @@ function array_mask($array, $vmask, $kmask="%s"){
   return $ret;
 }
 
-
+    //paths merges
+function array_key_map($callback, $array){
+    return array_combine(array_map($callback, array_keys($array)), $array);
+}
 
 //function return a array from func_get_args
 /*

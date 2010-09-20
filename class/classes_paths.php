@@ -69,6 +69,8 @@ classes::register_class_paths(array(
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
 ));
 
+if(SQL_DRIVER == "pgsql")
+    classes::register_class_path("sql", CLASS_PATH."/sql/pgsql.php");
 
 classes::register_alias("sql",     "_sql_".SQL_DRIVER);
 classes::register_alias("storage", "_storage_".STORAGE_DRIVER);

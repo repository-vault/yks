@@ -17,11 +17,15 @@ class yks
         "config"              => CLASS_PATH."/yks/config.php",
         "exyks"               => CLASS_PATH."/exyks/exyks.php"
     ));
-
     classes::call_init(true);
     classes::extend_include_path(CLASS_PATH."/exts/ksimplexml", LIBS_PATH, CLASS_PATH);
+
+
     classes::activate();
+
     if($load_config) self::load_config(SERVER_NAME);
+
+
   }
 
 
@@ -50,7 +54,9 @@ class yks
 
     self::$get = new yks();
 
+
     $GLOBALS['config'] = $config =  yks::$get->config;
+
     if(!is_a($config, "config"))
         yks::fatality(yks::FATALITY_CONFIG, "\$config is no config");
 
@@ -89,7 +95,10 @@ class yks
     define('CACHE_REL',      'cache/'.FLAG_DOMAIN);
     define('CACHE_URL',      SITE_URL.'/'.CACHE_REL);
 
-    $consts = array_merge(array_mask($_ENV, "%s", "{%s}"), retrieve_constants("#_PATH$#"));
+    $consts = array_merge(
+            array_key_map('strtoupper', array_mask($_ENV, "%s", "{%s}")),
+            retrieve_constants("#_PATH$#")
+    );
     define('ROOT_PATH',      paths_merge(PUBLIC_PATH, ".."));
 
     $defs  = array(
@@ -145,8 +154,10 @@ class yks
     if($key == "types_xml")
         $this->$flag = data::load($key);
 
+
     if($key == "config")
         $this->$flag = config::load(self::$config_file);
+
 
     if($key == "entities")
         $this->$flag = data::load($key, $args);

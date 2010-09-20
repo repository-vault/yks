@@ -41,11 +41,6 @@ function array_sort($array, $keys){
 
 
 
-function array_key_map($callback, $array){
-    return array_combine(array_map($callback, array_keys($array)), $array);
-}
-
-
 function mask_join($glue,$array,$mask){
     foreach($array as $k=>&$v) $v=sprintf($mask,$v,$k);
     return join($glue,$array);
