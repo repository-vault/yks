@@ -28,7 +28,6 @@ class exyks {
     if(class_exists('classes') && !classes::init_need(__CLASS__))
         return; //exyks::init can be called
 
-
     if(bool((string)yks::$get->config->site['closed'])) {
         error_log($_SERVER['REMOTE_ADDR']);
         if(PHP_SAPI!='cli' && !DEBUG) yks::fatality(yks::FATALITY_SITE_CLOSED);
@@ -44,6 +43,14 @@ class exyks {
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
+    define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
+    self::store('LANGUAGES',
+        preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
+
+    define('USERS_ROOT',     (int)yks::$get->config->users['root']);
+    self::store('USERS_ROOT', USERS_ROOT); //drop constants here
+
+        
 
     self::$modules_list = array();
     $load_start_module = !bool(yks::$get->config->site['standalone']);
@@ -137,23 +144,17 @@ class exyks {
         'jsx-server'=>TYPE_XML,//no TYPE_XHTML as it's irrelevant (DOM is more important)
     );
 
-    self::store('LANGUAGES',
-        preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
-
+       
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
-    define('USERS_ROOT',     (int)yks::$get->config->users['root']);
+
     define('BASE_CC',        yks::$get->config->lang['country_code']);
     define('ERROR_PAGE',     '/'.SITE_BASE.'/error');
     define('ERROR_404',      "Location: /?".ERROR_PAGE.'//404');
-    define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
 
     self::store('XSL_URL',         CACHE_URL."/xsl/{$engine}_client.xsl");
-
     self::store('XSL_SERVER_PATH', "path://cache/xsl/{$engine}_server.xsl");
     self::store('XSL_CLIENT_PATH', "path://cache/xsl/{$engine}_client.xsl");
-
-    self::store('USERS_ROOT', USERS_ROOT); //drop constants here
   }
 
 

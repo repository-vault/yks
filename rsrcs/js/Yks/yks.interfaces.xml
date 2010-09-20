@@ -55,7 +55,7 @@
     <module key="path://yks/Interface/CheckBox.js" expose="CheckBox" matches="input[type=checkbox].checkbox, input[type=radio].radio" head="true">
       <description>Add a custom design for checkboxes</description>
     </module>
-    <module key="path://yks/Interface/Title.js" expose="Title" matches="img.button.effects" head="true">
+    <module key="path://yks/Interface/Title.js" expose="Title" matches="img.button.effects,input.button.effects" head="true">
       <description>Title</description>
     </module>
     <dep key="path://mt.more/Fx/Fx.Accordion.js" head="true"/>
