@@ -22,6 +22,7 @@ $z_e_r_o_entries = array(
 
 
 
+if(!$args) $args = null;
 
 
 interactive_runner::start($entry, $args);
