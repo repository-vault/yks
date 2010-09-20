@@ -107,7 +107,7 @@ class exyks {
 
 
 
-  private static function web_init(){
+  public static function web_init(){
 
     global $action;
 

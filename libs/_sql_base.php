@@ -95,7 +95,7 @@ abstract class _sql_base  implements ArrayAccess {
   function sql_update($data, $table = false){
     $res = sql::update($table?$table:$this->sql_table, $data, $this);
     if($res) foreach($data as $k=>$v) $this->_set($k, $v); //array_walk wrong arg order :/
-    return $res;
+    return true;
   }
 
 
