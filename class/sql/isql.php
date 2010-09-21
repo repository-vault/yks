@@ -159,10 +159,10 @@ abstract class isql {
 
     if(is_string($v) || is_int($v)) {
         $params[":w$k"] = $v;
-        return "$k=:w$k";
+        return "`$k`=:w$k";
     }
-    if(is_null($v))   return "$k IS NULL";
-    if(is_bool($v))   return $v?"$k":"not($k)";
+    if(is_null($v))   return "`$k` IS NULL";
+    if(is_bool($v))   return $v?"`$k`":"not(`$k`)";
   }
 
   static function where($cond, $table = false, $mode = 'AND') {

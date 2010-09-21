@@ -1,6 +1,6 @@
 <?php
 
-class ksql extends isql {
+class _sql_mysqli extends isql {
 
 
   static function connect(){
@@ -93,5 +93,3 @@ class ksql extends isql {
 
 
 
-
-class sql extends ksql {}

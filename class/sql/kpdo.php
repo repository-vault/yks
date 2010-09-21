@@ -8,8 +8,9 @@ class _sql_pdo extends isql {
   const false = '0';
 
   static function init() {
-    self::$pfx['search'][]  = "#`(.*?)`#";
-    self::$pfx['replace'][] = "\"$1\"";
+//    self::$pfx['search'][]  = "#`(.*?)`#";
+//    self::$pfx['replace'][] = "\"$1\"";
+
   }
 
   static function connect(){
