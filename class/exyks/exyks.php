@@ -67,8 +67,13 @@ class exyks {
   }
 
 
-
-  public static function wsserve() {
+  public static function ws_resolve($class_name){
+      $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
+      $wsdl_file = "$wsdls_path/$class_name.wsdl";
+      return $wsdl_file;
+  }
+  
+  public static function ws_serve() {
 
     header(TYPE_XML);
     set_time_limit(90);
@@ -79,8 +84,6 @@ class exyks {
     foreach(yks::$get->config->wsdls->iterate("class") as $class)
         $WSClasses[] = $class['name'];
 
-    $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
-
     $class_name = $_GET['class'];
     if(!in_array($class_name, $WSClasses)) {
         if($_SERVER['HTTP_SOAPACTION'])
@@ -89,8 +92,7 @@ class exyks {
         die("No valid class selected");
     }
 
-    $wsdl_file = "$wsdls_path/$class_name.wsdl";
-
+    $wsdl_file = self::ws_resolve($class_name);
 
     if($_SERVER['REQUEST_METHOD']=='GET') {
         readfile($wsdl_file);
