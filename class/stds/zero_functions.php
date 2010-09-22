@@ -25,6 +25,7 @@ function array_mask($array, $vmask, $kmask="%s"){
 
     //paths merges
 function array_key_map($callback, $array){
+    if(!$array) return $array;
     return array_combine(array_map($callback, array_keys($array)), $array);
 }
 
