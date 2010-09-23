@@ -23,7 +23,8 @@ class _sql_pdo extends isql {
 
     $sql_dsn = "$pdo_driver:$pdo_dsn";
 
-    sql::$links[sql::$link] = $lnk = new pdo($sql_dsn, $serv['user'], $serv['pass']);
+    $pdo_options = array(PDO::ATTR_TIMEOUT => 5);
+    sql::$links[sql::$link] = $lnk = new pdo($sql_dsn, $serv['user'], $serv['pass'],  $pdo_options );
     if(!$lnk)
       throw new Exception("Unable to load link #{".sql::$link."} configuration");
 
