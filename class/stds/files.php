@@ -89,6 +89,15 @@ class files {
     file_put_contents($file_out, $str);        
   }
 
+  public static function empty_dir($dir, $recursive = true) {
+    if($recursive)
+        self::delete_dir($dir, false, $depth);
+    else 
+        foreach(glob("$dir/*") as $file_path)
+            if(!is_dir($file_path)) unlink($file_path);
+
+    self::create_dir($dir);
+  }
 
   public static function delete_dir($dir, $rm_root=true, $depth=0){
     if(!is_dir($dir)) return false;
