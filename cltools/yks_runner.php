@@ -32,7 +32,7 @@ class yks_runner {
     );
 
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
-    files::create_dir($wsdls_path);
+    files::empty_dir($wsdls_path, false);
 
     $wsdl_uri_mask  = SITE_URL."/services/?class=%s";
     $wsdl_file_mask = "$wsdls_path/%s.wsdl";
