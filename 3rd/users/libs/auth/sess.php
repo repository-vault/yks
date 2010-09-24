@@ -22,10 +22,14 @@ class sess  {
     $key = SITE_CODE.$key;
     return self::$_storage[$key] = $value;
   }
-  static function retrieve($key){
+
+  static function fetch($key){
     $key = SITE_CODE.$key;
     return self::$_storage[$key];
- }
+  }
+
+    //deprecated
+  static function retrieve($key){ return self::fetch($key); }
 
   static function flag_ks($connected = true){
     $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
