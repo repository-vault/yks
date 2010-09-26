@@ -25,12 +25,17 @@ class date {
   }
 
 
+  static function uday($time, $user_tz = false){
+    if($user_tz) $time += exyks::retrieve("USER_TZ");
+    return floor($time/86400);
+  }
+
     /** get universal day **/
-  static function get_uday($d=false,$m=false,$y=false,$timestamp=false){
-	return floor(($timestamp?$timestamp:mktime(0,0,0,
-		$m!==false?$m:idate('m'),
-		$d!==false?$d:idate('d'),
-		$y!==false?$y:idate('Y')))/86400);
+  static function mkuday($d=false, $m=false, $y=false){
+    return self::uday(gmmktime(0, 0, 0,
+        $m!==false?$m:idate('m'),
+        $d!==false?$d:idate('d'),
+        $y!==false?$y:idate('Y')));
   }
 
 
