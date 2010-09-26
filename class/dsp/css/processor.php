@@ -10,7 +10,8 @@ class css_processor {
 
   static function init(){
     classes::register_class_path("css_parser", "exts/css/parser.php");
-    classes::register_class_path("css_box", "exts/css/box.php");
+    classes::register_class_path("css_box", "exts/css/mod/box.php");
+    classes::register_class_path("css_crop", "exts/css/mod/crop.php");
   }
 
   private function __construct($uri, $contents = false){
@@ -35,6 +36,7 @@ class css_processor {
 
   private function output(){
     $this->resolve_boxes();
+    $this->resolve_crops();
     $this->resolve_imports();
     $this->resolve_externals();
     return $this->css->output();
@@ -44,6 +46,15 @@ class css_processor {
     $boxes = $this->css->xpath("//rule[starts-with(@name,'box')]/parent::*");
     foreach($boxes as $box) {
         $box = new css_box($this->css, $box);
+        $box->write_cache();
+    }
+  }
+
+
+  private function resolve_crops(){
+    $boxes = $this->css->xpath("//rule[@name='background-crop']/parent::*");
+    foreach($boxes as $box) {
+        $box = new css_crop($this->css, $box);
         $box->write_cache();
     }
   }
@@ -64,11 +75,12 @@ class css_processor {
     foreach($externals as $external) {
         foreach($external->values_groups as $gid=>$values) foreach($values as $i=>$value) {
 
-            $mask  = "#url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)#";
-            if(!preg_match($mask, (string)$value, $out))
+            $uri = css_parser::split_string((string)$value); $uri = $uri['uri'];
+            if(!$uri || preg_match("#^(/|https://)#", $uri))
                 continue;
+            
             $url  = pick($out[1], $out[2], $out[3]); $start = $out[0];
-            $val = exyks_paths::merge($this->file_base, $url);
+            $val = exyks_paths::merge($this->file_base,$uri);
             $val = exyks_paths::expose($val);
             $val = "url(\"$val\")";
             $external->set_value($val, $i, $gid);
@@ -85,3 +97,8 @@ class css_processor {
   }
 
 }
+
+
+
+
+
