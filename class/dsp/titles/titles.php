@@ -72,27 +72,27 @@ class dsp_titles {
     $colors = array_map('hexdec', explode("-",$theme_config['color']));
 
     $data=array(
-        'text'=>$title_text,
-        'font'=>$font_file,
-        'box_src'=>$box_src,
-        'box_grid'=>"{$theme_config['grid']}",
-        'font_size'=>(int)$theme_config['size'],
-        'color'=>count($colors)==1?$colors[0]:$colors,
-        'border'=>isset($theme_config['border'])?hexdec("{$theme_config['border']}"):false,
-        'shadow'=>isset($theme_config['shadow'])?hexdec("{$theme_config['shadow']}"):false,
-        'angle'=>(int)$theme_config['angle'],
-        'drop_bottom'=>true,
-        'width'=>(int)$theme_config['width'],
-        'text_align'=>$theme_config['align'],
-        'icon'=>$icon,
-        'icon_grid'=>$theme_config['icon_grid'],
+        'text'        => $title_text,
+        'font'        => $font_file,
+        'box_src'     => $box_src,
+        'box_grid'    => "{$theme_config['grid']}",
+        'font_size'   => (int)$theme_config['size'],
+        'color'       => count($colors)==1?$colors[0]:$colors,
+        'border'      => isset($theme_config['border'])?hexdec("{$theme_config['border']}"):false,
+        'shadow'      => isset($theme_config['shadow'])?hexdec("{$theme_config['shadow']}"):false,
+        'angle'       => (int)$theme_config['angle'],
+        'drop_bottom' => true,
+        'width'       => (int)$theme_config['width'],
+        'text_align'  => $theme_config['align'],
+        'icon'        => $icon,
+        'icon_grid'   => $theme_config['icon_grid'],
     ); //print_r($data);die;
 
-    return self::create_img($data);
+    return self::gen_img($data);
   }
 
 
-  private static function create_img($data){ extract($data);
+  public static function gen_img($data){ extract($data);
 
     $text_tmp = imagettfbbox($font_size,0,$font,$text);
     $text_w=max(abs($text_tmp[4]-$text_tmp[0]),abs($text_tmp[2]-$text_tmp[6]));
@@ -101,18 +101,24 @@ class dsp_titles {
     $db=(bool)$drop_bottom;$db=false;
     $text_h=max(abs($text_tmp[7]-($db?0:$text_tmp[1])),abs($text_tmp[5]-($db?0:$text_tmp[3])));
 
-    list($tmp_x,$tmp_y) = explode(";",$box_grid);
-    list($box_xl,$box_xm,$box_xr,$box_ml,$box_mr) = $box_x = $tmp_x?explode(',',$tmp_x):array();
-    list($box_yu,$box_ym,$box_yd,$box_mu,$box_md) = $box_y =  $tmp_y?explode(',',$tmp_y):array();
+    if(!is_array($box_grid)) {
+        list($tmp_x,$tmp_y) = explode(";",$box_grid);
+        $box_x = $tmp_x?explode(',',$tmp_x):array();
+        $box_y =  $tmp_y?explode(',',$tmp_y):array();
+    } else list($box_x, $box_y) = array($box_grid['x'], $box_grid['y']);
+    
+    list($box_xl,$box_xm,$box_xr,$box_ml,$box_mr) = $box_x;
+    list($box_yu,$box_ym,$box_yd,$box_mu,$box_md) = $box_y;
     if(!isset($box_ml))$box_ml=$box_xl;
     if(!isset($box_mr))$box_mr=$box_xr;
     $img_h=max( $text_h+$box_mu+$box_md, $box_yu+$box_ym+$box_yd);
     $img_w=max( $text_w+$box_ml+$box_mr, $box_xl+$box_xm+$box_xr, $width);
     if($width) $img_w = $width;
+
     $img_back = imgs::imagecreatetruealpha($img_w,$img_h);
 
     if($box_src){
-        $box_img = imgs::imagecreatefromfile($box_src);
+        $box_img = is_resource($box_src) ? $box_src : imgs::imagecreatefromfile($box_src);
         if(!$box_x) $box_x = array(0,imagesx($box_img));
         if(!$box_y) $box_y = array(0,imagesy($box_img));
         imgs::image_bg_scale($img_back, $box_img, $box_x, $box_y);  
@@ -127,7 +133,6 @@ class dsp_titles {
             imgs::imagefusion($img_back, $icon, $icon_x, $icon_y);
         }
     }
-
     $img_text      = imgs::imagecreatetruealpha($img_w,$img_h);
     $img_text_mask = imgs::imagecreatetruealpha($img_w,$img_h);
 
@@ -146,11 +151,11 @@ class dsp_titles {
     else
         imagettftext($img_text, $font_size, 0, $text_x, $text_y, $color, $font, $text);
 
-    if($border!==false){
+    if($border!==false && !is_null($border) ){
         $res = imageboldedge($img_text_mask, imgs::colordec($border)); 
         imgs::imagefusion($img_text,$res);
     }
-    if($shadow!==false)
+    if($shadow!==false && !is_null($shadow))
         $img_back = imageglow($img_back, $img_text_mask, imgs::colordec($shadow));
 
     imgs::imagefusion($img_back, $img_text);
