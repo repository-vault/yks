@@ -327,6 +327,14 @@ class imgs {
   }
 
 
+  static function imagecrop($img, $x, $y, $w, $h = false){
+    if(!$h) $h = imagesy($img);
+    $new = self::imagecreatetruealpha($w, $h);
+
+    imagecopyresampled($new, $img, 0, 0, $x, $y, $w, $h, $w, $h);
+    return $new;
+  }
+
 /** correct use of imagettftext supporting alpha chan.*/
   static function imagetext($img, $font_size, $angle, $x, $y, $color, $font, $str){
     $img_text = self::imageempty($img);
