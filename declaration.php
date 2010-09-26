@@ -20,6 +20,7 @@ class css_declaration extends ibase  {
     else $this->values[$gid][$i] = $value;
   }
 
+
   function get_values($gid = 0){
     return $this->values[$gid];
   }

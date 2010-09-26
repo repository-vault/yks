@@ -20,6 +20,12 @@ class css_ruleset extends ibase  {
     $this->declarations[] = $declaration;
   }
 
+  protected function remove_child($child){
+    $i = array_search($child, $this->declarations, true);
+    if($i !== false) unset($this->declarations[$i]);
+  }
+
+
   function get_selector(){
     return $this->selector;
   }

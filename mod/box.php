@@ -38,7 +38,6 @@ class css_box extends ibase {
     $this->box_image = $val;
   }
 
-  
 
   function get_stylesheet(){
     return $this->css;

@@ -125,7 +125,7 @@ class css_parser {
     if(!preg_match($mask, $str, $out))
           return null; //throw new Exception("Invalid property value=".substr($str, $i));
 
-    return array('full' => $out[0], 'uri' => pick($out[9]) );
+    return array('full' => $out[0], 'uri' => pick($out[9], $out[8], $out[7]) );
   }
 
 
