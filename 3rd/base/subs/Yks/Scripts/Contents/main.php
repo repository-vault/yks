@@ -8,6 +8,8 @@ $full = exyks_paths::resolve_public($path);
 if(!is_file($full))
     die("No file here");
 
+define('TYPE_ICO', "Content-Type: image/x-icon");
+
 
 switch(files::ext($full)) {
   case 'css':
@@ -22,6 +24,14 @@ switch(files::ext($full)) {
     break;
   case 'png':
     header(TYPE_PNG);
+    files::delivers($full);
+    break; 
+  case 'cur':
+    header(TYPE_ICO);
+    files::delivers($full);
+    break; 
+  case 'ico':
+    header(TYPE_ICO);
     files::delivers($full);
     break; 
   case 'gif':
