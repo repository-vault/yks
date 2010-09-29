@@ -44,7 +44,7 @@ class sess  {
     self::status_check();
   }
 
-  static function deco(){
+  static function logout(){
     $_COOKIE['user_id'] = false;
     setcookie("user_pswd_".sess::$sess['user_id'],false);
     self::renew(); 
