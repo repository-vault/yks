@@ -21,6 +21,24 @@ class cli {
       ob_start(array('cli', 'console_out'), 2);
   }
 
+  static function which($bin_name){
+    static $paths= false;
+    if($paths===false) {
+      $paths = array_key_map('strtoupper', $_SERVER);
+      $paths = explode(PATH_SEPARATOR, $paths['PATH']);
+    }
+    
+    if(strpos($bin_name, ".")===false)
+        $bin_name .=".exe";
+
+    
+    foreach($paths as $path) {
+      $bin_path = $path.DIRECTORY_SEPARATOR.$bin_name;
+      if(file_exists($bin_path))
+        return $bin_path;
+    }
+  }
+  
   static function trace($msg) {
     $args = func_get_args();
     if(count($args) > 1) echo vsprintf(array_shift($args), $args).LF;
