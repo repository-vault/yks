@@ -11,7 +11,7 @@ class exyks_ws {
         $class_name = $class['name']; $aliases = array();
         $data = compact('class_name', 'aliases');
         foreach($class->iterate("alias") as $alias)
-            self::$classes[$class_name]['aliases'][] = $alias['name'];
+            $data['aliases'][] = $alias['name'];
         self::$classes[$class_name] = $data;
     }
   }
