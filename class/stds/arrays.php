@@ -173,8 +173,12 @@ function array_filter_criteria($list, $criteria){
 }
 
 
-
-function xml_to_constants($xml, $pfx){
+/**
+* LOL
+**/
+function xml_to_constants($xml, $pfx, $set = false){
+    if(is_string($xml))
+        $xml = simplemxl_load_file($xml);
     $ret  = array();
     $name = strtoupper($xml->getName());
     if($pfx) $name = $pfx.$name;
@@ -187,6 +191,10 @@ function xml_to_constants($xml, $pfx){
         
     foreach($children as $child)
         $ret = array_merge($ret, xml_to_constants($child, $name.'_'));
+        
+    if($set)
+      foreach($ret as $k=>$v)
+        define($k,$v);
     return $ret;
 }
 
