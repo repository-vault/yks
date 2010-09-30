@@ -67,55 +67,6 @@ class exyks {
   }
 
 
-  public static function ws_resolve($class_name){
-      $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
-      $wsdl_file = "$wsdls_path/$class_name.wsdl";
-      return $wsdl_file;
-  }
-  
-  public static function ws_serve() {
-
-    header(TYPE_XML);
-    set_time_limit(90);
-
-    rbx::$output_mode = 0;
-
-    $WSClasses = array();
-    foreach(yks::$get->config->wsdls->iterate("class") as $class)
-        $WSClasses[] = $class['name'];
-
-    $class_name = $_GET['class'];
-    if(!in_array($class_name, $WSClasses)) {
-        if($_SERVER['HTTP_SOAPACTION'])
-            throw new SoapFault("server", "No valid class selected");
-        header(TYPE_TEXT);
-        die("No valid class selected");
-    }
-
-    $wsdl_file = self::ws_resolve($class_name);
-
-    if($_SERVER['REQUEST_METHOD']=='GET') {
-        readfile($wsdl_file);
-        die;
-    }
-
-    if(DEBUG) ini_set('soap.wsdl_cache_enabled ', 1);
-    $options = array('actor' => SITE_CODE, 'classmap' =>array());
-    $server = new SoapServer($wsdl_file, $options);
-    $server->setClass($class_name);
-    $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
-//      use_soap_error_handler(true);
-    $server->handle();
-  }
-
-
-
-
-
-
-
-
-
   public static function web_init(){
 
     global $action;

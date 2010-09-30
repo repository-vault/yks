@@ -62,8 +62,8 @@ class exyks_session {
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
 
-    if($action=="deco")
-        sess::deco();
+    if($action == "logout" || $action=="deco") //yeah
+        sess::logout();
 
     if(sess::$sess['session_ip']!=$_SERVER['REMOTE_ADDR']) auth_restricted_ip::reload();
     if($_COOKIE['user_id'] && ($_COOKIE['user_id']!=sess::$sess['user_id'])) auth_password::reload();
