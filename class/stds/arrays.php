@@ -178,7 +178,7 @@ function array_filter_criteria($list, $criteria){
 **/
 function xml_to_constants($xml, $pfx, $set = false){
     if(is_string($xml))
-        $xml = simplemxl_load_file($xml);
+        $xml = simplexml_load_file($xml);
     $ret  = array();
     $name = strtoupper($xml->getName());
     if($pfx) $name = $pfx.$name;
