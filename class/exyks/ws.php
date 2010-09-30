@@ -7,13 +7,18 @@ class exyks_ws {
   static public function init(){
     exyks::init();
 
-    foreach(yks::$get->config->wsdls->iterate("class") as $class) {
+    $wsdls = yks::$get->config->wsdls;
+    foreach($wsdls->iterate("class") as $class) {
         $class_name = $class['name']; $aliases = array();
         $data = compact('class_name', 'aliases');
         foreach($class->iterate("alias") as $alias)
             $data['aliases'][] = $alias['name'];
         self::$classes[$class_name] = $data;
     }
+
+    $use_sess = bool($wsdls['use_sess']);
+    if($use_sess)
+      sess::connect();
   }
 
 
