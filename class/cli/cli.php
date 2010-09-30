@@ -37,6 +37,8 @@ class cli {
       if(file_exists($bin_path))
         return $bin_path;
     }
+
+    return $bin_name;
   }
   
   static function trace($msg) {
