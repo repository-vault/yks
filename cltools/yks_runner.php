@@ -31,6 +31,8 @@ class yks_runner {
       LIBRARIES_PATH."/wshelper/lib/soap"
     );
 
+    classes::activate(".class.php,.php");
+
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     files::empty_dir($wsdls_path, false);
 
