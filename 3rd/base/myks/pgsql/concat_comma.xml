@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="concat" type="text">
+  <procedure name="concat_comma" type="text">
     <param type="text"/>
     <param type="text"/>
     <def>
