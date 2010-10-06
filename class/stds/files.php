@@ -5,7 +5,6 @@
 */
 
 
-
 class files {
   const CACHE_DELAY     = 3600;
   const FIND_SURFACE    = 1; //non recursive
@@ -28,6 +27,14 @@ class files {
         if ($fold=='..' && $i>0 && end($out)!='..') array_pop($out);
     else $out[]= $fold;
     } return ($path{0}=='/'?'/':'').join('/', $out);
+  }
+
+  public static function compress($file_path, $file_out = false){
+    if(!$file_out) $file_out = "$file_path.gz";
+    $contents = file_get_contents($file_path);
+
+    $bz = gzopen($file_out, "w9"); gzwrite($bz, $contents); gzclose($bz);
+    return $file_out;
   }
 
 
