@@ -155,7 +155,9 @@ class sql_runner {
     return !preg_match($filter, $value);
   }
 
-
+/**
+* @alias v * true
+*/
   function scan_views($only_stuff = '*', $run_queries = false){
     myks_gen::reset_types();
     rbx::title("Analysing views");
