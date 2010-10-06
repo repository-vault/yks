@@ -22,6 +22,9 @@ class cli {
   }
 
   static function which($bin_name){
+    if(self::$OS == self::OS_UNIX)
+      return trim(`which $bin_name`);
+
     static $paths= false;
     if($paths===false) {
       $paths = array_key_map('strtoupper', $_SERVER);
