@@ -16,6 +16,19 @@ class exyks_session {
     self::$sess_loaded = class_exists('sess');
   }
 
+
+  static protected $_storage = array();
+  static function store($key, $value){
+    $key = SITE_CODE.$key;
+    return self::$_storage[$key] = $value;
+  }
+
+  static function fetch($key){
+    $key = SITE_CODE.$key;
+    return self::$_storage[$key];
+  }
+
+
   public static function close(){
     if(self::$sess_loaded)
         return sess::close();
@@ -36,6 +49,7 @@ class exyks_session {
     else session_start();
 
     $user_tz = $_SESSION['client']['tz'];
+    self::$_storage = &$_SESSION[__CLASS__.'_storage'];
 
     if(is_null($user_tz)) {
         $_SESSION['client']['tz']  = IDATEZ;
