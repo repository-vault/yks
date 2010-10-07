@@ -35,8 +35,8 @@
       </xsl:if>
     </xsl:variable>
     <field>
-<!--  or @type=$birth -->
-      <xsl:copy-of select="@key"/>
+      <!--  or @type=$birth -->
+      <xsl:copy-of select="@key|@null"/>
       <xsl:if test="$name=$birth">
         <xsl:attribute name="key">primary</xsl:attribute>
       </xsl:if>

@@ -224,7 +224,9 @@ class sql_runner {
     pgsql_auto_inc_sync::doit($this->tables_xml_tdy, $this->types_xml);
   }
 
-
+/**
+* @alias t * true
+*/
   function scan_tables($only_stuff = '*', $run_queries = false){
 
     myks_gen::reset_types();

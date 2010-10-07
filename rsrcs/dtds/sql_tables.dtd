@@ -18,6 +18,7 @@
   key   CDATA  #IMPLIED
   extra (auto_increment) #IMPLIED
   default CDATA	#IMPLIED
+  %nullable;
   update %fk_actions; 'cascade'
   delete %fk_actions; 'no_action'
   defer (defer|strict) 'defer'
