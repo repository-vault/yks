@@ -9,24 +9,22 @@
   </table>
   <table name="ks_sessions_results_heap">
     <fields>
-      <field type="session_id" key="primary"/>
-      <field type="session_ns" key="primary"/>
-      <field type="session_heap_order"/>
+      <field type="session_heap_key"/>
+      <field type="session_id"/>
+      <field type="session_ns"/>
       <field type="session_heap_value"/>
     </fields>
     <indexes>
-      <index>
-        <member column="session_heap_order"/>
-      </index>
       <index>
         <member column="session_heap_value"/>
       </index>
       <index>
         <member column="session_id"/>
+        <member column="session_ns"/>
       </index>
     </indexes>
   </table>
-  <mykse type="session_heap_order">
+  <mykse type="session_heap_key" birth="ks_sessions_results_heap">
     <int size="big"/>
   </mykse>
   <mykse type="session_heap_value">
