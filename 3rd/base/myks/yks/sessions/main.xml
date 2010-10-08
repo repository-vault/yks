@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_sessions_list">
+    <fields>
+      <field type="session_id"/>
+      <field type="now" name="session_start"/>
+    </fields>
+  </table>
+  <table name="ks_sessions_results_heap">
+    <fields>
+      <field type="session_id" key="primary"/>
+      <field type="session_ns" key="primary"/>
+      <field type="session_heap_order"/>
+      <field type="session_heap_value"/>
+    </fields>
+    <indexes>
+      <index>
+        <member column="session_heap_order"/>
+      </index>
+      <index>
+        <member column="session_heap_value"/>
+      </index>
+      <index>
+        <member column="session_id"/>
+      </index>
+    </indexes>
+  </table>
+  <mykse type="session_heap_order">
+    <int size="big"/>
+  </mykse>
+  <mykse type="session_heap_value">
+    <int size="big"/>
+  </mykse>
+  <mykse type="session_ns">
+    <string length="64"/>
+  </mykse>
+  <mykse type="session_id" birth="ks_sessions_list">
+    <mykse type="sha1"/>
+  </mykse>
+</myks>
