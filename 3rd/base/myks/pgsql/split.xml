@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="split" type="record" setof="setof" volatility="IMMUTABLE">
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+DECLARE
+myrec record;
+i integer;
+part varchar;
+BEGIN
+i:=1;
+LOOP
+    part := split_part($1, $2,i);
+    EXIT WHEN part = '';
+    SELECT strtoint(part) INTO myrec;
+    RETURN NEXT myrec; --stack return
+    i:=i+1;
+END LOOP;
+END;
+</def>
+  </procedure>
+</myks>

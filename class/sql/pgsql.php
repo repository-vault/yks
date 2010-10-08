@@ -2,6 +2,7 @@
 
 
 class sql {
+   static $esc = '"';
    static public $queries=array();
    static private $link='db_link';
    static private $result;

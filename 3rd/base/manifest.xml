@@ -7,19 +7,20 @@
   <myks>
     <path path="path://here/myks/yks/types"/>
     <path path="path://here/myks/yks/locale"/>
+    <path path="path://here/myks/yks/sessions"/>
     <path path="path://here/myks/isos"/>
   </myks>
   <locales>
     <path path="path://here/locale"/>
   </locales>
   <classes>
-<!-- runner -->
+    <!-- runner -->
     <class name="myks_runner" path="path://here/libs/myks_runner.php"/>
     <class name="sync_runner" path="path://here/libs/sql/sync_runner.php"/>
     <class name="sql_runner" path="path://here/libs/sql/runner.php"/>
     <class name="__sql_sync" path="path://here/libs/sql/sync.php"/>
     <class name="sql_sync" path="path://here/libs/sql/{SQL_DRIVER}/sql_sync.php"/>
-<!--  myks -->
+    <!--  myks -->
     <class name="myks" path="path://here/libs/myks/myks.php"/>
     <class name="mykses" path="path://here/libs/myks/mykses.php"/>
     <class name="myks_parser" path="path://here/libs/myks/parser.php"/>

@@ -49,11 +49,13 @@ abstract class procedure_base extends myks_installer  {
         $args[]=$param['name'].' '.myks_gen::$type_resolver->convert($param['type'], 'out', 'proc');
     $args=join(', ',$args);
 
+    $volatility = $this->xml_def['volatility'];
+
     $out  = $this->xml_def['setof']
             .' '.myks_gen::$type_resolver->convert($this->xml_def['type'],'out', 'proc');
     $ret = "CREATE OR REPLACE FUNCTION {$this->proc_name['safe']}($args) RETURNS $out AS\n\$body\$\n";
     $ret.= $this->xml_def['def']."\n\$body\$\n";
-    $ret.= "LANGUAGE 'plpgsql' VOLATILE CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
+    $ret.= "LANGUAGE 'plpgsql' $volatility CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
 
     return array($ret);
   }
@@ -130,18 +132,27 @@ abstract class procedure_base extends myks_installer  {
         'routine_schema' => $this->proc_name['schema']
     ); $cols = "specific_name, routine_name, data_type, routine_definition";
     $data = sql::row("information_schema.routines",$verif_proc, $cols);
-    $extras = sql::qrow("SELECT IF(proretset,'setof','') as routine_setof
+    $extras = sql::qrow("SELECT
+            IF(proretset,'setof','') as routine_setof,
+            provolatile ,
+            ( CASE provolatile
+             WHEN 'v' THEN 'VOLATILE'
+             WHEN 'i' THEN 'IMMUTABLE'
+             WHEN 's' THEN 'STABLE'
+             END ) AS volatility
             FROM pg_catalog.pg_proc WHERE oid='$oid'");
     $data = array_merge($data, $extras);
 
     if(!$data) return false;
 
     $this->sql_def = array(
-        'name'=>$data['routine_name'],
-        'setof'=>$data['routine_setof'],
-        'type'=>myks_gen::$type_resolver->convert($data['data_type'], 'in', 'proc'),
-        'def'=>myks_gen::sql_clean_def($data['routine_definition']),
+        'name'       => $data['routine_name'],
+        'setof'      => $data['routine_setof'],
+        'volatility' => $data['volatility'],
+        'type'       => myks_gen::$type_resolver->convert($data['data_type'], 'in', 'proc'),
+        'def'        => myks_gen::sql_clean_def($data['routine_definition']),
     );
+
     $specific_name=$data['specific_name'];
     $verif_proc_inner=compact('specific_name');
     sql::select("information_schema.parameters",$verif_proc_inner,'*','ORDER BY ordinal_position');
@@ -157,10 +168,11 @@ abstract class procedure_base extends myks_installer  {
   function xml_infos(){
     $def  = pick($this->proc_xml->def, $this->proc_xml['def']);
     $data = array(
-        'name'=>(string)  $this->proc_name['name'],
-        'type'=>(string)  $this->proc_xml['type'],
-        'setof'=>(string) $this->proc_xml['setof'],
-        'def'=>sql::unfix(myks_gen::sql_clean_def($def)),
+        'name'        =>(string)  $this->proc_name['name'],
+        'type'        =>(string)  $this->proc_xml['type'],
+        'setof'       =>(string) $this->proc_xml['setof'],
+        'volatility'  =>(string) $this->proc_xml['volatility'],
+        'def'         =>sql::unfix(myks_gen::sql_clean_def($def)),
     );
 
     if($this->proc_xml->param)

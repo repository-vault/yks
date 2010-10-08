@@ -12,4 +12,5 @@
   name	CDATA	#REQUIRED
   type CDATA #REQUIRED
   setof (setof) #IMPLIED
+  volatility (VOLATILE|IMMUTABLE) 'VOLATILE'
 >

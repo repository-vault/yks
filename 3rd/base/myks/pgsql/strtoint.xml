@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="strtoint" type="int">
+  <procedure name="strtoint" type="int" volatility="IMMUTABLE">
     <param type="string"/>
     <def>
 BEGIN

@@ -52,7 +52,9 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
-//    $this->scan_tables("mirrors_list");
+    //$this->scan_tables("sessions_results_heap");
+    //$this->scan_procedures("spli", true);
+    //$this->scan_views("ttriggers", true);
   }
 
 /**

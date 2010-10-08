@@ -20,7 +20,7 @@
   </xsl:template>
   <xsl:template match="mykse">
     <xsl:variable name="elem" select="./node()[1]"/>
-<!-- first (and only) child -->
+    <!-- first (and only) child -->
     <xsl:variable name="name">
       <xsl:value-of select="string(@type)"/>
     </xsl:variable>
@@ -71,6 +71,9 @@
         <grants>
           <xsl:copy-of select="//table[@name=$name]/grant"/>
         </grants>
+        <indexes>
+          <xsl:copy-of select="//table[@name=$name]/indexes/*"/>
+        </indexes>
       </table>
     </xsl:if>
   </xsl:template>

@@ -1,4 +1,4 @@
-<!ELEMENT table (abstract?,(fields|rule|grant|trigger)+)>
+<!ELEMENT table (abstract?,(fields|indexes|rule|grant|trigger)+)>
 <!ELEMENT def (#PCDATA)>
 <!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance)">
 
@@ -9,7 +9,22 @@
 >
 <!ENTITY % fk_actions "(cascade|set_null|no_action)">
 
+
 <!ELEMENT fields (field+)>
+<!ELEMENT indexes (index+)>
+
+
+<!ELEMENT index (member+)>
+<!ATTLIST index
+  type	CDATA	#IMPLIED
+  name	CDATA	#IMPLIED
+>
+
+<!ELEMENT member EMPTY>
+<!ATTLIST member
+ column CDATA #REQUIRED
+>
+
 
 <!ELEMENT field EMPTY>
 <!ATTLIST field

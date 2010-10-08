@@ -28,6 +28,9 @@ classes::register_class_paths(array(
     "myks_triggers"    => "$elements/triggers.php",
     "myks_table_triggers" => "$elements/table_triggers.php",
 
+
+    "myks_indexes"   => "$elements/indexes.php",
+
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",
     "resolver"         => "$ds_elements/resolver.php",

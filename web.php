@@ -4,7 +4,6 @@ if(!defined('Ex/yks')) die("Ex/yks is not loaded");
 
   ob_start( );
   exyks::bench('generation_start');
-  exyks::web_init();
 
   list($context, $href, $href_ks, $depths, $argv0) = exyks::context_prepare($_SERVER['QUERY_STRING']);
     foreach($context as $depth=>$infos){

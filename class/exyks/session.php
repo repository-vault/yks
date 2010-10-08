@@ -48,6 +48,12 @@ class exyks_session {
         sess::connect();
     else session_start();
 
+    if(!isset($_SESSION['load'])) {
+      $data = array('session_id' => session_id());
+      sql::insert("ks_sessions_list", $data);
+      $_SESSION['load'] = true;
+    }
+
     $user_tz = $_SESSION['client']['tz'];
     self::$_storage = &$_SESSION[__CLASS__.'_storage'];
 

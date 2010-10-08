@@ -138,7 +138,7 @@ class exyks {
 
     //website initialisation
   static function context_prepare($query_path){
-
+    self::web_init();
         /* $result_path, $href, $href_ks, $context_depths */
     $parsed_paths = exyks_urls::parse($query_path);
     list(, self::$href, self::$href_ks) = $parsed_paths;

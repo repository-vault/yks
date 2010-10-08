@@ -8,9 +8,10 @@ class table extends table_base {
   public $tmp_refs=array();
 
 
-  private $rules; //rules only exists in this driver
+  private $rules;
   private $privileges;
   private $triggers;
+  private $indexes;
 
   private $ghost_keys;
 
@@ -18,8 +19,9 @@ class table extends table_base {
     parent::__construct($table_xml);
 
     $this->privileges  = new privileges($this, $table_xml->grants, 'table');
-    $this->rules    = new rules($this, $table_xml->rules->xpath('rules/rule'), 'table');
-    $this->triggers = new myks_table_triggers($this, $table_xml->triggers->xpath('triggers/trigger'));
+    $this->rules    = new rules($this, $table_xml->rules->xpath('rule'), 'table');
+    $this->triggers = new myks_table_triggers($this, $table_xml->triggers->xpath('trigger'));
+    $this->indexes  = new myks_indexes($this, $table_xml->indexes->xpath('index'));
   }
 
 
@@ -35,6 +37,7 @@ class table extends table_base {
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
     $this->triggers->sql_infos();
+    $this->indexes->sql_infos();
     return true;
   }
 
@@ -43,6 +46,8 @@ class table extends table_base {
     $this->rules->xml_infos();
     $this->triggers->xml_infos();
     $this->privileges->xml_infos();
+    $this->indexes->xml_infos();
+
     foreach($this->keys_xml_def as $k=>&$key){
         if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
             continue;
@@ -59,6 +64,7 @@ class table extends table_base {
     return parent::modified()
         || $this->privileges->modified()
         || $this->triggers->modified()
+        || $this->indexes->modified()
         || $this->rules->modified();
 
   }
@@ -69,6 +75,7 @@ class table extends table_base {
         parent::alter_def(),
         $this->privileges->alter_def(),
         $this->triggers->alter_def(),
+        $this->indexes->alter_def(),
         $this->rules->alter_def()
     );
   }
