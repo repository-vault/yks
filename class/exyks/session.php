@@ -23,6 +23,42 @@ class exyks_session {
     return self::$_storage[$key] = $value;
   }
 
+
+  static function store_results($key, $query){
+    $session_ns = SITE_CODE.$key;
+    $session_id = session_id();
+
+    sql::delete("ks_sessions_results_heap", compact('session_ns', 'session_id'));
+
+    $query = "INSERT INTO `ks_sessions_results_heap`
+        (session_id, session_ns, session_heap_value)
+        SELECT
+            '$session_id' AS session_id,
+            '$session_ns'        AS session_ns,
+            id AS session_heap_value
+        FROM ($query) AS src";
+    $results = sql::query($query);
+    $results_nb = sql::arows($results);
+    self::store("results_{$key}", $results_nb);
+    return $results_nb;
+  }
+
+  static function fetch_results($key, $table, $criteria, $cols = "*", $extras = '', $by = 0 ){
+    if($by) $extras = "LIMIT $by OFFSET ".($start = (int) $extras);
+    $verif_join = array(
+        'session_ns' => SITE_CODE.$key,
+        'session_id' => session_id(),
+        "session_heap_value = $criteria",
+    );
+    $query = " SELECT $cols FROM $table
+    INNER JOIN `ks_sessions_results_heap`
+        ".sql::on($verif_join)."
+    ORDER BY session_heap_key ASC
+    $extras";
+
+    sql::query($query);
+  }
+
   static function fetch($key){
     $key = SITE_CODE.$key;
     return self::$_storage[$key];

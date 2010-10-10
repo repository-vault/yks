@@ -16,7 +16,7 @@
 
 <!ELEMENT index (member+)>
 <!ATTLIST index
-  type	CDATA	#IMPLIED
+  type	(index|unique)	'index'
   name	CDATA	#IMPLIED
 >
 

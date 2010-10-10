@@ -9,8 +9,8 @@
   </table>
   <table name="ks_sessions_results_heap">
     <fields>
+      <field type="session_id" delete="cascade"/>
       <field type="session_heap_key"/>
-      <field type="session_id"/>
       <field type="session_ns"/>
       <field type="session_heap_value"/>
     </fields>

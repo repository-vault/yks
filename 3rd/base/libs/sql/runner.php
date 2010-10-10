@@ -71,6 +71,7 @@ class sql_runner {
     $myks_parser->trace();
 
     $types_xml            = $myks_parser->out("mykse");
+
     $tables_xml           = $myks_parser->out("table");
 
     $this->tables_xml_tdy = simplexml_import_dom(myks::tables_reflection($tables_xml));
@@ -78,6 +79,7 @@ class sql_runner {
     $this->tables_xml     = simplexml_import_dom($tables_xml, "field");
     $this->procedures_xml = simplexml_import_dom($myks_parser->out("procedure"));
     $this->views_xml      = simplexml_import_dom($myks_parser->out("view"));
+
 
     //echo chunk_split($this->tables_xml->asXML(),90);die('here');
     if(!$this->types_xml instanceof SimpleXMLElement) die("Unable to load types_xml");
@@ -107,10 +109,18 @@ class sql_runner {
     $this->scan_tables();
     $this->autoinc_sync();
 
+    $this->gc();
     $this->queue(bool($run_queries), "end");
 
   }
 
+
+  function gc(){
+    rbx::ok("Cleaning expired sessions");
+    $expired = 86400 * 2;
+    sql::delete("ks_sessions_list", "session_start < unix_timestamp() - $expired");
+    
+  }
 
   private function queries_queue($queries){
     $this->queries = array_merge($this->queries, $queries);

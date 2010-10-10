@@ -19,12 +19,15 @@ abstract class mykse_base  {
 
     $this->table = $table;
     $this->type  = $field_xml['type'];
-    $this->field_def=array(
-        'Field'   => $field_xml->get_name(),
+    $this->field_def = array(
+        'Field'   => (string) $field_xml->get_name(),
         'Extra'   => '',
         'Null'    => isset($field_xml['null'])?$field_xml['null']=='null':null,
         'Default' => isset($field_xml['default'])?(string)$field_xml['default']:null,
     ); $this->resolve($this->type);
+
+
+
 
     // faut faire tomber les key sur les types qui ne sont pas directs.. 
     // OU si le name dans le  birth est différent du type

@@ -202,11 +202,10 @@ class exyks {
     exyks::bench('display_start'); 
     ob_start();
 
-
     jsx::set(array(
       "href"      => "?".exyks::$href,
       "href_ks"   => "?".exyks::$href_ks,
-      "href_base" => "?$href_base",
+      "href_base" => "?&href_base;",
     ));
 
     if(!JSX) {
@@ -214,7 +213,8 @@ class exyks {
           "xsl_engine" => XSL_ENGINE,
           "site_code"  => SITE_CODE,
           "cache_path" => CACHE_REL,
-          "href_fold"  => "?$href_fold",
+          "href_fold"  => "?&href_fold;",
+          "lang_key"  =>  "&USER_LANG;",
           "screen_id"  => 10
         ));
 

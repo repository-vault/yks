@@ -178,15 +178,30 @@ class sql {
     return sql::query("DELETE FROM `$table` ".sql::where($where, $table)." $extras",false,true);
   }
   static function select($table,$where=sql::true,$cols="*",$extra=''){
-    return sql::query("SELECT $cols ".sql::from($table).' '.sql::where($where, $table)." $extra");
+    $query = self::fselect($table, $where, $cols, $extra);
+    return sql::query($query);
   }
+
+  static function fselect($table,$where=sql::true,$cols="*",$extra=''){
+    return "SELECT $cols ".sql::from($table).' '.sql::where($where, $table)." $extra";
+  }
+
   static function row($table,$where=sql::true,$cols="*",$extras=''){
     sql::select($table, $where, $cols, " $extras LIMIT 1"); return sql::fetch();
   }
   static function where($cond, $table=false, $mode='&&'){
-    if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
+    return self::fcond($cond, $table, $mode, "WHERE");
+  }
+
+  static function on($cond, $table=false, $mode='&&'){
+    return self::fcond($cond, $table, $mode, "ON");
+  }
+
+
+  private static function fcond($cond, $table, $mode, $keyword) {
+    if(is_bool($cond) || !$cond) return $cond?'':'$keyword FALSE';
     if(is_object($cond)) $cond = array($cond);
-    if(!is_array($cond)) return $cond&&strpos($cond,"WHERE")===false?"WHERE $cond":$cond;
+    if(!is_array($cond)) return $cond&&strpos($cond,$keyword)===false?"$keyword $cond":$cond;
     foreach(array_filter($cond,'is_object') as $k=>$obj){
         if(!method_exists($obj, '__sql_where'))continue;
         unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
@@ -195,9 +210,8 @@ class sql {
     $conds=array_intersect_key($cond,array_flip($slice));
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
        $conds[]= sql::conds($k, $v);
-    return $conds?"WHERE ".join(" $mode ",$conds):'';
+    return $conds?"$keyword ".join(" $mode ",$conds):'';
   }
-
 
   private static function fromf($table) {
     return ' `'.str_replace('.','`.`',$table).'` ';
@@ -246,6 +260,7 @@ class sql {
     return $str;
   }
 
+  static function arows($result) { return pg_affected_rows($result); }
 
   static function lines($table){ return sql::value($table, true, "COUNT(*)");}
   static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }

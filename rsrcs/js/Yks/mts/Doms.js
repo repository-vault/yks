@@ -45,8 +45,10 @@ var Doms = {
     for(var uid in this.loaders) {
         var infos = this.loaders[uid];
         if(infos['class'] != name)continue;
-        var url ='/?/Yks/Scripts/Js|'+uid;
-        (new Xhr(false)).addEvent('success', $exec).request( url);
+        var url ="/?/Yks/Scripts/Js|{uid:'"+uid+"','Yks-Language':'"+lang_key+"'}";
+        (new Xhr(false))
+        .addEvent('success', $exec)
+        .request( url);
         var tmp = $take(window, name.split('.'));
         if(!tmp) return false;
         this.loaders[uid]['class'] = tmp;

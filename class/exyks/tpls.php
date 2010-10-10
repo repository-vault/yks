@@ -81,9 +81,11 @@ class tpls {
  }
 
  static function js_add($href, $defer=false){
-    if($href == "/?/Yks/Scripts/Js")
+    if($href == "/?/Yks/Scripts/Js") {
         $href .= "//".substr(data::fetch("JS_CACHE_KEY"),0,5);
-
+        $href .= "|{'Yks-Language':'&USER_LANG;'}";
+    }
+    
     $tmp = exyks::$head->scripts->addChild("js");
     if($defer)$tmp['defer']="true";
     $tmp['src']=$href;

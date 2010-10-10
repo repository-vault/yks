@@ -38,6 +38,7 @@ class exyks_js_packer extends js_packer {
 
     $contents="";
     foreach($this->files_list as $file_key=>$file_path) {
+        $file_path = strtr($file_path, $this->ctx_elements);
         if(!is_file($file_path) ) die("!! $file_path is unavaible");
         $contents.=file_get_contents($file_path);
     } $contents .= $this->additional_script;

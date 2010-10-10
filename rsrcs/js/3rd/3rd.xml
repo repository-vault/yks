@@ -4,6 +4,10 @@
     <module key="path://3rd/Arian/DatePicker.js" head="true">
       <description>datepicker.js - MooTools Datepicker class</description>
       <dep key="mootools.lite"/>
+      <dep key="path://3rd/usage/locales/DatePicker.%USER_LANG%.js"/>
     </module>
+  </package>
+  <package name="Locales">
+    <module key="path://3rd/usage/locales/DatePicker.%USER_LANG%.js"/>
   </package>
 </js>

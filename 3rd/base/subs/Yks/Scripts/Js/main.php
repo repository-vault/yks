@@ -1,7 +1,13 @@
 <?
 ob_start("ob_gzhandler");
 
+
 $uids = array_filter(explode("," , $argv0));
+if($argv0[0]=='{') {
+    $nojsx_ctx = json_parser::parse($argv0);
+    $uids = array_filter(array($nojsx_ctx['uid']));
+}
+
 $compress = false;
 
 classes::register_class_paths(array(
@@ -14,6 +20,11 @@ classes::register_class_paths(array(
 ));
 
 
+
+$lang_key  = pick($nojsx_ctx['Yks-Language'], $_SERVER['HTTP_YKS_LANGUAGE']);
+
+$lang_key = pick(preg_clean("a-z_-", $lang_key), 'en-us');
+
 $yks_root = RSRCS_PATH."/js/Yks";
 $mt_root  = RSRCS_PATH."/js/Mootools";
 $trd_root = RSRCS_PATH."/js/3rd";
@@ -21,6 +32,8 @@ $trd_root = RSRCS_PATH."/js/3rd";
 
 
 $packer   = new exyks_js_packer();
+$packer->ctx("USER_LANG", $lang_key);
+
 $packager = new js_packager();
 
 $manifests_list = array_merge(

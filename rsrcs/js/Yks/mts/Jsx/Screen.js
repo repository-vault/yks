@@ -20,6 +20,8 @@ var Screen = {
 
     if(!document.body) document.body = $E('body');
     Doms.scan();
+    MooTools.lang.addLanguage(lang_key);
+    MooTools.lang.setLanguage(lang_key);
   },
 
   boxer:function(anchor, options){

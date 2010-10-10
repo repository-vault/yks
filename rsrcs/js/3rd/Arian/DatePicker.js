@@ -49,10 +49,8 @@ var DatePicker = new Class({
 	
 	options: { 
 		pickerClass: 'datepicker',
-		days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-		dayShort: 2,
-		monthShort: 3,
+
+
 		startDay: 1, // Sunday (0) through Saturday (6) - be aware that this may affect your layout, since the days on the right might have a different margin
 		timePicker: false,
 		timePickerOnly: false,
@@ -382,7 +380,7 @@ var DatePicker = new Class({
 	renderMonth: function() {
 		var month = this.d.getMonth();
 		
-		this.picker.getElement('.titleText').set('text', this.options.months[month] + ' ' + this.d.getFullYear());
+		this.picker.getElement('.titleText').set('text', MooTools.lang.get('Date', 'months')[month] + ' ' + this.d.getFullYear());
 		
 		this.d.setDate(1);
 		while (this.d.getDay() != this.options.startDay) {
@@ -394,7 +392,7 @@ var DatePicker = new Class({
 		var d, i, classes, e, weekcontainer;
 
 		for (d = this.options.startDay; d < (this.options.startDay + 7); d++) {
-			new Element('div', { 'class': 'title day day' + (d % 7) }).set('text', this.options.days[(d % 7)].substring(0,this.options.dayShort)).inject(titles);
+			new Element('div', { 'class': 'title day day' + (d % 7) }).set('text', MooTools.lang.get('Date', 'daysShort')[(d % 7)]).inject(titles);
 		}
 		
 		var available = false;
@@ -453,7 +451,7 @@ var DatePicker = new Class({
 		
 		for (i = 0; i <= 11; i++) {
 			e = new Element('div', { 'class': 'month month'+(i+1)+(i == month && thisyear ? ' today' : '')+(i == this.choice.month && selectedyear ? ' selected' : '') })
-			.set('text', this.options.monthShort ? this.options.months[i].substring(0, this.options.monthShort) : this.options.months[i]).inject(container);
+			.set('text',  MooTools.lang.get('Date', 'monthsShort')[i]).inject(container);
 			
 			if (this.limited('month')) {
 				e.addClass('unavailable');
@@ -625,12 +623,12 @@ var DatePicker = new Class({
 				case 'Y': f += t.getFullYear(); break;
 				case 'm': f += this.leadZero(m + 1); break;
 				case 'n': f += (m + 1); break;
-				case 'M': f += this.options.months[m].substring(0,this.options.monthShort); break;
-				case 'F': f += this.options.months[m]; break;
+				case 'M': f += MooTools.lang.get('Date', 'monthsShort')[m]; break;
+				case 'F': f += MooTools.lang.get('Date', 'months')[m]; break;
 				case 'd': f += this.leadZero(t.getDate()); break;
 				case 'j': f += t.getDate(); break;
-				case 'D': f += this.options.days[t.getDay()].substring(0,this.options.dayShort); break;
-				case 'l': f += this.options.days[t.getDay()]; break;
+				case 'D': f += MooTools.lang.get('Date', 'daysShort')[t.getDay()]; break;
+				case 'l': f += MooTools.lang.get('Date', 'days')[t.getDay()]; break;
 				case 'G': f += h; break;
 				case 'H': f += this.leadZero(h); break;
 				case 'g': f += (h % 12 ? h % 12 : 12); break;
@@ -660,11 +658,9 @@ var DatePicker = new Class({
 				case 'Y': r = '[0-9]{4}'; break;
 				case 'm': r = '0[1-9]|1[012]'; break;
 				case 'n': r = '[1-9]|1[012]'; break;
-				case 'M': r = '[A-Za-z]{'+this.options.monthShort+'}'; break;
 				case 'F': r = '[A-Za-z]+'; break;
 				case 'd': r = '0[1-9]|[12][0-9]|3[01]'; break;
 				case 'j': r = '[1-9]|[12][0-9]|3[01]'; break;
-				case 'D': r = '[A-Za-z]{'+this.options.dayShort+'}'; break;
 				case 'l': r = '[A-Za-z]+'; break;
 				case 'G': 
 				case 'H': 
@@ -699,9 +695,6 @@ var DatePicker = new Class({
 				case 'Y': d.setFullYear(v); break;
 				case 'm':
 				case 'n': d.setMonth(v - 1); break;
-				// FALL THROUGH NOTICE! "M" has no break, because "v" now is the full month (eg. 'February'), which will work with the next format "F":
-				case 'M': v = this.options.months.filter(function(item, index) { return item.substring(0,this.options.monthShort) == v }.bind(this))[0];
-				case 'F': d.setMonth(this.options.months.indexOf(v)); break;
 				case 'd':
 				case 'j': d.setDate(v); break;
 				case 'G': 

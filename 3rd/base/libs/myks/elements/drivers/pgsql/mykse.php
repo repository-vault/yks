@@ -9,17 +9,17 @@ class mykse extends mykse_base {
   function int_node(){
 
     $sizes=array(
-        'mini'=>'smallint',
-        'small'=>'smallint',
-        'int'=>'integer',
-        'big'=>'integer',
-        'giga'=>'bigint',
-        'float'=>'double precision',
-        'decimal'=>'float(10,5)',
+        'mini'    => 'smallint',
+        'small'   => 'smallint',
+        'int'     => 'integer',
+        'big'     => 'integer',
+        'giga'    => 'bigint',
+        'float'   => 'double precision',
+        'decimal' => 'float(10,5)',
     );$type = $sizes[(string)$this->mykse_xml['size']];
     if($this->birth) {
         $table_name = $this->table->get_name();
-        $this->field_def["Default"]="auto_increment('{$this->type}','{$table_name['name']}')";
+        $this->field_def["Default"] = "auto_increment('{$this->type}','{$table_name['name']}')";
     }
 
     $this->field_def["Type"]=$type;
