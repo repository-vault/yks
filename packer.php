@@ -5,11 +5,16 @@ class js_packer {
   protected $cache_path;
   protected $files_list;
   protected $additional_script;
+  protected $ctx_elements;
 
   function __construct(){
     $this->cache_path = sys_get_temp_dir();
     $this->files_list = array();
     $this->additional_script = "";
+  }
+
+  public function ctx($key, $value){
+    $this->ctx_elements["%$key%"] = $value;
   }
 
   public function feed($files){
@@ -30,6 +35,8 @@ class js_packer {
     $hash="";
         //generate hash based on mtime & filename
     foreach($this->files_list as $file_key=>$file_path){
+        $file_path = strtr($file_path, $this->ctx_elements);
+        if(!is_file($file_path) ) die("!! $file_path is unavaible");
         $time = filemtime($file_path);
         $hash.= "$file_key:$time;";
     } $hash.= $this->additional_script;
@@ -45,6 +52,7 @@ class js_packer {
 
     $contents="";
     foreach($this->files_list as $file_key=>$file_path) {
+        $file_path = strtr($file_path, $this->ctx_elements);
         if(!is_file($file_path) ) die("!! $file_path is unavaible");
         $contents.=file_get_contents($file_path);
     } $contents .= $this->additional_script;
