@@ -4,7 +4,7 @@
   <procedure name="unix_timestamp" type="int">
     <def>
 BEGIN
-return CAST ( (EXTRACT(EPOCH FROM now()) + EXTRACT(timezone FROM timestamptz 'epoch')) as INTEGER);
+return CAST ( EXTRACT(EPOCH FROM now())  as INTEGER);
 END;
 </def>
   </procedure>
@@ -13,8 +13,7 @@ END;
     <def>
 BEGIN
 return  (CASE WHEN time_in IS NULL THEN NULL ELSE MIN(CAST (
-        (EXTRACT(EPOCH FROM time_in) + EXTRACT(timezone FROM timestamptz 'epoch'))
-     as BIGINT),2147483647)  END);
+        EXTRACT(EPOCH FROM time_in) as BIGINT),2147483647)  END);
 END;
 </def>
   </procedure>

@@ -11,7 +11,8 @@ class resolver extends base_type_resolver {
     $trans = array();
 
     $trans['in'] = array(
-        'timestamp without time zone'=>'timestamp(0)', //information_schema.routines.data_type
+        'timestamp without time zone' =>'timestamp(0)', //information_schema.routines.data_type
+        'timestamp with time zone'    =>'timestamptz(0)', //information_schema.routines.data_type
     ); $this->feed($trans);
   }
 }

@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="from_unix_timestamp" type="timestamp">
+  <procedure name="from_unix_timestamp" type="timestamptz">
     <param name="time_in" type="bigint"/>
     <def>
 DECLARE 
-tmp TIMESTAMP;
+tmp timestamptz;
 BEGIN
-SELECT TIMESTAMP 'epoch' + (time_in) * INTERVAL '1 second'  INTO tmp;
+SELECT timestamptz 'epoch' + (time_in) * INTERVAL '1 second'  INTO tmp;
 RETURN tmp;
 END;
 </def>
   </procedure>
-  <procedure name="from_unix_timestamp" type="timestamp">
+  <procedure name="from_unix_timestamp" type="timestamptz">
     <param name="time_in" type="float"/>
     <def>
 DECLARE 
-tmp TIMESTAMP;
+tmp timestamptz;
 BEGIN
-SELECT TIMESTAMP 'epoch' + time_in * INTERVAL '1 second'  INTO tmp;
+SELECT timestamptz 'epoch' + time_in * INTERVAL '1 second'  INTO tmp;
 RETURN tmp;
 END;
 </def>
