@@ -62,7 +62,7 @@ Jsx.Form = new Class({
   js_valid:function(rbx){
     this.xtd = this.xtd || this.extended();
     if(rbx.warn){
-        var tmp = this.anchor.getElement("*[name='"+(rbx['warn'].trim())+"']");
+        var tmp = $N(rbx['warn'].trim(), this.anchor);
         if(tmp) tmp.addClass('error').focus();
     } this.parent(rbx);
   }

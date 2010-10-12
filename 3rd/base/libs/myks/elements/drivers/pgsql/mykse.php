@@ -39,7 +39,7 @@ class mykse extends mykse_base {
 
   protected function get_def(){
     if($this->mykse_xml == "sql_timestamp") {
-        $this->field_def["Type"]="timestampz(0)";
+        $this->field_def["Type"]="timestamptz(0)";
     }else return parent::get_def();
   }
 
