@@ -20,7 +20,8 @@ abstract class procedure_base extends myks_installer  {
   }
 
   function modified(){
-    //print_r(array_show_diff($this->xml_def, $this->sql_def,"xml","sql"));
+    //print_r($this->xml_def);print_r($this->sql_def);die;
+    //print_r(array_show_diff($this->xml_def, $this->sql_def,"xml","sql"));die;
     $same = $this->xml_def == $this->sql_def;
     return !$same;
   }
@@ -87,8 +88,8 @@ abstract class procedure_base extends myks_installer  {
       $having  []= " concat_comma(parameters.data_type) = '".join(', ',$params_types)."'";
     }
 
-    $data_type = myks_gen::$type_resolver->convert($type,'search', 'proc');
-    sql::query("SELECT
+    $data_type = myks_gen::$type_resolver->convert($type, 'search', 'proc');
+    $query = "SELECT
             routine_name, routine_schema, specific_name
         FROM
           information_schema.routines
@@ -104,9 +105,10 @@ abstract class procedure_base extends myks_installer  {
             AND  routine_schema='{$proc_schema}'
             AND  information_schema.routines.data_type='$data_type'
         GROUP BY specific_name, routine_schema, routine_name
-        HAVING ".join(' AND ', $having)
-    );
+        HAVING ".join(' AND ', $having);
+
     
+    sql::query($query);
     return sql::brute_fetch("specific_name");
   }
 
@@ -117,6 +119,8 @@ abstract class procedure_base extends myks_installer  {
         $this->proc_name['schema'],
         $this->xml_def['type'],
         $this->xml_def['params'] );
+
+    //print_r($this->proc_name);print_r($find);die;
     $specific_name = key($find);
 
     if(!$specific_name){

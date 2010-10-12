@@ -19,7 +19,7 @@ class myks_indexes {
     $verif_table = array(
         'table_name'   => $this->parent->name['name'],
         'table_schema' => $this->parent->name['schema'],
-    ); sql::select("information_schema.indexes", array_merge($verif_table, array("not(pri)")),$cols);
+    ); sql::select("zks_information_schema_indexes", array_merge($verif_table, array("not(pri)")),$cols);
     $this->sql_def = sql::brute_fetch("index_name");
     sql::select("information_schema.columns", $verif_table);
     $cols = sql::brute_fetch("ordinal_position", "column_name");

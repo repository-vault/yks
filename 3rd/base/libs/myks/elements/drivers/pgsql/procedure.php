@@ -10,7 +10,8 @@ class procedure extends procedure_base {
 
     myks_gen::$type_resolver->register("in", array(
       'boolean'=>'bool',
-      '"trigger"'=>'trigger', //vraiment ridicule postgres :/
+      '"trigger"'=>'trigger', //  :/
+      'trigger'=>'trigger',
       'integer'=>'int',
       'character varying'=>'string',
       'timestamp with time zone'=>'timestamptz',
@@ -30,6 +31,7 @@ class procedure extends procedure_base {
       'timestamp'=>'timestamp',
       'record'=>'record',
     ), 'proc'  );
+
 
 
   }

@@ -39,7 +39,7 @@ class myks_table_triggers extends table_collection {
     );
 
 
-    sql::select("information_schema.triggers", $verif);
+    sql::select("zks_information_schema_ttriggers", $verif);
     $elements = array();
     foreach(sql::brute_fetch() as $line)
         $elements[] = sql::resolve("{$line['trigger_schema']}.{$line['trigger_name']}");
@@ -49,6 +49,7 @@ class myks_table_triggers extends table_collection {
         if($this->contains($element['hash'])) continue;
         $this->drops[] = $element['name'];
     }
+
 
     //look for dropptable trigger' functions (unattached)
 

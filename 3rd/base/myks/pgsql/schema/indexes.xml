@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <view name="information_schema.indexes">
+  <view name="zks_information_schema_indexes">
     <def><![CDATA[
 
 SELECT

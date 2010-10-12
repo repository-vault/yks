@@ -61,8 +61,9 @@ class myks_trigger extends myks_installer {
         return;
 
     $proc = array(
-        'type' => 'trigger',
-        'def'  => $query
+        'type'       => 'trigger',
+        'def'        => $query,
+        'volatility' => 'VOLATILE',
     );
     $this->procedure = new procedure($this->procedure_name, $proc);
   }
@@ -106,16 +107,16 @@ class myks_trigger extends myks_installer {
 
   function modified(){
 
-//    echo "Check modified {$this->name['name']}".CRLF;
+ //   echo "Check modified {$this->name['name']}".CRLF;
     $modified = $this->sql_def != $this->xml_def;
 //print_r($this->sql_def);
 //print_r($this->xml_def);
-
+//var_dump($modified);die;
 
     if($this->procedure)
         $modified |= $this->procedure->modified();
 
-
+//var_dump($modified);die;
 //    echo "Check modified {$this->name['name']} :$modified".CRLF;
     return $modified;
   }
@@ -128,7 +129,7 @@ class myks_trigger extends myks_installer {
         'event_object_table'  => $this->table_ref['name'],
         'event_object_schema' => $this->table_ref['schema'],
     );
-    $data = sql::row("information_schema.ttriggers", $verif);
+    $data = sql::row("zks_information_schema_ttriggers", $verif);
 
     $keys = array('event_object_schema', 'event_object_table', 'event_manipulation', 'action_orientation', 'condition_timing','proc_name','proc_schema');
 

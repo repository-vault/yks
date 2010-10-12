@@ -2,7 +2,7 @@
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
   <!-- add proc_schema , proc_name -->
-  <view name="information_schema.ttriggers">
+  <view name="zks_information_schema_ttriggers">
     <def><![CDATA[
 SELECT (current_database())::information_schema.sql_identifier AS
     trigger_catalog, (n.nspname)::information_schema.sql_identifier AS
