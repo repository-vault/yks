@@ -128,7 +128,7 @@ class myks_trigger extends myks_installer {
         'event_object_table'  => $this->table_ref['name'],
         'event_object_schema' => $this->table_ref['schema'],
     );
-    $data = sql::row("information_schema.tttrigers", $verif);
+    $data = sql::row("information_schema.ttriggers", $verif);
 
     $keys = array('event_object_schema', 'event_object_table', 'event_manipulation', 'action_orientation', 'condition_timing','proc_name','proc_schema');
 

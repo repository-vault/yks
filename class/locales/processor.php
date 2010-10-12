@@ -18,7 +18,7 @@ class locales_processor {
   public static function defined($entity_type){ return isset(self::$entities_renderer[$entity_type]); }
 
   public static function register_std_renderer($entity_type, $entity_table, $entity_col, $entity_key = false){
-    if(!$entity_key) $entity_key = $entity_type;
+    if(!$entity_key) $entity_key = $entity_type; //shoould be primary key inn birth table
     self::$entities_std_definition[$entity_type] = compact('entity_table', 'entity_key', 'entity_col');
     self::register($entity_type, array(__CLASS__, 'std_entity_renderer'));
   }
@@ -66,7 +66,7 @@ class locales_processor {
     if(!$entity_def) return false; //Undefined std entity definition
     extract($entity_def);
     $verif_entities = array($entity_key => $entities_vals);
-    sql::select($entity_table, $verif_entities, "$entity_key, $entity_col");
+    sql::select($entity_table, $verif_entities, "`$entity_key`, `$entity_col`");
     $entities = array();
     while($l= sql::fetch()) $entities["&$entity_type.{$l[$entity_key]};"] = $l[$entity_col];
     return $entities;

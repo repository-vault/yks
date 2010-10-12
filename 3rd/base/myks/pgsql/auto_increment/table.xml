@@ -3,8 +3,8 @@
 <myks>
   <table name="zks_autoincrement">
     <fields>
-      <field type="table_meta" name="increment_key" key="primary"/>
       <field type="table_meta" name="increment_table" key="primary"/>
+      <field type="table_meta" name="increment_key"/>
       <field type="increment_value"/>
       <field type="increment_value" name="increment_lastval"/>
     </fields>

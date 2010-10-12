@@ -19,7 +19,8 @@ class mykse extends mykse_base {
     );$type = $sizes[(string)$this->mykse_xml['size']];
     if($this->birth) {
         $table_name = $this->table->get_name();
-        $this->field_def["Default"] = "auto_increment('{$this->type}','{$table_name['name']}')";
+        $field_name = $this->field_def['Field'];
+        $this->field_def["Default"] = "auto_increment('$field_name','{$table_name['name']}')";
     }
 
     $this->field_def["Type"]=$type;
