@@ -26,6 +26,9 @@ class yks_runner {
 * @alias ws
 */
   function wsdl_gen(){
+
+    $wsdl_config = yks::$get->config->wsdls;
+
     classes::extend_include_path(
       LIBRARIES_PATH."/wshelper/lib/",
       LIBRARIES_PATH."/wshelper/lib/soap"
@@ -36,21 +39,28 @@ class yks_runner {
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     files::empty_dir($wsdls_path, false);
 
-    $wsdl_uri_mask  = SITE_URL."/services/?class=%s";
+    $wsdl_uri_mask  = SITE_URL;
+    if($wsdl_config['port'])
+        $wsdl_uri_mask.=":{$wsdl_config['port']}";
+    $wsdl_uri_mask.="/services/?class=%s";
+
     $wsdl_file_mask = "$wsdls_path/%s.wsdl";
 
     $WSClasses = array();
-    foreach(yks::$get->config->wsdls->iterate("class") as $class)
+    foreach($wsdl_config->iterate("class") as $class)
         $WSClasses[] = $class['name'];
     if(!$WSClasses)
       throw rbx::error("Cannot find ws classes, please check your configuration");
     cli::box("Running wsdl generation", $WSClasses);
+
+
 
     foreach($WSClasses as $class_name){
         $wsdl_url      = sprintf($wsdl_uri_mask, $class_name);
         $wsdl_filepath = sprintf($wsdl_file_mask, $class_name);
 
         $class = new IPReflectionClass($class_name);
+        
         $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, SOAP_RPC, SOAP_ENCODED);
         $wsdl->setService($class);
         $wsdl_contents = $gendoc = $wsdl->generateDocument();
