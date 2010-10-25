@@ -53,15 +53,16 @@ class yks_runner {
       throw rbx::error("Cannot find ws classes, please check your configuration");
     cli::box("Running wsdl generation", $WSClasses);
 
-
-
+    $encoding = pick_in($wsdl_config['encoding'], array('encoded', 'literal'));
+    $encoding =  $encoding == 'encoded' ? SOAP_ENCODED : SOAP_LITERAL;
+    
     foreach($WSClasses as $class_name){
         $wsdl_url      = sprintf($wsdl_uri_mask, $class_name);
         $wsdl_filepath = sprintf($wsdl_file_mask, $class_name);
 
         $class = new IPReflectionClass($class_name);
         
-        $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, SOAP_RPC, SOAP_ENCODED);
+        $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, SOAP_RPC, $encoding);
         $wsdl->setService($class);
         $wsdl_contents = $gendoc = $wsdl->generateDocument();
         file_put_contents($wsdl_filepath, $wsdl_contents);
