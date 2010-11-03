@@ -14,6 +14,10 @@ a.node_item, div.root_node p {
   font-size: 11px;
 }
 
+div.root_node p a {
+  font-weight: normal;  
+}
+
 div.root_node p.parent{
   margin-left: 0px;
 }
