@@ -1,14 +1,12 @@
 <style>
 #node_tree {
-  width:120px;
-  height:300px;
-  border:1px solid gray;
+  width:20%;
+  min-height:300px;
   float:left;
   margin:5px;
 }
 #node_infos {
-  width:500px;
-  border:1px solid gray;
+  width:75%;
   margin:5px;
   float:left ;
 }

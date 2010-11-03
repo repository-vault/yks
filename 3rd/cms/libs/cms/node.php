@@ -75,7 +75,7 @@ abstract class cms_node extends _sql_base {
   function __toString(){
     $args = func_get_args();  array_unshift($args, $this->node_type);
     if($this->node_key) $args[] = sprintf('"%s"', $this->node_key);
-    return "#{$this->node_id}(".join(', ', $args).")";
+    return "#{$this->node_id} (".join(', ', $args).")";
   }
 
   static function from_where($where){
