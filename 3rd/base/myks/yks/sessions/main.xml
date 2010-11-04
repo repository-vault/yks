@@ -14,7 +14,7 @@
       <field type="session_ns"/>
       <field type="session_heap_value"/>
     </fields>
-    <indexes>
+    <indices>
       <index>
         <member column="session_heap_value"/>
       </index>
@@ -22,7 +22,7 @@
         <member column="session_id"/>
         <member column="session_ns"/>
       </index>
-    </indexes>
+    </indices>
   </table>
   <mykse type="session_heap_key" birth="ks_sessions_results_heap">
     <int size="big"/>

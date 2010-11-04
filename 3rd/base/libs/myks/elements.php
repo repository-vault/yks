@@ -29,7 +29,7 @@ classes::register_class_paths(array(
     "myks_table_triggers" => "$elements/table_triggers.php",
 
 
-    "myks_indexes"   => "$elements/indexes.php",
+    "myks_indices"   => "$elements/indices.php",
 
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",

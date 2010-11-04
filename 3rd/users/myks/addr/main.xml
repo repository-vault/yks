@@ -21,12 +21,12 @@
       <field type="user_name" name="addr_company"/>
       <field type="user_mail" name="addr_mail"/>
     </fields>
-    <indexes>
+    <indices>
       <index type="unique">
         <member column="addr_type"/>
         <member column="user_id"/>
       </index>
-    </indexes>
+    </indices>
   </table>
   <mykse type="addr_id" birth="ks_users_addrs">
     <int size="big"/>

@@ -1,17 +1,17 @@
 <?php
 
-class myks_indexes {
+class myks_indices {
 
-  private  $indexes_xml;
+  private  $indices_xml;
 
   private $parent;
 
   private $sql_def = array();
   private $xml_def = array();
 
-  function __construct($parent, $indexes_xml){
+  function __construct($parent, $indices_xml){
     $this->parent       = $parent;
-    $this->indexes_xml   = $indexes_xml;
+    $this->indices_xml   = $indices_xml;
   }
 
   function sql_infos(){
@@ -33,7 +33,7 @@ class myks_indexes {
 
   function xml_infos(){
     $this->xml_def = array(); $i=0;
-    foreach($this->indexes_xml as $index_xml){ $i++;
+    foreach($this->indices_xml as $index_xml){ $i++;
         $index_name = pick((string)$index_xml['name'], "{$this->parent->name['name']}_idx_$i");
         $data = array(
             'index_name' => $index_name,
