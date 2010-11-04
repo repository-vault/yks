@@ -33,14 +33,11 @@ classes::register_class_paths(array(
 
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",
-    "resolver"         => "$ds_elements/resolver.php",
     "view"             => "$ds_elements/view.php",
     "procedure"        => "$ds_elements/procedure.php",
     "rule"             => "$ds_elements/rule.php",
 
     "materialized_view"=> "$elements/materialized_view.php",
-
-    "base_type_resolver"        => "$elements/resolver.php",
 
 ));
 

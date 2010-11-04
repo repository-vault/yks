@@ -19,9 +19,9 @@ class table extends table_base {
     parent::__construct($table_xml);
 
     $this->privileges  = new privileges($this, $table_xml->grants, 'table');
-    $this->rules    = new rules($this, $table_xml->rules->xpath('rule'), 'table');
-    $this->triggers = new myks_table_triggers($this, $table_xml->triggers->xpath('trigger'));
-    $this->indexes  = new myks_indexes($this, $table_xml->indexes->xpath('index'));
+    $this->rules    = new rules($this, $table_xml->xpath('rules/rule'), 'table');
+    $this->triggers = new myks_table_triggers($this, $table_xml->xpath('triggers/trigger'));
+    $this->indexes  = new myks_indexes($this, $table_xml->xpath('indexes/index'));
   }
 
 
@@ -89,7 +89,6 @@ class table extends table_base {
     foreach($this->fields_xml_def as $field_name=>$field_xml)
         $parts[]="\"$field_name\" {$field_xml['Type']}";
 
-
     foreach($this->keys_xml_def as $key=>$def) {
         if($def['type']!="PRIMARY")continue;
         $members=' ("'.join('","',$def['members']).'")';$type=$def['type'];
@@ -99,6 +98,7 @@ class table extends table_base {
     }
 
     $query = "CREATE TABLE {$this->table_name['safe']} (\n\t".join(",\n\t", $parts)."\n)";
+
     $todo  []= $query;
     return $todo;
   }
@@ -111,28 +111,35 @@ class table extends table_base {
 */
 
  protected function table_fields(){
-    $strip_types = array("#::[a-z ]+#"=>"","#,\s+#"=>",");
     
-    sql::select("information_schema.columns", $this->table_where());
-    $columns=sql::brute_fetch('column_name');$table_cols=array();
+    sql::select("zks_information_schema_columns", $this->table_where());
+    $columns = sql::brute_fetch('column_name'); $table_cols=array();
 
 
     foreach($columns as $column_name=>$column){
-        if($column['data_type']=="character varying"){
-            $column['data_type']="varchar({$column['character_maximum_length']})";
-        }
-        if($column['column_default'])
-            $column['column_default']= preg_areplace($strip_types, $column['column_default']); 
+        //on transtype ici (à la facon de ce qui est fait dans mykse->XXX_mode()
+        $transtype = array(
+            'string'  => "varchar({$column['character_maximum_length']})",
+            'mini'    => "smallint",
+            'small'   => "smallint",
+            'int'     => "integer",
+            'big'     => "integer",
+            'giga'    => "bigint",
+            'float'   => "double precision",
+            'decimal' => "float(10,5)",
+            'bool'    => "boolean",
+            'sql_timestamp' => "timestamptz",
+            'text'    => "text",
+        ); $type = pick($transtype[$column['data_type']], $column['data_type']);
 
-        $table_cols[$column_name]=array(
-            'Extra'=>'',
-            'Default'=>$column['column_default'],
-            'Field'=>$column['column_name'],
-            'Type'=>myks_gen::$type_resolver->convert($column['data_type'], 'in'),
-            'Null'=>(int)bool($column['is_nullable']),
+        $table_cols[$column_name] = array(
+            'Extra'     => '',
+            'Default'   => $column['column_default'],
+            'Field'     => $column['column_name'],
+            'Type'      => $type,
+            'Null'      => bool($column['is_nullable']),
         );
     } return $table_cols;
   }
-
 
 }

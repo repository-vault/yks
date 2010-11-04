@@ -4,7 +4,6 @@ class myks_gen {
   static public $mykse_xml;
   static public $tables_xml;
 
-  static $type_resolver;
   static public $tables_ghosts_views; // (tables can be ghosts of views)
 
   static $cols=array('Field','Type','Extra','Null','Default','Extra');
@@ -15,10 +14,7 @@ class myks_gen {
     self::$mykse_xml  = $mykse_xml;
     self::$tables_xml = $tables_xml;
   }
-    //between each type of analyse, the type resolver have to be reset
-  static function reset_types(){
-     self::$type_resolver = new resolver();
-  }
+
 
   static function table_check($table_xml){
     try {
@@ -44,11 +40,12 @@ class myks_gen {
 
   static function sql_clean_def($def, $trim=";"){
     //specialchars_decode ne devrait pas être necessaire ( CDATA) ??
+    
     return sql::unfix(trim(self::newline(specialchars_decode( (string)$def) ), $trim).$trim);
   }
 
   static function newline($str){
-    return preg_replace("#\r?\n#","\n",trim($str));
+    return preg_replace("#\s*\r?\n\s*#","\n",trim($str));
   }
 }
 

@@ -23,7 +23,7 @@ class mykse extends mykse_base {
         $this->field_def["Default"] = "auto_increment('$field_name','{$table_name['name']}')";
     }
 
-    $this->field_def["Type"]=$type;
+    $this->field_def["Type"] = $type;
   }
 
 
@@ -40,7 +40,7 @@ class mykse extends mykse_base {
 
   protected function get_def(){
     if($this->mykse_xml == "sql_timestamp") {
-        $this->field_def["Type"]="timestamptz(0)";
+        $this->field_def["Type"]="timestamptz";
     }else return parent::get_def();
   }
 
@@ -57,12 +57,12 @@ class mykse extends mykse_base {
         $length=0;foreach(vals($this->mykse_xml) as $val)$length=max($length,strlen($val));
     $type=$set?'set':'enum';
         if($set)$length=255;
-    $this->field_def["Type"]="varchar($length)";
+    $this->field_def["Type"] = "varchar($length)";
 
   }
 
   function bool_node(){
-    $this->field_def["Type"]="boolean";
+    $this->field_def["Type"] = "boolean";
 
   }
 

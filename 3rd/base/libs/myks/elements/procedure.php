@@ -20,9 +20,13 @@ abstract class procedure_base extends myks_installer  {
   }
 
   function modified(){
+ 
+    $same = $this->xml_def == $this->sql_def;
+    if($same) return !$same;
+
     //print_r($this->xml_def);print_r($this->sql_def);die;
     //print_r(array_show_diff($this->xml_def, $this->sql_def,"xml","sql"));die;
-    $same = $this->xml_def == $this->sql_def;
+
     return !$same;
   }
 
@@ -46,14 +50,30 @@ abstract class procedure_base extends myks_installer  {
     //print_r(array_show_diff($this->xml_def, $this->sql_def, 'xml', 'sql'));//sql::$queries);die;
 
     $args=array();
-    foreach((array)$this->xml_def['params'] as $param)
-        $args[]=$param['name'].' '.myks_gen::$type_resolver->convert($param['type'], 'out', 'proc');
-    $args=join(', ',$args);
+    foreach((array)$this->xml_def['params'] as $param) {
+        //on transtype ici (à la facon de ce qui est fait dans mykse->XXX_mode()
+        $transtype = array(
+            'string'  => "varchar",
+            'mini'    => "smallint",
+            'small'   => "smallint",
+            'int'     => "integer",
+            'big'     => "integer",
+            'giga'    => "bigint",
+            'float'   => "double precision",
+            'decimal' => "float(10,5)",
+            'bool'    => "boolean",
+            'sql_timestamp' => "timestamptz",
+            'text'    => "text",
+        ); $type = pick($transtype[$param['type']], $param['type']);
+        $args[] = $param['name'].' '.$type;
+    }
+
+    $args = join(', ',$args);
 
     $volatility = $this->xml_def['volatility'];
 
     $out  = $this->xml_def['setof']
-            .' '.myks_gen::$type_resolver->convert($this->xml_def['type'],'out', 'proc');
+            .' '.$this->xml_def['type'];
     $ret = "CREATE OR REPLACE FUNCTION {$this->proc_name['safe']}($args) RETURNS $out AS\n\$body\$\n";
     $ret.= $this->xml_def['def']."\n\$body\$\n";
     $ret.= "LANGUAGE 'plpgsql' $volatility CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
@@ -73,7 +93,7 @@ abstract class procedure_base extends myks_installer  {
   }
 
 //STATIC
-  private static function raw_sql_search($proc_name, $proc_schema, $type, $params = array()){
+  private static function raw_sql_search($proc_name, $proc_schema, $data_type, $params = array()){
 
     $having    = array();
     $having  []= "COUNT(parameters.specific_name) = ".count($params);
@@ -83,31 +103,30 @@ abstract class procedure_base extends myks_installer  {
     if($params) {
       $params_types = array();
       foreach($params as $param)
-        $params_types[] = myks_gen::$type_resolver->convert($param['type'], 'search', 'proc');
+        $params_types[] = $param['type'];
 
       $having  []= " concat_comma(parameters.data_type) = '".join(', ',$params_types)."'";
     }
 
-    $data_type = myks_gen::$type_resolver->convert($type, 'search', 'proc');
     $query = "SELECT
             routine_name, routine_schema, specific_name
         FROM
-          information_schema.routines
+          zks_information_schema_routines
           LEFT JOIN (
               SELECT *
                 FROM 
-                information_schema.parameters
-                ORDER BY ordinal_position DESC
+                zks_information_schema_parameters
+                ORDER BY ordinal_position ASC
           ) AS parameters USING(specific_name)
 
         WHERE
                  routine_name LIKE '{$proc_name}'
             AND  routine_schema='{$proc_schema}'
-            AND  information_schema.routines.data_type='$data_type'
+            AND  zks_information_schema_routines.data_type='$data_type'
         GROUP BY specific_name, routine_schema, routine_name
         HAVING ".join(' AND ', $having);
 
-    
+
     sql::query($query);
     return sql::brute_fetch("specific_name");
   }
@@ -120,7 +139,7 @@ abstract class procedure_base extends myks_installer  {
         $this->xml_def['type'],
         $this->xml_def['params'] );
 
-    //print_r($this->proc_name);print_r($find);die;
+
     $specific_name = key($find);
 
     if(!$specific_name){
@@ -128,24 +147,12 @@ abstract class procedure_base extends myks_installer  {
         return false;
     }
 
-    $oid = end(split("_", $specific_name));
     $verif_proc = array(
         'routine_type'   => 'FUNCTION',
         'routine_name'   => $this->proc_name['name'],
         'specific_name'  => $specific_name,
         'routine_schema' => $this->proc_name['schema']
-    ); $cols = "specific_name, routine_name, data_type, routine_definition";
-    $data = sql::row("information_schema.routines",$verif_proc, $cols);
-    $extras = sql::qrow("SELECT
-            IF(proretset,'setof','') as routine_setof,
-            provolatile ,
-            ( CASE provolatile
-             WHEN 'v' THEN 'VOLATILE'
-             WHEN 'i' THEN 'IMMUTABLE'
-             WHEN 's' THEN 'STABLE'
-             END ) AS volatility
-            FROM pg_catalog.pg_proc WHERE oid='$oid'");
-    $data = array_merge($data, $extras);
+    ); $data = sql::row("zks_information_schema_routines", $verif_proc);
 
     if(!$data) return false;
 
@@ -153,18 +160,19 @@ abstract class procedure_base extends myks_installer  {
         'name'       => $data['routine_name'],
         'setof'      => $data['routine_setof'],
         'volatility' => $data['volatility'],
-        'type'       => myks_gen::$type_resolver->convert($data['data_type'], 'in', 'proc'),
+        'type'       => $data['data_type'],
         'def'        => myks_gen::sql_clean_def($data['routine_definition']),
     );
 
-    $specific_name=$data['specific_name'];
-    $verif_proc_inner=compact('specific_name');
-    sql::select("information_schema.parameters",$verif_proc_inner,'*','ORDER BY ordinal_position');
-    while($l=sql::fetch()){
+    $specific_name    = $data['specific_name'];
+    $verif_proc_inner = compact('specific_name');
+
+    sql::select("zks_information_schema_parameters", $verif_proc_inner,
+        '*', 'ORDER BY ordinal_position');
+    while($l = sql::fetch()){
         $this->sql_def['params'][]=array(
-            'type'=>myks_gen::$type_resolver->convert($l['data_type'], 'in', 'proc'),
-            
-            'name'=>$l['parameter_name'],
+            'type' => $l['data_type'],
+            'name' => $l['parameter_name'],
         );
     }
   }
@@ -172,18 +180,18 @@ abstract class procedure_base extends myks_installer  {
   function xml_infos(){
     $def  = pick($this->proc_xml->def, $this->proc_xml['def']);
     $data = array(
-        'name'        =>(string)  $this->proc_name['name'],
-        'type'        =>(string)  $this->proc_xml['type'],
-        'setof'       =>(string) $this->proc_xml['setof'],
-        'volatility'  =>(string) $this->proc_xml['volatility'],
-        'def'         =>sql::unfix(myks_gen::sql_clean_def($def)),
+        'name'        => (string)  $this->proc_name['name'],
+        'type'        => (string)  $this->proc_xml['type'],
+        'setof'       => (string) $this->proc_xml['setof'],
+        'volatility'  => (string) $this->proc_xml['volatility'],
+        'def'         => sql::unfix(myks_gen::sql_clean_def($def)),
     );
 
     if($this->proc_xml->param)
       foreach($this->proc_xml->param as $param_xml){
         $data['params'][]=array(
-            'type'=>(string)$param_xml['type'],
-            'name'=>isset($param_xml['name'])?(string)$param_xml['name']:null,
+            'type'    => (string)$param_xml['type'],
+            'name'    => isset($param_xml['name'])?(string)$param_xml['name']:null,
         );
     }
 

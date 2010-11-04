@@ -139,7 +139,8 @@ class materialized_view extends myks_installer {
 
         foreach($queries as $pid=>$proc_infos) {
             $p_name = "{$this->table->name['schema']}.rtg_{$this->table->name['name']}_$pid";
-            $p_xml  = "<procedure name='$p_name' type='{$proc_infos['type']}'><def>{$proc_infos['query']}</def></procedure>";
+            $p_xml  = "<procedure name='$p_name' type='{$proc_infos['type']}' volatility='VOLATILE'>
+                          <def>{$proc_infos['query']}</def></procedure>";
 
             $p_name = sql::resolve($p_name);
             $p_xml  = simplexml_load_string($p_xml);
