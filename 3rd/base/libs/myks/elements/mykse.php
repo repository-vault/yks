@@ -24,8 +24,7 @@ abstract class mykse_base  {
         'Extra'   => '',
         'Null'    => isset($field_xml['null'])?$field_xml['null']=='null':null,
         'Default' => isset($field_xml['default'])?(string)$field_xml['default']:null,
-    ); $this->resolve($this->type);
-
+    );  $this->resolve($this->type);
 
 
 
@@ -47,9 +46,8 @@ abstract class mykse_base  {
         && $field_xml['key'] != "unique"  ){
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth = true;
-            if($this->field_def['Null']) $this->field_def['Null']=false; //pas de null dans le birth
-      } elseif($birth_root['name']!=(string)$table['name']) //?
-        $this->fk($field_xml, $birth_root);
+            if($this->field_def['Null']) $this->field_def['Null'] = false; //pas de null dans le birth
+      } else $this->fk($field_xml, $birth_root);
     }
 
     $this->get_def(); 
@@ -102,7 +100,7 @@ abstract class mykse_base  {
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
         throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
 
-    $this->field_def['Null']|=$this->mykse_xml['null']=='null';
+    $this->field_def['Null'] = $this->field_def['Null'] || $this->mykse_xml['null']=='null';
     $this->default_value($type);
 
     $this->type=$type;
@@ -128,7 +126,9 @@ abstract class mykse_base  {
     $this->field_def["Type"]="text";
   }
 
-  function string_node(){ $this->field_def["Type"]="varchar({$this->mykse_xml['length']})"; }
+  function string_node(){
+    $this->field_def["Type"]="varchar({$this->mykse_xml['length']})";
+  }
 
 
 }
