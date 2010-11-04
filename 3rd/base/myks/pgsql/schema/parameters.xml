@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <view name="zks_information_schema_parameters">
+    <def><![CDATA[
+SELECT 
+specific_name,
+ordinal_position,
+
+    (CASE data_type
+        WHEN '"trigger"' THEN 'trigger'
+        WHEN 'boolean' THEN 'bool'
+        WHEN 'integer' THEN 'int'
+        WHEN 'character varying' THEN 'string'
+        WHEN 'timestamp with time zone' THEN 'timestamptz'
+        WHEN 'timestamp without time zone' THEN 'timestamp'
+        WHEN 'double precision' THEN 'float'
+		ELSE data_type
+     END ) AS data_type,     
+parameter_name
+FROM information_schema.parameters
+
+]]></def>
+  </view>
+</myks>

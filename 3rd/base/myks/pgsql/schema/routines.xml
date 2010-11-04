@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <view name="zks_information_schema_routines">
+    <def><![CDATA[
+
+SELECT 
+    routine_name,
+    routine_schema,
+    specific_name,
+    IF(proretset,'setof','') as routine_setof,
+     ( CASE provolatile
+                 WHEN 'v' THEN 'VOLATILE'
+                 WHEN 'i' THEN 'IMMUTABLE'
+                 WHEN 's' THEN 'STABLE'
+                 END ) AS volatility,
+
+-- chk columns.xml
+    (CASE data_type
+        WHEN '"trigger"' THEN 'trigger'
+        WHEN 'boolean' THEN 'bool'
+        WHEN 'integer' THEN 'int'
+        WHEN 'character varying' THEN 'string'
+        WHEN 'timestamp with time zone' THEN 'timestamptz'
+        WHEN 'timestamp without time zone' THEN 'timestamp'
+        WHEN 'double precision' THEN 'float'
+		ELSE data_type
+    END ) AS data_type, 
+    routine_definition,
+    routine_type
+
+FROM
+ information_schema.routines
+LEFT JOIN  pg_catalog.pg_proc
+    ON oid = regexp_replace(specific_name, '^.*_([0-9]+)$', E'\\1', 'g')
+
+
+]]></def>
+  </view>
+</myks>

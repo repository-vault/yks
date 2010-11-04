@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <view name="zks_information_schema_columns">
+    <def><![CDATA[
+
+SELECT
+
+    table_schema, 
+    table_name,
+    column_name,
+
+-- chk routines.xml
+    (CASE data_type
+        WHEN '"trigger"' THEN 'trigger'
+        WHEN 'boolean' THEN 'bool'
+        WHEN 'integer' THEN 'int'
+        WHEN 'character varying' THEN 'string'
+        WHEN 'timestamp with time zone' THEN 'timestamptz'
+        WHEN 'timestamp without time zone' THEN 'timestamp'
+        WHEN 'double precision' THEN 'float'
+        ELSE data_type
+    END ) AS data_type, 
+
+    character_maximum_length,
+    (is_nullable='YES') as is_nullable,
+
+
+    regexp_replace(regexp_replace(column_default, '::[a-z ]+', '', 'g'), ',[ ]+',',','g') AS column_default
+
+FROM information_schema.columns
+
+]]></def>
+  </view>
+</myks>

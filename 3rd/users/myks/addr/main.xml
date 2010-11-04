@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
 <myks>
   <table name="ks_users_addrs">
     <fields>
       <field type="addr_id"/>
-      <field type="addr_type" key="unique"/>
-      <field type="user_id" key="addr_type" delete="cascade" update="cascade"/>
+      <field type="addr_type"/>
+      <field type="user_id" delete="cascade" update="cascade"/>
       <field type="country_code"/>
       <field type="addr_gender"/>
       <field type="addr_text" name="addr_field1"/>
@@ -21,6 +21,12 @@
       <field type="user_name" name="addr_company"/>
       <field type="user_mail" name="addr_mail"/>
     </fields>
+    <indexes>
+      <index type="unique">
+        <member column="addr_type"/>
+        <member column="user_id"/>
+      </index>
+    </indexes>
   </table>
   <mykse type="addr_id" birth="ks_users_addrs">
     <int size="big"/>
