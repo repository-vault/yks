@@ -1,4 +1,4 @@
-<!ELEMENT table (abstract?,(fields|indexes|rule|grant|trigger)+)>
+<!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger)+)>
 <!ELEMENT def (#PCDATA)>
 <!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance)">
 
@@ -11,7 +11,7 @@
 
 
 <!ELEMENT fields (field+)>
-<!ELEMENT indexes (index+)>
+<!ELEMENT indices (index+)>
 
 
 <!ELEMENT index (member+)>

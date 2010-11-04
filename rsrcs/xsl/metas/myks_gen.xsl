@@ -71,9 +71,9 @@
         <grants>
           <xsl:copy-of select="//table[@name=$name]/grant"/>
         </grants>
-        <indexes>
-          <xsl:copy-of select="//table[@name=$name]/indexes/*"/>
-        </indexes>
+        <indices>
+          <xsl:copy-of select="//table[@name=$name]/indices/*"/>
+        </indices>
       </table>
     </xsl:if>
   </xsl:template>
