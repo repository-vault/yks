@@ -273,7 +273,9 @@ abstract class table_base  extends myks_installer {
     $keys = array_map('array_change_key_case', $keys);
 
     $usages=array(); $behavior=array();
-    $where['constraint_name']=array_keys($keys);
+
+    $where['constraint_name']   = array_keys($keys);
+
 
     if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
     sql::select("information_schema.key_column_usage", $where, "constraint_name,column_name", $order);
@@ -281,15 +283,18 @@ abstract class table_base  extends myks_installer {
         $table_keys[$l['constraint_name']]['members'][$l['column_name']]=$l['column_name'];
             //une clée est basé sur au moins UNE colonne ( élimine les checks )
 
+    $verif_contraints = array(
+        'constraint_name'   => array_keys($table_keys),
+        'constraint_schema' => $this->table_name['schema'],
+    );
+
     if(SQL_DRIVER=="pgsql"){ ///FOREIGN_KEYS
-        sql::select("information_schema.constraint_column_usage",
-            array('constraint_name'=>array_keys($table_keys)) );
+        sql::select("information_schema.constraint_column_usage", $verif_contraints );
         while($l=sql::fetch())
             $usages[$l['constraint_name']][$l['table_schema']][$l['table_name']][] = $l['column_name'];
                 //="{$l['table_name']}({$l['column_name']})";
-        sql::select("information_schema.referential_constraints",
-            array('constraint_name'=>array_keys($table_keys)));
-        $behavior=sql::brute_fetch('constraint_name');
+        sql::select("information_schema.referential_constraints", $verif_contraints );
+        $behavior = sql::brute_fetch('constraint_name');
     }
 
 
@@ -312,7 +317,6 @@ abstract class table_base  extends myks_installer {
 
         }
     }
-
     return $table_keys;
  }
 
