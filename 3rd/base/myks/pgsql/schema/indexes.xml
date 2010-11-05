@@ -22,7 +22,6 @@ FROM pg_index i
     LEFT JOIN pg_namespace nt ON nt.oid = ci.relnamespace
 WHERE ci.relkind IN ('i','')
      AND nt.nspname NOT IN ('pg_catalog', 'pg_toast')
-     AND pg_table_is_visible(ci.oid)
 ORDER BY 1,2;
 
 ]]></def>
