@@ -149,7 +149,7 @@ class materialized_view extends myks_installer {
         }
     }
 
-    rbx::ok("Materialized view check_procedures ");
+    rbx::ok("-- Materialized view check_procedures ");
 
     return $procedures;
   }
@@ -178,7 +178,7 @@ class materialized_view extends myks_installer {
 
       $table_triggers[$table['name']] = $triggers;
     }
-    rbx::ok("Materialized view check_triggers ".join(',', array_keys($table_triggers)));
+    rbx::ok("-- Materialized view check_triggers ".join(',', array_keys($table_triggers)));
 
     return $table_triggers;
   }
