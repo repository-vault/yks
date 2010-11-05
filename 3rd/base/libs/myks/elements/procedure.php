@@ -45,26 +45,27 @@ abstract class procedure_base extends myks_installer  {
     if(!$this->modified())
         return $todo;
 
+        //on transtype ici (à la facon de ce qui est fait dans mykse->XXX_mode()
+    $transtype = array(
+        'string'  => "varchar",
+        'mini'    => "smallint",
+        'small'   => "smallint",
+        'int'     => "integer",
+        'big'     => "integer",
+        'giga'    => "bigint",
+        'float'   => "double precision",
+        'decimal' => "float(10,5)",
+        'bool'    => "boolean",
+        'sql_timestamp' => "timestamptz",
+        'text'    => "text",
+    );
 
     //usefull for debug
     //print_r(array_show_diff($this->xml_def, $this->sql_def, 'xml', 'sql'));//sql::$queries);die;
 
     $args=array();
     foreach((array)$this->xml_def['params'] as $param) {
-        //on transtype ici (à la facon de ce qui est fait dans mykse->XXX_mode()
-        $transtype = array(
-            'string'  => "varchar",
-            'mini'    => "smallint",
-            'small'   => "smallint",
-            'int'     => "integer",
-            'big'     => "integer",
-            'giga'    => "bigint",
-            'float'   => "double precision",
-            'decimal' => "float(10,5)",
-            'bool'    => "boolean",
-            'sql_timestamp' => "timestamptz",
-            'text'    => "text",
-        ); $type = pick($transtype[$param['type']], $param['type']);
+        $type = pick($transtype[$param['type']], $param['type']);
         $args[] = $param['name'].' '.$type;
     }
 
@@ -72,8 +73,7 @@ abstract class procedure_base extends myks_installer  {
 
     $volatility = $this->xml_def['volatility'];
 
-    $out  = $this->xml_def['setof']
-            .' '.$this->xml_def['type'];
+    $out  = $this->xml_def['setof'].' '.pick($transtype[$this->xml_def['type']], $this->xml_def['type']);
     $ret = "CREATE OR REPLACE FUNCTION {$this->proc_name['safe']}($args) RETURNS $out AS\n\$body\$\n";
     $ret.= $this->xml_def['def']."\n\$body\$\n";
     $ret.= "LANGUAGE 'plpgsql' $volatility CALLED ON NULL INPUT SECURITY INVOKER;\n\n";
