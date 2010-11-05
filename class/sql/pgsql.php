@@ -58,6 +58,7 @@ class sql {
     if(self::$log) self::$queries[] = $query;
     if(self::$result===false) {
         $error = self::error(htmlspecialchars($query));
+        error_log($query);
         return $error;
     }
     
@@ -142,7 +143,7 @@ class sql {
         if($type === "sql") return "$k $val";
         return $v ? sql::in_join($k,$v) : "FALSE";
     }
-    if(is_string($v)) return "$k='$v'";
+    if(is_string($v)) return "$k='".sql::clean($v)."'";
     if(is_int($v))    return "$k=$v";
     if(is_null($v))   return "$k IS NULL";
     if(is_bool($v))   return $v?"$k":"not($k)";
@@ -151,6 +152,7 @@ class sql {
  static function insert($table,$vals=false, $auto_indx=false, $keys=false){
     if(is_array($keys)) $vals=array_intersect_key($vals,array_flip($keys));
     $vals = $vals?sql::format($vals,false):'VALUES (DEFAULT)';
+
 
     $result = &sql::query("INSERT INTO `$table` $vals", false, true);
     return $auto_indx && $result ? self::auto_indx($table) : $result;
