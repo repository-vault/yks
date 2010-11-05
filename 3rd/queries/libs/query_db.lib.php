@@ -14,6 +14,10 @@ class query_db  extends _sql_base {
   private $query;
 
 
+  public function __construct($from){
+    parent::__construct($from);
+  }
+
   public function prepare($params_values){
     $sql_query = specialchars_decode($this->query_def);
 
