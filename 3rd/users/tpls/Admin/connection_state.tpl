@@ -30,7 +30,7 @@ foreach($users_list as $user_id=>$user){
   
     //On ignore l'utilisateur 'racine', il se connecte à chaque utilisateur anonyme, il n'est donc pas pertinent.
     if($user_id == USERS_ROOT)  continue; 
-    if($user['user_type'] != "ks_users") continue;
+
 
     $parents_tree = $user['parent_tree'];
 
@@ -46,15 +46,7 @@ foreach($users_list as $user_id=>$user){
     $links .= "<a class='user_icon icon_user_infos' href='/?/Admin/Users//$user_id/Manage' target='user_infos'>&#160;</a>";
     $links .= "<a class='user_icon icon_user_$auth' href='/?/Admin/Users//$user_id/Manage/access' target='user_access'>&#160;</a>";
   
-    
-    // display des infos générales
-    echo
-    "<tr class='line_pair'>
-        <td>{$user['user_id']}</td>
-        <td>$links</td>
-        <td>".dsp::date($user['user_connect'], '$d/$m/$Y $H:$i')."</td>        
-        <td>{$users_path}</td>";
-
+    $displayed_rights = array();
     // display des droits
     foreach($access_zone_list_dsp as $zone) {
       $str = "";
@@ -64,11 +56,21 @@ foreach($users_list as $user_id=>$user){
           $str.="<b>$access_lvl</b>,";
         elseif($user['inherited_rights'][$zone_path][$access_lvl])
           $str.="$access_lvl,";
-      }$str= trim($str, ',');
-      echo "<td>$str</td>";
-
+      } $displayed_rights  []=  trim($str, ',');
     }
-      
+    if(!array_filter($displayed_rights))
+        continue; //si on a rien a dire, on skippe
+
+    // display des infos générales
+    echo
+    "<tr class='line_pair'>
+        <td>{$user['user_id']}</td>
+        <td>$links</td>
+        <td>".dsp::date($user['user_connect'], '$d/$m/$Y $H:$i')."</td>        
+        <td>{$users_path}</td>";
+
+    foreach($displayed_rights as $str)
+        echo "<td>$str</td>";
     
     echo "</tr>";
 

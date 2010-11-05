@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <locale xml:lang="en-us">
-  <!-- Users & addrs -->
+<!-- Users & addrs -->
   <item key="addr_field.country_code">Country</item>
   <item key="addr_field.addr_gender">Gender</item>
   <item key="addr_field.addr_field1">Adress</item>
@@ -18,7 +18,7 @@
   <item key="addr_gender.Mlle">Miss</item>
   <item key="addr_gender.M">Mister</item>
   <item key="user_type.ks_users">User account</item>
-  <item key="addr_mail.intro">Dear</item>
+  <item key="addr_mail.intro">Hello</item>
   <item key="yks.users.unnamed">Unnamed user</item>
   <item key="user_profile.user_name">Name</item>
   <item key="user_profile.user_lang">Language</item>
