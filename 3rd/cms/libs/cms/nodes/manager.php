@@ -70,7 +70,6 @@ class cms_nodes_manager {
 */
   static function save(cms_node $node, $input){
 
-    file_put_contents("www/DEBUG", print_r($node->states,1));
     $old_state = $node->serialize();
 
     $keys = array('node_key');
