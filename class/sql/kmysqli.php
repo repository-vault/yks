@@ -1,29 +1,32 @@
 <?php
 
+/**
+*  @alias sql
+**/
 class _sql_mysqli extends isql {
 
 
   static function connect(){
-    $serv = ksql::$config->links->search(ksql::$link);
+    $serv = sql::$config->links->search(sql::$link);
     $credentials = array($serv['host'], $serv['user'], $serv['pass'], $serv['db']);
-    ksql::$links[ksql::$link] = @call_user_func_array('mysqli_connect', $credentials);
+    sql::$links[sql::$link] = @call_user_func_array('mysqli_connect', $credentials);
 
-    if(!ksql::$links[ksql::$link])
-      throw new Exception("Unable to load link #{".ksql::$link."} configuration");
+    if(!sql::$links[sql::$link])
+      throw new Exception("Unable to load link #{".sql::$link."} configuration");
 
-    mysqli_set_charset(ksql::$links[ksql::$link], "utf8");
-    return ksql::$links[ksql::$link];
+    mysqli_set_charset(sql::$links[sql::$link], "utf8");
+    return sql::$links[sql::$link];
   }
 
 
   static function close($link = false){
-    if(!$link) $link = ksql::$link;
-    if(!($serv = ksql::$links[$link])) return;
-    mysqli_close($serv); unset(ksql::$links[$link]);
+    if(!$link) $link = sql::$link;
+    if(!($serv = sql::$links[$link])) return;
+    mysqli_close($serv); unset(sql::$links[$link]);
   }
 
   static function free(&$r=null){
-    if($r=$r?$r:ksql::$result) mysqli_free_result($r);
+    if($r=$r?$r:sql::$result) mysqli_free_result($r);
     return $r=null;
   }
 
@@ -31,64 +34,64 @@ class _sql_mysqli extends isql {
 
   public static function query($query, $params=null, $arows=false){
     
-    if(!$lnk = ksql::get_lnk()) return false;
-    $query = ksql::unfix($query);
-    $query = ksql::format_raw_query($query, $params, $lnk);
+    if(!$lnk = sql::get_lnk()) return false;
+    $query = sql::unfix($query);
+    $query = sql::format_raw_query($query, $params, $lnk);
 
-    ksql::$result = mysqli_query($lnk, $query);
+    sql::$result = mysqli_query($lnk, $query);
 
-    if(ksql::$log) ksql::$queries[] = $query;
-    if(ksql::$result===false) {
-        $error = ksql::error(htmlspecialchars($query));
+    if(sql::$log) sql::$queries[] = $query;
+    if(sql::$result===false) {
+        $error = sql::error(htmlspecialchars($query));
         return $error;
     }
 
     if($arows) {
-        $arows = mysqli_affected_rows(ksql::$result);
+        $arows = mysqli_affected_rows(sql::$result);
         return $arows; 
     }
-    return ksql::$result;
+    return sql::$result;
   }
 
   static function fetch($r=false){
-    $tmp = mysqli_fetch_assoc( pick($r, ksql::$result));
+    $tmp = mysqli_fetch_assoc( pick($r, sql::$result));
     return $tmp?$tmp:array();
   }
   
 
   static function fetch_all(){
     $res = array();
-    while($l=mysqli_fetch_row(ksql::$result)) $res[]=$l[0];
+    while($l=mysqli_fetch_row(sql::$result)) $res[]=$l[0];
     return $res;
   }
 
   static function error($msg='') {
-    $error = mysqli_error(ksql::$links[ksql::$link]);
+    $error = mysqli_error(sql::$links[sql::$link]);
     $msg = "<b>".htmlspecialchars($error)."</b> in $msg";
-    if(DEBUG && !ksql::$transaction) error_log($msg);
+    if(DEBUG && !sql::$transaction) error_log($msg);
     return false;
   }
 
 
   static function clean($str){
     if(is_numeric($str)) return $str;
-    if(!$lnk = ksql::get_lnk()) return false;
+    if(!$lnk = sql::get_lnk()) return false;
     return mysqli_real_escape_string($lnk, $str);
   }
 
-  static function rows($r=false){ return  mysqli_num_rows(pick($r, ksql::$result)); }
+  static function rows($r=false){ return  mysqli_num_rows(pick($r, sql::$result)); }
   static function auto_indx($table){
-    $name = ksql::resolve($table);
-    return (int)ksql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
+    $name = sql::resolve($table);
+    return (int)sql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
   }
 
   static function query_raw($query){
-    if(!$lnk = ksql::get_lnk()) return false;
+    if(!$lnk = sql::get_lnk()) return false;
     return mysqli_query($lnk, $query);
   }
 
 //************** Extras ************
-  static function limit_rows(){return ksql::qvalue("SELECT FOUND_ROWS()");}
+  static function limit_rows(){return sql::qvalue("SELECT FOUND_ROWS()");}
 }
 
 
