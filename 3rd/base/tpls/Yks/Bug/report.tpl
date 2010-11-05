@@ -4,7 +4,7 @@
 
 <field type="text" name="report_contents">
 &lt;p style='text-align:right'&gt;<?=dsp::date(_NOW,DATE_DAY)?>&lt;/p&gt;
-&addr_mail.intro; <?=$webmaster_name?>,&lt;br/&gt;
+Hello <?=$webmaster_name?>,&lt;br/&gt;
 &lt;br/&gt;
 
 
