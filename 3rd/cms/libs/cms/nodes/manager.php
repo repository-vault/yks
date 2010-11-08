@@ -190,10 +190,16 @@ class cms_nodes_manager {
     $template  = cms_node::instanciate($template_id);
     $xsl = $template->template_xsl;
 
+    $links = array(
+      'fr-fr' => array('prec', 'suiv'),
+      'en-us' => array('prev', 'next'),
+    );
+    $curLink = $links[pick(exyks::retrieve("USER_LANG"), 'en-us')];
+
     if($prev = $related_nodes['prev'])
-        $related_str .= self::lnk($prev, "&lt; prev", false, "prev");
+        $related_str .= self::lnk($prev, "&lt; ".$curLink[0], false, 'prev');
     if($next = $related_nodes['next'])
-        $related_str .= self::lnk($next, "next &gt;", false, "next");
+        $related_str .= self::lnk($next, $curLink[1]." &gt;", false, 'next');
 
     if($related_str)
         $related_str = sprintf("<hnav>%s</hnav>", $related_str);
