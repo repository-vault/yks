@@ -205,7 +205,9 @@ class sql_runner {
     $this->queue(bool($run_queries));
   }
 
-
+/**
+* @alias p * true
+*/
   function scan_procedures($only_stuff = '*', $run_queries = false){
     
     rbx::title("Analysing stored procedures");
