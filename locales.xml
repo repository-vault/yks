@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<js>
+  <package name="mootools-more">
+    <package name="more.Localization">
+      <module key="path://mt.more/Localization/Date.English.US.js">
+        <description>Date messages in English (with conventions for the US).</description>
+        <dep key="more.Core"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.English.js">
+        <description>Form.Validator messages in English.</description>
+        <dep key="more.Core"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Catalan.js">
+        <description>Date messages in Catalan.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Czech.js">
+        <description>Date messages in Czech.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Danish.js">
+        <description>Date messages in Danish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Dutch.js">
+        <description>Date messages in Dutch.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.English.GB.js">
+        <description>Date messages in English (with conventions for Great Britain).</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Estonian.js">
+        <description>Date messages in Estonian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.German.js">
+        <description>Date messages for German.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.German.CH.js">
+        <description>Date messages for Swiss German.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+        <dep key="path://mt.more/Localization/Date.German.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.French.js">
+        <description>Date messages in French.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Italian.js">
+        <description>Date messages in Italian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Norwegian.js">
+        <description>Date messages in Norwegian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Polish.js">
+        <description>Date messages in Polish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Portuguese.BR.js">
+        <description>Date messages in Portuguese for Brazil.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Russian.js">
+        <description>Date messages in Russian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Spanish.js">
+        <description>Date messages in Spanish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Swedish.js">
+        <description>Date messages in Swedish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Date.Ukrainian.js">
+        <description>Date messages in Ukrainian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Arabic.js">
+        <description>Form.Validator messages in Arabic.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Catalan.js">
+        <description>Form.Validator messages in Catalan.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Czech.js">
+        <description>Form.Validator messages in Czech.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Chinese.js">
+        <description>Form.Validator messages in Chinese.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Dutch.js">
+        <description>Form.Validator messages in Dutch.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Estonian.js">
+        <description>Form.Validator messages in Estonian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.German.js">
+        <description>Form.Validator messages in German.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.German.CH.js">
+        <description>Form.Validator messages in Swiss German.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+        <dep key="path://mt.more/Localization/Form.Validator.German.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.French.js">
+        <description>Form.Validator messages in French.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Italian.js">
+        <description>Form.Validator messages in Italian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Norwegian.js">
+        <description>Form.Validator messages in Norwegian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Polish.js">
+        <description>Form.Validator messages in Polish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Portuguese.js">
+        <description>Form.Validator messages in Portuguese.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Portuguese.BR.js">
+        <description>Form.Validator messages in Portuguese localized for Brazil.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Russian.js">
+        <description>Form.Validator messages in Russian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Spanish.js">
+        <description>Form.Validator messages in Spanish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Swedish.js">
+        <description>Form.Validator messages in Swedish.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+      <module key="path://mt.more/Localization/Form.Validator.Ukrainian.js">
+        <description>Form.Validator messages in Ukrainian.</description>
+        <dep key="path://mt.more/Core/Lang.js"/>
+      </module>
+    </package>
+  </package>
+</js>
