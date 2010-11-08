@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<js>
+  <package name="mootools-more">
+    <package name="more.Core">
+      <module key="path://mt.more/Core/More.js">
+        <description>Defines MooTools.More.version.</description>
+        <dep key="Core"/>
+      </module>
+      <module key="path://mt.more/Core/Lang.js">
+        <description>Enables classes to contain text that can be localized to specific languages.</description>
+        <dep key="path://mt.more/Core/More.js"/>
+        <dep key="Class"/>
+      </module>
+      <module key="path://mt.more/Core/Log.js">
+        <description>A default logger for MooTools. Logs to Firebug or a similar console unless it is not present.</description>
+        <dep key="path://mt.more/Core/More.js"/>
+        <dep key="Class"/>
+      </module>
+      <module key="path://mt.more/Core/Depender.js">
+        <description>A stand alone dependency loader for the MooTools library.</description>
+        <dep key="path://mt.more/Core/More.js"/>
+        <dep key="Class"/>
+        <dep key="Element"/>
+        <dep key="path://mt.core/Request/Request.JSON.js"/>
+        <dep key="path://mt.more/Core/Log.js"/>
+      </module>
+    </package>
+    <package name="more.Class">
+      <module key="path://mt.more/Class/Class.Refactor.js">
+        <description>Allows for a class to extend itself without damaging it's namespace.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+      </module>
+      <module key="path://mt.more/Class/Class.Binds.js">
+        <description>Adds the Binds Mutator to all classes.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+      </module>
+      <module key="path://mt.more/Class/Class.Occlude.js">
+        <description>Mixin class for preventing a class from applying itself to the same element twice.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Class/Chain.Wait.js">
+        <description>Adds a delay method for chaining that allows you to easily introduce pauses.</description>
+        <dep key="more.Core"/>
+        <dep key="Fx"/>
+        <dep key="Element"/>
+      </module>
+    </package>
+    <package name="more.Native">
+      <module key="path://mt.more/Native/Array.Extras.js">
+        <description>Extends the Array native object to include useful methods to work with arrays.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Native/Array.js"/>
+      </module>
+      <module key="path://mt.more/Native/Date.js">
+        <description>Extends the Date native object to include methods useful in managing dates.</description>
+        <dep key="more.Core"/>
+        <dep key="Native"/>
+        <dep key="path://mt.more/Localization/Date.English.US.js"/>
+      </module>
+      <module key="path://mt.more/Native/Date.Extras.js">
+        <description>Extends the Date native object to include extra methods (on top of those in Date.js).</description>
+        <dep key="path://mt.more/Native/Date.js"/>
+      </module>
+      <module key="path://mt.more/Native/Hash.Extras.js">
+        <description>Extends the Hash native object to include getFromPath which allows a path notation to child elements.</description>
+        <dep key="more.Core"/>
+        <dep key="Native"/>
+      </module>
+      <module key="path://mt.more/Native/String.Extras.js">
+        <description>Extends the String native object to include methods useful in managing strings (query strings, urls, etc).</description>
+        <dep key="more.Core"/>
+        <dep key="Native"/>
+        <dep key="path://mt.more/Native/Hash.Extras.js"/>
+      </module>
+      <module key="path://mt.more/Native/String.QueryString.js">
+        <description>String shortcuts for working with query strings.</description>
+        <dep key="more.Core"/>
+        <dep key="Native"/>
+      </module>
+      <module key="path://mt.more/Native/URI.js">
+        <description>Provides methods useful in managing the window location and uris.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Native/String.QueryString.js"/>
+        <dep key="path://mt.core/Utilities/Selectors.js"/>
+      </module>
+      <module key="path://mt.more/Native/URI.Relative.js">
+        <description>Extends the URI class to add methods for computing relative and absolute urls.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Native/URI.js"/>
+        <dep key="path://mt.more/Class/Class.Refactor.js"/>
+      </module>
+    </package>
+    <package name="more.Element">
+      <module key="path://mt.more/Element/Element.Forms.js">
+        <description>Extends the Element native object to include methods useful in managing inputs.</description>
+        <dep key="more.Core"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Element/Elements.From.js">
+        <description>Adds a static method to Element to parse html.</description>
+        <dep key="more.Core"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Element/Element.Delegation.js">
+        <description>Delegates events for child elements to their parents for greater efficiency.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Utilities/Selectors.js"/>
+      </module>
+      <module key="path://mt.more/Element/Element.Measure.js">
+        <description>Extends the Element native object to include methods useful in measuring dimensions.</description>
+        <dep key="more.Core"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Element/Element.Pin.js">
+        <description>Extends the Element native object to include the pin method useful for fixed positioning for elements.</description>
+        <dep key="more.Core"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Element/Element.Position.js">
+        <description>Extends the Element native object to include methods useful positioning elements relative to others.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Element/Element.Measure.js"/>
+      </module>
+      <module key="path://mt.more/Element/Element.Shortcuts.js">
+        <description>Extends the Element native object to include some shortcut methods.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.Style.js"/>
+      </module>
+    </package>
+    <package name="more.Forms">
+      <module key="path://mt.more/Forms/Form.Request.js">
+        <description>Handles the basic functionality of submitting a form via ajax and updating a DOM element with the result.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Request/Request.HTML.js"/>
+        <dep key="path://mt.more/Class/Class.Binds.js"/>
+        <dep key="path://mt.more/Class/Class.Occlude.js"/>
+        <dep key="path://mt.more/Interface/Spinner.js"/>
+        <dep key="path://mt.more/Native/String.QueryString.js"/>
+      </module>
+      <module key="path://mt.more/Forms/Form.Request.Append.js">
+        <description>Uses Form.Request to fetch and update a DOM element, but appends the result into the target instead of overwriting its contents.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Forms/Form.Request.js"/>
+        <dep key="path://mt.more/Fx/Fx.Reveal.js"/>
+        <dep key="path://mt.more/Element/Elements.From.js"/>
+      </module>
+      <module key="path://mt.more/Forms/Form.Validator.js">
+        <description>A css-class based form validation system.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Class/Class.Binds.js"/>
+        <dep key="path://mt.core/Utilities/Selectors.js"/>
+        <dep key="path://mt.core/Utilities/JSON.js"/>
+        <dep key="path://mt.more/Native/Date.js"/>
+        <dep key="path://mt.more/Element/Element.Forms.js"/>
+        <dep key="path://mt.more/Localization/Form.Validator.English.js"/>
+        <dep key="path://mt.more/Element/Element.Shortcuts.js"/>
+      </module>
+      <module key="path://mt.more/Forms/Form.Validator.Inline.js">
+        <description>A css-class based form validation system.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Forms/Form.Validator.js"/>
+      </module>
+      <module key="path://mt.more/Forms/Form.Validator.Extras.js">
+        <description>Additional validators for Form.Validator.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Forms/Form.Validator.js"/>
+      </module>
+      <module key="path://mt.more/Forms/OverText.js">
+        <description>Displays text over empty inputs until the user focuses the input or adds information.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.more/Class/Class.Binds.js"/>
+        <dep key="path://mt.more/Class/Class.Occlude.js"/>
+        <dep key="path://mt.more/Element/Element.Position.js"/>
+        <dep key="path://mt.more/Element/Element.Shortcuts.js"/>
+      </module>
+    </package>
+    <package name="more.Fx">
+      <module key="path://mt.more/Fx/Fx.Elements.js">
+        <description>Effect to change any number of CSS properties of any number of Elements.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Fx/Fx.CSS.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Accordion.js" expose="Fx.Accordion">
+        <description>An Fx.Elements extension which allows you to easily create accordion type controls.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Fx/Fx.Elements.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Move.js">
+        <description>Moves an element to another location (relative to another element) with a transition.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Fx/Fx.Morph.js"/>
+        <dep key="path://mt.more/Element/Element.Position.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Reveal.js">
+        <description>Executes a transition from display:block to display:none and vice versa.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Fx/Fx.Morph.js"/>
+        <dep key="path://mt.more/Element/Element.Shortcuts.js"/>
+        <dep key="path://mt.more/Element/Element.Measure.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Scroll.js" expose="Fx.Scroll">
+        <description>Effect to smoothly scroll any element, including the window.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Fx/Fx.js"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Element/Element.Dimensions.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Slide.js">
+        <description>Effect to slide an element in and out of view.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Fx/Fx.js"/>
+        <dep key="path://mt.core/Element/Element.Style.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.SmoothScroll.js">
+        <description>Class for creating a smooth scrolling effect to all internal links on the page.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Fx/Fx.Scroll.js"/>
+        <dep key="path://mt.core/Utilities/Selectors.js"/>
+      </module>
+      <module key="path://mt.more/Fx/Fx.Sort.js">
+        <description>Reorders a group of items with a transition.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Fx/Fx.Elements.js"/>
+        <dep key="path://mt.core/Element/Element.Dimensions.js"/>
+        <dep key="path://mt.more/Element/Element.Measure.js"/>
+      </module>
+    </package>
+    <package name="more.Drag">
+      <module key="path://mt.more/Drag/Drag.js" expose="Drag">
+        <description>The base Drag Class. Can be used to drag and resize Elements using mouse events.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Element/Element.Style.js"/>
+      </module>
+      <module key="path://mt.more/Drag/Drag.Move.js" expose="Drag.Move">
+        <description>A Drag extension that provides support for the constraining of draggables to containers and droppables.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Drag/Drag.js"/>
+        <dep key="path://mt.core/Element/Element.Dimensions.js"/>
+      </module>
+      <module key="path://mt.more/Drag/Slider.js" expose="Slider">
+        <description>Class for creating horizontal and vertical slider controls.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Class/Class.Binds.js"/>
+        <dep key="path://mt.more/Drag/Drag.js"/>
+        <dep key="path://mt.core/Element/Element.Dimensions.js"/>
+        <dep key="path://mt.more/Element/Element.Measure.js"/>
+      </module>
+      <module key="path://mt.more/Drag/Sortables.js" expose="Sortables">
+        <description>Class for creating a drag and drop sorting interface for lists of items.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Drag/Drag.Move.js"/>
+        <dep key="path://mt.core/Utilities/Selectors.js"/>
+      </module>
+    </package>
+    <package name="more.Request">
+      <module key="path://mt.more/Request/Request.JSONP.js">
+        <description>Creates a Json request using a script tag include and handles the callbacks for you.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.js"/>
+        <dep key="path://mt.core/Request/Request.js"/>
+      </module>
+      <module key="path://mt.more/Request/Request.Queue.js">
+        <description>Manages a group of Request instances so that connections are queued.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Request/Request.js"/>
+      </module>
+      <module key="path://mt.more/Request/Request.Periodical.js">
+        <description>Requests the same url at a time interval that increases when no data is returned from the requested server.</description>
+        <dep key="path://mt.more/Core/More.js"/>
+        <dep key="path://mt.core/Request/Request.js"/>
+      </module>
+    </package>
+    <package name="more.Utilities">
+      <module key="path://mt.more/Utilities/Assets.js">
+        <description>Provides methods to dynamically load JavaScript, CSS, and Image files into the document.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+      </module>
+      <module key="path://mt.more/Utilities/Color.js">
+        <description>Class for creating and manipulating colors in JavaScript. Supports HSB -&gt; RGB Conversions and vice versa.</description>
+        <dep key="more.Core"/>
+        <dep key="Native"/>
+      </module>
+      <module key="path://mt.more/Utilities/Group.js">
+        <description>Class for monitoring collections of events.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+      </module>
+      <module key="path://mt.more/Utilities/Hash.Cookie.js">
+        <description>Class for creating, reading, and deleting browser Cookies in JSON format.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.core/Utilities/Cookie.js"/>
+        <dep key="path://mt.core/Utilities/JSON.js"/>
+      </module>
+      <module key="path://mt.more/Utilities/IframeShim.js">
+        <description>Creates a transparent iframe to mask out items not drawn by the browser (flash, select lists, etc) for IE6.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Element/Element.Position.js"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Element/Element.Style.js"/>
+        <dep key="path://mt.more/Class/Class.Occlude.js"/>
+      </module>
+    </package>
+    <package name="more.Interface">
+      <module key="path://mt.more/Interface/HtmlTable.js">
+        <description>Builds table elements with methods to add rows quickly.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Class/Class.Occlude.js"/>
+      </module>
+      <module key="path://mt.more/Interface/HtmlTable.Zebra.js">
+        <description>Adds stripes to an HTML table's rows.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Interface/HtmlTable.js"/>
+        <dep key="path://mt.more/Class/Class.Refactor.js"/>
+      </module>
+      <module key="path://mt.more/Interface/HtmlTable.Sort.js">
+        <description>Adds the ability to sort the columns of a HtmlTable.Zebra instance.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Interface/HtmlTable.js"/>
+        <dep key="path://mt.more/Element/Element.Delegation.js"/>
+        <dep key="path://mt.core/Native/Hash.js"/>
+        <dep key="path://mt.more/Native/Date.js"/>
+        <dep key="path://mt.more/Class/Class.Refactor.js"/>
+        <dep key="path://mt.more/Native/String.Extras.js"/>
+      </module>
+      <module key="path://mt.more/Interface/HtmlTable.Select.js">
+        <description>Adds the ability to highlight and select rows on a HtmlTable.Sort instance.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Interface/HtmlTable.js"/>
+        <dep key="path://mt.more/Interface/Keyboard.js"/>
+        <dep key="path://mt.more/Class/Class.Refactor.js"/>
+        <dep key="path://mt.more/Element/Element.Delegation.js"/>
+      </module>
+      <module key="path://mt.more/Interface/Keyboard.js">
+        <description>Provides enhanced group key event management.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="Element"/>
+        <dep key="path://mt.more/Core/Log.js"/>
+      </module>
+      <module key="path://mt.more/Interface/Keyboard.Extras.js">
+        <description>Adds description functionality to the Keyboard</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Interface/Keyboard.js"/>
+      </module>
+      <module key="path://mt.more/Interface/Mask.js">
+        <description>Creates a mask over a specified element.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="path://mt.core/Element/Element.Style.js"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.more/Element/Element.Position.js"/>
+        <dep key="path://mt.more/Utilities/IframeShim.js"/>
+        <dep key="path://mt.more/Class/Class.Binds.js"/>
+      </module>
+      <module key="path://mt.more/Interface/Scroller.js">
+        <description>Class which scrolls the contents of any Element (including the window) when the mouse reaches the Element's boundaries.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="path://mt.core/Element/Element.Event.js"/>
+        <dep key="path://mt.core/Element/Element.Dimensions.js"/>
+      </module>
+      <module key="path://mt.more/Interface/Tips.js">
+        <description>Class for creating nice tooltips that follow the mouse cursor when hovering over an element.</description>
+        <dep key="more.Core"/>
+        <dep key="Class"/>
+        <dep key="Element"/>
+      </module>
+      <module key="path://mt.more/Interface/Spinner.js">
+        <description>Adds a semi-transparent overlay over a dom element with a spinnin ajax icon.</description>
+        <dep key="more.Core"/>
+        <dep key="path://mt.more/Class/Class.Refactor.js"/>
+        <dep key="path://mt.core/Fx/Fx.Tween.js"/>
+        <dep key="path://mt.more/Interface/Mask.js"/>
+      </module>
+    </package>
+  </package>
+</js>
