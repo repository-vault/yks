@@ -58,7 +58,6 @@ class sql {
     if(self::$log) self::$queries[] = $query;
     if(self::$result===false) {
         $error = self::error(htmlspecialchars($query));
-        error_log($query);
         return $error;
     }
     
@@ -248,12 +247,15 @@ class sql {
     $query = end(sql::$queries);
     $begin_at = strpos($query, "FROM");
     $query = "SELECT  COUNT(*) as nb_line ".substr($query, $begin_at);
-    $remove_from = min(strripos($query, "ORDER"), strripos($query, "LIMIT"));
-    if($remove_from)
+
+    $end   = strlen($query);
+    $order = pick(strripos($query, "ORDER"), $end);
+    $limit = pick(strripos($query, "LIMIT"), $end);
+    
+    $remove_from = min($order, $limit);
+    if($remove_from != $end)
             $query = substr($query, 0, $remove_from);
-            
-    //preg_replace messed up with big strings
-    //$query=preg_replace('#SELECT (.*?) FROM (.*?)(\s*(?:ORDER BY|LIMIT).*)$#is',"SELECT COUNT(*) as nb_line FROM $2",$query);
+
     return sql::qvalue($query);
   }
   
