@@ -680,17 +680,8 @@ Element.Properties.tag = {
 
 };
 
+
 Element.Properties.html = (function(){
-	var BUGGY_INNERHTML = true;
-	try {
-		var tester = document.createElement('tr');
-		tester.innerHTML = '<td>x';
-		tester = tester.firstChild;
-		BUGGY_INNERHTML = !(tester.nodeName == 'TD' && tester.innerHTML == 'x');
-	}
-	catch (e){}
-	if (!BUGGY_INNERHTML) return null;
-	
 	var wrapper = document.createElement('div');
 
 	var translations = {
@@ -704,7 +695,7 @@ Element.Properties.html = (function(){
 	var html = {
 		set: function(){
 			var html = Array.flatten(arguments).join('');
-			var wrap = translations[this.get('tag')];
+			var wrap = Browser.Engine.trident && translations[this.get('tag')];
 			if (wrap){
 				var first = wrapper;
 				first.innerHTML = wrap[1] + html + wrap[2];
@@ -720,6 +711,7 @@ Element.Properties.html = (function(){
 
 	return html;
 })();
+
 
 if (Browser.Engine.webkit && Browser.Engine.version < 420) Element.Properties.text = {
 	get: function(){
