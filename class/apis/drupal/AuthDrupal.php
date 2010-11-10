@@ -23,11 +23,8 @@ class YksAuthDrupal {
 
     foreach($drupal_config->endpoints->endpoint as $endpoint) {
         try {
-            error_log("loop");
             $ws = new  SerializedSoapClient($endpoint['auth_wsdl']);
                 //exyks login
-
-
             $user_infos = $ws->login($user_login, $user_pswd);
 
             if($user_infos) break;
