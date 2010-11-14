@@ -75,6 +75,7 @@ class dsp_titles {
         'text'        => $title_text,
         'font'        => $font_file,
         'box_src'     => $box_src,
+        'colorize'    => isset($theme_config['colorize'])?hexdec("{$theme_config['colorize']}"):false,
         'box_grid'    => "{$theme_config['grid']}",
         'font_size'   => (int)$theme_config['size'],
         'color'       => count($colors)==1?$colors[0]:$colors,
@@ -121,6 +122,9 @@ class dsp_titles {
         $box_img = is_resource($box_src) ? $box_src : imgs::imagecreatefromfile($box_src);
         if(!$box_x) $box_x = array(0,imagesx($box_img));
         if(!$box_y) $box_y = array(0,imagesy($box_img));
+        if($colorize) {
+imgs::imagecolorize($box_img, imgs::colordec($colorize));
+        }
         imgs::image_bg_scale($img_back, $box_img, $box_x, $box_y);  
 
         if($icon){

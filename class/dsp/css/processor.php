@@ -2,6 +2,7 @@
 
 class css_processor {
 
+  private static $entities;
   private $file_uri;
   private $file_base;
 
@@ -15,12 +16,16 @@ class css_processor {
   }
 
   private function __construct($uri, $contents = false){
+    self::$entities = array();
+    foreach(yks::$get->config->themes->exports->iterate('val') as $val)
+        self::$entities["&{$val['key']};"] = $val['value'];
 
     $this->file_uri   = $uri;
     $this->file_base  = ends_with($this->file_uri, '/')
         ? $this->file_uri
         : dirname($this->file_uri).'/';
 
+    css_parser::register_entities(self::$entities);
 
     if($contents) 
         $this->css    = css_parser::load_string($contents, $this->file_uri);
