@@ -9,6 +9,7 @@ class css_parser {
   const URI    = "url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)";
   const COMMENTS = "/\*.*?\*/";
   const KEYWORD = "([!]?[a-z0-9-]+)";
+  private static $entities = array();
 
   public static function init(){
 
@@ -23,15 +24,20 @@ class css_parser {
     ));
 
   }
+  public static function register_entities($entities){
+    self::$entities = $entities;
+  }
 
   public static function load_file($file_path){
     $str = file_get_contents($file_path);
+    $str = strtr($str, self::$entities);
     return self::load_string($str, $file_path);
   }
 
   public static function load_string($str, $file_path = "path://public") {
     try {
       $i = 0;
+      $str = strtr($str, self::$entities);
       $str = self::strip_comments($str);
       return self::parse_block($str, $i, $file_path);
     } catch(Exception $e){
