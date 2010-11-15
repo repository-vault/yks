@@ -12,7 +12,7 @@ if($action=="user_filter")try {
         if(is_numeric($q)) {
             $data['user_id'] = $q;
         }elseif($pattern){
-            $data[] = "user_name $pattern";
+            $data[] = "( user_name $pattern OR user_mail $pattern)";
         }
         $data = array_filter($data);
         $user_filter['depth'] = (bool)$_POST['search_deep'];
