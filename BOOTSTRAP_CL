@@ -1,0 +1,7 @@
+<?
+define('yks/cli', true);
+define('ROOT_PATH', realpath(dirname(__FILE__).'/..') );
+define('SERVER_NAME', 'foo.melon.net');
+
+include "yks/class/yks/loader.php";
+include "yks/class/functions.php";
