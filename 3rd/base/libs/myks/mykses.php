@@ -78,8 +78,10 @@ class mykses {
         } elseif(in_array("time", array($mykse_start_type, $mykse_type)) ){
             if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
-            else $out[$mykse_key] = date::validate($val, DATETIME_MASK);
-        } elseif(in_array("date", array($mykse_start_type, $mykse_type)) ){
+            else $out[$mykse_key] = pick(
+                date::validate($val, DATETIME_MASK),
+                date::validate($val, DATE_MASK));
+        } elseif(in_array("datesss", array($mykse_start_type, $mykse_type)) ){
             if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
             else $out[$mykse_key] = date::validate($val, DATE_MASK);
@@ -108,7 +110,8 @@ class mykses {
         break;
       } //loop
 
-    } return $filter_unique?$out[$filter_unique]:$out;
+    }
+    return $filter_unique?$out[$filter_unique]:$out;
   }
 
 }
