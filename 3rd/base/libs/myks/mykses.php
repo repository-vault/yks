@@ -75,11 +75,15 @@ class mykses {
         }elseif($mykse_type=='mail'){
             $val = trim(strtolower($val));
             $out[$mykse_key]= mail_valid($val)?$val:false;
-        }elseif(in_array("time", array($mykse_start_type, $mykse_type)) ){
+        } elseif(in_array("time", array($mykse_start_type, $mykse_type)) ){
             if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
-            else $out[$mykse_key]=date::validate($val);
-        }elseif($mykse_type=='int'){
+            else $out[$mykse_key] = date::validate($val, DATETIME_MASK);
+        } elseif(in_array("date", array($mykse_start_type, $mykse_type)) ){
+            if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
+            if(is_numeric($val)) $out[$mykse_key] = $val;
+            else $out[$mykse_key] = date::validate($val, DATE_MASK);
+        } elseif($mykse_type=='int'){
             if($null) break;
             if($val === "") {$out[$mykse_key] = null;break; }
             $out[$mykse_key]=(int) $val;
