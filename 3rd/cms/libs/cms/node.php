@@ -88,6 +88,24 @@ abstract class cms_node extends _sql_base {
     return $this->parent_node = ($parent_id) ? self::instanciate($parent_id) : null;
     
   }
+  
+  public function get_pagination(){
+    $filter = array(
+      'node_type' => 'article',
+      'parent_id' => $this->parent_id,
+    );
+    sql::select(self::sql_table, $filter);
+    $nodes = sql::brute_fetch();
+    
+    $pagination = array('total' => 0, 'current' => 0);
+    foreach($nodes as $n){
+      $pagination['total']++;
+      if($n['node_id'] == $this->node_id)
+        $pagination['current'] = $pagination['total'];
+    }
+        
+    return $pagination;
+  }
 
   static function from_ids($ids){
     die("UNIMPLEMENTED");
