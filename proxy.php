@@ -14,6 +14,7 @@ class http_proxy {
   protected $bind_on_ssl  = false;
 
   protected $auths  = array();
+  protected $exclude_dests  = array();
 
   function __construct($ip = '0.0.0.0', $port = '8080'){
     $bind = "tcp://$ip:$port";
@@ -35,6 +36,10 @@ class http_proxy {
     $this->auths['hosts'][] = $host;
   }
 
+
+  function bind_exclude($dest){
+    $this->exclude_dests[] = $dest;
+  }
 
   function bind_to($client_bind){
     $this->client_bind = $client_bind;
@@ -197,6 +202,7 @@ class http_proxy {
     $dest_port = $url_infos['port'] ? $url_infos['port'] : 80;
     if($this->trace) echo "openning $dest_host:$dest_port".CRLF;
 
+    $use_binding &= !in_array($dest_host, $this->exclude_dests);
     if($this->client_bind && $use_binding) {
       $remote_socket = "tcp://$dest_host:$dest_port";
       $dest = stream_socket_client ($remote_socket , $errno,
