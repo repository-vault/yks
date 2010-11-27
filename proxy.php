@@ -13,6 +13,8 @@ class http_proxy {
     //use binding on connect mode
   protected $bind_on_ssl  = false;
 
+  protected $auths  = array();
+
   function __construct($ip = '0.0.0.0', $port = '8080'){
     $bind = "tcp://$ip:$port";
   
@@ -24,6 +26,15 @@ class http_proxy {
   function close(){
     fclose($this->server);
   }
+
+  function allow_account($login, $password){
+    $this->auths['accounts'][$login] = $password;
+  }
+
+  function allow_from($host){
+    $this->auths['hosts'][] = $host;
+  }
+
 
   function bind_to($client_bind){
     $this->client_bind = $client_bind;
@@ -86,8 +97,8 @@ class http_proxy {
   }
 
 
-  protected function read_request($client) {
-    $request_str = $this->read_headers($client);
+  protected function read_request($client_stream) {
+    $request_str = $this->read_headers($client_stream);
     if($this->trace) echo $request_str;
     $mask = '#^(GET|POST|CONNECT)\s*(.*?)\s*HTTP/[0-9]\.[0-9]\r\n#';
     if(!preg_match($mask, $request_str, $out))
@@ -99,7 +110,40 @@ class http_proxy {
     list(, $method, $url, $version) = $out;
     $url_infos = parse_url($url);
 
+    if($this->auths)
+      $this->proxy_authenticate($client_stream, $request_str);
+
     return array($method, $url_infos, $request_str);
+  }
+
+  protected function proxy_authenticate($client_stream, &$request_str){
+      //check host
+    $remote_addr = strtok(stream_socket_get_name($client_stream, true),":");
+    $remote_host = gethostbyaddr($remote_addr);
+
+    if(  in_array($remote_addr, $this->auths['hosts'])
+      || in_array($remote_host, $this->auths['hosts']) )
+      return;
+
+      //check account
+    $proxy_auth = false;
+    $mask = "#^Proxy-Authorization:\s*Basic\s(.*)\r\n#m";
+    if(preg_match($mask, $request_str, $out)) {
+      $full = base64_decode($out[1]);
+      list($proxy_login, $proxy_pswd) = explode(":", $full, 2);
+      $proxy_auth = ($this->auths['accounts'][$proxy_login] == $proxy_pswd);
+
+        //dont fw proxy predentials
+      $request_str = preg_replace($mask, "", $request_str);
+    }
+    
+    if(!$proxy_auth) {
+      //    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+      $failure = "HTTP/1.0 407 Proxy Authentication Required".CRLF;
+      $failure .= "Proxy-Authenticate:Basic realm=\"Login\"".CRLF.CRLF;
+      fwrite($client_stream, $failure);
+      die;
+    }
   }
 
   protected function prepare_connect($client_stream, $url_infos, $request_str) {
@@ -131,7 +175,7 @@ class http_proxy {
     $mask = "#^Content-Length:\s*([0-9]+)#m";
     $request_length = preg_match($mask, $request_str, $out) ? $out[1] : 0;
 
-    //stream_copy_to_stream($client_stream, $dest_stream, $request_length);
+    //read the whole request and send it to the destination
     $this->stream_copy_to_stream_nb($client_stream, $dest_stream, $request_length);
     return $dest_stream;
   }
