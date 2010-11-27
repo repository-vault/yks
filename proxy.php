@@ -60,8 +60,9 @@ class http_proxy {
     //$serve_client = "serve_client";
 
     do {
-    if ($client = stream_socket_accept($this->server))
-      $this->$serve_client($client);
+      $client = @stream_socket_accept($this->server);
+      if($client)
+         $this->$serve_client($client);
     } while(true);
     $this->close();
   }
