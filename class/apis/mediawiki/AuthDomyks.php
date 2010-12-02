@@ -23,11 +23,19 @@ class Auth_Domyks extends AuthPlugin {
   public function userExists( $user_name ) { return true;}  // stfu
   public function strict() { return true;}
 
+  public function updateUser(&$user){
+    $user->mRealName = $this->ext_user['user_name'];
+    $user->mEmail    = $this->ext_user['user_mail'];
+    $user->saveSettings();
+    return true;
+  }
+
   public function authenticate($user_login, $user_pswd){
     try {
         $this->ext_sess = new  SoapClient($this->wsdl_url);
         $this->ext_user = unserialize($this->ext_sess->login($user_login, $user_pswd));
         $auth  = $this->ext_sess->verifAuth($this->access_zone, "access");
+
         return $auth;
     } catch(Exception $e){ return false; }
 
