@@ -10,18 +10,15 @@
   <xsl:template match="table">
     <xsl:variable name="name" select="string(@name)"/>
     <xsl:element name="{$name}">
-      <xsl:if test="//table[@extend=$name]">
-        <xsl:attribute name="children">
-          <xsl:for-each select="//table[@extend=$name]">
-            <xsl:value-of select="@name"/>
-            <xsl:if test="not(position()=last())">,</xsl:if>
-          </xsl:for-each>
-        </xsl:attribute>
-      </xsl:if>
       <xsl:copy-of select="@birth"/>
       <xsl:apply-templates select="fields/field">
         <xsl:with-param name="birth" select="@birth"/>
       </xsl:apply-templates>
+      <xsl:if test="//table[@extend=$name]">
+          <xsl:for-each select="//table[@extend=$name]">
+            <xsl:element name="child"><xsl:value-of select="@name"/></xsl:element>
+          </xsl:for-each>
+      </xsl:if>
     </xsl:element>
   </xsl:template>
   <xsl:template match="field">

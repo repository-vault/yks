@@ -52,9 +52,8 @@ $tables_children_list = array();
 $involved_tables_list = array("ks_users_list", $profile_table);
 foreach($involved_tables_list as $table_name) {
     $table_xml = $tables_xml->$table_name;
-    if(!$table_xml['children']) continue;
-    $tables_children = explode(",", $table_xml['children']);
-    foreach($tables_children as $table_children_name){
+    if(!$table_xml->child) continue;
+    foreach($table_xml->child as $child){ $table_children_name = (string)$child;
         $data = array();
         if($user_id) { sql::select($table_children_name, $verif_user); $data = sql::brute_fetch(); }
         $fields = fields($tables_xml->$table_children_name);
@@ -64,7 +63,6 @@ foreach($involved_tables_list as $table_name) {
         );
     }
 }
-
 
 
 

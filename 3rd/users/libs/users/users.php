@@ -7,8 +7,11 @@ function coalesce($cols,$alias=false){
 class users  {
     // user_id || users_id
 
-  private static $cols_def            = false;
-  private static $users_linear_tables = array();
+  private static $table                 = "ks_users_list";
+  private static $cols_def_horizontal  = false;
+  private static $cols_def_vertical    = false;
+
+  private static $users_linear_tables   = array(); //todo refactor & merge with horizontal
 
   static function get_addrs($user_id,$addr_type=array('sql'=>"!=''")){
     sql::select('ks_users_addrs',compact('user_id','addr_type'));
@@ -37,30 +40,33 @@ class users  {
   }
 
 
-  static function get_infos($users, $cols=array('user_name'), $where=array(), $sort=false, $start=false, $by=false) {
+  static function get_infos($users, $cols=array('user_name'), $where=array(), $sort = null, $start=false, $by=false) {
 
-    if(!self::$cols_def) self::init();
+    if(!self::$cols_def_horizontal) self::init();
 
     if(!is_array($users) || !$users) return array();
-    $selected=array('user_id'=>'user_id'); $tables_used=array();
+    $selected=array('user_id'=>'user_id');
+    $tables_used_horizontal = array();
+    $tables_used_vertical   = array();
 
     $limit="LIMIT ".count($users);
 
     if(is_string($cols) ) {
-        $tables_used = self::$users_linear_tables;
+        $tables_used_horizontal = self::$users_linear_tables;
         $selected = $cols;
     } else {
-        foreach($cols as $col) if(self::$cols_def[$col]&& !$selected[$col]) {
-            $tables_used    = array_merge($tables_used, self::$cols_def[$col]);
-            $selected[$col] = coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"),$col);
-        }elseif(strpos($col," ")!==false) $selected[]=$col;
+        foreach($cols as $col) if(self::$cols_def_horizontal[$col]&& !$selected[$col]) {
+            $tables_used_horizontal    = array_merge($tables_used_horizontal, self::$cols_def_horizontal[$col]);
+            $selected[$col] = coalesce(array_mask(self::$cols_def_horizontal[$col],"`%s`.`$col`"),$col);
+        } elseif(strpos($col," ")!==false) $selected[]=$col;
         $selected=join(',',$selected);
     }
-
+    
+      //attention, les filtres where ne sont pas appliqués verticalement.
     if($where && $slice=array_keys($tmp=array_filter($where,'is_array'))){
         foreach($slice as $k=>$col){
-                $tables_used=array_merge($tables_used,self::$cols_def[$col]);
-                $slice[$k]=coalesce(array_mask(self::$cols_def[$col],"`%s`.`$col`"));
+                $tables_used_horizontal=array_merge($tables_used_horizontal,self::$cols_def_horizontal[$col]);
+                $slice[$k]=coalesce(array_mask(self::$cols_def_horizontal[$col],"`%s`.`$col`"));
         } $where=array_merge(array_diff($where,$tmp),array_combine($slice,$tmp)); //powa
     }
 
@@ -68,23 +74,39 @@ class users  {
 
     if($where) $limit=""; else $start=$by=false;
 
-    $tables_used=array_diff(array_unique($tables_used),array('ks_users_list'));
+    $tables_used_horizontal=array_diff(array_unique($tables_used_horizontal),array('ks_users_list'));
     $where = sql::where(array_merge(array('user_id'=>$users),$where));
 
     if($sort) {
-        if(!self::$cols_def[$sort]) $order="ORDER BY $sort";
-        else $order="ORDER BY TRIM(".coalesce(array_mask(self::$cols_def[$sort],"`%s`.$sort")).')';
+        if(!self::$cols_def_horizontal[$sort]) $order="ORDER BY $sort";
+        else $order="ORDER BY TRIM(".coalesce(array_mask(self::$cols_def_horizontal[$sort],"`%s`.$sort")).')';
     } else $order="";
 
     sql::query("SELECT "
         .CRLF."$selected "
         .CRLF."FROM `ks_users_list` "
-        .CRLF.mask_join(CRLF, $tables_used, "LEFT JOIN `%s` USING(`user_id`) ")
+        .CRLF.mask_join(CRLF, $tables_used_horizontal, "LEFT JOIN `%s` USING(`user_id`) ")
         .CRLF." $where $order $limit"
     ); list($users_infos) = sql::partial_fetch('user_id', false, $start, $by);
 
-    if(!$sort)
-        $users_infos=array_filter(array_merge_numeric(array_flip($users),$users_infos),'is_array');
+        //traitement vertical 
+        //!! attention on traite (aujoud'hui) au PLUS une colonne de valeur (non membre de la clée)
+    foreach($cols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
+        $index_name   =  $tmp['index_name'];
+        $table_name   = (string)$tmp['table_children_name'];
+        $verif_users  = array('user_id' => array_keys($users_infos));
+        sql::select($table_name, $verif_users);
+        while($line = sql::fetch()) {
+          $index_value = array();
+          foreach($tmp['keys'] as $k=>$v) $index_value[$k] = $line[$k];
+          $index_value = '{'.mask_join(',', $index_value, '%2$s:%1$s').'}';
+          $users_infos[$line['user_id']][$col_name][$index_value] = $line;          
+        }
+     }
+    
+    
+    if(is_null($sort))
+        $users_infos = array_sort($users_infos, $users);
     return $users_infos;
   }
 
@@ -101,16 +123,78 @@ class users  {
     $users_list = sql_func::get_children($user_id, 'ks_users_tree', 'user_id', $depth);
     return array_unique($users_list);
   }
+  
+  static private function get_children_query($parent_id){
+    $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
+    if(!is_array($parent_id)) $parent_id = array((int)$parent_id);
+    $query = mask_join(" UNION ", $parent_id, " SELECT * FROM $mask_tree");
+    return $query;
+  }
 
+  static function get_children_tree($parent_id){
+
+  $parents =  (!is_array($parent_id))?array((int)$parent_id): $parent_id;
+  $query_tree = self::get_children_query($parents);
+  $query = "SELECT * FROM `ks_users_list` INNER JOIN ($query_tree) AS tmp USING(user_id)";
+   sql::query($query);
+   //sql::select(array("ks_users_tree", "user_id"=>"ks_users_list"));
+   $users_list = sql::brute_fetch("user_id");
+   
+   $tree = array();
+   foreach($users_list as $user_id=>$user){
+
+      $parent_id = $user['parent_id'];
+      if ($user_id == $parent_id) $parent_id = null;
+           
+      if(!$tree[$user_id] ) $tree[$user_id]  = $user;
+      if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
+      $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
+   } 
+   
+   $ret = array();
+   foreach($parents as $parent_id )
+      $ret[$parent_id] = $tree[$parent_id];
+   return $ret;
+  }
+  
+  
+
+  static function clean_children_tree_by_last_node_type($tree, $user_type){
+    $me = $tree;
+    $children = $me['children'];
+    unset($me['children']);
+
+    if ($children)
+    foreach($children as $user_id=>$child) {
+      $child = self::clean_children_tree_by_last_node_type($child, $user_type);
+      if($child)
+        $me['children'][$user_id] = $child;
+    }
+    
+    if (in_array($me['user_type'], $user_type)  || $me['children'])
+      return $me;
+    return ;
+  }
+    
+  
+  function linearize_tree($tree,$depth=0){
+    $ret=array();
+    foreach($tree as $cat_id=>$children){
+      $ret[$cat_id]=array('id'=>$cat_id,'depth'=>$depth);
+      if($children['children'])
+        $ret += self::linearize_tree($children['children'],$depth+1);
+    }return $ret;
+}
+  
+  
     //this implementation only works for postgres 
     //but it's cool !!! useit !
   static function get_children_infos($parent_id, $where=true, $cols=array(), $sort = false){
-    $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
     if(!$parent_id) return array();
-    if(!is_array($parent_id)) $parent_id = array((int)$parent_id);
-    $query_tree = "(".mask_join(" UNION ", $parent_id, " SELECT * FROM $mask_tree").") as tmp";
+    
+    $query_tree = self::get_children_query($parent_id);
     $query = "SELECT * FROM
-        $query_tree    
+        ($query_tree)
         LEFT JOIN `ks_users_list` USING(user_id) 
     ".sql::where($where);
     sql::query($query);
@@ -158,39 +242,65 @@ class users  {
   }
 
   static function init(){
+
     if(!classes::init_need(__CLASS__)) return;
 
     $users_type = vals(yks::$get->types_xml->user_type);
+    
+    // On récupère les tables de types _profile
     self::$users_linear_tables = array_mask($users_type,'%s_profile');
-
-    self::$cols_def=array(); $tables_xml = yks::$get->tables_xml;
+    
+    self::$cols_def_horizontal=array(); $tables_xml = yks::$get->tables_xml;
     foreach(self::$users_linear_tables as $k=>$table_name)
         if(!$tables_xml->$table_name) unset(self::$users_linear_tables[$k]);
+        
+    // On récupère les tables qui étendent Users_list ! /!\ on va avoir des tables en doubles entre les deux.
+        
+
+    /*///////////////*/
 
     $tables = array_merge(self::$users_linear_tables, self::$infos_tables);
     foreach($tables as $table_name) {
         $table_xml = $tables_xml->$table_name;
 
-        self::$cols_def = array_merge_recursive(self::$cols_def,
+        self::$cols_def_horizontal = array_merge_recursive(self::$cols_def_horizontal,
             array_fill_keys(array_keys(fields($table_xml)), array($table_name))
         );
 
-        if(!$table_xml['children']) continue;
-        $tables_children = explode(",", $table_xml['children']);
-        foreach($tables_children as $table_children_name){
+        if(!$table_xml->child) continue;
+        foreach($table_xml->child as $table_children_name){
+                echo "$table_children_name\n";
+
             $keys   = fields($tables_xml->$table_children_name, true);
-            if(array_values($keys) != array('user_id')) continue;
-            self::$users_linear_tables[] = $table_children_name;
             $fields = fields($tables_xml->$table_children_name);
+    
+            if(!in_array('user_id',array_values($keys)))
+              contine;
 
-            self::$cols_def = array_merge_recursive(self::$cols_def,
-                array_fill_keys(array_keys($fields), array($table_children_name))
-            );
+            if(array_values($keys) == array('user_id')) {
+              self::$users_linear_tables[] = $table_children_name;
+
+              self::$cols_def_horizontal = array_merge_recursive(self::$cols_def_horizontal,
+                  array_fill_keys(array_keys($fields), array($table_children_name))
+              );
+            }
+            else {
+
+               //on exclue de la liste des fields les clefs
+              $fields = array_diff($fields, $keys);
+
+                //on exclue de la liste dee clées les clées de type user_id
+              $keys = array_diff($keys, array('user_id'));
+              $index_name = join('-', array_keys($keys));
+              self::$cols_def_vertical[$index_name] = compact('index_name', 'keys', 'table_children_name'); //!
+              foreach($fields as $k=>$v)
+                self::$cols_def_vertical[$k] = &self::$cols_def_vertical[$index_name];
+
+            }
         }
-            
-
-    }
-    self::$cols_def['user_id'] = array('ks_users_list');
+     }
+     
+    self::$cols_def_horizontal['user_id'] = array('ks_users_list');
 
     //done
   }

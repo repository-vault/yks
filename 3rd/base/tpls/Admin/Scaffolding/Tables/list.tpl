@@ -27,7 +27,7 @@ if($data) foreach($data as $line){
         $uid[$key_name] = $line[$key_name];
     $do = json_encode(array('ks_action'=>'delete', 'uid'=>$uid));
 
-    $actions.="<span class='user_icon icon_user_trash' alt='trash_icon' onclick='Jsx.action($do, this, \"Supprimer\")'>[Delete]</span>";
+    $actions.="<span class='user_icon icon_user_trash' alt='trash_icon' onclick='Jsx.action(\$H($do), this, \"Supprimer\")'>[Delete]</span>";
     echo "<td>$actions</td>";
 
 

@@ -13,8 +13,38 @@ class _user extends _sql_base {
     return parent::from_where($class, self::sql_table, self::sql_key, $where);
   }
 
-  static function from_ids($class, $ids){
-    return parent::from_ids($class, self::sql_table, self::sql_key, $ids);
+  //attention, a n'utiliser que si on est certain que la liste contient un arbre complet
+  //todo : check
+  static function from_ids($ids, $class ){
+    throw new Exception("Not yet");
+  }
+  
+  
+  static function from_tree($tree, $class ){
+    
+    print_r($tree);
+    //$users_id = array_keys(users::linearize_tree($tree)));
+print_r($users_id);die('o');
+    parent::from_ids($class, self::sql_table, self::sql_key, $users_id);
+    
+    $this->computed = array(); $this->users_types = array();
+    //$ids
+    foreach(users::get_infos($this->users_tree,"*") as $line){
+        $this->users_types[$line['user_type']] = $line['user_id'];
+        $this->computed = array_merge($this->computed, array_filter($line,'is_not_null'));
+    } 
+    
+    foreach($users as $user){
+          $user->users_tree  = $users_infos[$user_id]['users_tree'];
+          $user->computed    = $users_infos[$user_id]['computed'];
+          $user->users_types = $users_infos[$user_id]['users_types'];
+
+          $data = array_sort($user, array('auth_type', 'user_type', 'user_name'));
+          $data["parent_id"] = $user->users_tree[max(count($user->users_tree)-2,0)];
+          $user->data = $data; 
+    }
+    
+    return $users;
   }
 
   function __toString(){ return $this->user_name; }
@@ -27,21 +57,20 @@ class _user extends _sql_base {
   function get_children_list(){
     return $this->children_list = users::get_children($this->user_id);
   }
+  
+  static function instanciate($user_id, $class = __CLASS__){
+    $tree= users::get_parents($user_id);
+    $users = self::from_tree($tree, $class);
+    $user = $users[$user_id];
+    if(!$user->user_id || !$user->users_tree)
+        throw new Exception("Unable to load user #{$user->user_id}");
 
-  function __construct($user_id){
-    if(!is_numeric($user_id))
-        $user_id = $user_id[self::sql_key];
-    
-    $this->user_id = (int)$user_id;
-    if(!$this->user_id || !$this->users_tree)
-        throw new Exception("Unable to load user #{$this->user_id}");
-    $this->computed = array(); $this->users_types = array();
-    foreach(users::get_infos($this->users_tree,"*") as $line){
-        $this->users_types[$line['user_type']] = $line['user_id'];
-        $this->computed = array_merge($this->computed, array_filter($line,'is_not_null'));
-    } $data = array_intersect_key($line, array_flip(array('auth_type', 'user_type', 'user_name')));
-    $data["parent_id"] = $this->users_tree[max(count($this->users_tree)-2,0)];
-    parent::__construct($data);
+    return $user; 
+  }
+
+  protected function __construct($from){
+    parent::__construct($from);
+    $user_id = (int)$from[self::sql_key];
     $type_id = preg_reduce('#^[a-z]{2,3}_(.*?)s?$#', $this->user_type).'_id';
     if($this->user_type!="ks_users") $this->$type_id = $user_id;
     $this->sql_key = $type_id;

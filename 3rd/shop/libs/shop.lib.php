@@ -27,7 +27,7 @@ class shop {
       return;
     $success = call_user_func_array($this->precalc_hook, array($order, &$order_infos, &$products_list));
     if(!$success)
-      throw new Exception("Invalid content in your basket");
+      throw rbx::error("Invalid content in your basket");
   }
 
   function apply_checkout_hooks(order $order, &$order_infos, &$products_list){
