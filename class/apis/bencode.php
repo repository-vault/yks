@@ -9,13 +9,13 @@ class bencode {
       case 'd':
         $out=array();
         while($str{$i}!='e'){
-          $key=bencode_decode($str,&$i);
-          $out[$key]=bencode_decode($str,&$i);
+          $key=bencode::decode($str,&$i);
+          $out[$key]=bencode::decode($str,&$i);
         } $i++; return $out;
       case 'l':
         $out=array();
         while($str{$i}!='e'){
-          $out[]=bencode_decode($str,&$i);
+          $out[]=bencode::decode($str,&$i);
         } $i++; return $out;
       case 'i':
         $out=intval(substr($str,$i,($e=strpos($str,'e',$i))-$i));$i=$e+1;
@@ -26,6 +26,23 @@ class bencode {
         return $out;
     }
   }
-
+  static function encode($struct){
+    if(is_int($struct))
+      return "i{$struct}e";
+    if(is_string($struct))
+      return strlen($struct).":$struct";
+    
+    $str = "";
+    if(is_int(key($struct))) {
+      $str .= "l";      
+     foreach($struct as $v) $str .= self::encode($v);
+    } else {
+      $str .= "d";
+      foreach($struct as $k=>$v){
+       $str .=  self::encode($k);
+       $str .=  self::encode($v);
+      }
+    } return $str.'e';
+  }
 }
 
