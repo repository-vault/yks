@@ -44,14 +44,6 @@ class torrent implements ArrayAccess {
     }
   }
 
-  function get_trackers(){
-    $ret = array($this['announce']);
-    if($this['announce-list'])
-      foreach($this['announce-list'] as $tracker)
-        foreach($tracker as $announce)
-          $ret[] = $announce;
-    return $ret;
-  }
 
 
 
@@ -73,5 +65,7 @@ class torrent implements ArrayAccess {
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
       return $this->$getter();
+    if(method_exists('torrents', $getter))
+      return call_user_func(array('torrents', $getter), $this);
   }
 }
