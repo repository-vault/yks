@@ -67,6 +67,11 @@ classes::register_class_paths(array(
 
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
+
+    "torrent"             => CLASS_PATH."/exts/torrents/bencode.php",
+    "bencode"             => CLASS_PATH."/exts/torrents/bencode.php"
+    "torrents"            => CLASS_PATH."/exts/torrents/torrents.php"
+
 ));
 
 if(SQL_DRIVER == "pgsql")
