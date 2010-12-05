@@ -18,7 +18,7 @@ class bencode {
           $out[]=bencode::decode($str,&$i);
         } $i++; return $out;
       case 'i':
-        $out=intval(substr($str,$i,($e=strpos($str,'e',$i))-$i));$i=$e+1;
+        $out=floatval(substr($str,$i,($e=strpos($str,'e',$i))-$i));$i=$e+1;
         return $out;
       default:
         $end=strpos($str,':',$i)+1;
@@ -27,7 +27,7 @@ class bencode {
     }
   }
   static function encode($struct){
-    if(is_int($struct))
+    if(is_int($struct) || is_float($struct))
       return "i{$struct}e";
     if(is_string($struct))
       return strlen($struct).":$struct";
