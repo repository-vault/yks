@@ -198,12 +198,18 @@ class http_proxy {
 
   /******** Utils : internals ***************************/
 
+  static function same_domain($domain0, $domain1) {
+    return join('.', array_slice(explode('.', $domain1),-count(explode('.', $domain0)))) == $domain0;
+  }
+  
   protected function open_dest($url_infos, $use_binding = true) {
     $dest_host = $url_infos['host'];
     $dest_port = $url_infos['port'] ? $url_infos['port'] : 80;
     if($this->trace) echo "openning $dest_host:$dest_port".CRLF;
 
-    $use_binding &= !in_array($dest_host, $this->exclude_dests);
+    foreach($this->exclude_dests as $domain)
+      $use_binding &= !self::same_domain($domain, $dest_host);
+
     if($this->client_bind && $use_binding) {
       $remote_socket = "tcp://$dest_host:$dest_port";
       $dest = stream_socket_client ($remote_socket , $errno,
