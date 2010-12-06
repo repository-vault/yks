@@ -13,16 +13,17 @@ class user extends _user {
     user::register("auth_password", "ks_auth_password");
   }
 
-  function __construct($user_id, $forced_tree = false){
-    if($forced_tree !== false)
-        $this->users_tree = $forced_tree;
-
-    parent::__construct($user_id);
-
+  static function instanciate($user_id, $forced_tree = false){
+    $tree  = pick($forced_tree, users::get_parents($user_id));
+    $users = self::from_flat_tree($tree, __CLASS__);
+    $user  = $users[$user_id];
+    if(!$user->user_id || !$user->users_tree)
+        throw new Exception("Unable to load user #{$user->user_id}");
     $this->user_access = auth::get_access($this->users_tree);
     $this->user_flags  = array_filter(explode(',',$this->user_flags));
+    return $user; 
   }
-
+  
   function register($key, $table_name){
     if(!($table_xml = yks::$get->tables_xml->$table_name)) return false;
     $table_keys = fields($table_xml,'primary'); 

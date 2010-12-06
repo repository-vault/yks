@@ -13,8 +13,12 @@ function paths_merge($path_root, $path, $default="."){
 }
 
 
-    //return the first non empty value
-function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
+    //return the first non empty value, or the last one
+function pick(){
+  $args = func_get_args();
+  $val  = reset(array_filter($args));
+  return $val ? $val : end($args);
+}
 
 
 function array_mask($array, $vmask, $kmask="%s"){ 

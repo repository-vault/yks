@@ -19,34 +19,51 @@ class _user extends _sql_base {
     throw new Exception("Not yet");
   }
   
-  private static function browse_tree($tree, &$users_infos, $parent_infos){
-      $user_id   = $tree['user_id'];
-      $user_info = $users_infos[$user_id];
+  private static function feed_tree($tree, &$users_infos, $parent_infos = array()){
+      $user_id    = $tree['user_id'];
+      $user_infos = $users_infos[$user_id];
       //$users_infos[$user_id] = $parent_infos - 
-      $user_infos['users_types'][$user_info['user_type']] = $user_id;
-      $user_infos['computed'] = array_merge($parent_infos['computed'], array_filter($user_infos, 'is_not_null'));
-      $user_infos['users_tree'] = array_merge(array(), $parent_infos['users_tree']); //!
-      $user_infos['parent_id'] = pick($parent_infos['user_id'], $user_id);
-      $users_infos[$user_id] = $user_infos;
+      $user_infos['users_types'] = pick($parent_infos['users_types'], array());
+      $user_infos['users_types'][$user_infos['user_type']] = $user_id;
       
-      if($tree['children'])
+      $user_infos['users_tree'] = pick($parent_infos['users_tree'], array()); 
+      $user_infos['users_tree'][] = $user_id;
+      $user_infos['parent_id'] = pick($parent_infos['user_id'], $user_id);
+
+        //pas indispensable
+      unset($parent_infos['computed']['users_tree']);
+      unset($parent_infos['computed']['users_type']);
+      
+      $user_infos['computed'] = array_merge_deep(
+              pick($parent_infos['computed'], array()),
+              array_filter($user_infos, 'is_not_null'));
+
+      $users_infos[$user_id] = $user_infos;
+      if($tree['children']) 
       foreach($tree['children'] as $child)
-        self::$browse_tree($child_tree, $users_infos,  $user_infos);
+        self::feed_tree($child, $users_infos,  $user_infos);
+  }
+
+  static protected function from_flat_tree($flat_tree, $class){
+    $tree = array(); $here = &$tree;
+    foreach($flat_tree as $node_id){
+      $here[$node_id]['user_id'] = $node_id;
+      $here[$node_id]['children'] = array();
+      $here = &$here[$node_id]['children'];
+    }; unset($here);
+   return self::from_tree($tree, $class);
   }
   
   static function from_tree($tree, $class ){
-    
-    print_r($tree);
     $users_id = array_keys(users::linearize_tree($tree));
-print_r($users_id);die('o');
-    
-    $users_infos = users::get_infos($users_id);
+    $users_infos = users::get_infos($users_id, '*');
       //feed $users_infos with computed, users_tree & users_types
-    self::browse_tree($tree, $users_infos, array());
-    print_r($users_infos);die;
+    foreach($tree as $root_id=>$tree)
+        self::feed_tree($tree, $users_infos);
+
     $users = array();
     foreach($users_infos as $user_id=>$user_infos){
-          $data = array_sort($user_infos, array('auth_type', 'user_type', 'user_name', 'parent_id'));
+          $data = array_sort($user_infos, array('user_id', 'auth_type', 'user_type', 'user_name', 'parent_id'));
           $user = new $class($data);
                 //this is no good
           $user->users_tree  = $user_infos['users_tree'];
@@ -69,12 +86,11 @@ print_r($users_id);die('o');
   }
   
   static function instanciate($user_id, $class = __CLASS__){
-    $tree= users::get_parents($user_id);
-    $users = self::from_tree($tree, $class);
-    $user = $users[$user_id];
+    $tree  = users::get_parents($user_id);
+    $users = self::from_flat_tree($tree, $class);
+    $user  = $users[$user_id];
     if(!$user->user_id || !$user->users_tree)
         throw new Exception("Unable to load user #{$user->user_id}");
-
     return $user; 
   }
 

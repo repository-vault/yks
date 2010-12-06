@@ -91,7 +91,13 @@ class users  {
 
         //traitement vertical 
         //!! attention on traite (aujoud'hui) au PLUS une colonne de valeur (non membre de la clée)
-    foreach($cols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
+    $vcols = $cols;
+    if($vcols == "*") {
+     $vcols = array();
+     foreach(self::$cols_def_vertical as $col_name=>$index_infos)
+        $vcols[$index_infos['index_name']]= $col_name;
+    }
+    foreach($vcols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
         $index_name   =  $tmp['index_name'];
         $table_name   = (string)$tmp['table_children_name'];
         $verif_users  = array('user_id' => array_keys($users_infos));
@@ -135,21 +141,28 @@ class users  {
 
   $parents =  (!is_array($parent_id))?array((int)$parent_id): $parent_id;
   $query_tree = self::get_children_query($parents);
+  foreach($parents as $parent_id)
+    $query_tree .= " UNION (SELECT $parent_id, $parent_id,  0) ";
+  
   $query = "SELECT * FROM `ks_users_list` INNER JOIN ($query_tree) AS tmp USING(user_id)";
    sql::query($query);
    //sql::select(array("ks_users_tree", "user_id"=>"ks_users_list"));
    $users_list = sql::brute_fetch("user_id");
-   
+
    $tree = array();
    foreach($users_list as $user_id=>$user){
-
       $parent_id = $user['parent_id'];
       if ($user_id == $parent_id) $parent_id = null;
-           
-      if(!$tree[$user_id] ) $tree[$user_id]  = $user;
+      if(!$tree[$user_id] ){
+          $tree[$user_id]  = $user;
+      } else {
+         $tmp =  &$tree[$user_id]['children'];
+         $tree[$user_id] = $user;
+         $tree[$user_id]['children'] = $tmp; unset($tmp);
+      }
       if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
       $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
-   } 
+   }
    
    $ret = array();
    foreach($parents as $parent_id )
@@ -161,14 +174,12 @@ class users  {
 
   static function clean_children_tree_by_last_node_type($tree, $user_type){
     $me = $tree;
-    $children = $me['children'];
-    unset($me['children']);
-
+    $children = $me['children']; unset($me['children']);
     if ($children)
-    foreach($children as $user_id=>$child) {
+    foreach($children as $child_id=>$child) {
       $child = self::clean_children_tree_by_last_node_type($child, $user_type);
       if($child)
-        $me['children'][$user_id] = $child;
+        $me['children'][$child_id] = $child;
     }
     
     if (in_array($me['user_type'], $user_type)  || $me['children'])
@@ -269,7 +280,6 @@ class users  {
 
         if(!$table_xml->child) continue;
         foreach($table_xml->child as $table_children_name){
-                echo "$table_children_name\n";
 
             $keys   = fields($tables_xml->$table_children_name, true);
             $fields = fields($tables_xml->$table_children_name);
