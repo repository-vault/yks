@@ -19,31 +19,41 @@ class _user extends _sql_base {
     throw new Exception("Not yet");
   }
   
+  private static function browse_tree($tree, &$users_infos, $parent_infos){
+      $user_id   = $tree['user_id'];
+      $user_info = $users_infos[$user_id];
+      //$users_infos[$user_id] = $parent_infos - 
+      $user_infos['users_types'][$user_info['user_type']] = $user_id;
+      $user_infos['computed'] = array_merge($parent_infos['computed'], array_filter($user_infos, 'is_not_null'));
+      $user_infos['users_tree'] = array_merge(array(), $parent_infos['users_tree']); //!
+      $user_infos['parent_id'] = pick($parent_infos['user_id'], $user_id);
+      $users_infos[$user_id] = $user_infos;
+      
+      if($tree['children'])
+      foreach($tree['children'] as $child)
+        self::$browse_tree($child_tree, $users_infos,  $user_infos);
+  }
   
   static function from_tree($tree, $class ){
     
     print_r($tree);
-    //$users_id = array_keys(users::linearize_tree($tree)));
+    $users_id = array_keys(users::linearize_tree($tree));
 print_r($users_id);die('o');
-    parent::from_ids($class, self::sql_table, self::sql_key, $users_id);
     
-    $this->computed = array(); $this->users_types = array();
-    //$ids
-    foreach(users::get_infos($this->users_tree,"*") as $line){
-        $this->users_types[$line['user_type']] = $line['user_id'];
-        $this->computed = array_merge($this->computed, array_filter($line,'is_not_null'));
-    } 
-    
-    foreach($users as $user){
-          $user->users_tree  = $users_infos[$user_id]['users_tree'];
-          $user->computed    = $users_infos[$user_id]['computed'];
-          $user->users_types = $users_infos[$user_id]['users_types'];
-
-          $data = array_sort($user, array('auth_type', 'user_type', 'user_name'));
-          $data["parent_id"] = $user->users_tree[max(count($user->users_tree)-2,0)];
-          $user->data = $data; 
+    $users_infos = users::get_infos($users_id);
+      //feed $users_infos with computed, users_tree & users_types
+    self::browse_tree($tree, $users_infos, array());
+    print_r($users_infos);die;
+    $users = array();
+    foreach($users_infos as $user_id=>$user_infos){
+          $data = array_sort($user_infos, array('auth_type', 'user_type', 'user_name', 'parent_id'));
+          $user = new $class($data);
+                //this is no good
+          $user->users_tree  = $user_infos['users_tree'];
+          $user->computed    = $user_infos['computed'];
+          $user->users_types = $user_infos['users_types'];
+          $users[$user_id] = $user;
     }
-    
     return $users;
   }
 
