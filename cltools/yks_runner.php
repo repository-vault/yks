@@ -40,9 +40,7 @@ class yks_runner {
     files::empty_dir($wsdls_path, false);
 
     $wsdl_uri_mask  = SITE_URL;
-    if($wsdl_config['port'])
-        $wsdl_uri_mask.=":{$wsdl_config['port']}";
-    $wsdl_uri_mask.="/services/?class=%s";
+    $wsdl_uri_mask .= pick($wsdl_config['rel_mask'], "/services/?class=%s"); 
 
     $wsdl_file_mask = "$wsdls_path/%s.wsdl";
 

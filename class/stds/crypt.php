@@ -12,8 +12,6 @@ class crypt {
     $iv_size  = mcrypt_enc_get_iv_size($cipher);
     $key_size = mcrypt_enc_get_key_size($cipher);
 
-    var_dump(mcrypt_enc_get_block_size($cipher));
-
     $key    = substr($key256, 0, $key_size);
     $iv     = substr($key256, 0, $iv_size);
 
