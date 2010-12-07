@@ -67,7 +67,10 @@ class yks
 
     if(!$domain['host']){
         $domain['host'] = SERVER_NAME;
-        $config->site['url']="http://{$domain['host']}";
+        $config->site['url'] = "http://{$domain['host']}";
+        $port = $_SERVER['SERVER_PORT'];
+        if($port != 80) $config->site['url'].=":$port";
+
         if(!$config->site['code'])
             $config->site['code'] = pick(join('.',array_slice(explode(".",$domain['host']),0,-2)), SERVER_NAME);
     }
