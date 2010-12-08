@@ -70,7 +70,7 @@ class materialized_view extends myks_installer {
             ."UPDATE {$this->table->name['safe']}".CRLF
             ."SET $updates_fields".CRLF
             ."FROM  {$this->view->name['safe']} AS ghost".CRLF
-            ."WHERE {$this->table->name['safe']}.$rkey = OLD.$rkey".CRLF
+            ."WHERE {$this->table->name['safe']}.$key = OLD.$rkey".CRLF
             ."AND ghost.$key = NEW.$rkey".CRLF
             .";".CRLF
             ."RETURN NULL;".CRLF
