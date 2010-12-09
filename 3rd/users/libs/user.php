@@ -19,8 +19,8 @@ class user extends _user {
     $user  = $users[$user_id];
     if(!$user->user_id || !$user->users_tree)
         throw new Exception("Unable to load user #{$user->user_id}");
-    $this->user_access = auth::get_access($this->users_tree);
-    $this->user_flags  = array_filter(explode(',',$this->user_flags));
+    $user->user_access = auth::get_access($user->users_tree);
+    $user->user_flags  = array_filter(explode(',',$user->user_flags));
     return $user; 
   }
   
