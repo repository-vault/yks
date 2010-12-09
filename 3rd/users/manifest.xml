@@ -8,6 +8,9 @@
     <path path="path://here/myks"/>
   </myks>
   <classes>
+<!-- User zero -->
+    <class name="_user" path="path://here/libs/_user.php"/>
+    <class name="user" path="path://here/libs/user.php"/>
 <!-- auth & sess -->
     <class name="sess" path="path://here/libs/auth/sess.php"/>
     <class name="auth" path="path://here/libs/auth/auth.php"/>
