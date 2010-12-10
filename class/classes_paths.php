@@ -46,6 +46,8 @@ classes::register_class_paths(array(
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
     "exyks_auth_api"      => CLASS_PATH."/apis/AuthApi.php",
+    "stdflow_filter"      => CLASS_PATH."/apis/stdflow_filter.php",
+    "php_legacy"          => CLASS_PATH."/apis/legacy.php",
 
     "yksauthdrupal"       => CLASS_PATH."/apis/drupal/AuthDrupal.php",
 
