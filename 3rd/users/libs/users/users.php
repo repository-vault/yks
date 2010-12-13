@@ -205,7 +205,7 @@ class users  {
     
     $query_tree = self::get_children_query($parent_id);
     $query = "SELECT * FROM
-        ($query_tree)
+        ($query_tree) as tmp
         LEFT JOIN `ks_users_list` USING(user_id) 
     ".sql::where($where);
     sql::query($query);
