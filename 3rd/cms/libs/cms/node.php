@@ -94,7 +94,7 @@ abstract class cms_node extends _sql_base {
       'node_type' => 'article',
       'parent_id' => $this->parent_id,
     );
-    sql::select(self::sql_table, $filter);
+    sql::select(self::sql_table, $filter, "*", "ORDER BY node_order ASC");
     $nodes = sql::brute_fetch();
     
     $pagination = array('total' => 0, 'current' => 0);
@@ -103,7 +103,6 @@ abstract class cms_node extends _sql_base {
       if($n['node_id'] == $this->node_id)
         $pagination['current'] = $pagination['total'];
     }
-        
     return $pagination;
   }
 

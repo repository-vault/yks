@@ -196,13 +196,32 @@ class cms_nodes_manager {
     );
     $curLink = $links[pick(exyks::retrieve("USER_LANG"), 'en-us')];
 
+    $related_str .= '<span class="pagination">';
     if($prev = $related_nodes['prev'])
-        $related_str .= self::lnk($prev, "&lt; ".$curLink[0], false, 'prev');
+      $related_str .= self::lnk($prev, "&lt; ".$curLink[0], false, 'prev');
+    else
+      $related_str .= "&#160;";
+    $related_str .= '</span>';
+
+    //Pagination
+    $pagination = $node->pagination;
+    if($pagination && $pagination['total'] > 0){
+      $related_str .= '<span class="pagination">';
+      $related_str .= 'Page: '.$pagination['current'].'/'.$pagination['total'];
+      $related_str .= '</span>';
+    }
+
+    $related_str .= '<span class="pagination">';
     if($next = $related_nodes['next'])
-        $related_str .= self::lnk($next, $curLink[1]." &gt;", false, 'next');
+      $related_str .= self::lnk($next, $curLink[1]." &gt;", false, 'next');
+    else
+      $related_str .= "&#160;";
+    $related_str .= '</span>';
 
     if($related_str)
         $related_str = sprintf("<hnav>%s</hnav>", $related_str);
+
+
 
         //on pourrait aussi injecter hnav en <xsl:variable (node-set))
     $contents.= $related_str ? "<cms>$related_str</cms>":'';
