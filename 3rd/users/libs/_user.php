@@ -1,6 +1,6 @@
 <?php
 
-class _user extends _sql_base {
+abstract class _user extends _sql_base {
   const sql_table = 'ks_users_list';
   const sql_key = 'user_id';
 
@@ -85,7 +85,7 @@ class _user extends _sql_base {
     return $this->children_list = users::get_children($this->user_id);
   }
   
-  static function instanciate($user_id, $class = __CLASS__){
+  protected static function instanciate($user_id, $class ){
     $tree  = users::get_parents($user_id);
     $users = self::from_flat_tree($tree, $class);
     $user  = $users[$user_id];
