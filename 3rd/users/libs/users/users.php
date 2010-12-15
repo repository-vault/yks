@@ -97,7 +97,8 @@ class users  {
      foreach(self::$cols_def_vertical as $col_name=>$index_infos)
         $vcols[$index_infos['index_name']]= $col_name;
     }
-    foreach($vcols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
+    if(is_array($vcols))
+      foreach($vcols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
         $index_name   =  $tmp['index_name'];
         $table_name   = (string)$tmp['table_children_name'];
         $verif_users  = array('user_id' => array_keys($users_infos));
