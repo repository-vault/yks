@@ -93,10 +93,10 @@ class http_proxy {
       return fclose($client);
 
         //open a pipe to the destination
-    if($method == "GET" || $method == "POST") {
+    if($method != "CONNECT") {
       $dest_stream = $this->prepare_std($client_stream, $method, $url_infos, $request_str);
       $this->serve_std($dest_stream, $client_stream);
-    } elseif($method == "CONNECT") {
+    } else {
       $dest_stream = $this->prepare_connect($client_stream, $url_infos, $request_str);
       $this->serve_connect($dest_stream, $client_stream);
     }
@@ -106,7 +106,7 @@ class http_proxy {
   protected function read_request($client_stream) {
     $request_str = $this->read_headers($client_stream);
     if($this->trace) echo $request_str;
-    $mask = '#^(GET|POST|CONNECT)\s*(.*?)\s*HTTP/[0-9]\.[0-9]\r\n#';
+    $mask = '#^([A-Z]+)\s*(.*?)\s*HTTP/[0-9]\.[0-9]\r\n#';
     if(!preg_match($mask, $request_str, $out))
         return null;
 
@@ -170,17 +170,23 @@ class http_proxy {
     if(isset($url_infos['query']))
         $url_query.="?".$url_infos['query'];
 
+      //we are a poor 1.0 proxy
     $request_head = "$method {$url_query} HTTP/1.0".CRLF;
     $request_str  = $request_head.$request_str;
-      fwrite($dest_stream, $request_str);
+    $dropped_headers = array('Keep-Alive', 'Proxy-Connection', 'TE', 'Connection');
+    $request_str  = preg_replace("#^(?:".join('|', $dropped_headers)."):.*\r?\n#m", "", $request_str);
 
+    fwrite($dest_stream, $request_str);
+
+    $bodyless_methods = array('GET', 'HEAD');
     //if GET, just go the response
-    if($method =="GET")
+    if(in_array($method, $bodyless_methods))
       return $dest_stream;
 
     $mask = "#^Content-Length:\s*([0-9]+)#m";
     $request_length = preg_match($mask, $request_str, $out) ? $out[1] : 0;
 
+    
     //read the whole request and send it to the destination
     $this->stream_copy_to_stream_nb($client_stream, $dest_stream, $request_length);
     return $dest_stream;
