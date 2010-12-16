@@ -32,7 +32,7 @@ SELECT
 FROM
  information_schema.routines
 LEFT JOIN  pg_catalog.pg_proc
-    ON oid = regexp_replace(specific_name, '^.*_([0-9]+)$', E'\\1', 'g')
+    ON oid::text = regexp_replace(specific_name, '^.*_([0-9]+)$', E'\\1', 'g')
 
 
 ]]></def>
