@@ -200,7 +200,7 @@ class sql {
 
 
   private static function fcond($cond, $table, $mode, $keyword) {
-    if(is_bool($cond) || !$cond) return $cond?'':'$keyword FALSE';
+    if(is_bool($cond) || !$cond) return $cond?'':"$keyword FALSE";
     if(is_object($cond)) $cond = array($cond);
     if(!is_array($cond)) return $cond&&strpos($cond,$keyword)===false?"$keyword $cond":$cond;
     foreach(array_filter($cond,'is_object') as $k=>$obj){
