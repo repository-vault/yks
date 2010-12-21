@@ -90,7 +90,7 @@ class yks
     define('SESS_DOMAIN',    pick($config->site->sess['domain'], SITE_DOMAIN) );
     
       //enable default module & define yks rsrcs
-    define('SITE_STANDALONE', !bool($config->site['standalone']));
+    define('SITE_STANDALONE', bool($config->site['standalone']));
 
     define('FLAG_DOMAIN',    substr(md5(SITE_DOMAIN.SITE_CODE),0,5));
     define('FLAG_APC',       FLAG_DOMAIN);
