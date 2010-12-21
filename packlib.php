@@ -5,6 +5,12 @@ class packlib {
   const  class_mask = "#class\s+([^{\s]*?)\s*\{#";
   private $files_list; //file_path => file contents
   public $init_safe_class = array();
+  
+  const MODE_RAW = 1;
+  const MODE_BC  = 2;
+  const MODE_BCZ = 4;
+  const MODE_DEFAULT = 7;  
+
   function __construct(){
 
   }
@@ -55,40 +61,30 @@ class packlib {
     $this->files_list[] = "$php_code";
   }
 
-  function output($out_file) {
+  function output($out_file, $mode = self::MODE_DEFAULT) {
 
     $infos = pathinfo($out_file);
     $outz_file = "{$infos['dirname']}/{$infos['filename']}_z.dll";
     $outr_file = "{$infos['dirname']}/{$infos['filename']}_r.dll";
 
-    $fh = fopen($out_file, "w");
-
-    bcompiler_write_header($fh);
-
-    if(false) { //file per file 
-      foreach($this->files_list as $file_path=>$file_contents){
-          $code = "<?php\r\n$file_contents";
-          file_put_contents(self::tmp_file, $code);
-          bcompiler_write_file($fh, self::tmp_file);
-      }
-    }
-    if(true) { //one buffer only
-      $code = "<?php\r\n";
-      foreach($this->files_list as $file_path=>$file_contents)
-          $code .= $file_contents.CRLF.CRLF;
-      file_put_contents($outr_file, $code);
+    $code = "<?php\r\n";
+    foreach($this->files_list as $file_path=>$file_contents)
+        $code .= $file_contents.CRLF.CRLF;
+    file_put_contents($outr_file, $code);
+    
+    if($mode & self::MODE_DEFAULT)
+      copy($outr_file, $out_file);
+    
+    if($mode & self::MODE_BC) {
+      $fh = fopen($out_file, "w");
+      bcompiler_write_header($fh);
       file_put_contents(self::tmp_file, $code);
       bcompiler_write_file($fh, self::tmp_file);
+      bcompiler_write_footer($fh);
+      fclose($fh);
     }
 
-    bcompiler_write_footer($fh);
-
-    fclose($fh);
-
     //write bz compressed version
-    $contents = file_get_contents($out_file);
-
-    $bz = bzopen($outz_file, "w"); bzwrite($bz, $contents); bzclose($bz);
 
   }
 }
