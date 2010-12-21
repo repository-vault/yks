@@ -104,7 +104,7 @@
           </textarea>
         </xsl:when>
         <xsl:when test="$item_type='bool' and @mode='checkbox'">
-          <input type="checkbox" name="{@name}"/>
+          <input type="checkbox" name="{@name}" checked="{@checked}"/>
         </xsl:when>
         <xsl:when test="$type='enum'">
           <xsl:variable name="value" select="@value"/>
