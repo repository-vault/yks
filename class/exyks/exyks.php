@@ -53,8 +53,7 @@ class exyks {
         
 
     self::$modules_list = array();
-    $load_start_module = !bool(yks::$get->config->site['standalone']);
-    if($load_start_module) 
+    if(!SITE_STANDALONE) 
       self::$modules_list[] = new exyks_module(array(
         'key'      => "base",
         'manifest' => "path://yks/3rd/base",

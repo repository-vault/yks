@@ -88,6 +88,9 @@ class yks
     define('SITE_BASE',      ucfirst($site_code));
     define('SITE_DOMAIN',    $domain['host']);
     define('SESS_DOMAIN',    pick($config->site->sess['domain'], SITE_DOMAIN) );
+    
+      //enable default module & define yks rsrcs
+    define('SITE_STANDALONE', !bool($config->site['standalone']));
 
     define('FLAG_DOMAIN',    substr(md5(SITE_DOMAIN.SITE_CODE),0,5));
     define('FLAG_APC',       FLAG_DOMAIN);
@@ -138,7 +141,7 @@ class yks
 
   static function fatality($fatality_key, $details=false, $render_mode="html"){
     if($details) error_log("[FATALITY] $details");
-    if(PHP_SAPI == "cli") die ("==== Fatality $fatality_key ====\r\n$details");
+    if(PHP_SAPI == "cli" || SITE_STANDALONE) die ("==== Fatality $fatality_key ====\r\n$details");
     header($render_mode=="jsx"?TYPE_XML:TYPE_HTML);
     $contents  = file_get_contents(RSRCS_PATH."/fatality/-top.html");
     if(DEBUG) $contents .= "\r\n<!-- ".strtr($details,array("-->"=>"--"))."-->\r\n";
