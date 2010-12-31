@@ -5,6 +5,7 @@ class browser {
   private $windows_list = array();
 
   private $cookiejar;
+  private $proxy;
   private $url;
   private $start_url;
   private $lnk;
@@ -15,6 +16,10 @@ class browser {
     $this->cookiejar = new cookiejar();
     $this->ua        = $this->forge_ua();
     if($session_key) $this->session_load($session_key);
+  }
+  
+  function set_proxy($proxy_url){
+    $this->proxy = $proxy_url;
   }
 
   function open($url = false){ //can open an empty tab
@@ -81,6 +86,8 @@ class browser {
 
   function get_lnk($url){
     $lnk = new xhr($this, $url);
+    if($this->proxy)
+      $lnk->set_proxy($this->proxy);
     return $lnk;
   }
 
