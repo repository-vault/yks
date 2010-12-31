@@ -14,6 +14,8 @@ class sock   {
   protected $port;
   protected $enctype;
 
+  private $proxy;
+  private $proxy_infos;
   public static $trace = false;
   public static $transport_type = sock::TRANSPORT_USER;
 
@@ -30,6 +32,13 @@ class sock   {
     $this->close();
   }
 
+
+  function set_proxy($proxy){
+    $this->proxy = $proxy;
+    $this->proxy_infos = parse_url($this->proxy);
+    $this->proxy_infos['port'] = pick($this->proxy_infos['port'], 8080);
+    //$this->proxy_infos['auth'] = pick($this->proxy_infos['port'], 8080);
+  }
 
   static function trace($msg){
     if(!self::$trace) return;
@@ -81,8 +90,13 @@ class sock   {
         'timeout'          => 10,
         'max_redirects'    => 1,
         'protocol_version' => self::HTTP_VERSION,
+    ));
 
-    )); $ctx = stream_context_create($opts);
+    if($this->proxy)
+        $opts['http']['proxy'] = (string)$this->proxy;
+
+
+    $ctx = stream_context_create($opts);
 
     
     $this->contents = file_get_contents($this->query['url'], false, $ctx);
@@ -126,7 +140,9 @@ class sock   {
         'Connection'    =>'close',
     ); // -- 'Referer'       =>'',
 
-    if(self::HTTP_VERSION == 1.1
+    if($this->proxy) {
+        
+    } elseif (self::HTTP_VERSION == 1.1
       && self::$transport_type == self::TRANSPORT_USER)
       $headers = array_merge($headers, array(
         'Connection'    =>'keep-alive',
@@ -149,11 +165,16 @@ class sock   {
     $this->query['headers_str'] = mask_join('', $this->query['headers'], '%2$s: %1$s'.CRLF);
     $this->query['method']      = $method;
 
-    $this->query['raw'] = "$method $url HTTP/1.1".CRLF;
+    if($this->proxy) {
+      $this->query['raw'] = "$method {$this->query['url']} HTTP/1.0".CRLF;
+    } else {
+      $this->query['raw'] = "$method $url HTTP/1.1".CRLF;
+    }
     $this->query['raw'] .= $this->query['headers_str'];
     $this->query['raw'] .= CRLF;
 
     $this->query['raw'].= $this->query['data'];
+
     return $this->query['raw'];
   }
 
@@ -199,10 +220,22 @@ class sock   {
     return $body;
   }
 
+  private function receive_end_lnk($filter=false, &$ret=NULL){
+    $body = '';
+    do {
+      $body .= fgets($this->lnk, 1024);
+    } while(!feof($this->lnk));
+    if($filter && preg_match($filter, $body, $ret))
+      return true;
+
+    return $body;
+  }
+
   function receive($filer = false, &$ret=NULL){
 
     $file_size = (int)    $this->response['headers']['Content-Length']->value;
     $chunked   = (string) $this->response['headers']['Transfer-Encoding']->value == "chunked";
+
 
     if(self::$transport_type == self::TRANSPORT_USER) {
 
@@ -212,6 +245,8 @@ class sock   {
             return $this->receive_classic($file_size, $filter, $ret);
         elseif($chunked)
             return $this->receive_chunked($filter, $ret);
+        elseif($this->proxy)
+            return $this->receive_end_lnk($filter, $ret);
 
         throw new Exception("Invalid transport type");
     }
@@ -244,7 +279,11 @@ class sock   {
     if(self::$transport_type == self::TRANSPORT_NATIVE)
         return;
 
-    $this->lnk = @fsockopen($this->enctype.$this->host,$this->port);
+    if($this->proxy) 
+      $this->lnk = fsockopen($this->proxy_infos['host'], $this->proxy_infos['port']);
+    else
+      $this->lnk = @fsockopen($this->enctype.$this->host,$this->port);
+
     if(!$this->lnk) 
         throw new Exception("Unable to connect '$this->host':$this->port");
   }
