@@ -34,6 +34,7 @@ class crypt {
 
     if($in64) $cipherText = base64_decode($cipherText);
     $cleartext = mdecrypt_generic($cipher, $cipherText);
+    if($in64) $cleartext = rtrim($cleartext, "\0");
     return $cleartext ;
   }
 }
