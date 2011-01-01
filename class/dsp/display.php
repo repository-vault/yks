@@ -177,10 +177,11 @@ class dsp{
   }
 
   static function file_size($size){
-    $size=sprintf("%u",$size);
-    return ($size>>30)?round($size/(1<<30),2).' Go':
-        (($size>>20)?round($size/(1<<20),2).' Mo':
-            (($size>>10)?round($size/(1<<10),2).' Ko':"$size octets"));
+    $size=sprintf("%f",$size);
+    return ($size>>30) ? round($size/(1<<30),2).' Go'
+        : (($size>>20) ? round($size/(1<<20),2).' Mo'
+           : (($size>>10) ? round($size/(1<<10),2).' Ko'
+              :((int)$size)." octets"));
   }
 
   static function datef($date=_NOW,$format=DATE_MASK){
