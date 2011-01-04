@@ -16,7 +16,12 @@ abstract class _user extends _sql_base {
   //attention, a n'utiliser que si on est certain que la liste contient un arbre complet
   //todo : check
   static function from_ids($ids, $class ){
-    throw new Exception("Not yet");
+    $users = array();
+    foreach($ids as $user_id) {
+        $user = self::instanciate($user_id, $class);
+        $users[$user_id] = $user;
+    }
+    return $users;
   }
   
   private static function feed_tree($tree, &$users_infos, $parent_infos = array()){
