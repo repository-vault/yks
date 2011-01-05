@@ -1,7 +1,6 @@
 <?
 
 class packlib {
-  const  tmp_file    = 'R:\@';
   const  class_mask = "#class\s+([^{\s]*?)\s*\{#";
   private $files_list; //file_path => file contents
   public $init_safe_class = array();
@@ -12,7 +11,9 @@ class packlib {
   const MODE_DEFAULT = 7;  
 
   function __construct(){
-
+    $tmp_dir   = sys_get_temp_dir();
+    $tmp_drive = preg_reduce("#([a-z]:)#i", $tmp_dir);
+    $this->tmp_file = $tmp_drive.'\@';
   }
 
   function scan_path($dir, $file_mask = '.*\.(php|lib)$'){
@@ -78,8 +79,8 @@ class packlib {
     if($mode & self::MODE_BC) {
       $fh = fopen($out_file, "w");
       bcompiler_write_header($fh);
-      file_put_contents(self::tmp_file, $code);
-      bcompiler_write_file($fh, self::tmp_file);
+      file_put_contents($this->tmp_file, $code);
+      bcompiler_write_file($fh, $this->tmp_file);
       bcompiler_write_footer($fh);
       fclose($fh);
     }
