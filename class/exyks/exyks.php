@@ -21,6 +21,7 @@ class exyks {
   
 
   static function init() {
+    global $action;
 
     if(!defined('YKS_FUNCTIONS'))
       require CLASS_PATH."/functions.php";
@@ -50,7 +51,7 @@ class exyks {
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
-        
+    $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 
     self::$modules_list = array();
     if(!SITE_STANDALONE) 
@@ -67,10 +68,6 @@ class exyks {
 
 
   public static function web_init(){
-
-    global $action;
-
-    $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
 
     $tmp = (string)yks::$get->config->site['default_mode'];
     define('DEFAULT_MODE', $tmp?$tmp:"xml");
