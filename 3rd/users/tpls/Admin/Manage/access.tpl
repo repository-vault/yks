@@ -5,7 +5,7 @@ Vous êtes ici : <?=$parent_path?><br/>
 
 <ks_form ks_action="access_save" submit="Enregistrer">
 
-<table class='table' style='width:500px' id='access_zones_list'>
+<table class='table' style='width:750px' id='access_zones_list'>
     <thead>
   <tr class="line_head">
   <th style='width:200px'>Zone</th>
@@ -13,10 +13,12 @@ Vous êtes ici : <?=$parent_path?><br/>
     foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl)
         echo "<th>&access_lvl.$access_lvl;</th>";
     ?>
+  <th>Notes</th>  
   </tr>
     </thead>
 <?
 $root_zone = false;
+
 foreach($access_zones as $access_zone=>$zone_infos){
 
     //root zones are their own parent
@@ -40,7 +42,8 @@ foreach($access_zones as $access_zone=>$zone_infos){
         $checked=$checked?" checked='checked'":'';
         $tmp.="<td class='align_center'><input type='checkbox' name='access[{$access_zone}][{$access_lvl}]' $checked $readonly/></td>";
     }
-    $tmp.="</tr>";
+    $tmp.="<td class='center'>{$zone_infos['zone_descr']}</td>
+    </tr>";
     echo $tmp;
 }
 
