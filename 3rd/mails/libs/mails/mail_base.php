@@ -45,7 +45,9 @@ abstract class mail_base {
         $this->$key = array_merge($this->$key, $list);//no unique here, thx
   }
 
-  
+  public function from($from){
+    return $this->from = $from;
+  }
   public function to($to){ 
     return $this->dest_add("to", $to);
   }
