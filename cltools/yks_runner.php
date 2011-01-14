@@ -185,7 +185,15 @@ class yks_runner {
 
   private static function wget_dnsless($url){
     $local_ip      = (string) yks::$get->config->site->local['ip'];
-    return http::ping_url($url, 3, $local_ip);
+    $url_infos = parse_url($url);
+    $url           = "{$url_infos['scheme']}://{$local_ip}{$url_infos['path']}";
+    if($url_infos['query'])
+        $url.="?{$url_infos['query']}";
+    $options = array(
+      'timeout' => 3,
+      'header' => "Host:{$url_infos['host']}".CRLF,
+    );
+    return http::ping_url($url, $options);
   }
 
 
