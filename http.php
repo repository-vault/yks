@@ -38,33 +38,30 @@ class http {
   }
 
 
+  //option might be an integer ; this is just the timeout
+  public static function ping_url($url, $options = array()){
+    if(is_numeric($options))
+      $options = array('timeout'=>$options);
 
-  public static function ping_url($url, $timeout = 3, $ip = false){
-    $url_infos = parse_url($url);
+    if($options['proxy']) {
+        $options['request_fulluri'] = true;
+        $proxy = parse_url($options['proxy']);
+        $proxy['port'] = pick($proxy['port'], 8080);
+        if($proxy['scheme'] == 'http') {
+          $options['proxy'] = "tcp://{$proxy['host']}:{$proxy['port']}";
+          if($proxy['user'])
+            $credentials = "Basic ".base64_encode("{$proxy['user']}:{$proxy['pass']}");
+            $options['header'] .= "Proxy-Authorization: $credentials".CRLF;
+        }
+    }
+    if(!$options['timeout'])
+      $options['timeout'] = 3;
+    $options['timeout']/=2; //php 5.1 on socket open/close (checked with sleep());
+    $opts = array('http' => $options);
 
-    $host     = $url_infos['host'];
-    $host_ip  = $ip ? $ip : $host;
-    $path     = $url_infos['path'].'?'.$url_infos['query'];
-
-    $fp = @fsockopen($host_ip, 80, $null, $null, $timeout);
-    if (!$fp) throw new Exception("Unable to connect to host '$host'");
-    $query = array("GET $path HTTP/1.0");
-    $query []= "Host: $host";
-    $query []= "Connection: close";
-    $query []= "";
-    $query []= "";
-    $query  = join(CRLF, $query);
-
-    fwrite($fp, $query);
-    stream_set_timeout($fp, $timeout);
-    list($headers, $contents) = explode(CRLF.CRLF, stream_get_contents($fp), 2);
-    $info = stream_get_meta_data($fp);
-    fclose($fp);
-
-    if ($info['timed_out']) 
-        throw new Exception("Request timed out");
-
-    return $contents;
+    $ctx = stream_context_create($opts);
+    $res = @file_get_contents($url, null, $ctx);
+    return $res;
   }
 
 
