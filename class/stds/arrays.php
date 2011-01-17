@@ -90,6 +90,7 @@ function array_sublinearize($a,$c){$ret=array();foreach($a as $k=>$val)$ret[$k]=
 
 
 //thx cagret 
+//$mirrors_paths = array_msort($mirrors_paths, array("path_root"=>SORT_ASC) );
 
 function array_msort($array, $cols) {
     $colarr = array();
@@ -127,6 +128,7 @@ function linearize_tree($tree,$depth=0){
     }return $ret;
 }
 
+//you might want to look at array_msort ^^
 function array_sort_deep($array,$sort_by,$order='asort'){ 
     $keys=array(); foreach($array as $k=>$v)$keys[$k]=$v[$sort_by]; $order($keys);
     return array_merge_numeric($keys,$array);
