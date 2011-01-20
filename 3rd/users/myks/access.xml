@@ -4,13 +4,13 @@
   <table name="ks_access_zones">
     <fields>
       <field type="access_zone"/>
-      <field type="access_zone" name="access_zone_parent"/>
+      <field type="access_zone" name="access_zone_parent" delete="cascade"/>
       <field type="text" name="zone_descr"/>
     </fields>
   </table>
   <table name="ks_users_access">
     <fields>
-      <field type="access_zone" key="primary"/>
+      <field type="access_zone" key="primary"  delete="cascade"/>
       <field type="user_id" key="primary" update="cascade" delete="cascade"/>
       <field type="access_lvl"/>
       <field type="now" name="auth_create"/>
