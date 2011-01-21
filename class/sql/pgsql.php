@@ -269,7 +269,7 @@ class sql {
   static function lines($table){ return sql::value($table, true, "COUNT(*)");}
   
   static function in_join($field,$vals,$not=''){
-    if((!$vals) && (!$not)) return "FALSE";
+    if((!$vals) && (!$not)) return sql::false;
     return "$field $not IN('".join("','",$vals)."')";
   }
   
