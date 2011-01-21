@@ -127,7 +127,10 @@ abstract class isql {
 
 /***************** Data helpers *******************/
 
-  static function in_join($field,$vals,$not=''){ return "$field $not IN('".join("','",$vals)."')"; }
+  static function in_join($field,$vals,$not=''){
+    if((!$vals) && (!$not)) return "FALSE";
+    return "$field $not IN('".join("','",$vals)."')";
+  }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
 
 
