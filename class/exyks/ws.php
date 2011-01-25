@@ -59,8 +59,12 @@ class exyks_ws {
         die;
     }
 
-    if(DEBUG) ini_set('soap.wsdl_cache_enabled ', 1);
-    $options = array('actor' => SITE_CODE, 'classmap' =>array());
+    $options = array(
+        'actor'      => SITE_CODE,
+        'classmap'   => array(),
+        'cache_wsdl' => WSDL_CACHE_NONE,
+    );
+
     $server = new SoapServer($wsdl_file, $options);
     $server->setClass($class_name);
     $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
