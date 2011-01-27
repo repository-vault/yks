@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="zks_triggers_manager" type="string">
+<!-- operation is backup, disable, enable, release -->
+    <param type="string" name='operation'/>
+    <def>
+DECLARE
+mytrigger RECORD;
+query VARCHAR;
+BEGIN
+  IF(operation = 'backup') THEN
+    DROP TABLE IF EXISTS _triggerbackup;
+    CREATE TABLE _triggerbackup AS SELECT * FROM zks_information_schema_ttriggers WHERE trigger_schema NOT IN ('pg_catalog');
+  END IF;
+  IF(operation = 'disable' ) THEN
+
+    -- disable FK and triggers
+    FOR mytrigger IN SELECT * FROM information_schema.tables
+          WHERE TRUE
+              AND table_type = 'BASE TABLE'
+              AND table_schema NOT IN ('information_schema', 'pg_catalog')
+      LOOP
+        query := 'ALTER TABLE "'
+                 || mytrigger.table_schema  || '"."' || mytrigger.table_name || '" '
+                 || 'DISABLE TRIGGER ALL;';
+        EXECUTE query;
+      END LOOP;
+ END IF;
+
+  IF(operation = 'enable') THEN
+
+    -- enable FK and all triggers
+    FOR mytrigger IN SELECT * FROM information_schema.tables
+          WHERE TRUE
+              AND table_type = 'BASE TABLE'
+              AND table_schema NOT IN ('information_schema', 'pg_catalog')
+      LOOP
+        query := 'ALTER TABLE "'
+                 || mytrigger.table_schema  || '"."' || mytrigger.table_name || '" '
+                 || 'ENABLE TRIGGER ALL;';
+        EXECUTE query;
+      END LOOP;
+
+    -- disable previously disabled triggers
+    FOR mytrigger IN SELECT * FROM _triggerbackup WHERE NOT(trigger_enabled)
+      LOOP
+        query := 'ALTER TABLE "'
+                 || mytrigger.event_object_schema  || '"."' || mytrigger.event_object_table || '" '
+                 || 'DISABLE TRIGGER "' || mytrigger.trigger_name || '";';
+        EXECUTE query;
+      END LOOP;
+ END IF;
+
+
+  IF(operation = 'release') THEN
+    DROP TABLE IF EXISTS _triggerbackup;
+  END IF;
+
+  RETURN operation;
+END
+</def>
+  </procedure>
+</myks>
