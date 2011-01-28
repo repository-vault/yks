@@ -24,6 +24,11 @@ abstract class _user extends _sql_base {
     return $users;
   }
   
+  function get_addr($verif_addr = array("addr_type != ''")){
+    $verif_addr[] = $this;
+    return sql::row('ks_users_addrs', $verif_addr);
+  }
+  
   private static function feed_tree($tree, &$users_infos, $parent_infos = array()){
       $user_id    = $tree['user_id'];
       $user_infos = $users_infos[$user_id];
@@ -126,7 +131,7 @@ abstract class _user extends _sql_base {
   }
 
   function update($data_full) {
-    $tables_list = array('ks_users_profile'); //todo : see users::$users_linear_tables
+    $tables_list = array('ks_users_profile', sprintf('%s_profile', $this->user_type));
     foreach($tables_list as $table_name){
         $data = mykses::validate_update($data_full, yks::$get->tables_xml->$table_name);
         if(!$data) continue;
