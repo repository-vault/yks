@@ -5,12 +5,20 @@ class packlib {
   private $files_list; //file_path => file contents
   public $init_safe_class = array();
   
+  private $init_code = "";
+  private $options = array();
+  
   const MODE_RAW = 1;
   const MODE_BC  = 2;
   const MODE_BCZ = 4;
   const MODE_DEFAULT = 7;  
-
-  function __construct(){
+  const MODE_PHAR = 9;  
+  
+  const OPT_NO_PHAR_INCLUDE = 1;
+  
+  
+  function __construct($options = array()){
+    $this->options = $options;
     $tmp_dir   = sys_get_temp_dir();
     $tmp_drive = preg_reduce("#([a-z]:)#i", $tmp_dir);
     $this->tmp_file = $tmp_drive.'\@';
@@ -55,15 +63,54 @@ class packlib {
   }
 
   public function add_code($php_code){
-    $this->stack_code($php_code);
+    $this->init_code .= $php_code;
   }
 
   private function stack_code($php_code){
     $this->files_list[] = "$php_code";
   }
+  
+  private function has_option($key){
+    return in_array($key, $this->options);
+  }
+  
+  private function output_phar($out_file) {
+
+    //Check setup
+    if(!Phar::canWrite())
+      die("Can't create any phar. Please disable phar.readonly in php.ini");
+
+    $out_phar = "$out_file.phar";
+    $archive_phar_name = basename($out_phar) ;
+    $archive_name = basename($out_file) ;
+    $inner_file = "yals"; //$archive_name
+
+    $phar = new Phar($out_phar, 0, $archive_phar_name);
+    $code = "<?php\r\n";
+    foreach($this->files_list as $file_path=>$file_contents)
+        $code .= $file_contents.CRLF.CRLF;
+    $phar[$inner_file] = $code;
+
+    $stub = "<?\n";
+    if(!$this->has_option(self::OPT_NO_PHAR_INCLUDE))
+      $stub .= "include 'phar://{$archive_name}/{$inner_file}';\n";
+    $stub .= $this->init_code.CRLF;
+    $stub .= "__HALT_COMPILER();";
+    $phar->setStub($stub);
+    $phar->stopBuffering();
+
+    //Compress 
+    $phar->compressFiles(Phar::BZ2);
+    $phar = null; // Releave phar lock
+
+    rename($out_phar, $out_file);
+  }
 
   function output($out_file, $mode = self::MODE_DEFAULT) {
 
+    if($mode == packlib::MODE_PHAR)
+     return $this->output_phar($out_file); 
+     
     $infos = pathinfo($out_file);
     $outz_file = "{$infos['dirname']}/{$infos['filename']}_z.dll";
     $outr_file = "{$infos['dirname']}/{$infos['filename']}_r.dll";
@@ -71,6 +118,7 @@ class packlib {
     $code = "<?php\r\n";
     foreach($this->files_list as $file_path=>$file_contents)
         $code .= $file_contents.CRLF.CRLF;
+    $code .= $this->init_code;
     file_put_contents($outr_file, $code);
     
     if($mode & self::MODE_DEFAULT)
