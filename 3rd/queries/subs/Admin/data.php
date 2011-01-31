@@ -1,7 +1,8 @@
 <?
 
 
-if(!$query) abort(405);
+if(!$query)
+    abort(405);
 $export = (bool) $sub0;
 
 

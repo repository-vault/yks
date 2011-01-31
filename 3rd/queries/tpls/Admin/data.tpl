@@ -1,4 +1,5 @@
 <box theme="&pref.dft;" class="center " caption="<?=$query['query_name']?>" options="reload" style="width:100%">
+<button ext="/?&href;//download">Export Excel</button>
 
 
 <toggler caption="Détails de la query" class="closed">
