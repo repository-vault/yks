@@ -37,4 +37,22 @@ class crypt {
     if($in64) $cleartext = rtrim($cleartext, "\0");
     return $cleartext ;
   }
+
+  const PEM_PUBLIC = "public";
+  const PEM_PRIVATE = "private";
+   
+  public static function BuildPemKey($key, $type=crypt::PEM_PUBLIC) {
+    if($type == crypt::PEM_PRIVATE){
+      $keyMask = "-----BEGIN RSA PRIVATE KEY-----\n%s\n-----END RSA PRIVATE KEY-----"; 
+    }else{
+      $keyMask = "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----";   
+    }
+
+    $k = array();
+    $lineSize = 65;
+    for($i = 0; $i < strlen($key); $i += $lineSize)
+      $k[] = substr($key, $i, $lineSize);
+
+    return sprintf($keyMask, implode("\n", $k));
+  }
 }
