@@ -48,11 +48,6 @@ class crypt {
       $keyMask = "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----";   
     }
 
-    $k = array();
-    $lineSize = 65;
-    for($i = 0; $i < strlen($key); $i += $lineSize)
-      $k[] = substr($key, $i, $lineSize);
-
-    return sprintf($keyMask, implode("\n", $k));
+    return sprintf($keyMask, chunk_split($key, 65, "\n") );
   }
 }
