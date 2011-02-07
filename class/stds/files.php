@@ -302,6 +302,21 @@ class files {
     return $tmp_file;
   }
 
+  public static function search_bytes($file_handle, $needle, $buffer_size = 2048) {
+    if(strlen($needle) >= $buffer_size)
+      throw new Exception('Needle length must be inferior to buffer_size size.');
+
+    while($line = fread($file_handle, $buffer_size)){
+      $needle_pos = strpos($line, $needle);
+      if($needle_pos !== FALSE)
+        return ftell($file_handle) + $needle_pos - strlen($line);
+      if(feof($file_handle))
+        return false;
+      fseek($file_handle, - strlen($needle), SEEK_CUR);
+    }
+    return false;
+  }
+
   public static function file_edit_bit($file, $value, $byte_start = 0, $bit = 0){
     $str = file_get_contents($file);
     $str = self::edit_bit($str, $value, $byte_start, $bit);
