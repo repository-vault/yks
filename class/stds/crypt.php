@@ -1,7 +1,33 @@
 <?
 
 class crypt {
+  
+  
+  public static function getppkpair($rsa_options = array()){
+    $options = array(
+      'digest_alg'       => 'sha1',
+      'private_key_bits' => 2048,
+      'private_key_type' => OPENSSL_KEYTYPE_RSA,
+      'encrypt_key'      => false,
+    ); $options = array_merge($options, $rsa_options);
+    
+    $ppk       = openssl_pkey_new($options);
+    $ppk_infos = openssl_pkey_get_details($ppk);
+    if(!openssl_pkey_export ($ppk, $contents))
+        throw new Exception("Fail to export private key");
+    $private_key = $contents;
+    $public_key  = $ppk_infos['key'];
 
+    $cleanup = array(
+      '#^-+(BEGIN|END)( RSA)? (PUBLIC|PRIVATE) KEY-+$#m' => '',
+      "#\r?\n#" => ''
+    );
+    $private_key = preg_areplace($cleanup, $private_key);
+    $public_key = preg_areplace($cleanup, $public_key);
+
+    return compact('private_key', 'public_key');
+  }
+  
   private static function cypherInit($passphrase){
     $algo    = MCRYPT_RIJNDAEL_128;
 //    $algo    = MCRYPT_DES;
