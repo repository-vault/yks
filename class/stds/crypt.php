@@ -74,6 +74,6 @@ class crypt {
       $keyMask = "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----";   
     }
 
-    return sprintf($keyMask, chunk_split($key, 65, "\n") );
+    return sprintf($keyMask, trim(chunk_split($key, 64, "\n")) );
   }
 }
