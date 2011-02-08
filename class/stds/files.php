@@ -302,10 +302,10 @@ class files {
     return $tmp_file;
   }
 
-  public static function search_bytes($file_handle, $needle, $buffer_size = 2048) {
+  public static function search_bytes($file_handle, $needle, $offset = false, $buffer_size = 2048) {
     if(strlen($needle) >= $buffer_size)
       throw new Exception('Needle length must be inferior to buffer_size size.');
-
+    if($offset !==false) fseek($file_handle, $offset);
     while($line = fread($file_handle, $buffer_size)){
       $needle_pos = strpos($line, $needle);
       if($needle_pos !== FALSE)
