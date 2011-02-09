@@ -67,6 +67,16 @@ class crypt {
   const PEM_PUBLIC = "public";
   const PEM_PRIVATE = "private";
    
+  public static function BuildAuthorizedKey($key){
+    $tmp_path = files::tmppath();
+    file_put_contents($tmp_path, $key);
+    chmod($tmp_path, 0600);
+
+    $cmd = "ssh-keygen -f $tmp_path -y";
+    exec($cmd, $out);
+    return join('', $out);
+  }
+  
   public static function BuildPemKey($key, $type=crypt::PEM_PUBLIC) {
     if($type == crypt::PEM_PRIVATE){
       $keyMask = "-----BEGIN RSA PRIVATE KEY-----\n%s\n-----END RSA PRIVATE KEY-----"; 
