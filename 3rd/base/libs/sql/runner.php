@@ -118,7 +118,7 @@ class sql_runner {
   function gc(){
     rbx::ok("Cleaning expired sessions");
     $expired = 86400 * 2;
-    sql::delete("ks_sessions_list", "session_start < unix_timestamp() - $expired");
+    sql::delete("zks_sessions_list", "session_start < unix_timestamp() - $expired");
     
   }
 

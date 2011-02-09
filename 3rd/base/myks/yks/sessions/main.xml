@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
 <myks>
-  <table name="ks_sessions_list">
+  <table name="zks_sessions_list">
     <fields>
-      <field type="session_id"/>
+      <field type="ksession_id" name="session_id" key="primary"/>
       <field type="now" name="session_start"/>
     </fields>
   </table>
-  <table name="ks_sessions_results_heap">
+  <table name="zks_sessions_results_heap">
     <fields>
-      <field type="session_id" delete="cascade"/>
+      <field type="ksession_id" name="session_id" delete="cascade"/>
       <field type="session_heap_key"/>
       <field type="session_ns"/>
       <field type="session_heap_value"/>
@@ -24,7 +24,7 @@
       </index>
     </indices>
   </table>
-  <mykse type="session_heap_key" birth="ks_sessions_results_heap">
+  <mykse type="session_heap_key" birth="zks_sessions_results_heap">
     <int size="big"/>
   </mykse>
   <mykse type="session_heap_value">
@@ -33,7 +33,7 @@
   <mykse type="session_ns">
     <string length="64"/>
   </mykse>
-  <mykse type="session_id" birth="ks_sessions_list">
+  <mykse type="ksession_id" birth="zks_sessions_list">
     <mykse type="sha1"/>
   </mykse>
 </myks>
