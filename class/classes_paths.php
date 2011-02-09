@@ -46,8 +46,6 @@ classes::register_class_paths(array(
     "highlight_xml"       => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "json_parser"         => CLASS_PATH."/apis/json_parser.php",
     "exyks_auth_api"      => CLASS_PATH."/apis/AuthApi.php",
-    "stdflow_filter"      => CLASS_PATH."/apis/stdflow_filter.php",
-    "php_legacy"          => CLASS_PATH."/apis/legacy.php",
 
     "yksauthdrupal"       => CLASS_PATH."/apis/drupal/AuthDrupal.php",
 
@@ -57,6 +55,7 @@ classes::register_class_paths(array(
 
     "imgs"                => CLASS_PATH."/imgs/imgs.php",
     "png"                 => CLASS_PATH."/apis/png/png.php",
+    "unix"                => CLASS_PATH."/apis/unix.php",
 
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
@@ -69,10 +68,6 @@ classes::register_class_paths(array(
 
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
-
-    "torrent"             => CLASS_PATH."/exts/torrents/torrent.php",
-    "bencode"             => CLASS_PATH."/exts/torrents/bencode.php",
-    "torrents"            => CLASS_PATH."/exts/torrents/torrents.php",
 
 ));
 
