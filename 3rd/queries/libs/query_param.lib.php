@@ -49,7 +49,7 @@ class query_param extends _sql_base {
 
   public function valid_query(&$data, $_POST){
 
-    $sub_query_str = $_POST['query_contents'];
+    $sub_query_str = specialchars_decode($_POST['query_contents']);
     $data['param_arg0'] = $sub_query_str;
 
     $test = sql::qrow($sub_query_str);

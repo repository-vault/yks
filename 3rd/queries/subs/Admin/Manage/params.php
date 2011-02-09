@@ -26,7 +26,9 @@ if($action == "params_add") try {
         'param_descr'    => $_POST['param_descr'],
         'param_nullable' => bool($_POST['param_nullable']),
         'param_multiple' => bool($_POST['param_multiple']),
-    ); $query_param = query_param::create($data, $_POST);
+    );
+
+    $query_param = query_param::create($data, $_POST);
 
     jsx::$rbx = false;
 
