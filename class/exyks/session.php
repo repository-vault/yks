@@ -86,7 +86,7 @@ class exyks_session {
 
     if(!isset($_SESSION['load'])) {
       $data = array('session_id' => session_id());
-      //sql::insert("ks_sessions_list", $data);
+      //sql::insert("zks_sessions_list", $data);
       $_SESSION['load'] = true;
     }
 
