@@ -7,6 +7,7 @@ abstract class mail_base {
   protected $to = array();
   protected $cc = array();
   protected $dests = array();
+  protected $first_part;
 
   abstract function send($to=false);
 
