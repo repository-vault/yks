@@ -150,7 +150,8 @@ class users  {
         if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
         $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
      }
-     $tree=  array_intersect_key($tree, array($uttermost_user => false));;
+     if($uttermost_user)
+         $tree=  array_intersect_key($tree, array($uttermost_user => false));;
      return $tree;
   }
   
@@ -167,19 +168,18 @@ class users  {
   }
 
   static function get_children_tree($parent_id){
-    //TODO : TRAHSME & use recompute_tree_from_flying_nodes (a lot smarter)
-  $parents =  (!is_array($parent_id))?array((int)$parent_id): $parent_id;
-  $query_tree = self::get_children_query($parents);
-  foreach($parents as $parent_id)
+    $parents =  (!is_array($parent_id))?array((int)$parent_id): $parent_id;
+    $query_tree = self::get_children_query($parents);
+    foreach($parents as $parent_id)
     $query_tree .= " UNION (SELECT $parent_id, $parent_id,  0) ";
-  
-  $query = "SELECT * FROM `ks_users_list` INNER JOIN ($query_tree) AS tmp USING(user_id)";
-   sql::query($query);
-   //sql::select(array("ks_users_tree", "user_id"=>"ks_users_list"));
-   $users_list = sql::brute_fetch("user_id");
 
-   $tree = array();
-   foreach($users_list as $user_id=>$user){
+    $query = "SELECT * FROM `ks_users_list` INNER JOIN ($query_tree) AS tmp USING(user_id)";
+    sql::query($query);
+    //sql::select(array("ks_users_tree", "user_id"=>"ks_users_list"));
+    $users_list = sql::brute_fetch("user_id");
+
+    $tree = array();
+    foreach($users_list as $user_id=>$user){
       $parent_id = $user['parent_id'];
       if ($user_id == $parent_id) $parent_id = null;
       if(!$tree[$user_id] ){
@@ -191,12 +191,12 @@ class users  {
       }
       if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
       $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
-   }
+    }
    
-   $ret = array();
-   foreach($parents as $parent_id )
+    $ret = array();
+    foreach($parents as $parent_id )
       $ret[$parent_id] = $tree[$parent_id];
-   return $ret;
+    return $ret;
   }
   
   
