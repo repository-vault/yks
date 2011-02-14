@@ -73,16 +73,19 @@ class dsp{
   }
 
   // Find documentation in the manual
-  static function pages($max,$by,$page_id,$href,$target=false,$step=true){ $str="";
-    if($by) for($a=0;$a<$max;$a+=$by){
-        $b=$a/$by;$tmp=$b+1;$total=ceil($max/$by);
-        if($b==$page_id)$tmp="[$tmp]";
+  static function pages($max, $by, $page_id, $href, $target=false, $step=true){
+    $str="";
+    if($by) for($a=0; $a<$max; $a += $by){
+        $b=$a/$by; $tmp=$b+1; $total=ceil($max/$by);
+        if($b==$page_id) $tmp="[$tmp]";
         if($step && $b>4 && $b<$page_id-2){
             if($b==5) $str.="…"; continue;
         } elseif($step && $b>$page_id+2 && $b<$total-5){
             if($b==$page_id+3) $str.="…"; continue;
         } $str.="<a href='$href$b' ".($target?"target='$target'":'').">$tmp</a>&#160;";
-    } return $str?$str." ($max)":'';
+    }
+    $end = ($page_id*$by +1 )."-".min(($page_id+1)*$by+1, $max);
+    return $str?$str." ($end/$max)":'';
   }
 
   static function radio($type,$actives=false,$mode="radio"){
