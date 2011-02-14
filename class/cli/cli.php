@@ -185,6 +185,7 @@ class cli {
         $file_tick = files::tmppath("chk");
 
     $wd = dirname($file_tick);
+    files::create_dir($wd);
 
     $cmds["ok"] = 'echo "ok">'.$file_tick;
     $dist_file = files::tmppath("bat");
