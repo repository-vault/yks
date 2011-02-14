@@ -103,6 +103,8 @@ class packlib {
     $phar->compressFiles(Phar::BZ2);
     $phar = null; // Releave phar lock
 
+    if(is_file($out_file))
+      unlink($out_file);
     rename($out_phar, $out_file);
   }
 
