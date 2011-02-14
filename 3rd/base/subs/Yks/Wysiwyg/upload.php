@@ -1,4 +1,5 @@
 <?php
+
 $valid_exts = preg_split( VAL_SPLITTER, $upload_def['exts'],  -1,  PREG_SPLIT_NO_EMPTY);
 
 if(!sess::$connected && !DEBUG){
@@ -21,7 +22,7 @@ if($action=="upload_tmp")try {
         throw rbx::error("Le fichier est invalide");
     if( ($file['size']/1024) > $upload_def['size'] )
         throw rbx::error("Votre fichier est trop lourd, il ne peut excéder {$upload_def['size']} Ko");
-    if(!in_array($file_ext, $valid_exts))
+    if(!in_array($file_ext, $valid_exts) && !in_array('*',$valid_exts)) // Si on a pas l'ext et si on a pas autorisé le whilecard
         throw rbx::error("Le format de votre fichier n'est pas valide.<br />".
             "Les extensions acceptées sont : ".join(', ', $valid_exts));
 

@@ -126,6 +126,34 @@ class users  {
     } else return sql_func::get_parents_path($user_id,'ks_users_tree','user_id');
   }
 
+  static function recompute_tree_from_flying_nodes($users_ids, $uttermost_user = USERS_ROOT){
+    
+    $tree_table = "ks_users_tree";
+    $tree_key   = "user_id";
+    $tree = sql_func::filter_parents($users_ids, $tree_table, $tree_key);
+    sql::select($tree_table, array($tree_key => $tree));
+    $treex =  sql::brute_fetch("user_id");
+
+      //on recompose un tree complet
+     $tree = array();
+     foreach($treex as $user_id=>$user){
+       
+        $parent_id = $user['parent_id'];
+        if ($user_id == $parent_id) $parent_id = null;
+        if(!$tree[$user_id] ){
+            $tree[$user_id]  = $user;
+        } else {
+           $tmp =  &$tree[$user_id]['children'];
+           $tree[$user_id] = $user;
+           $tree[$user_id]['children'] = $tmp; unset($tmp);
+        }
+        if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
+        $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
+     }
+     $tree=  array_intersect_key($tree, array($uttermost_user => false));;
+     return $tree;
+  }
+  
   static function get_children($user_id, $depth=-1){
     $users_list = sql_func::get_children($user_id, 'ks_users_tree', 'user_id', $depth);
     return array_unique($users_list);
@@ -139,7 +167,7 @@ class users  {
   }
 
   static function get_children_tree($parent_id){
-
+    //TODO : TRAHSME & use recompute_tree_from_flying_nodes (a lot smarter)
   $parents =  (!is_array($parent_id))?array((int)$parent_id): $parent_id;
   $query_tree = self::get_children_query($parents);
   foreach($parents as $parent_id)

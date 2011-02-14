@@ -54,17 +54,18 @@ abstract class _user extends _sql_base {
         self::feed_tree($child, $users_infos,  $user_infos);
   }
 
-  static protected function from_flat_tree($flat_tree, $class){
+  protected static function from_flat_tree($flat_tree, $class){
     $tree = array(); $here = &$tree;
     foreach($flat_tree as $node_id){
       $here[$node_id]['user_id'] = $node_id;
       $here[$node_id]['children'] = array();
       $here = &$here[$node_id]['children'];
     }; unset($here);
+
    return self::from_tree($tree, $class);
   }
   
-  static function from_tree($tree, $class ){
+  protected static function from_tree($tree, $class ){
     $users_id = array_keys(users::linearize_tree($tree));
     $users_infos = users::get_infos($users_id, '*');
       //feed $users_infos with computed, users_tree & users_types
