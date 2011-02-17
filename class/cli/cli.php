@@ -15,27 +15,40 @@ class cli {
     $tty = isset($_SERVER['SSH_TTY']);
     self::$OS = $win && !$tty ? self::OS_WINDOWS : self::OS_UNIX;
 
+    self::$paths = self::get_path();
 
       //transcoding UTF-8 to IBM codepage
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
   }
 
+  
+  private static $paths = false;
+  static function extend_path($paths){
+    $new_paths      = is_array($paths)?$paths:func_get_args();
+    
+    $paths = array_merge(self::get_path(), $new_paths);
+    $paths = array_filter(array_unique($paths));
+
+    $_ENV['PATH'] = $_SERVER['PATH'] = join(PATH_SEPARATOR, $paths);
+    self::$paths = self::get_path();
+  }
+  
+  static function get_path(){
+    $tmp            = array_key_map('strtoupper', $_SERVER);
+    self::$paths    = array_filter(explode(PATH_SEPARATOR, $tmp['PATH']));
+    return self::$paths;
+  }
+  
   static function which($bin_name){
     if(self::$OS == self::OS_UNIX)
       return trim(`which $bin_name`);
 
-    static $paths= false;
-    if($paths===false) {
-      $paths = array_key_map('strtoupper', $_SERVER);
-      $paths = explode(PATH_SEPARATOR, $paths['PATH']);
-    }
-    
+   
     if(strpos($bin_name, ".")===false)
         $bin_name .=".exe";
 
-    
-    foreach($paths as $path) {
+    foreach(self::$paths as $path) {
       $bin_path = $path.DIRECTORY_SEPARATOR.$bin_name;
       if(file_exists($bin_path))
         return $bin_path;

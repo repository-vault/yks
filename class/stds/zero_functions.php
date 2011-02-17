@@ -23,7 +23,8 @@ function pick(){
 
 function array_mask($array, $vmask, $kmask="%s"){ 
   $ret = array();
-  foreach($array as $k=>$v) $ret[sprintf($kmask, $k)] = sprintf($vmask, $v);
+  foreach($array as $k=>$v)
+    $ret[sprintf($kmask, $k, $v)] = sprintf($vmask, $v, $k);
   return $ret;
 }
 
