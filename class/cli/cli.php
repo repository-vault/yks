@@ -40,8 +40,8 @@ class cli {
     return self::$paths;
   }
   
-  static function which($bin_name){
-    if(self::$OS == self::OS_UNIX)
+  static function which($bin_name, $force_use_path = false){
+    if(self::$OS == self::OS_UNIX && !$force_use_path )
       return trim(`which $bin_name`);
 
    
