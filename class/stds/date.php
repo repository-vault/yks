@@ -10,7 +10,7 @@ class date {
     $tm['tm_mon']+=1;
 
     $date = gmmktime($tm['tm_hour'],$tm['tm_min'],$tm['tm_sec'],
-        $tm['tm_mon'], $tm['tm_mday'], 1900+pick($tm['tm_year'], 70));
+        $tm['tm_mon'], pick($tm['tm_mday'],1), 1900+pick($tm['tm_year'], 70));
 
     if(!$zero_time)
         $date -= exyks::retrieve("USER_TZ");
