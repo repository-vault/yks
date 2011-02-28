@@ -241,7 +241,7 @@ class files {
   public static function tmppath($ext= 'tmp') {
       $abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       $rand = substr(str_shuffle($abc.$abc.$abc), 0,8);
-      $file_path = sys_get_temp_dir().DIRECTORY_SEPARATOR."$ext-$rand.$ext";
+      $file_path = rtrim(sys_get_temp_dir(),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR."$ext-$rand.$ext";
       if(file_exists($file_path))
         return self::tmppath($ext);
       return $file_path;
