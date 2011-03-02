@@ -7,6 +7,7 @@ class interactive_runner {
 
   private $command_pipe;
   private $file;
+  const ns = "runner";
   
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
@@ -37,7 +38,7 @@ class interactive_runner {
     $mode_str = is_null($this->obj) ? "auto-instanciation" : "std";
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
-    $this->reflection_scan(__CLASS__, "runner", $this); //register runners own commands
+    $this->reflection_scan(__CLASS__, self::ns, $this); //register runners own commands
 
     $this->help();
 
@@ -78,6 +79,7 @@ class interactive_runner {
         $msgs[$command['command_ns']][] = "$alias_name (={$command['command_key']} ".join(" ", $args).")";
 
     }
+    $msgs[self::ns][] = "r replay last command";
 
     $rbx_msgs = array();
     foreach($msgs as $command_ns=>$msgs) {
@@ -189,6 +191,10 @@ class interactive_runner {
     }
 
   }
+  
+  private $last_command;
+  private static $REPLAY_COMMAND = array('r');
+
     //embeded object loop, deal with commands
   private function command_loop(){
 
@@ -197,8 +203,12 @@ class interactive_runner {
       try {
         $command_split = array();
         cli::text_prompt('$'.$this->className, $command_split);
-        list($command_callback, $command_args) = $this->command_parse($command_split);
+        if($command_split == self::$REPLAY_COMMAND)
+            $command_split = $this->last_command;
+        else 
+            $this->last_command = $command_split;
         
+        list($command_callback, $command_args) = $this->command_parse($command_split);
       } catch(Exception $e){ continue; }
 
 
