@@ -197,6 +197,7 @@ class interactive_runner {
 
     //embeded object loop, deal with commands
   private function command_loop(){
+   ///system("stty -icanon");
 
     while(is_null($this->command_pipe)){ 
 
