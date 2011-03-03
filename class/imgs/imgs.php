@@ -313,14 +313,14 @@ class imgs {
 
 /** duplicate an image, return an empty one of the same size */
   static function imageempty($img){
-    list($pic_w, $pix_h) = array( imagesx($img), imagesy($img));
+    list($pic_w, $pic_h) = array( imagesx($img), imagesy($img));
     $tmp = self::imagecreatetruealpha($pic_w, $pic_h);
     return $tmp;
   }
 
 /** duplicate an image/ have to check if alpha is well supported */
   static function imageduplicate($img){
-    list($pic_w, $pix_h) = array( imagesx($img), imagesy($img));
+    list($pic_w, $pic_h) = array( imagesx($img), imagesy($img));
     $tmp = self::imagecreatetruealpha($pic_w,$pic_h);
     imagecopyresampled($tmp, $img, 0, 0, 0, 0, $pic_w, $pic_h, $pic_w, $pic_h);
     return $tmp;

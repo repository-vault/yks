@@ -8,12 +8,15 @@ define('TRANSPARENT_LVL',127);
 /* Applies a 10px glow from $img_mask */
 function imageglow($img_back, $img_mask, $color){
     if(!function_exists('imagefilter')) return;
-    $img_back = imgs::imageduplicate($img_back);
 
+    $img_back = imgs::imageduplicate($img_back);
     $radius = 10;
     $img_w    = imagesx($img_mask);$img_h=imagesy($img_mask);
-    $glow_w   = ($img_w+$radius);$glow_h=($img_h+$radius);
-    $img_glow = imgs::imagecreatetruealpha($glow_w,$glow_h);
+
+
+    $glow_w   = ($img_w+$radius); $glow_h=($img_h+$radius);
+    $img_glow = imgs::imagecreatetruealpha($glow_w, $glow_h);
+
     imagecopyresampled ($img_glow, $img_mask,
             ($img_w-$glow_w)/2,($img_h-$glow_h)/2,
             0,0,
