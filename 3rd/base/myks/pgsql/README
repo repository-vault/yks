@@ -1,0 +1,7 @@
+Aggregates arent managed (yet)
+Please create
+CREATE AGGREGATE "public"."concat_comma" ( BASETYPE = "text",
+    SFUNC = "public"."concat_comma", STYPE = "text");
+
+ CREATE LANGUAGE 'plpgsql' HANDLER plpgsql_call_handler
+                            LANCOMPILER 'PL/pgSQL'

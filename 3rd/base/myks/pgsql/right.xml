@@ -12,4 +12,15 @@ RETURN SUBSTR($1,LENGTH($1)-$2+1);
 END;
 </def>
   </procedure>
+  <procedure name="left" type="string">
+    <param type="string"/>
+    <param type="int"/>
+    <def>
+BEGIN
+
+RETURN SUBSTR($1, 0 +1 , $2);
+
+END;
+</def>
+  </procedure>
 </myks>
