@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <mykse type="country_code">
+    <string length="5"/>
+  </mykse>
+  <mykse type="user_lang">
+    <string length="5"/>
+  </mykse>
+</myks>
