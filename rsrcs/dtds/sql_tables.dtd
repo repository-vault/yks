@@ -1,6 +1,6 @@
 <!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger)+)>
 <!ELEMENT def (#PCDATA)>
-<!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance)">
+<!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance|tree_integral)">
 
 <!ATTLIST table
   name    CDATA    #REQUIRED
