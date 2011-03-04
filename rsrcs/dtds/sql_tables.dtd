@@ -40,7 +40,7 @@
 >
 
 <!-- abstract tables  -->
-<!ELEMENT abstract (subscribe+,query)>
+<!ELEMENT abstract (subscribe+,query?)>
 <!ATTLIST abstract
   type %table_abstraction; #REQUIRED
 >
