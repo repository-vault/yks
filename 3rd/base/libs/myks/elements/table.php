@@ -49,7 +49,10 @@ abstract class table_base  extends myks_installer {
     $this->keys_def=array();
 
     if($this->xml->abstract) {
-        $this->abstract = new materialized_view($this, $this->xml->abstract);
+        $abstract = $this->xml->abstract;
+        if($abstract['type'] == "tree_integral")
+            $this->abstract = new tree_integral($this, $abstract);
+        else $this->abstract = new materialized_view($this, $abstract);
     }
 
   }

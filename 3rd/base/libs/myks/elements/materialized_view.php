@@ -1,17 +1,9 @@
 <?php
 
-class materialized_view extends myks_installer {
-  private $table;
-  private $view;
-  private $triggers;
-  private $procedures;
+class materialized_view extends table_abstract {
 
-  private $table_keys;
-  private $table_name;
-  private $table_fields;
-
-  private $abstact_xml;
   private $subscribed_tables = array();
+
   function __construct($table, $abstract_xml){
 
     $this->abstract_xml = $abstract_xml;
@@ -192,53 +184,6 @@ class materialized_view extends myks_installer {
     return new view($v_xml);
   }
 
-  function modified(){
-    $modified = $this->view->modified()
-           || $this->procedures->modified();
-    foreach($this->triggers as $triggers)
-        $modified |= $triggers->modified();
-    return $modified;
-  }
-
-  function get_name(){
-    return $this->table->get_name();
-  }
-
-  function alter_def(){
-    $ret = array_merge(
-        $this->view->alter_def(),
-        $this->procedures->alter_def());
-    foreach($this->triggers as $triggers)
-      $ret = array_merge($ret, $triggers->alter_def());
-    return $ret;
-  }
-
-  function xml_infos(){
-    $this->view->xml_infos();
-    $this->procedures->xml_infos();
-
-    foreach($this->triggers as $triggers)
-      $triggers->xml_infos();
-  }
-
-  function sql_infos(){
-    $this->view->sql_infos();
-    $this->procedures->sql_infos();
-    foreach($this->triggers as $triggers)
-      $triggers->sql_infos();
-  }
-
-  function delete_def(){
-    $ret = array_merge(
-        $this->view->delete_def(),
-        $this->procedures->delete_def(),
-        $this->triggers->delete_def()
-    );
-    foreach($this->triggers as $triggers)
-      $ret = array_merge($ret, $triggers->delete_def());
-
-    return $ret;
-  }
 
 
 }
