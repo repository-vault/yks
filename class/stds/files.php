@@ -49,6 +49,7 @@ class files {
 
 
   public static function find($dir, $pattern = '.', $opts = self::FIND_DEFAULT){
+    if($pattern{0} != "#") $pattern = "#pattern#";
     $files=array(); if(!is_dir($dir)) return array();
     foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
         $base_file = substr(strrchr($item,'/'), 1);
@@ -56,7 +57,7 @@ class files {
           && !($opts&self::FIND_SURFACE)
           && (is_link($item)?($opts&self::FIND_FOLLOWLINK):true) )
             $files = array_merge($files, self::find($item, $pattern, $opts));
-        if(preg_match("#$pattern#", $base_file)) $files[] = $item;
+        if(preg_match($pattern, $base_file)) $files[] = $item;
     } return $files;
   }
 
