@@ -25,9 +25,10 @@ class table_abstract extends myks_installer {
   }
 
   function alter_def(){
-    $ret = array_merge(
-        $this->view->alter_def(),
-        $this->procedures->alter_def());
+    $ret = array();
+    $ret = array_merge($ret, $this->procedures->alter_def());
+    $ret = array_merge($ret, $this->view->alter_def());
+
     foreach($this->triggers as $triggers)
       $ret = array_merge($ret, $triggers->alter_def());
     return $ret;

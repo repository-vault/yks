@@ -3,6 +3,7 @@
 class tree_integral extends table_abstract {
 
   protected $view_name;
+  protected $proc_name;
 
   function __construct($table, $abstract_xml){
 
@@ -16,6 +17,7 @@ class tree_integral extends table_abstract {
     $subscription = $this->abstract_xml->subscribe;
     $key = (string)$subscription['key'];
     $this->view_name = (string)$subscription['table'];
+    $this->proc_name = "rtg_{$this->table->name['name']}_sync";
 
     $fields = $this->table_fields;
     $type   = $fields[$key];
@@ -31,33 +33,9 @@ class tree_integral extends table_abstract {
 
     $this->view       = $this->load_ghost_view();
     $this->procedures = $this->load_procedures();
-    $this->triggers   = $this->load_triggers();
+    $this->triggers   = array();
   }
 
-
-  private function load_triggers(){
-
-    $table_name = $this->table->name;
-    $tables_triggers = array();
-
-    $xml  = "<triggers>";
-    foreach(array('insert', 'update') as $event) {
-        $name = $this->procedures->retrieve("sync")->name;
-        if(!$name) throw rbx::error("Cannot resolve procedure behind $pid");
-        $proc_name = "{$name['schema']}.{$name['name']}";
-        $t_name    = "{$name['name']}_$event";
-        $xml .= "<trigger name='$t_name' on='$event' procedure='$proc_name'/>";
-    } $xml .= "</triggers>";
-
-
-    $triggers_collection = simplexml_load_string($xml)->xpath("./trigger");
-    $triggers = new myks_triggers($table_name, $triggers_collection);
-
-    $table_triggers[$table_name['name']] = $triggers;
-    rbx::ok("-- Tree integral view check_triggers ");
-
-    return $table_triggers;
-  }
 
   private function load_ghost_view(){
     extract($this->fields); //key, parent, depth
@@ -69,46 +47,50 @@ SELECT $key, $parent  FROM {$this->table->name['safe']} WHERE $depth = 1;
 </def>
 <!-- explicit syntax -->
 <rules>
-<rule on='insert'>
-INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth) VALUES (NEW.$key, NEW.$parent, 1)
-</rule>
-<rule on='delete'>
-DELETE FROM {$this->table->name['safe']}
-WHERE $key = OLD.$key
-      OR $key IN ( SELECT $key FROM {$this->table->name['safe']} WHERE $parent = OLD.$key )
-</rule>
-    <rule on='update'>
-UPDATE {$this->table->name['safe']} SET $parent = NEW.$parent WHERE $key = OLD.$key AND $depth = 1
-</rule>
+    <rule on='insert'>SELECT {$this->proc_name}('INSERT', NEW.$key, NEW.$parent)</rule>
+    <rule on='delete'>SELECT {$this->proc_name}('DELETE', OLD.$key, OLD.$parent)</rule>
+    <rule on='update'>SELECT {$this->proc_name}('UPDATE', OLD.$key, NEW.$parent)</rule>
 </rules>
 </view>";
     $v_xml = simplexml_load_string($v_xml);
     return new view($v_xml);
   }
 
-  private function load_procedures_tree_integral(){
+
+  protected function load_procedures(){
+    $procedures = new procedures_list($this->table);
 
     extract($this->fields); //key, parent, depth
-    return array(
-      "sync" => array(
-        'type'  => 'trigger',
-        'query' => "BEGIN
 
-IF(TG_OP = 'UPDATE' AND new.$depth = 1)  THEN 
+    $p_xml  = "<procedure name='{$this->proc_name}' type='bool' volatility='VOLATILE'>
+    <param type='string' name='operation'/>
+    <param type='int'/>
+    <param type='int'/>
+<def>
+BEGIN
+
+IF(operation = 'DELETE') THEN
+    DELETE FROM {$this->table->name['safe']}
+    WHERE $key = $2
+      OR $key IN ( SELECT $key FROM {$this->table->name['safe']} WHERE $parent = $2 );
+END IF;
+
+IF(operation = 'UPDATE')  THEN 
+  UPDATE {$this->table->name['safe']} SET $parent = $3 WHERE $key = $2 AND $depth = 1;
+
   --suppression des paths des enfants
   DELETE FROM {$this->table->name['safe']}
   WHERE TRUE
   -- parmis mes enfants
-  AND $key IN (SELECT $key FROM {$this->table->name['safe']} WHERE $parent = OLD.$key)
+  AND $key IN (SELECT $key FROM {$this->table->name['safe']} WHERE $parent = $2)
   -- delete extra parents informations (but not mine)
-  AND $parent IN (SELECT $parent FROM {$this->table->name['safe']} WHERE $key = OLD.$key AND $parent != $key );
+  AND $parent IN (SELECT $parent FROM {$this->table->name['safe']} WHERE $key = $2 AND $parent != $key );
 
   --suppression de mes infos
-  DELETE FROM {$this->table->name['safe']} WHERE $key = OLD.$key;
+  DELETE FROM {$this->table->name['safe']} WHERE $key = $2;
 
   -- insertion à la bonne position - yeah
-  INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth)
-    VALUES (OLD.$key, NEW.$parent, 1);
+  PERFORM {$this->proc_name}('INSERT', $2, $3);
 
   INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth)
     SELECT 
@@ -117,42 +99,30 @@ IF(TG_OP = 'UPDATE' AND new.$depth = 1)  THEN
       me.$depth + children.$depth AS $depth
     FROM {$this->table->name['safe']} AS me, {$this->table->name['safe']} AS children
     WHERE TRUE
-      AND me.$key = OLD.$key
-      AND children.$parent = OLD.$key
+      AND me.$key = $2
+      AND children.$parent = $2
       --allow standalone roots  
       AND me.$parent != me.$key
       AND children.$key != me.$parent
     ;
 END IF;
 
-IF(TG_OP = 'INSERT' AND new.$depth = 1)  THEN 
+IF(operation = 'INSERT')  THEN 
+  INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth) VALUES ($2, $3, 1);
   INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth)
-    SELECT NEW.$key AS $key, $parent, $depth + 1 AS $depth
-      FROM {$this->table->name['safe']}  WHERE $key = NEW.$parent AND $key != $parent;
+    SELECT $2 AS $key, $parent, $depth + 1 AS $depth
+      FROM {$this->table->name['safe']}  WHERE $key = $3 AND $key != $parent;
 END IF;
 
-RETURN NEW;
+RETURN true;
+END;
+</def></procedure>";
 
-END;"),
-    );
-  }
-
-
-  protected function load_procedures(){
-    $procedures = new procedures_list($this->table);
-    $queries    = $this->load_procedures_tree_integral();
-    foreach($queries as $pid=>$proc_infos) {
-        $p_name = "{$this->table->name['schema']}.rtg_{$this->table->name['name']}_$pid";
-        $p_xml  = "<procedure name='$p_name' type='{$proc_infos['type']}' volatility='VOLATILE'>
-                      <def>{$proc_infos['query']}</def></procedure>";
-        $p_name = sql::resolve($p_name);
-        $p_xml  = simplexml_load_string($p_xml);
-        $p      = new procedure($p_name, $p_xml);
-        $procedures->stack($p, $pid);
-    }
-
+    $p_name = sql::resolve($this->proc_name);
+    $p_xml  = simplexml_load_string($p_xml);
+    $p      = new procedure($p_name, $p_xml);
+    $procedures->stack($p, "sync");
     rbx::ok("-- Materialized view check_procedures ");
-
     return $procedures;
   }
 
