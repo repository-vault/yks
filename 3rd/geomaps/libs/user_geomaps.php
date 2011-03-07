@@ -20,14 +20,18 @@ class user_geomaps extends geomaps {
   }
 
 
-  static function user_color($user){
+  static function user_color($user, $hex = false){
     $user_id = is_numeric($user)?$user:$user['user_id'];
-    return hexdec(substr(md5($user_id),0,6));
+    $dec = hexdec(substr(md5($user_id),0,6));
+    return $hex ? substr("000000".dechex($dec),-6) : $dec;
   }
+
 
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
         return $this->$getter();
+
+    return $this->data[$key];
   }
 
   function get_root_user(){
