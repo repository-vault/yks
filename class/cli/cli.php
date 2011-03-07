@@ -113,7 +113,8 @@ class cli {
   }
 
 
-  public static function password_prompt(){
+  public static function password_prompt($prompt = ""){
+    if($prompt) echo "$prompt : ";
     if(self::$OS & self::OS_WINDOWS) {
         $pwObj = new Com('ScriptPW.Password');
         $password = $pwObj->getPassword();
@@ -121,7 +122,15 @@ class cli {
         system('stty -echo');
         $password = trim(fgets(STDIN));
         system('stty echo');
-    } return $password;
+    } echo CRLF;
+    return $password;
+  }
+
+  public static function bool_prompt($prompt=""){
+    if($prompt) echo "$prompt (yes/no) : ";
+    $line =  strtolower(trim(fread(STDIN, 1024)));
+    $result = $line == "yes" || $line =="y" || bool($line);
+    return $result;
   }
 
   public static function text_prompt($prompt=false, &$args = null){

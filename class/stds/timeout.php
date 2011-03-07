@@ -17,6 +17,9 @@ class timeout {
     return new self($ms/1000);
   }
 
+  private function get_ratio(){
+    return (microtime(true) - $this->start_time) / $this->delay;
+  }
   private function is_expired(){
     return (microtime(true) - $this->start_time) > $this->delay;
   }
@@ -24,5 +27,7 @@ class timeout {
   function __get($key){
     if($key=="expired")
         return $this->is_expired();
+    if($key=="ratio")
+        return $this->get_ratio();
   }
 }

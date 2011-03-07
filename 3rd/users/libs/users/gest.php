@@ -41,8 +41,10 @@ class user_gest {
     }
     if(!$user_id) return false;
 
-    $data=array_filter(mykses::validate($def, $tables_xml->ks_users_addrs));
-    if($data) sql::replace("ks_users_addrs", $data, compact('user_id') );
+    $data = array_filter(mykses::validate($def, $tables_xml->ks_users_addrs));
+    unset($data['user_id']);
+    if($data)
+        sql::replace("ks_users_addrs", $data, compact('user_id') );
 
     if(is_array($def['user_access'])){
         foreach($def['user_access'] as $access_zone=>$access_lvl){

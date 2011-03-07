@@ -2,6 +2,9 @@
 
 class yks_runner {
 
+  function __construct(){
+
+  }
 
   function sql($query){
     sql::query($query);
@@ -89,6 +92,52 @@ class yks_runner {
 
   }
   
+
+  function users(){
+    $data = array();
+    $users_root = (int)yks::$get->config->users['root'];
+
+    if(!$users_root) {
+        rbx::error("Cannot find users root in config->users['root']");
+        $root_name = cli::text_prompt("Root user name");
+        $users_root = sql::insert("ks_users_list", array('user_type' => 'ks_users'));
+        $data = array('user_id' => $users_root, 'user_name' => $root_name);
+        sql::insert("ks_users_profile", $data);
+        sql::insert("ks_users_tree", array('user_id'=>$users_root, 'parent_id'=>$users_root));
+        rbx::ok("Please write user root in your config : $users_root");
+        die;
+    }
+
+    $create_admin = cli::bool_prompt("Create admin");
+
+    if($create_admin) {
+        sql::begin();
+        $access_zone = 'yks';
+        $access = sql::row("ks_access_zones", compact('access_zone'));
+        if(!$access)
+            sql::insert("ks_access_zones", 
+                array('access_zone' => $access_zone, 'access_zone_parent' => $access_zone));
+
+        $data=array(
+            'user_name' => cli::text_prompt("Admin name"),
+            'parent_id' => $users_root,
+            'user_type' => 'ks_users',
+
+            'auth_type'   => 'auth_password',
+            'user_login'  => cli::text_prompt("Admin login"),
+            'user_pswd'   => crpt(cli::password_prompt("Admin password"), FLAG_LOG),
+            'user_access' => array($access_zone => 'admin'),
+        ); $user_id = user_gest::create($data);
+
+        if(!$user_id)
+            throw rbx::error("Impossible de creer l'utilisateur");
+
+        rbx::ok("Admin user created : $user_id");
+        sql::commit();
+    } else rbx::ok("Skipping admin creation");
+
+   
+  }
 
 
   function install(){

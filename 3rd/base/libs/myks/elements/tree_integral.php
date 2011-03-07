@@ -10,7 +10,8 @@ class tree_integral extends table_abstract {
     $this->abstract_xml = $abstract_xml;
     $this->table = $table;
 
-    $name = $this->table->name['name'];
+    $name = $this->table->name['raw'];
+
     $this->table_keys   = fields(yks::$get->tables_xml->$name, true);
     $this->table_fields = fields(yks::$get->tables_xml->$name);
 

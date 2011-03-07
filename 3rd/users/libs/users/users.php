@@ -9,7 +9,7 @@ class users  {
 
   private static $table                 = "ks_users_list";
   private static $cols_def_horizontal  = false;
-  private static $cols_def_vertical    = false;
+  private static $cols_def_vertical     = array();
 
   private static $users_linear_tables   = array(); //todo refactor & merge with horizontal
 

@@ -24,8 +24,8 @@ function pick_in(){
 function pick_between($i, $min, $max) { return  min(max($min, (int) $i), $max); }
 
 function array_next_val($array,$val){ return array_step($array, $val, 1, false); }
-function array_step($array,$val,$way=1,$loop=true){
-    $tmp=array_search($val,$array)+$way;
+function array_step($array, $val, $way=1, $loop=true){
+    $tmp = array_search($val, $array) + $way;
     return $array[$loop?(($tmp+count($array))%count($array)):$tmp];
 }
 
