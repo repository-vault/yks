@@ -49,7 +49,6 @@ class files {
 
 
   public static function find($dir, $pattern = '.', $opts = self::FIND_DEFAULT){
-    if($pattern{0} != "#") $pattern = "#pattern#";
     $files=array(); if(!is_dir($dir)) return array();
     foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
         $base_file = substr(strrchr($item,'/'), 1);

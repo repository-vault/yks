@@ -1,7 +1,6 @@
 <?
 ob_start("ob_gzhandler");
 
-
 $uids = array_filter(explode("," , $argv0));
 if($argv0[0]=='{') {
     $nojsx_ctx = json_parser::parse($argv0);
@@ -36,15 +35,19 @@ $packer->ctx("USER_LANG", $lang_key);
 
 $packager = new js_packager();
 
+
 $manifests_list = array_merge(
-    files::find($mt_root,  '\.xml$'),
-    files::find($yks_root, '\.xml$'),
-    files::find($trd_root, '\.xml$')
+    files::find($mt_root,  '#\.xml$#'),
+    files::find($yks_root, '#\.xml$#'),
+    files::find($trd_root, '#\.xml$#')
 );
 
-foreach($manifests_list as $file_path) {
+foreach($manifests_list as $file_path) 
     $packager->manifest_register($file_path);
-}
+
+//print_r($package);//dont, this is too big for you
+
+
 
 //packager is now ready 
 
@@ -89,7 +92,6 @@ if($uids) {
 
 
 //packer is now ready
-
 
 
  header(TYPE_JS);

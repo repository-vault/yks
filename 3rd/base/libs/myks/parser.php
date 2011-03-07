@@ -40,7 +40,7 @@ class myks_parser {
 
     $files = array();
     foreach(self::$myks_paths as $path)
-        $files = array_merge($files, files::find($path,'.*?\.xml$'));
+        $files = array_merge($files, files::find($path,'#.*?\.xml$#'));
 
     $xsl_file = RSRCS_PATH."/xsl/metas/myks_gen.xsl";
     if(!is_file($xsl_file)) die("Unable to locate ressource myks_gen.xsl, please check rsrcs");
