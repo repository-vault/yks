@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_talks_tree_depth">
+    <abstract type="tree_integral">
+      <subscribe table="ks_talks_tree" key="talk_id"/>
+    </abstract>
+    <fields>
+      <field type="talk_id" delete="cascade"/>
+      <field type="talk_id" name="parent_id" delete="cascade"/>
+    </fields>
+    <fields>
+      <field type="talk_depth"/>
+    </fields>
+    <indices>
+      <index type="unique">
+        <member column="talk_id"/>
+        <member column="parent_id"/>
+      </index>
+      <index type="unique">
+        <member column="talk_id"/>
+        <member column="talk_depth"/>
+      </index>
+    </indices>
+  </table>
+  <mykse type="talk_depth">
+    <int/>
+  </mykse>
+</myks>

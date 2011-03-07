@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_talks_list">
+    <fields>
+      <field type="talk_id"/>
+      <field type="user_id"/>
+      <field type="now" name="talk_date"/>
+      <field type="count" name="talk_weight"/>
+    </fields>
+  </table>
+  <table name="ks_talks_contents">
+    <fields>
+      <field type="talk_id" delete="cascade"/>
+      <field type="title" name="talk_title"/>
+      <field type="talk_content" null="null"/>
+    </fields>
+  </table>
+  <mykse type="talk_id" birth="ks_talks_list">
+    <int/>
+  </mykse>
+  <mykse type="talk_content">
+    <text/>
+  </mykse>
+</myks>

@@ -1,0 +1,24 @@
+<box>
+<p>Pages <?=$pages?></p>
+<table class='table' style="width:100%">
+<tr class='line_head'>
+    <th>#</th>
+    <th>Nom</th>
+    <th>Actions</th>
+</tr>
+<?
+foreach($children as $node_id=>$node){
+  $actions = "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id},this)\" class='icon icon_delete'>Delete</a>";
+  echo "<tr class='line_pair'>
+        <td>$node_id</td>
+        <td><a href='/?&href_fold;//$node_id' target='talk_home'>$node</a></td>
+        <td>$actions</td>
+    </tr>";
+}
+if(!$children)
+    echo  "<tfail>Aucune donnée</tfail>";
+?>
+</table>
+<p>Pages <?=$pages?></p>
+
+</box>

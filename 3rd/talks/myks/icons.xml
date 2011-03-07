@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_talks_icons">
+    <fields>
+      <field type="talk_id" delete="cascade"/>
+      <field type="talk_icon"/>
+    </fields>
+  </table>
+  <mykse type="talk_icon" default="''">
+    <string length="128"/>
+  </mykse>
+</myks>

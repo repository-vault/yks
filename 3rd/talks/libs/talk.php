@@ -1,0 +1,182 @@
+<?
+
+class talk extends _sql_base {
+  const sql_key = "talk_id";
+  const sql_table = "ks_talks_list";
+  protected $sql_key   = self::sql_key;
+  protected $sql_table = self::sql_table;
+
+
+  private static $cols;
+  private static $order = array('DESC' => SORT_DESC, 'ASC' => SORT_ASC);
+  public static function init(){
+    $tables = array('ks_talks_list', 'ks_talks_contents');
+    $cols   = array();
+    foreach($tables as $table_name) {
+        $col = array_fill_keys(array_keys(fields(yks::$get->tables_xml->$table_name)), $table_name);
+        $cols = array_merge($cols, $col);
+    } unset($cols[self::sql_key]);
+    self::$cols = $cols;
+  }
+
+  static function instanciate($talk_id){  return reset(self::from_ids(array($talk_id))); }
+  static function from_ids($ids) {
+    $ret = self::from_where(array(self::sql_key=>$ids));
+    return array_sort($ret, $ids);
+  }
+
+  static function from_where($where){
+    $ret = parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
+    self::extend_flesh($ret);
+    return $ret;
+  }
+
+  
+  protected function get_children_ids($sort = null){
+    $tables = array();
+    if($sort)
+        $tables = array_merge($tables, array_unique(array_intersect_key(self::$cols, $sort)));
+
+    $tables_str = "ks_talks_tree";
+    foreach($tables as $table_name)
+        $tables_str .= sprintf(" LEFT JOIN `%s` USING(%s)", $table_name, self::sql_key);
+    $tables = mask_join(' LEFT JOIN ', $tables, '`%s` USING('.self::sql_key.')');
+    $order = "";
+    if($sort) {
+        $order .= "ORDER BY ";
+        foreach($sort as $col_name=>$sort)
+            $order.=" $col_name ".self::$order[$sort];
+    }
+
+    sql::select($tables_str, array('parent_id' => $this->talk_id), 'talk_id', $order);
+    $children  = sql::fetch_all();
+    if(in_array($this->talk_id, $children))
+        $children = array_diff($children, array($this->talk_id));
+
+    return $this->children_ids = $children;
+  }
+
+  function get_children_nb(){
+    return count($this->children_ids);
+  }
+
+
+  function get_children(){
+    $children = $this->children_ids;
+    return self::from_ids($children);
+  }
+
+  function __toString(){
+    return pick($this->talk_title, "#{$this->talk_id}");
+  }
+
+  function get_children_range($start, $by, $sort = null){
+    if(!$sort) $children = $this->children_ids;
+    else $children = $this->get_children_ids($sort);
+
+    $children = array_slice($children, $start, $by, true);
+    return self::from_ids($children);
+  }
+
+  function update($input){
+    $tables   = array(self::sql_table, 'ks_talks_contents');
+    foreach($tables as $table_name){
+        $fields = fields(yks::$get->tables_xml->$table_name);
+        $data = array_intersect_key($input, $fields);
+        if(!$data) continue;
+        sql::replace($table_name, $data, $this->verif);
+        $this->data  = array_merge($this->data, $data);
+    }
+  }
+
+  static function get_last_stats($roots){
+    sql::query("SELECT * FROM `ks_talks_tree_depth`
+        LEFT JOIN `ks_talks_list` USING(talk_id)
+        WHERE (parent_id, talk_date) IN (
+            SELECT parent_id, MAX(talk_date) FROM `ks_talks_tree_depth`
+            LEFT JOIN `ks_talks_list` USING(talk_id)
+        WHERE ".sql::in_join('parent_id', array_keys($roots))."
+        GROUP BY parent_id)");
+    $stats = sql::brute_fetch("parent_id");
+    foreach($roots as $node_id=>$node)
+        $node->last_stats = $stats[$node_id];
+  }
+
+  static function create($input){
+    if(!$input['user_id'])
+        $input['user_id'] = sess::$sess['user_id'];
+
+    $fields = fields(yks::$get->tables_xml->{self::sql_table});
+    $data = array_intersect_key($input, $fields);
+    $talk_id = sql::insert(self::sql_table, $data, true);
+    $talk = self::instanciate($talk_id);
+    if(!$talk) throw rbx::error("Cannot create node".print_r(sql::$queries,1));
+    $talk->update($input);
+    return $talk;
+  }
+
+  function get_parents(){
+    $order = "ORDER BY talk_depth DESC";
+    sql::select("ks_talks_tree_depth", array('talk_id' => $this->talk_id), "parent_id", $order);
+    $parents  = sql::fetch_all();
+
+    return $this->parents = self::from_ids($parents);
+  }
+
+  protected function get_verif(){
+    return array(self::sql_key => $this->{self::sql_key});
+  }
+
+  protected static function extend_flesh($nodes){
+    sql::select("ks_talks_contents", array(self::sql_key => array_keys($nodes)));
+    $data = sql::brute_fetch(self::sql_key);
+    foreach($nodes as $node_id=>$node)
+        if($data[$node_id]) $node->data = array_merge($node->data, $data[$node_id]);
+  }
+
+    //as in collection member
+  protected function get_collection(){
+    return array($this->talk_id => $this);
+  }
+
+  protected function get_children_stats(){
+    talk_stats::get_children_stats($this->collection);
+  }
+
+  function adopt($node){
+    $data = array('talk_id' =>$node->talk_id, 'parent_id' => $this->talk_id);
+    sql::insert("ks_talks_tree", $data);
+    $this->children_ids [] = $node->talk_id;
+  }
+
+  function abandon(talk $node){
+    $verif_delete = array('talk_id' =>$node->talk_id, 'parent_id' => $this->talk_id);
+    sql::delete("ks_talks_tree", $verif_delete);
+    $this->children_ids  = array_diff($this->children_ids, array($node->talk_id));
+  }
+
+
+  function get_depth(){
+    return count($this->parents);
+  }
+
+
+  function get_parents_path(){
+    $verif_tree = array('talk_id' => $this->talk_id);
+    sql::select("ks_talks_tree", $verif_tree, "parent_id", "ORDER BY talk_depth ASC");
+    $this->parents_path = sql::fetch_all();
+    return $this->parents_path;
+  }
+
+
+  function can_modify(){
+    $is_mine = $this->user_id == sess::$sess['user_id'];
+    return $is_mine;
+  }
+
+  function can_delete(){
+    $is_mine = $this->user_id == sess::$sess['user_id'];
+    return $is_mine;
+  }
+
+}
