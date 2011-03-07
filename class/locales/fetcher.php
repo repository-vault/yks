@@ -10,7 +10,7 @@ class locales_fetcher {
 
   static public $locale_paths;
   static private $locale_tables = array();
-  
+  const files_mask = '#\.xml$#';
 
     //prepare paths list
   public static function init(){
@@ -70,9 +70,8 @@ class locales_fetcher {
 
     $files = array();
 
-
     foreach(self::$locale_paths as $path)
-        $files = array_merge($files, files::find($path,'\.xml$',files::FIND_FOLLOWLINK));
+        $files = array_merge($files, files::find($path, self::files_mask, files::FIND_FOLLOWLINK));
 
     foreach($files as $file)
         $entities = array_merge($entities, self::ent_get($file, $lang_key));
