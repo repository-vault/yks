@@ -1,7 +1,8 @@
 <?
 
 class packlib {
-  const  class_mask = "#class\s+([^{\s]*?)\s*\{#";
+  const class_mask  = "#class\s+([^{\s]*?)\s*\{#";
+  const files_mask  = '#.*\.(php|lib)$#';
   private $files_list; //file_path => file contents
   public $init_safe_class = array();
   
@@ -24,7 +25,7 @@ class packlib {
     $this->tmp_file = $tmp_drive.'\@';
   }
 
-  function scan_path($dir, $file_mask = '.*\.(php|lib)$'){
+  function scan_path($dir, $file_mask = self::files_mask){
     $files_list = files::find($dir, $file_mask);
     foreach($files_list as $file_path)
       $this->add_file($file_path);
