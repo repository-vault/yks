@@ -39,6 +39,8 @@ class yks_runner {
 
     classes::activate(".class.php,.php");
 
+    $encoding_values = array('encoded', 'literal');
+    $binding_types   = array(SOAP_RPC, SOAP_LITERAL);
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     files::empty_dir($wsdls_path, false);
 
@@ -47,23 +49,20 @@ class yks_runner {
 
     $wsdl_file_mask = "$wsdls_path/%s.wsdl";
 
-    $WSClasses = array();
-    foreach($wsdl_config->iterate("class") as $class)
-        $WSClasses[] = $class['name'];
-    if(!$WSClasses)
-      throw rbx::error("Cannot find ws classes, please check your configuration");
-    cli::box("Running wsdl generation", $WSClasses);
-
-    $encoding = pick_in($wsdl_config['encoding'], array('encoded', 'literal'));
-    $encoding =  $encoding == 'encoded' ? SOAP_ENCODED : SOAP_LITERAL;
+    rbx::title("Running wsdl generation");
     
-    foreach($WSClasses as $class_name){
+    foreach($wsdl_config->iterate("class") as $class){
+        $class_name    = $class['name'];
+        $encoding      = pick_in($wsdl_config['encoding'], $class['encoding'], $encoding_values)
+                             == 'encoded' ? SOAP_ENCODED : SOAP_LITERAL;
+        $binding       = pick_in(@constant($class['binding']), SOAP_RPC, $binding_types);
+
         $wsdl_url      = sprintf($wsdl_uri_mask, $class_name);
         $wsdl_filepath = sprintf($wsdl_file_mask, $class_name);
 
         $class = new IPReflectionClass($class_name);
         
-        $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, SOAP_RPC, $encoding);
+        $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, $binding, $encoding);
         $wsdl->setService($class);
         $wsdl_contents = $gendoc = $wsdl->generateDocument();
         file_put_contents($wsdl_filepath, $wsdl_contents);
