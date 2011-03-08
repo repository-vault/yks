@@ -6,6 +6,7 @@ class torrent implements ArrayAccess {
   private $file_path;
   function __construct($file){
     $this->struct = bencode::decode($file);
+    $this->trackers_cleanup();
   }
 
   static function from_file($file_path){
@@ -40,7 +41,6 @@ class torrent implements ArrayAccess {
   }
 
   function tracker_exclude($domain){
-    $trackers =  $this->trackers;
     if($this['announce-list'])
     foreach($this['announce-list'] as $tid=>$tracker){
        foreach($tracker as $aid=>$announce) {
@@ -74,7 +74,7 @@ class torrent implements ArrayAccess {
   function offsetGet ($key){ return $this->struct[$key];}
   function offsetSet($key, $v) { }
   function offsetExists( $key){ }
-  function offsetUnset($key){ }
+  function offsetUnset($key){ unset($this->struct[$key]); }
 
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
