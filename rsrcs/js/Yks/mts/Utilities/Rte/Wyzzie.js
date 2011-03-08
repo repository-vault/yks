@@ -29,9 +29,9 @@ var Wyzzie = new Class({
     this.area.setStyles($merge(frame_size,{'display':'none'}) );
     this.area.inject(this.container);
 
-    this.toolbar=new Element('div',{'class':'rte_toolbar'}).inject(this.container,'top');
+    this.toolbar=new Element('div',{'class':'rte_toolbar topbar'}).inject(this.container,'top');
     for(var key in this.actions){ var item=this.actions[key];
-        item.div=new Element('div',{'class':key,'unselectable':'on'});
+        item.div=new Element('div',{'class':key+' rte_button','unselectable':'on'});
         item.div.inject(this.toolbar);
         if(item.action) item.div.onclick=this.action.pass(item.action,this);
         if(item.onclick)item.div.onclick=item.onclick.bind(this);

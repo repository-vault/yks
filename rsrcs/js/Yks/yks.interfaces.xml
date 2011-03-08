@@ -18,13 +18,18 @@
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
     </module>
-    <module key="path://3rd/usage/ColorPicker.js" expose="ColorPicker" matches="input.input_color" head="true">>
+    <module key="path://3rd/usage/ColorPicker.js" expose="ColorPicker" matches="input.input_color" head="true">&gt;
       <dep key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js"/>
       <description>Extend a basic text input into a small but usefull color picker</description>
     </module>
     <module key="path://yks/Utilities/Rte/Wyzzie.js" expose="Wyzzie" matches="textarea.wyzzie" head="true">
       <dep key="yks.core"/>
       <description>Provide a very light Rich Text Editor for editing html contents</description>
+    </module>
+    <module key="path://yks/Utilities/Rte/BBcoder.js" expose="BBcoder" matches="textarea.bbcoder" head="true">
+      <dep key="yks.core"/>
+      <dep key="path://mt.more/Element/Element.Forms.js"/>
+      <description>Provide a very light BBCode Editor</description>
     </module>
     <module key="path://yks/Utilities/Completer.js" expose="Completer" head="true">
       <dep key="yks.core"/>

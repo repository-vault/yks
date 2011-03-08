@@ -14,11 +14,11 @@
     background-color:white;
 }
 
-.rte_toolbar {
+.rte_toolbar.topbar {
     width:300px;
     height:30px;
 }
-.rte_toolbar div {
+.rte_toolbar .rte_button {
     display:block;
     width:24px;
     height:24px;
@@ -28,11 +28,20 @@
     float:left;
 }
 
-.rte_toolbar .italic { background-image:url(imgs/italic.png); }
+.rte_toolbar .big { background-image:url(imgs/big.png); }
 .rte_toolbar .bold { background-image:url(imgs/bold.png); }
-.rte_toolbar .underline { background-image:url(imgs/underline.png); }
-.rte_toolbar .left { background-image:url(imgs/left.png); }
-.rte_toolbar .right { background-image:url(imgs/right.png); }
 .rte_toolbar .center { background-image:url(imgs/center.png); }
+.rte_toolbar .color { background-image:url(imgs/color.png); }
+.rte_toolbar .float_left { background-image:url(imgs/float_left.png); }
+.rte_toolbar .float_right { background-image:url(imgs/float_right.png); }
+.rte_toolbar .hr { background-image:url(imgs/hr.png); }
+.rte_toolbar .hyperlink { background-image:url(imgs/hyperlink.png); }
+.rte_toolbar .italic { background-image:url(imgs/italic.png); }
+.rte_toolbar .justified { background-image:url(imgs/justified.png); }
+.rte_toolbar .left { background-image:url(imgs/left.png); }
+.rte_toolbar .picture { background-image:url(imgs/picture.png); }
+.rte_toolbar .right { background-image:url(imgs/right.png); }
+.rte_toolbar .small { background-image:url(imgs/small.png); }
+.rte_toolbar .strike { background-image:url(imgs/strike.png); }
 .rte_toolbar .toggle { background-image:url(imgs/toggle.png); }
-
+.rte_toolbar .underline { background-image:url(imgs/underline.png); }

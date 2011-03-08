@@ -11,7 +11,10 @@ var Nav_bar = new Class({
     $$("li.d_0.parent").addEvent('mouseover',function(){
         var sub= this.getElement('ul'), to = sub.getScrollSize().y,tmp;
         if(!sub.retrieve('trans')) {
-            if(Browser.Engine.trident)sub.setStyle('margin-left',-this.getWidth());
+            if(Browser.Engine.trident && Browser.ie6) {
+                sub.setStyle('margin-left',-this.getWidth());
+            }
+            
             sub.set('morph', {duration: 500, transition:Fx.Transitions.Quint.easeOut}).get('morph')
             sub.store('trans',true);
         } sub.morph({height:to}); 
