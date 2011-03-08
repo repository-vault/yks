@@ -26,29 +26,42 @@ class torrent implements ArrayAccess {
     file_put_contents($file_path, $this->bencode());
   }
 
-  function tracker_exclude($domain){
+  function trackers_cleanup(){
+    $announce = $this['announce'];
+    if($announce)
+      $this->tracker_add($announce);
+
     if($this['announce-list'])
     foreach($this['announce-list'] as $tid=>$tracker){
-      foreach($tracker as $aid=>$announce) {
-        $announce = parse_url($announce);
-        if(ends_with($announce['host'], $domain))
-          unset($this->struct['announce-list'][$tid][$aid]);
-      } if(!$this->struct['announce-list'][$tid])
+      if(! array_filter( $this->struct['announce-list'][$tid]) )
           unset($this->struct['announce-list'][$tid]);
     }
+
+  }
+
+  function tracker_exclude($domain){
+    $trackers =  $this->trackers;
+    if($this['announce-list'])
+    foreach($this['announce-list'] as $tid=>$tracker){
+       foreach($tracker as $aid=>$announce) {
+        $announce = @parse_url($announce);
+        if(ends_with($announce['host'], $domain))
+          unset($this->struct['announce-list'][$tid][$aid]);
+      }
+    }
+
     $announce = parse_url($this['announce']);
     if(ends_with($announce['host'], $domain)) {
       if(!$this['announce-list'])
         throw new Exception("No tracker to fallback");
        $this->struct['announce'] = reset(reset($this['announce-list']));
     }
+    $this->trackers_cleanup();
   }
 
-
-
-
   function tracker_add($tracker){
-    $this->struct['announce-list'][] = array($tracker);
+    if(!in_array($tracker, $this->trackers))
+      $this->struct['announce-list'][] = array($tracker);
   }
 
   function __toString(){
@@ -62,6 +75,7 @@ class torrent implements ArrayAccess {
   function offsetSet($key, $v) { }
   function offsetExists( $key){ }
   function offsetUnset($key){ }
+
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
       return $this->$getter();

@@ -25,7 +25,7 @@ class torrents {
       foreach($torrent['announce-list'] as $tracker)
         foreach($tracker as $announce)
           $ret[] = $announce;
-    return $ret;
+    return array_unique(array_filter($ret));
   }
 
   function get_files(torrent $torrent){
