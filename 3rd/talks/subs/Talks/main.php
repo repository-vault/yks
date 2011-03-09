@@ -1,6 +1,7 @@
 <?
 
-$talk_root  = (int)yks::$get->config->talk['root'];
+$talk_root  = (int) exyks::$get->module->config['root'];
+
 if(!$talk_root)
     die("No talk['root']!!");
 $talk_id    = (int) $sub0;

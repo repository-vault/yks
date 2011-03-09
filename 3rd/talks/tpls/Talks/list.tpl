@@ -8,11 +8,14 @@
 </tr>
 <?
 foreach($children as $node_id=>$node){
-  $actions = "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id},this)\" class='icon icon_delete'>Delete</a>";
+    $actions = array();
+    $actions []= "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id},this)\" class='icon icon_delete'>Delete</a>";
+    $actions []= "<a href='/?&href_fold;//$node_id/manage' target='talk_manage'>Editer</a>";
+
   echo "<tr class='line_pair'>
         <td>$node_id</td>
         <td><a href='/?&href_fold;//$node_id' target='talk_home'>$node</a></td>
-        <td>$actions</td>
+        <td>".join(' - ', $actions)."</td>
     </tr>";
 }
 if(!$children)
