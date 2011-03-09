@@ -7,11 +7,14 @@ class exyks_module {
   private $key;
   private $ns;
   private $module_root;
+  public  $config;
+
   private $module_rq_start;  //request start for the module
   private $module_base;
 
   function __construct($module_xml){
 
+    $this->config = $module_xml->config;
     $this->key = $module_xml['key'];
     $this->ns  = "module/$this->key"; //or ...
 

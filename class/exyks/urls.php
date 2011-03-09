@@ -8,14 +8,14 @@ class exyks_urls {
 
     foreach(yks::$get->config->paths->iterate("path") as $path) {
         $root = $path['root'] ? exyks_paths::resolve($path['root']) : ROOT_PATH;
-        self::register($path['virtual'], $root, $path['dest']);
+        self::register(false, $path['virtual'], $root, $path['dest']);
     }
 
     //here
 
     foreach(exyks::get_modules_list() as $module) {
         foreach($module->virtual_paths as $path_key=>$dest)
-            self::register($path_key, $dest[0], $dest[1]);
+            self::register($module, $path_key, $dest[0], $dest[1]);
     }
 
   }
@@ -24,22 +24,29 @@ class exyks_urls {
 /*
     Register a "virtual" path from any file starting with $path_key
 */
-  private static function register($path_key, $root, $dest){
+  private static function register($module, $path_key, $root, $dest){
 
 
     $sub_path = paths_merge(ROOT_PATH, "$root/subs/$dest");
     $tpl_path = paths_merge(ROOT_PATH, "$root/tpls/$dest");
 
-    self::$paths['subs'][$path_key]   = $sub_path;
+    self::$paths[$path_key] = compact('sub_path', 'module');
+
     tpls::add_resolver($path_key, $tpl_path);
   }
 
 
+  private static $current;
+    //only used in exyks::$get->module
+  public static function get_current_module(){
+    return self::$current;
+  }
 
   private static function resolve($subs_fold, $node_name, $subs_path){
 
-    if($subs = self::$paths['subs']["$subs_fold/$node_name"]) {
-        return $subs;
+    if($subs = self::$paths["$subs_fold/$node_name"]) {
+        self::$current = $subs['module'];
+        return $subs['sub_path'];
     }
     return "$subs_path/$node_name";
   }
