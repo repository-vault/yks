@@ -1,0 +1,19 @@
+.goth {
+  box-image:url(goth.png);
+  box-grid-x:51 21 51;
+  box-grid-y:51 22 51;
+}
+
+.goth_mm { background-color:black; }
+
+.goth_caption { float:right; }
+.goth_mu { vertical-align:middle; }
+
+.goth_close { 
+  background-image:url(close); 
+  width:16px;
+  height:16px;
+  float:right;
+  display:block;
+  margin-left:5px;
+}

@@ -1,0 +1,46 @@
+.noia0 {
+  box-image:url(noia0.png);
+  box-grid-x:16 8 16;
+  box-grid-y:19 1 13;
+}
+
+
+.noia0_u, .noia0_d { line-height:0px; }
+
+.noia0_mm {
+  background-image:url('/?/Yks/Imgs/bgs//7eb1da/13');
+  background-image:url(mm.png);
+  height:100%;
+}
+
+.noia0_mu { 
+  background-repeat:repeat-x;
+  vertical-align:middle;
+}
+
+.noia0_caption {  
+  float:right;position:relative;margin-top:-18px;
+}
+
+.noia0_rm div {
+  position:relative;
+  width:16px;
+  height:16px;
+  float:right;
+  display:block;
+  margin-right:-5px;
+}
+
+.noia0_close { background-image:url(close.png);  }
+.noia0_reload { background-image:url(reload.png);  }
+
+.noia0_rd div {
+  width:8px;
+  height:9px;
+  margin:auto;
+  background-image:url(drag.png);
+}
+
+.noia0_table a {
+  color:black;
+}
