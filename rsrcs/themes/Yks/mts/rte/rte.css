@@ -28,6 +28,7 @@
     float:left;
 }
 
+
 .rte_toolbar .big { background-image:url(imgs/big.png); }
 .rte_toolbar .bold { background-image:url(imgs/bold.png); }
 .rte_toolbar .center { background-image:url(imgs/center.png); }
@@ -44,4 +45,5 @@
 .rte_toolbar .small { background-image:url(imgs/small.png); }
 .rte_toolbar .strike { background-image:url(imgs/strike.png); }
 .rte_toolbar .toggle { background-image:url(imgs/toggle.png); }
+.rte_toolbar .preview { background-image:url(imgs/preview.png); }
 .rte_toolbar .underline { background-image:url(imgs/underline.png); }

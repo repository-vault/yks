@@ -1,6 +1,6 @@
 var BBcoder = new Class({
 
-  Binds:['focus', 'selectedText'],
+  Binds:['focus', 'selectedText', 'replaceSelection'],
 
   Declare : 'BBcoder',
   focus:function(){this.area.focus(); },
@@ -10,6 +10,7 @@ var BBcoder = new Class({
     if(area.bbcoder) return false;
     this.options = options || {};
     var actions = this.options.actions || BBcoder.actions;
+    var controls = this.options.controls || [];
 
     this.area = $(area);
     this.area.bbcoder = this;
@@ -32,7 +33,19 @@ var BBcoder = new Class({
         div.addEvent('mouseup', callback.bind(this));
    }.bind(this));
 
+    $A(controls).each(function(control){
+        control[0].each(function(el){
+            el.addEvent('mousedown', this.store.bind(this));
+            el.addEvent('mouseup', control[1].curry(el).bind(this));
+        }.bind(this));
+    }.bind(this));
+  },
 
+
+  replaceSelection:function(str){
+    var pos = this.pos, txt = this.area.value;
+    this.area.value = txt.substring(0, pos.start) + str + txt.substring(pos.end);
+    this.area.setCaretPosition(pos.start + str.length );
   },
 
   store:function(){
@@ -79,8 +92,8 @@ BBcoder.extend({
     'justified'    : BBcoder.addtag.curry('justified', '[justify]', '[/justify]', '[justify][/justify]'),
     'color'        : BBcoder.addtag.curry('color', '[color=%s]', '[/color]', '[color=#][/color]'),
     'hr'           : BBcoder.addtag.curry('hr', '', '[hr/]', '[hr/]'),
-    'small'        : BBcoder.addtag.curry('small', '[size=+1]', '[/size]', '[size=][/size]'),
-    'big'          : BBcoder.addtag.curry('big', '[size=-1]', '[/size]', '[size=][/size]')
+    'small'        : BBcoder.addtag.curry('small', '[size=--]', '[/size]', '[size=][/size]'),
+    'big'          : BBcoder.addtag.curry('big', '[size=++]', '[/size]', '[size=][/size]')
   }
 });
 
