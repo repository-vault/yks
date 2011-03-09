@@ -14,8 +14,8 @@ class exyks {
   public static $head = null;
 
   private static $is_script = false;
-
   private static $modules_list;
+  public static $get;
 
   static function get_modules_list(){    return self::$modules_list;  }
   
@@ -51,6 +51,7 @@ class exyks {
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
         
+    self::$get = new self();
 
     self::$modules_list = array();
     if(!SITE_STANDALONE) 
@@ -276,6 +277,18 @@ class exyks {
         $content = preg_replace('#\s+xmlns:[a-z]+=".*?"#',"",$str);
     }
   }
+
+
+  private function get($key){ //dont use it as a static, use yks::$get->get(
+
+    if(isset($this->$key)) return $this->$key;
+
+    if($key == "module")
+        return exyks_urls::get_current_module();
+
+  }
+
+  public function __get($key){ return $this->get($key);  }
 
 
 }
