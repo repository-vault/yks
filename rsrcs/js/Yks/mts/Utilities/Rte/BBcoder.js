@@ -93,7 +93,8 @@ BBcoder.extend({
     'color'        : BBcoder.addtag.curry('color', '[color=%s]', '[/color]', '[color=#][/color]'),
     'hr'           : BBcoder.addtag.curry('hr', '', '[hr/]', '[hr/]'),
     'small'        : BBcoder.addtag.curry('small', '[size=--]', '[/size]', '[size=][/size]'),
-    'big'          : BBcoder.addtag.curry('big', '[size=++]', '[/size]', '[size=][/size]')
+    'big'          : BBcoder.addtag.curry('big', '[size=++]', '[/size]', '[size=][/size]'),
+    'preview'      : function(){ Jsx.open('/?/Yks/Wysiwyg/Preview', 'preview_box', this.area); } ,
   }
 });
 
