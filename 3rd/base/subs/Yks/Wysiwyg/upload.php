@@ -1,5 +1,8 @@
 <?php
 
+if(!$upload_def)
+    die("Invalid upload flag");
+
 $valid_exts = preg_split( VAL_SPLITTER, $upload_def['exts'],  -1,  PREG_SPLIT_NO_EMPTY);
 
 if(!sess::$connected && !DEBUG){
