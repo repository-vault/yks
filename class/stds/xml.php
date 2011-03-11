@@ -13,6 +13,21 @@ class xml {
     );
   }
 
+  static function clean_html($str){
+    $doc = new DOMDocument('1.0','UTF-8');
+
+    @$doc->loadHTML("<html><body>$str</body></html>"); $str=$doc->saveXML();
+    $str = utf8_decode(html_entity_decode($str, ENT_NOQUOTES, "UTF-8"));
+
+    $str = mb_ereg_replace("&", "&amp;", mb_ereg_replace("&amp;","&",$str));
+    if(strpos($str,"<body/>")) return "";
+
+    $start = strpos($str, "<body>")+6;
+    $end   = strpos($str, "</body>");
+    $str   = substr($str, $start, $end-$start);
+
+    return $str;
+  }
 
   static function load_html($str, $first_element=false){
     libxml_use_internal_errors(true);
