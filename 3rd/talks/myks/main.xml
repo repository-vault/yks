@@ -8,6 +8,11 @@
       <field type="now" name="talk_date"/>
       <field type="count" name="talk_weight"/>
     </fields>
+    <trigger on="delete" timing="before">
+BEGIN
+DELETE FROM `ks_talks_tree` WHERE talk_id = OLD.talk_id;
+END;
+    </trigger>
   </table>
   <table name="ks_talks_contents">
     <fields>
