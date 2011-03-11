@@ -31,7 +31,23 @@ class talk extends _sql_base {
     return $ret;
   }
 
-  
+
+//huge !
+  protected function get_children_tree($max_depth = null){
+    $verif  = array('parent_id'=> $this->talk_id);
+    if($max_depth) $verif [] = "talk_depth < $max_depth";
+    sql::select("ks_talks_tree_depth", $verif, "talk_id", "ORDER BY talk_depth ASC");
+    $children = self::from_ids(sql::fetch_all());
+
+    $tree_splat  = array_merge_numeric($this->collection, $children );
+    foreach($tree_splat as $node) $node->children_tree = array();
+
+    foreach($tree_splat as $node)
+        $tree_splat[$node['parent_id']]->children_tree[$node->talk_id] = $node;
+
+    return $this->children_tree;
+  }
+
   protected function get_children_ids($sort = null){
     $tables = array();
     if($sort)
@@ -128,10 +144,13 @@ class talk extends _sql_base {
   }
 
   protected static function extend_flesh($nodes){
-    sql::select("ks_talks_contents", array(self::sql_key => array_keys($nodes)));
+
+    $tables = "`ks_talks_tree` LEFT JOIN `ks_talks_contents` USING(talk_id)";
+    sql::select($tables, array(self::sql_key => array_keys($nodes)));
     $data = sql::brute_fetch(self::sql_key);
     foreach($nodes as $node_id=>$node)
         if($data[$node_id]) $node->data = array_merge($node->data, $data[$node_id]);
+
   }
 
     //as in collection member
