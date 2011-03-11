@@ -95,6 +95,7 @@ class css_box extends ibase {
 
     $theme_css.=".{$theme_name}_lm {width:{$box_xl}px;} .{$theme_name}_rm {width:{$box_xr}px;}\n";
     $theme_css.=".{$theme_name}_mu {height:{$box_yu}px;} .{$theme_name}_md {height:{$box_yd}px;}\n";
+    $theme_css.=".{$theme_name}_rd {height:{$box_yd}px;width:{$box_xr}px; }\n";
 
 
     $at_rule = new at_rule("import", "\"$css_file\"");
