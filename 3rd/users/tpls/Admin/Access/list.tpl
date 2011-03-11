@@ -10,11 +10,15 @@
 <?
 
 foreach($access_zones as $access_zone=>$zone_infos){
+    $actions = array();
+    $actions[] = "<div class='user_icon icon_zone_trash' onclick=\"zone_delete('{$zone_infos['access_zone']}')\">&#160;</div>";
+    $actions[] = "<a target='::modal' href='/?&href_fold;/manage//$access_zone'>Modifier</a>";
+
     echo "<tr class='line_pair'>
         <td>{$zone_infos['access_zone']}</td>
         <td>{$zone_infos['access_zone_parent']}</td>
         <td>{$zone_infos['zone_descr']}</td>
-        <td><div class='user_icon icon_zone_trash' onclick=\"zone_delete('{$zone_infos['access_zone']}')\">&#160;</div></td>
+        <td>".join(' - ', $actions)."</td>
     </tr>";
 }
 ?>
