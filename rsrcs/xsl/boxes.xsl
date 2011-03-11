@@ -45,7 +45,7 @@
           <tr class="{$theme}_d">
             <td class="{$theme}_ld"> </td>
             <td class="{$theme}_md"><xsl:apply-templates select="md/node()"/> </td>
-            <td class="{$theme}_rd"> </td>
+            <td class="{$theme}_rd"><xsl:if test="contains(@options,'resize')"><div class="box_action {$theme}_resize"> </div></xsl:if><xsl:apply-templates select="rd/node()"/> </td>
           </tr>
         </table>
       </xsl:when>
@@ -76,5 +76,5 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  <xsl:template match="lm|mu|md|rm|md"/>
+  <xsl:template match="lm|mu|md|rm|md|rd"/>
 </xsl:stylesheet>

@@ -61,7 +61,15 @@ var Box = new Class({
     if(drag_anchor) anchor.makeDraggable({handle:drag_anchor.addClass('dragged')});
     anchor.addEvent('click', this.focus.bind(this) );
 
+    if(this.glue = $E("*[class$='_resize']", anchor)){
+        if($(this.glue).getParent('.box') == anchor) {
+          var drag = anchor.makeResizable({handle:this.glue});
+        }
+
+    }
+
     this.focus();
+
 
     var modal = options.modal || this.anchor.hasClass('modal') ;
 
