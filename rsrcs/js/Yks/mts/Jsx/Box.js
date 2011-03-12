@@ -63,7 +63,32 @@ var Box = new Class({
 
     if(this.glue = $E("*[class$='_resize']", anchor)){
         if($(this.glue).getParent('.box') == anchor) {
-          var drag = anchor.makeResizable({handle:this.glue});
+          var drag = anchor.makeResizable({handle:this.glue, 
+            onStart:function(){
+
+            anchor.getElements('.glued').each(function(el){
+
+                var p = el.getParent(el.get('glued')).getCoordinates(),
+                    inner = el.getScrollSize(),
+                    me = el.getCoordinates(),
+                    dec = el.retrieve('dec', {
+                        width:(me.left-p.left + p.right-me.right) + (me.width-inner.x) +20,
+                        height:(me.top-p.top + p.bottom-me.bottom) +(me.height-inner.y)+20,
+                    });
+                el.store('dec', dec).setStyle('position', 'absolute');
+            });
+
+            },
+
+            onDrag:function(){
+                anchor.getElements('.glued').each(function(el){
+                    var pa = el.getParent(el.get('glued')),
+                        p = pa.getCoordinates(),
+                        dec = el.retrieve('dec');
+                    el.setStyles({ width:p.width - dec.width, height:p.height - dec.height});
+                });
+            }
+        });
         }
 
     }

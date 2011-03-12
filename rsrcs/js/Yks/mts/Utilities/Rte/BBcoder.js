@@ -16,10 +16,8 @@ var BBcoder = new Class({
     this.area.bbcoder = this;
 
     var box_size = this.area.getSize();
-    var container_size = {'width':box_size.x,'height':box_size.y-30};
-
-    this.container = new Element('div', {'class':'rte_container', styles:container_size}
-        ).inject(this.area,'before');
+    this.container = this.options.container
+        || new Element('div' {'class':'rte_bbcontainer'}).inject(this.area, 'before');
     this.area.inject(this.container);
 
     if(this.options.toolbar)
