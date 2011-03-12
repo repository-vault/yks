@@ -69,7 +69,7 @@ var Box = new Class({
             anchor.getElements('.glued').each(function(el){
 
                 var p = el.getParent(el.get('glued')).getCoordinates(),
-                    inner = el.getScrollSize(),
+                    inner = el.getSize(),
                     me = el.getCoordinates(),
                     dec = el.retrieve('dec', {
                         width:(me.left-p.left + p.right-me.right) + (me.width-inner.x) +20,
