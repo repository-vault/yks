@@ -63,7 +63,9 @@ var Box = new Class({
 
     if(this.glue = $E("*[class$='_resize']", anchor)){
         if($(this.glue).getParent('.box') == anchor) {
+
           var drag = anchor.makeResizable({handle:this.glue, 
+ 
             onStart:function(){
 
             anchor.getElements('.glued').each(function(el){
@@ -75,7 +77,7 @@ var Box = new Class({
                         width:(me.left-p.left + p.right-me.right) + (me.width-inner.x) +20,
                         height:(me.top-p.top + p.bottom-me.bottom) +(me.height-inner.y)+20,
                     });
-                el.store('dec', dec).setStyle('position', 'absolute');
+                el.store('dec', dec); //.setStyle('position', 'absolute');
             });
 
             },
@@ -87,8 +89,9 @@ var Box = new Class({
                         dec = el.retrieve('dec');
                     el.setStyles({ width:p.width - dec.width, height:p.height - dec.height});
                 });
-            }
-        });
+            } });
+
+
         }
 
     }

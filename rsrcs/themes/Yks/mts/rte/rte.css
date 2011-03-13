@@ -14,7 +14,10 @@
     background-color:white;
 }
 
+.rte_toolbar.topbar {
+    clear:both;
 
+}
 .rte_toolbar .rte_button {
     display:block;
     width:24px;
@@ -23,6 +26,10 @@
     background-repeat:no-repeat;
     cursor:pointer;
     float:left;
+}
+
+.rte_bbtxtcontainer {
+  clear:both;
 }
 
 
