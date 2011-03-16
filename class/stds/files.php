@@ -186,7 +186,8 @@ class files {
     $filename = utf8_decode($filename);
     // $filename = rfc_-2047::header_encode($filename); ie crap
     header(sprintf($mask, $filename));
-
+    header('Content-Length: '.filesize($file));
+    
     readfile($file);
     die;
 
