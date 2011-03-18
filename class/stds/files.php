@@ -20,13 +20,13 @@ class files {
     return $cache_contents;
   }
 
-  public static function rp($path){
-    $out=array();$last=count($from=explode('/', $path))-1;
+  public static function rp($path, $ds = "/"){
+    $out=array();$last=count($from=explode($ds, $path))-1;
     foreach($from as $i=>$fold){
         if ($fold==''&& $i!=$last || $fold=='.') continue;
         if ($fold=='..' && $i>0 && end($out)!='..') array_pop($out);
-    else $out[]= $fold;
-    } return ($path{0}=='/'?'/':'').join('/', $out);
+        else $out[]= $fold;
+    } return ($path{0}==$ds?$ds:'').join($ds, $out);
   }
 
   public static function compress($file_path, $file_out = false){
