@@ -8,6 +8,8 @@ class bbwriter {
   private static $trs   = array();
   private static $pregs = array();
 
+  private static $options;
+
   public static function init(){
 
     $size_mask  = "[0-9]+";
@@ -27,18 +29,24 @@ class bbwriter {
         "#\[img\](".self::url_mask.")\[/img\]#is"              => '<img src="$1"/>',
         "#\[img=($align)\](".self::url_mask.")\[/img\]#is"     => '<img style="vertical-align:$1" src="$2"/>',
         "#\[float=(right|left)\](.*?)\[/float\]#is"   => '<div style="float:$1">$2</div>',
+        "#\[size=([+-])([0-9]+)](.*?)\[/size]#ise"      => '"<span style=\"font-size:".(100 $1 $2*10)."%\">$3</span>"',
         "#\[size=(([+-])\\2*)](.*?)\[/size]#ise"      => '"<span style=\"font-size:".(100 $2 strlen("$1")*20)."%\">$3</span>"',
 
         "#\[hr/](?:\r?\n)?#is"       => '<hr class="clear"/>',
         "#\[clear/](?:\r?\n)?#is"       => '<clear/>',
-        
 
-        "#\[lines( *)](.*?)\[/lines]$nlf#ise"      => '"<div style=\"margin-left:".(strlen("$1")*10)."px\">$2</div>"',
-
+        "#\[lines( *)](.*?)\[/lines]$nlf#ise"            => '"<div style=\"margin-left:".(strlen("$1")*10)."px\">$2</div>"',
+        "#\[spoiler=(.*?)](.*?)\[/spoiler]$nlf#is"      => '<div class="sploiler closed toggle_zone"><div class="toggle_anchor">$1</div><div>$2</div></div>',
     ));
 
+    $opt = yks::$get->config->bbwriter->options;
+    self::$options['allow_html'] = bool($opt['allow_html']);
+    self::$options['allow_php']  = bool($opt['allow_php']);
   }
 
+  public static function split_more($str){
+    return explode("[readmore/]", $str);
+  }
 
   protected static function register_tr($trs){
     self::$trs = array_merge(self::$trs, $trs);
@@ -48,8 +56,12 @@ class bbwriter {
     self::$pregs = array_merge(self::$pregs, $pregs);
   }
 
-
-  static function decode($txt){
+/*
+    allow_html
+    allow_php
+*/
+  static function decode($txt, $options = array()){
+    $options = array_merge(self::$options, $options);
 
     $safes = array();
     $safe = preg_match_all(sprintf(self::easynl, "html|php"), $txt, $out, PREG_OFFSET_CAPTURE|PREG_SET_ORDER);
@@ -72,10 +84,10 @@ class bbwriter {
     $txt = xml::clean_html($txt);
     $txt = specialchars_decode($txt);
     
-    if($safes['html'])
+    if($options['allow_html'] && $safes['html'])
         $txt = strtr($txt, $safes['html']);
 
-    if($safes['php']) {
+    if($options['allow_php'] && $safes['php']) {
         $safes['php'] = array_map(array(__CLASS__, 'evaluate'), $safes['php']);
         $txt = strtr($txt, $safes['php']);
     }

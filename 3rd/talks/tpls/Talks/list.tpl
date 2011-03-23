@@ -9,7 +9,7 @@
 <?
 foreach($children as $node_id=>$node){
     $actions = array();
-    $actions []= "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id},this)\" class='icon icon_delete'>Delete</a>";
+    $actions []= "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id}, this, this.innerHTML)\" class='icon icon_delete'>Delete</a>";
     $actions []= "<a href='/?&href_fold;//$node_id/manage' target='talk_manage'>Editer</a>";
 
   echo "<tr class='line_pair'>

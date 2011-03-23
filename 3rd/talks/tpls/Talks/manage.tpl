@@ -1,4 +1,4 @@
-<box theme="&pref.dft;" caption="Editer" options="fly,close,reload,resize" style="width:400px;">
+<box theme="&pref.dft;" caption="Editer" options="fly,close,reload,resize" style="width:600px;">
 <ks_form ks_action="talk_manage">
 
     <field type="title" name="talk_title" title="Titre" value="<?=$talk->talk_title?>"/>
@@ -9,7 +9,7 @@
 <?
 
 foreach($fields as $field)
-    echo "<textarea class='bbcoder glued' glued='.inner' name='talk_content' style='resize:none;height:100px;width:100%;'>{$talk->talk_content}&XML_EMPTY;</textarea>";
+    echo "<textarea class='bbcoder glued' glued='.inner' name='talk_content' style='resize:none;height:400px;width:100%;'>{$talk->talk_content}&XML_EMPTY;</textarea>";
 
 ?>
 

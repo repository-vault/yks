@@ -11,18 +11,21 @@ class talk_stats {
     sql::select($tables,  $verif_roots, $cols, $group);
     $stats = sql::brute_fetch('parent_id');
 
+
     foreach($roots as $node_id=>$node)
         $node->stats = $stats[$node_id];
 
     $lasts = array_extract($stats, 'talk_last');
-    $lasts = mask_join(" UNION ", $lasts, 'SELECT %2$s, %1$s');
+    if($lasts) {
+        $lasts = mask_join(" UNION ", $lasts, 'SELECT %2$s, %1$s');
+        sql::query("SELECT * FROM `ks_talks_tree_depth`
+            LEFT JOIN `ks_talks_list` USING(talk_id)
+            WHERE (parent_id, talk_date) IN ($lasts)");
+        $lstats = sql::brute_fetch("parent_id");
+    }
 
-    sql::query("SELECT * FROM `ks_talks_tree_depth`
-        LEFT JOIN `ks_talks_list` USING(talk_id)
-        WHERE (parent_id, talk_date) IN ($lasts)");
-    $stats = sql::brute_fetch("parent_id");
     foreach($roots as $node_id=>$node)
-        $node->last_stats = $stats[$node_id];
+        $node->last_stats = $lstats[$node_id];
 
   }
 

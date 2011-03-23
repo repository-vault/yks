@@ -7,8 +7,10 @@ class talk extends _sql_base {
   protected $sql_table = self::sql_table;
 
 
+  private $order_by = array();
+
   private static $cols;
-  private static $order = array('DESC' => SORT_DESC, 'ASC' => SORT_ASC);
+  private static $order = array(SORT_DESC => 'DESC', SORT_ASC => 'ASC');
   public static function init(){
     $tables = array('ks_talks_list', 'ks_talks_contents');
     $cols   = array();
@@ -17,6 +19,10 @@ class talk extends _sql_base {
         $cols = array_merge($cols, $col);
     } unset($cols[self::sql_key]);
     self::$cols = $cols;
+  }
+
+  function order($cols){
+    $this->order_by = $cols;
   }
 
   static function instanciate($talk_id){  return reset(self::from_ids(array($talk_id))); }
@@ -31,13 +37,53 @@ class talk extends _sql_base {
     return $ret;
   }
 
+/*
 
-//huge !
-  protected function get_children_tree($max_depth = null){
+
+SELECT d0.talk_id, count(talk_date), max(talk_date)
+FROM  ks_talks_tree_depth AS d0,
+	  ks_talks_tree_depth AS d1,
+	  ks_talks_list  AS list
+WHERE TRUE
+AND d0.parent_id = 6
+AND d0.talk_depth = 1
+AND d1.parent_id = d0.talk_id
+AND list.talk_id = d1.talk_id
+GROUP BY d0.talk_id
+
+*/
+  protected function get_children_tree_ids($max_depth){
     $verif  = array('parent_id'=> $this->talk_id);
-    if($max_depth) $verif [] = "talk_depth < $max_depth";
-    sql::select("ks_talks_tree_depth", $verif, "talk_id", "ORDER BY talk_depth ASC");
-    $children = self::from_ids(sql::fetch_all());
+    if($max_depth)
+        $verif [] = "talk_depth <= $max_depth";
+ 
+    $tables = array();
+    if($this->order_by)
+        $tables = array_merge($tables, array_unique(array_intersect_key(self::$cols, $this->order_by)));
+
+    $tables_str = "`ks_talks_tree_depth`";
+    foreach($tables as $table_name)
+        $tables_str .= sprintf(" LEFT JOIN `%s` USING(%s)", $table_name, self::sql_key);
+
+    $order = array();
+    $sort = array_merge(array("talk_depth" => SORT_ASC), $this->order_by);
+    foreach($sort as $col_name=>$sort)
+        $order []= "$col_name ".self::$order[$sort];
+    $order = "ORDER BY ".join(',', $order);
+
+    sql::select($tables_str, $verif, 'talk_id', $order);
+    $children  = sql::fetch_all();
+
+    if(in_array($this->talk_id, $children)) //root only
+        $children = array_diff($children, array($this->talk_id));
+
+    return $children;
+  }
+
+
+  protected function get_children_tree($max_depth = null){
+    $children = $this->get_children_tree_ids($max_depth);
+    $children = self::from_ids($children);
 
     $tree_splat  = array_merge_numeric($this->collection, $children );
     foreach($tree_splat as $node) $node->children_tree = array();
@@ -48,28 +94,9 @@ class talk extends _sql_base {
     return $this->children_tree;
   }
 
-  protected function get_children_ids($sort = null){
-    $tables = array();
-    if($sort)
-        $tables = array_merge($tables, array_unique(array_intersect_key(self::$cols, $sort)));
-
-    $tables_str = "ks_talks_tree";
-    foreach($tables as $table_name)
-        $tables_str .= sprintf(" LEFT JOIN `%s` USING(%s)", $table_name, self::sql_key);
-    $tables = mask_join(' LEFT JOIN ', $tables, '`%s` USING('.self::sql_key.')');
-    $order = "";
-    if($sort) {
-        $order .= "ORDER BY ";
-        foreach($sort as $col_name=>$sort)
-            $order.=" $col_name ".self::$order[$sort];
-    }
-
-    sql::select($tables_str, array('parent_id' => $this->talk_id), 'talk_id', $order);
-    $children  = sql::fetch_all();
-    if(in_array($this->talk_id, $children))
-        $children = array_diff($children, array($this->talk_id));
-
-    return $this->children_ids = $children;
+  protected function get_children_ids($order_by = null){
+    if($order_by) $this->order($order_by);
+    return $this->children_ids = $this->get_children_tree_ids(1);
   }
 
   function get_children_nb(){
@@ -87,6 +114,7 @@ class talk extends _sql_base {
   }
 
   function get_children_range($start, $by, $sort = null){
+
     if(!$sort) $children = $this->children_ids;
     else $children = $this->get_children_ids($sort);
 
