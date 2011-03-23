@@ -77,7 +77,6 @@ IF(operation = 'DELETE') THEN
 END IF;
 
 IF(operation = 'UPDATE')  THEN 
-  UPDATE {$this->table->name['safe']} SET $parent = $3 WHERE $key = $2 AND $depth = 1;
 
   --suppression des paths des enfants
   DELETE FROM {$this->table->name['safe']}
