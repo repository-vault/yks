@@ -95,15 +95,15 @@ IF(operation = 'UPDATE')  THEN
   INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth)
     SELECT 
       children.$key AS $key,
-      me.$parent AS $parent, 
-      me.$depth + children.$depth AS $depth
-    FROM {$this->table->name['safe']} AS me, {$this->table->name['safe']} AS children
+      parents.$parent AS $parent, 
+      parents.$depth + children.$depth AS $depth
+    FROM {$this->table->name['safe']} AS parents, {$this->table->name['safe']} AS children
     WHERE TRUE
-      AND me.$key = $2
+      AND parents.$key = $2
       AND children.$parent = $2
       --allow standalone roots  
-      AND me.$parent != me.$key
-      AND children.$key != me.$parent
+      AND parents.$parent != parents.$key
+      AND children.$key != parents.$parent
     ;
 END IF;
 
