@@ -195,8 +195,7 @@ function xml_to_constants($xml, $pfx, $set = false){
         $ret = array_merge($ret, xml_to_constants($child, $name.'_'));
         
     if($set)
-      foreach($ret as $k=>$v)
-        define($k,$v);
+      array_walk(array_flip($ret), 'define');
     return $ret;
 }
 

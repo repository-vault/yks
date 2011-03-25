@@ -156,7 +156,7 @@ class exyks {
     rbx::$output_mode = 0;
 
         //head element creation
-    self::$head = $config->head->to_simplexml();
+    self::$head = $config->head->asSimpleXML();
 
     if(!self::$head->jsx)     self::$head->addChild("jsx");
     if(!self::$head->styles)  self::$head->addChild("styles");

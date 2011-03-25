@@ -51,12 +51,10 @@ class yks
     define('YKS_CONFIG_FORCE', isset($_SERVER['YKS_CONFIG_FORCE']));
 
     self::find_config_file($host);
-
     self::$get = new yks();
 
 
     $GLOBALS['config'] = $config =  yks::$get->config;
-
     if(!is_a($config, "config"))
         yks::fatality(yks::FATALITY_CONFIG, "\$config is no config");
 
@@ -78,7 +76,7 @@ class yks
 
     define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
 
-    $site_code = strtr($config->site['code'],'.','_');
+    $site_code = strtr($config->site['code'], '.', '_');
 
     define('SQL_DRIVER',      pick($config->sql['driver'], 'pgsql'));
     define('STORAGE_DRIVER',  pick($config->storage['driver'], PHP_SAPI=='cli'?'var':'apc'));
@@ -105,14 +103,13 @@ class yks
             array_key_map('strtoupper', array_mask($_ENV, "%s", "{%s}")),
             retrieve_constants("#_PATH$#")
     );
-    define('ROOT_PATH',      paths_merge(PUBLIC_PATH, ".."));
 
-    $defs  = array(
+    $attrs = $config->paths->attributes();
+    $attrs = array_merge(array_diff_key(array(
         'libraries_path' => realpath(YKS_PATH.DIRECTORY_SEPARATOR.".."),
         'cache_path'     => PUBLIC_PATH.DIRECTORY_SEPARATOR.CACHE_REL,
         'tmp_path'       => ROOT_PATH.DIRECTORY_SEPARATOR."tmp",
-    ); $attrs = $config->paths->attributes();
-    $attrs = array_merge(array_diff_key($defs, $attrs), $attrs);
+    ), $attrs), $attrs); //order is relevant ! (CACHE_PATH might = {TMP_PATH})
 
     foreach($attrs as $k=>$v){
         $k = strtoupper($k); $v = str_set($v, $consts);

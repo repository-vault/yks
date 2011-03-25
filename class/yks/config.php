@@ -1,43 +1,24 @@
 <?php
 
 /*  "Yks config" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2010
-    Keep an internal reference table on ROOT_PATH hash so we can use it to clear APC cache
+    distributed under the terms of GNU General Public License
 */
 
 class config extends KsimpleXMLElement {
-    const cache_pfx = 'config_';      // cache key prefix
-    const xattr = 'file';             // derivation attribute
-    private static $_cache = array(); // prevent level 0 re-instanciation
+  const cache_pfx = 'config_';      // cache key prefix
+  const xattr = 'file';             // derivation attribute
 
-  public static function hash_key(){ return self::cache_pfx.crpt(ROOT_PATH, "yks/confighash", 10); }
   public static function load($file_path, $use_cache = YKS_CONFIG_CACHE) {
-
-    $key    = self::cache_pfx.crpt($file_path, "yks/config", 10);
-    if(!$use_cache){
-        syslog(LOG_INFO, "Skipping config cache for $key,you might want to SetEnv YKS_CONFIG_CACHE true");
+    if(!$use_cache)
         return KsimpleXML::load_file($file_path, __CLASS__);
-    }
 
-
-    $config = YKS_CONFIG_FORCE ? false 
-        : ( self::$_cache[$key] ? self::$_cache[$key] : self::$_cache[$key] = config_storage::fetch($key) );
+    $cache_key    = ROOT_PATH.'_'.crpt($file_path, "yks/config", 10);
+    $config = YKS_CONFIG_FORCE ? false : config_storage::fetch($cache_key) ;
     if(!$config) {
         $config = self::load($file_path, false);
-        config_storage::store($key, $config);
-        syslog(LOG_INFO, "Reloading config for $key");
-
-        //keep hash up to date
-        $hash_key = self::hash_key();
-        $hash = array_filter((array)config_storage::fetch($hash_key)); $hash[$key] = $file_path; //infos ?
-        config_storage::store($hash_key, $hash);
+        config_storage::store($cache_key, $config);
     }
     return $config;
-  }
-
-  public function to_simplexml(){
-    $tmp = simplexml_load_string("<null>".$this->asXML()."</null>");
-    return $tmp->{$this->getName()};  //document != documentElement
   }
 
   function search($key, $autocreate = false){
@@ -65,10 +46,12 @@ class config extends KsimpleXMLElement {
     return $ret;
   }
 
-  
+
   public function asSimpleXML(){
-    return simplexml_load_string($this->asXML(true));
+    $tmp = simplexml_load_string("<null>".$this->asXML(true)."</null>");
+    return $tmp->{$this->getName()};  //document != documentElement
   }
+
 
   public function asXML($resolve = false){
     if(!$resolve || !isset($this[self::xattr]))
