@@ -191,7 +191,8 @@ class cli {
       $cmds[] = "@ $cmd"; //silent
       file_put_contents($temp_file, join(CRLF, $cmds));
       $cmd = sprintf('"%s"', $temp_file);
-      return passthru($cmd);
+      passthru($cmd);
+      unlink($temp_file);
     } else {
         $WshShell = new COM("WScript.Shell");
         return $WshShell->Run($cmd);
