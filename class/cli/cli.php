@@ -240,7 +240,7 @@ class cli {
 
     } while(true);
     echo CRLF;
-
+    unlink($dist_file ); //drop remote file
   }
   
   
