@@ -82,6 +82,7 @@ class packlib {
       die("Can't create any phar. Please disable phar.readonly in php.ini");
 
     $out_phar = "$out_file.phar";
+      files::create_dir(dirname($out_phar)); //! phar dont create folder
     $archive_phar_name = basename($out_phar) ;
     $archive_name = basename($out_file) ;
     $inner_file = "yals"; //$archive_name
