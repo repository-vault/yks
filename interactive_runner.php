@@ -308,8 +308,10 @@ class interactive_runner {
 /**
 * @interactive_runner hide
 */
-  static public function start($obj, $args = null){
-    $runner = new self($obj, $args);
+  static public function start($obj, $args){
+    $args = func_get_args();
+    $obj = array_shift($args);
+    $runner = new self($obj, count($args) !=0 ? $args : null);
     $runner->main_loop(); //private internal
   }
 }
