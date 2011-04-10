@@ -44,7 +44,9 @@ class tree_integral extends table_abstract {
     $table = $this->table->get_name();
     $v_xml ="<view name='{$this->view_name}'>
 <def>
-SELECT $key, $parent  FROM {$this->table->name['safe']} WHERE $depth = 1;
+SELECT $key, $parent 
+FROM {$this->table->name['safe']}
+WHERE $depth = 1 OR $key = $parent;
 </def>
 <!-- explicit syntax -->
 <rules>
@@ -108,7 +110,7 @@ IF(operation = 'UPDATE')  THEN
 END IF;
 
 IF(operation = 'INSERT')  THEN 
-  INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth) VALUES ($2, $3, 1);
+  INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth) VALUES ($2, $3, IF($2=$3,0,1));
   INSERT INTO {$this->table->name['safe']} ($key, $parent, $depth)
     SELECT $2 AS $key, $parent, $depth + 1 AS $depth
       FROM {$this->table->name['safe']}  WHERE $key = $3 AND $key != $parent;
