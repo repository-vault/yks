@@ -262,9 +262,10 @@ class interactive_runner {
 
       $is_command = false;
       $callback   = null;
+      $is_magic   = starts_with($method_name, "__") && $method_name != "__call";
       if($method->isPublic()
           && !$method->isStatic()
-          && !starts_with($method_name, "__")
+          && !$is_magic
           && !$method->isConstructor()) {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
