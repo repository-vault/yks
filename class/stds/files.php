@@ -326,6 +326,17 @@ class files {
     return false;
   }
 
+  public static function read_bytes($file_handle, $bytes, $offset = false){
+      if($offset !==false) fseek($file_handle, $offset);
+      $body = ""; $buffer = 8192;
+      do {
+        $left  = min(8192, $bytes - strlen($body));
+        $body .= fread($file_handle, $left);
+      } while(strlen($body) < $bytes && !feof($file_handle));
+      return $body;
+  }
+
+
   public static function file_edit_bit($file, $value, $byte_start = 0, $bit = 0){
     $str = file_get_contents($file);
     $str = self::edit_bit($str, $value, $byte_start, $bit);

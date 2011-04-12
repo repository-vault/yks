@@ -91,6 +91,16 @@ class classes {
         call_user_func(array($class_name, 'init'));
   }
 
+  public static function retrieve_constants($class, $mask = "#.*?#", $format="{%s}"){
+    $re = new ReflectionClass($class);
+    $tmp = $re->getConstants();
+
+    $constants = array();
+    foreach($tmp as $name=>$val)
+        if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;
+    return $constants;
+  }
+
   static function spl_autoload($class_name){
     spl_autoload($class_name);
 
