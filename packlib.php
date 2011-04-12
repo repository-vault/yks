@@ -1,7 +1,7 @@
 <?
 
 class packlib {
-  const class_mask  = "#class\s+([^{\s]*?)\s*\{#";
+  const class_mask  = "#class\s+([^{\s]*?)\s+#";
   const files_mask  = '#.*\.(php|lib)$#';
   private $files_list; //file_path => file contents
   public $init_safe_class = array();
