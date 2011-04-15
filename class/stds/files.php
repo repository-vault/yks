@@ -168,13 +168,17 @@ class files {
 
   public static function download($file, $filename = false, $mime_type = false ){
 
+  private static function download_forge_headers($filename, $mime_type, $metas = array()){
         //http://support.microsoft.com/kb/812935
     header_remove("Set-Cookie");  header_remove("Pragma"); header_remove("Cache-Control");
 
+    
     //header("Accept-Ranges: bytes"); //no need
     //header("Content-Transfer-Encoding: binary"); //no need
     //header(sprintf("Content-Length:%d",filesize($file))); //force !chunked
 
+    
+    
     if($mime_type)
         header($mime_type===true //auto-detection
             ? "Content-Type: text/".self::ext($filename).";charset=UTF-8"
@@ -182,13 +186,31 @@ class files {
 
     $filename = $filename ? $filename : basename($file);
 
+    if($metas['filesize']) 
+      header(sprintf("Content-Length:%d", $metas['filesize'] )); //force !chunked
+            
     $mask     = 'Content-Disposition: attachment; filename="%s"';
     $filename = utf8_decode($filename);
     // $filename = rfc_-2047::header_encode($filename); ie crap
     header(sprintf($mask, $filename));
-    header('Content-Length: '.filesize($file));
-    
+
     readfile($file);
+
+  }
+  
+  public static function download_str($contents, $filename, $mime_type = false ){
+    while(@ob_end_clean());
+    $metas = array('filesize' => strlen($contents));
+    self::download_forge_headers($filename, $mime_type, $metas);
+    echo $contents;
+    die;
+    
+  }
+  public static function download($file_path, $filename = false, $mime_type = false ){
+    while(@ob_end_clean());
+    $metas = array('filesize' => filesize($file_path));
+    self::download_forge_headers($filename ? $filename : basename($file_path), $mime_type);
+    readfile($file_path);
     die;
 
   }
