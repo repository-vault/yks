@@ -15,7 +15,7 @@ class files {
     $cached_file = sys_get_temp_dir()."/".md5("cache $url");
     if(!$force && file_exists($cached_file) && (_NOW-filemtime($cached_file)) < self::CACHE_DELAY)
         return file_get_contents($cached_file);
-    $cache_contents = ltrim(file_get_contents($url, $use_include, $context), BOM);
+    $cache_contents = ltrim(file_get_contents($url, $use_include, $context), UTF8_BOM);
     file_put_contents($cached_file, $cache_contents);
     return $cache_contents;
   }

@@ -12,7 +12,7 @@ define('_NOW',$_SERVER['REQUEST_TIME']);
 define('_UDAY',floor(_NOW/86400));
 
 
-define('BOM', pack('C*',239,187,191));
+define('UTF8_BOM', pack('C*',239,187,191));
 define('VAL_SPLITTER', '#\s*[;,]\s*#');
 
     //Headers stds types
