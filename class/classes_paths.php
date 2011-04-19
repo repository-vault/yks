@@ -58,6 +58,7 @@ classes::register_class_paths(array(
 
     "imgs"                => CLASS_PATH."/imgs/imgs.php",
     "png"                 => CLASS_PATH."/apis/png/png.php",
+    "ffmpeg_helper"       => CLASS_PATH."/apis/ffmpeg/helper.php",
 
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
