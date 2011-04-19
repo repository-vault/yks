@@ -69,6 +69,17 @@ class ffmpeg_helper {
           $input_streams[$input_id]['streams'][$stream_id] = compact('stream_type', 'stream_format', 'stream_codec', 'stream_width', 'stream_height', 'stream_fps');
         } else $input_streams[$input_id]['streams'][$stream_id] = compact('stream_type');
       }
+
+      //is it a simple file ?
+      $video_streams = array();
+      foreach($input_streams[$input_id]['streams'] as $stream)
+        if($stream['stream_type'] == 'Video') $video_streams[] = $stream;
+      if(count($video_streams)==1 && $stream = $video_streams[0])
+        $input_streams[$input_id] = array_merge($input_streams[$input_id], array(
+          'movie_width'  => $stream['stream_width'],
+          'movie_height' => $stream['stream_height'],
+          'movie_fps'    => $stream['stream_fps'],
+      ));
     }
 
     return $input_streams[0];
