@@ -303,14 +303,14 @@ class files {
 
     if(!extension_loaded("zip")) dl("zip.so");
 
-    $zip = new ZipArchive();
-
-
-    $tmp_file = self::tmppath("zip");
-    $zip->open($tmp_file, ZIPARCHIVE::CREATE);
-
     $base_dir   = $options['base_dir'];
     $extra_path = $options['extra_path'];
+    
+    $zip = new ZipArchive();
+
+    $dest_path = pick($options['dest_path'], self::tmppath("zip"));
+    $zip->open($dest_path, ZIPARCHIVE::CREATE);
+
     foreach($files_list as $file_path) {
         if($base_dir) $file_path = files::paths_merge("$base_dir/", $file_path);
         $file_archive_path = basename($file_path);
@@ -323,9 +323,9 @@ class files {
 
     $zip->close();
 
-    //self::file_edit_bit($tmp_file, true, 4+2, 11);
+    //self::file_edit_bit($dest_path, true, 4+2, 11);
 
-    return $tmp_file;
+    return $dest_path;
   }
 
   public static function search_bytes($file_handle, $needle, $offset = false, $buffer_size = 2048) {
