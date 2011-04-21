@@ -3,6 +3,7 @@
 class date {
 
   static function validate($date, $format=DATE_MASK, $zero_time = false){
+
     $format=preg_replace("#[a-z]#i","%$0",strtr($format,array('i'=>'M','s'=>'S')));
 
     if(!($tm=self::strptime($date,$format)))
@@ -54,6 +55,7 @@ class date {
     return floor($time/86400);
   }
 
+
     /** get universal day **/
   static function mkuday($d=false, $m=false, $y=false){
     return self::uday(gmmktime(0, 0, 0,
@@ -68,7 +70,11 @@ class date {
   }
 
 
-  static function sprintfc($date=_NOW,$format=DATE_DAY,$format_rel=false){
+  static function sprintfc($date=_NOW, $format=DATE_DAY, $format_rel=false){
+    return self::sprintfc_time($date, $format, $format_rel, false);
+  }
+
+  static function sprintfc_time($date=_NOW, $format=DATE_DAY, $format_rel=false, $time = true){
     if(is_null($date))
         return "&date.undefined;";
     if($date==0)
@@ -82,7 +88,7 @@ class date {
             date('z/Y',_NOW-86400)=>'&date.yesterday;');
 
     static $USER_TZ = false;
-        if($USER_TZ===false && class_exists("exyks"))
+        if($USER_TZ===false && class_exists("exyks") && $time)
             $USER_TZ = exyks::retrieve("USER_TZ");
 
     $datef = $date+$USER_TZ; //date to display (use client TZ to format)
