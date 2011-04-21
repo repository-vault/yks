@@ -31,7 +31,7 @@ class cli {
     $paths = array_filter(array_unique($paths));
 
     $_ENV['PATH'] = $_SERVER['PATH'] = join(PATH_SEPARATOR, $paths);
-    self::$paths = self::get_path();
+    return self::$paths = self::get_path();
   }
   
   static function get_path(){

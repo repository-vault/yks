@@ -226,6 +226,16 @@ class dsp{
     return $str?$ul:"";
  }
 
+
+  public static function indent_xml($doc) {
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc->formatOutput = true;
+    $domnode = dom_import_simplexml($doc);
+    $domnode = $doc->importNode($domnode, true);
+    $domnode = $doc->appendChild($domnode);
+    return $doc->saveXML(); 
+  }
+
 }
 
 
