@@ -35,7 +35,7 @@ class rbx extends Exception {
   static function ok($msg,$jsx=0){ return new self("ok",$msg,$jsx); }
 
   static function title($title){ echo cli::pad(" $title ").LF; }
-  static function line(){ echo cli::pad().LF.LF; }
+  static function line(){ echo cli::pad().LF; }
 
   static function init($max,$flag=false){
     self::$max=$max;
