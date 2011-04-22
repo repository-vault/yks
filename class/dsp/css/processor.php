@@ -48,7 +48,8 @@ class css_processor {
   }
 
   private function resolve_boxes(){
-    $boxes = $this->css->xpath("//rule[starts-with(@name,'box')]/parent::*");
+    $boxes = $this->css->xpath("//rule[starts-with(@name,'box')]/ancestor::ruleset[1]");
+
     foreach($boxes as $box) {
         $box = new css_box($this->css, $box);
         $box->write_cache();
@@ -57,7 +58,7 @@ class css_processor {
 
 
   private function resolve_crops(){
-    $boxes = $this->css->xpath("//rule[@name='background-crop']/parent::*");
+    $boxes = $this->css->xpath("//rule[@name='background-crop']/parent::ruleset[1]");
     foreach($boxes as $box) {
         $box = new css_crop($this->css, $box);
         $box->write_cache();
