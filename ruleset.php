@@ -8,52 +8,34 @@ class css_ruleset extends ibase  {
 
   function __construct($selector) {
     $this->selector = $selector;
-    $this->declarations = array();
+    $this->declarations = null;
   }
 
   function get_rules(){
-    return $this->declarations;
+    return $this->declarations->get_rules();
   }
 
-  function stack_declaration($declaration){
-    $declaration->set_parent($this);
-    $this->declarations[] = $declaration;
+  function set_declarations($declarations){
+    $declarations->set_parent($this);
+    $this->declarations = $declarations;
   }
-
-  protected function remove_child($child){
-    $i = array_search($child, $this->declarations, true);
-    if($i !== false) unset($this->declarations[$i]);
-  }
-
 
   function get_selector(){
     return $this->selector;
   }
-  
+
   function output(){
     $str = "";
     $str .= $this->selector;
-
-    //declarations
-    $str .= '{';
-    end($this->declarations);
-    $last = key($this->declarations);
-
-    foreach($this->declarations as $i=>$declaration) {
-        $is_last = $last == $i;
-        $tmp = $declaration->output();
-        $str .= $is_last ? substr($tmp, 0, -1) : $tmp;
-    }
-    $str .= '}';
+    $str .= $this->declarations->output();
     return $str;
   }
 
   function outputXML(){
     $selector = specialchars_encode($this->selector);
     $str = "<ruleset {$this->uuid} selector=\"$selector\">";
-    foreach($this->declarations as $declaration)
-        $str .= $declaration->outputXML();
+    $str .= $this->declarations->outputXML();
     $str .= "</ruleset>";
-    return $str;    
+    return $str;
   }
 }

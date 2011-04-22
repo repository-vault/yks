@@ -6,7 +6,7 @@ class at_rule extends ibase {
 
   private $at_keyword;
   private $at_expression = array();
-  private $at_statements = null;
+  private $at_statements = null; //statement is block|declarations (font-face style)
 
   public function __construct($keyword, $expression = false){
     $this->at_keyword = $keyword;
@@ -31,6 +31,11 @@ class at_rule extends ibase {
     $this->at_statements = $block;
   }
 
+  public function set_declarations($declarations){
+    $declarations->set_parent($this);
+    $this->at_statements = $declarations;
+  }
+
   public function get_expressions(){
     if($this->at_expression)
         return join(" ", $this->at_expression);
@@ -41,9 +46,9 @@ class at_rule extends ibase {
     $str  = "@{$this->at_keyword} ";
     $str .= $this->expressions;
 
-    if(!is_null($this->at_statements)) {
+    if(!is_null($this->at_statements))
         $str .= $this->at_statements->output();
-    } else $str .= ";";
+    else $str .= ";";
 
     return $str;
   }

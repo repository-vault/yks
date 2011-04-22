@@ -19,7 +19,7 @@ class css_parser {
         "at_rule"                => "$dir/at_rule.php",
         "css_block"              => "$dir/block.php",
         "css_ruleset"            => "$dir/ruleset.php",
-        "css_declarations_block" => "$dir/declarations.php",
+        "css_declarations"       => "$dir/declarations.php",
         "css_declaration"        => "$dir/declaration.php",
     ));
 
@@ -82,7 +82,7 @@ class css_parser {
   private static function parse_declaration($str, &$i){
 
     $i += strspn($str, self::pad, $i);
-    $mask = "#^([^:]*?):#";
+    $mask = "#^([^:\r\n{]*?):#";
     if(!preg_match($mask, substr($str, $i), $out))
         throw new Exception("Invalid property declaration ".substr($str,$i));
 
@@ -182,7 +182,13 @@ class css_parser {
     $i += strlen($out[0])-1;
 
     $ruleset = new css_ruleset($selector);
+    $ruleset->set_declarations(self::parse_declarations($str, $i));
 
+    return $ruleset;
+  }
+
+  private static function parse_declarations($str, &$i){
+    $declarations  = new css_declarations();
         //declarations block
     if($str{$i++} != "{")
         throw new Exception("Invalid declarations block".substr($str, $i));
@@ -191,16 +197,16 @@ class css_parser {
         $declaration = self::parse_declaration($str, $i);
         if(!$declaration)
             break;
-        $ruleset->stack_declaration($declaration);
+        $declarations->stack_declaration($declaration);
     } while($str{$i}!="}" && $str{$i}!="");
 
     if($str{$i}=="}")
         $i++;
 
     $i += strspn($str, self::pad, $i);
-    return $ruleset;
-  }
 
+    return $declarations;
+  }
 
   private static function parse_string($str, &$i){
     //rbx::ok("parsestring");
@@ -241,9 +247,17 @@ class css_parser {
         return $rule;
     }
 
-    $block = self::parse_block($str, $i);
-    $rule->set_block($block);
-    
+
+    if($rule_keyword == "font-face") {
+      $declarations = self::parse_declarations($str, $i);
+      $rule->set_declarations($declarations);
+    } else {
+      $block = self::parse_block($str, $i);
+      $rule->set_block($block);
+    }
+
+
+
     return $rule;
   }
 
@@ -264,6 +278,12 @@ class css_parser {
 
   private static function parse_ruleset_XML($xml){
     $tmp = new css_ruleset((string)$xml['selector']);
+    $tmp->set_declarations(self::parse_declarations_XML($xml->declarations));
+    return $tmp;
+  }
+
+  private static function parse_declarations_XML($xml){
+    $tmp = new css_declarations();
     foreach($xml->rule as $rule)
         $tmp->stack_declaration(self::parse_declaration_XML($rule));
     return $tmp;
@@ -274,8 +294,11 @@ class css_parser {
     $tmp = new at_rule((string)$xml['keyword']);
     foreach(self::split_values((string)$xml->expression) as $value)
         $tmp->stack_expression($value);
+
     if($xml->style)
         $tmp->set_block(self::parse_block_XML($xml->style));
+    if($xml->declarations)
+        $tmp->set_declarations(self::parse_declarations_XML($xml->declarations));
     return $tmp;
   }
 

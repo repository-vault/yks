@@ -13,7 +13,6 @@ class css_box extends ibase {
 
     $selector = $ruleset->selector;
     $theme_name = trim(trim($selector),'.');
-
     foreach($ruleset->rules as $rule) {
         if($rule['name'] == 'box-image')
             $this->set_image((string)$rule);
