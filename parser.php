@@ -6,7 +6,7 @@ class css_parser {
 
   const pad = " \t\n\r";
   const STRING = "(?:\"([^\"]*)\"|'([^']*)')";
-  const URI    = "url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)";
+  const URI    = "url\(\s*(?:\"(?P<dq>[^\"]*)\"|'(?P<sq>[^']*)\'|(?P<nq>[^)]*))\s*\)";
   const COMMENTS = "/\*.*?\*/";
   const FUNC    = '[a-z-]+\(\s*[^(\r\n]*\s*\)'; // alpha(Opacity=50), rgb(42,42)
   const KEYWORD = "([!]?[a-z0-9-]+)";
@@ -124,19 +124,20 @@ class css_parser {
   public static function split_string($str){
 
     $all = array(
-        self::FUNC,                   //function call
+        self::URI,                    //URI, check first
+        self::FUNC,                   //other function call
         self::STRING,                 //string
         "(\#[0-9A-F]+)",              //hexacolor
         "(-?[0-9.]+)(%|[a-z]{2,3})",  //unit value
         "(-?[0-9.]+)",                //simple number
-        self::URI,                    //URI
         self::KEYWORD,                //keyword
     ); $mask = "#^(?:".join('|', $all).")#i";
 
     if(!preg_match($mask, $str, $out))
           return null; //throw new Exception("Invalid property value=".substr($str, $i));
 
-    return array('full' => $out[0], 'uri' => pick($out[9], $out[8], $out[7]) );
+    $uri = pick($out['nq'], $out['dq'], $out['sq']); //double, simple, no quote
+    return array('full' => $out[0], 'uri' => $uri );
   }
 
 
