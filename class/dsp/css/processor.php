@@ -13,13 +13,12 @@ class css_processor {
     classes::register_class_path("css_parser", "exts/css/parser.php");
     classes::register_class_path("css_box", "exts/css/mod/box.php");
     classes::register_class_path("css_crop", "exts/css/mod/crop.php");
-  }
-
-  private function __construct($uri, $contents = false){
     self::$entities = array();
     foreach(yks::$get->config->themes->exports->iterate('val') as $val)
         self::$entities["&{$val['key']};"] = $val['value'];
+  }
 
+  private function __construct($uri, $contents = false){
     $this->file_uri   = $uri;
     $this->file_base  = ends_with($this->file_uri, '/')
         ? $this->file_uri
@@ -39,11 +38,15 @@ class css_processor {
   }
 
 
-  private function output(){
+  private function apply_hooks(){
     $this->resolve_boxes();
     $this->resolve_crops();
     $this->resolve_imports();
     $this->resolve_externals();
+  }
+
+  private function output(){
+    $this->apply_hooks();
     return $this->css->output();
   }
 
@@ -67,11 +70,28 @@ class css_processor {
 
   private function resolve_imports() {
     $imports = $this->css->xpath("//atblock[@keyword='import']");
+    $replace = true;
+
     foreach($imports as $import) {
         $url = trim($import->expressions, "'\"");
         $path = exyks_paths::merge($this->file_base, $url);
-        $path = exyks_paths::expose($path);
-        $import->set_expression("\"$path\"");
+
+        if($replace) { try {
+            if(!is_file($path)) continue;
+            $process = new css_processor($path);
+            $process->apply_hooks();
+            $this->css->replaces_statement($import, $process->css);
+          } catch(Exception $e){
+            //something is fuck up in the file behind, leave it.. :/
+            $path = exyks_paths::expose($path);
+            $import->set_expression("\"$path\"");
+            $this->css->remove_child($import);
+            $this->css->stack_at($import);
+          }
+        } else { 
+          $path = exyks_paths::expose($path);
+          $import->set_expression("\"$path\"");
+        }
     }
   }
 
