@@ -18,12 +18,20 @@ class css_block extends ibase {
     return $this->file_path;
   }
 
+  function replaces_statement($from, $to){
+    $key = array_search($from, $this->statements);
+    if($key === false) return;
+    $to->set_parent($this);
+    $this->statements[$key] = $to;
+  }
+
   function stack_statement($statement){
     $statement->set_parent($this);
     $this->statements[] = $statement;
   }
 
   function stack_at($statement){
+      //put at rules before other statements..
     foreach(array_values($this->statements) as $i=>$tmp)
         if(!is_a($tmp, 'at_rule') || $tmp->keyword != 'import')
             break;
