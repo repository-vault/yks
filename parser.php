@@ -84,7 +84,10 @@ class css_parser {
 
   private static function parse_declaration($str, &$i){
 
-    $i += strspn($str, self::pad, $i);
+    $i += strspn($str, self::pad.';', $i);
+    if(in_array($str{$i}, array(';', '}', '')))
+      return;
+
     $mask = "#^([^:\r\n{]*?):#";
     if(!preg_match($mask, substr($str, $i), $out))
         throw new Exception("Invalid property declaration ".substr($str,$i));
@@ -183,7 +186,7 @@ class css_parser {
     if(!preg_match($mask, substr($str,$i), $out))
         throw new Exception("Invalid ruleset" . substr($str, $i));
 
-    list(, $selector) = $out;
+    $selector = preg_replace('#[\r\n]#', '', $out[1]);
 
     $i += strlen($out[0])-1;
 
