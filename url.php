@@ -1,7 +1,7 @@
 <?php
 
 class url  extends __native {
-  protected $_accessibles = array('query');
+  protected $_accessibles = array('query', 'host');
 
   function __construct($url){
     $this->data  = urls::parse($url);
@@ -47,14 +47,19 @@ class url  extends __native {
 
   function get_hash($full = false){
     if(!$this->scheme || !$this->host)
-        throw new Exception("Partial url");
+       $str = "[Partial url]";
+    else $str = "{$this->scheme}://{$this->host}";
+    $str .= $this->get_client_part($full);
+    return $str;
+  }
 
-    $str = "{$this->scheme}://{$this->host}";
-    $str .=$this->path;
+  function get_client_part($full = true){
+    $str = $this->path;
     if($full){
         if($this->query)$str.="?{$this->query}";
         if($this->fragment)$str.="#{$this->fragment}";
-    } return $str;
+    }
+    return $str;
   }
 
   function get_http_query(){
@@ -65,10 +70,6 @@ class url  extends __native {
 
 
   function __toString(){
-    try {
-        return $this->get_hash(true);
-    } catch(Exception $e){
-        return "##!!invalid partial url ##";
-    }
+    return $this->get_hash(true);
   }
 }
