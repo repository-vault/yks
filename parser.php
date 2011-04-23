@@ -8,7 +8,10 @@ class css_parser {
   const STRING = "(?:\"([^\"]*)\"|'([^']*)')";
   const URI    = "url\(\s*(?:\"([^\"]*)\"|'([^']*)\'|([^)]*))\s*\)";
   const COMMENTS = "/\*.*?\*/";
+  const FUNC    = '[a-z-]+\(\s*[^(\r\n]*\s*\)'; // alpha(Opacity=50), rgb(42,42)
   const KEYWORD = "([!]?[a-z0-9-]+)";
+  const css_fpi = "-//YKS//CSS";
+
   private static $entities = array();
 
   public static function init(){
@@ -119,7 +122,9 @@ class css_parser {
 
 
   public static function split_string($str){
+
     $all = array(
+        self::FUNC,                   //function call
         self::STRING,                 //string
         "(\#[0-9A-F]+)",              //hexacolor
         "(-?[0-9.]+)(%|[a-z]{2,3})",  //unit value
@@ -270,9 +275,13 @@ class css_parser {
   }
 
   private static function parse_declaration_XML($xml){
-    $tmp = new css_declaration((string)$xml['name']);
-    foreach($xml->valuegroup as $gid=>$group) foreach($xml->val as $value)
+//echo $xml->asXML();die;
+    $gid = 0; $tmp = new css_declaration((string)$xml['name']);
+    foreach($xml->valuegroup as $group) {
+      foreach($group->val as $value)
         $tmp->stack_value((string)$value, $gid);
+      $gid ++;
+    }
     return $tmp;
   }
 
