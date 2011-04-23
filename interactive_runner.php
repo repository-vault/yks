@@ -7,6 +7,7 @@ class interactive_runner {
 
   private $command_pipe;
   private $file;
+  private $magic_call; //does current object support __call ?
   const ns = "runner";
   
   static function init(){
@@ -134,8 +135,11 @@ class interactive_runner {
       if(!$command_prompt)
         throw new Exception("No command");
 
-      if(!$command_resolve)
-        throw rbx::error("Invalid command key '$command_prompt'");
+      if(!$command_resolve) {
+        if($this->magic_call)
+          return array(array($this->obj, $command_prompt), $command_args);
+        else throw rbx::error("Invalid command key '$command_prompt'");
+      }
 
       if(count($command_resolve) > 1)
         throw rbx::error("Too many results for command '*::$command_prompt', please specify ns");
@@ -262,7 +266,8 @@ class interactive_runner {
 
       $is_command = false;
       $callback   = null;
-      $is_magic   = starts_with($method_name, "__") && $method_name != "__call";
+      $is_magic   = starts_with($method_name, "__");
+      if($method_name == "__call") $this->magic_call = true;
       if($method->isPublic()
           && !$method->isStatic()
           && !$is_magic
