@@ -61,7 +61,7 @@ class css_processor {
 
 
   private function resolve_crops(){
-    $boxes = $this->css->xpath("//rule[@name='background-crop']/parent::ruleset[1]");
+    $boxes = $this->css->xpath("//rule[@name='background-crop']/ancestor::ruleset[1]");
     foreach($boxes as $box) {
         $box = new css_crop($this->css, $box);
         $box->write_cache();
