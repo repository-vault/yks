@@ -89,6 +89,9 @@ abstract class isql {
     //you'll need an sql::clean implementation to use this
   static function format_raw_query($query, $params, $lnk = null){
 
+    if(!$params)
+        return $query;
+
     foreach($params as $k=>&$v) {
         if(is_null($v))  $v = 'NULL';
         elseif(is_int($v));
