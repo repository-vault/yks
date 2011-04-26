@@ -33,7 +33,8 @@ function strip_accents($str){
 }
 
 function rte_clean($str){
-    $str=htmlspecialchars_decode(trim($str));
+    $str = htmlspecialchars_decode(trim($str));
+    $str = preg_replace("#<!--.*?-->#s","", $str);
     $str=html_entity_decode($str,ENT_NOQUOTES,"UTF-8");
     if(stripos($str,"<body")){
         preg_match("#<body.*?>(.*?)</body>#is",$str,$out);
