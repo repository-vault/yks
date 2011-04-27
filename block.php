@@ -19,7 +19,7 @@ class css_block extends ibase {
   }
 
   function replaces_statement($from, $to){
-    $key = array_search($from, $this->statements);
+    $key = array_search($from, $this->statements, true);
     if($key === false) return;
     $to->set_parent($this);
     $this->statements[$key] = $to;
