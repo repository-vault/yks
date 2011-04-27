@@ -29,7 +29,7 @@ class xhr extends sock {
 
     $this->url     = $url;
 
-    $port    = $url->is_ssl?443:80;
+    $port    = pick($url->port, $url->is_ssl?443:80);
     $enctype = $url->is_ssl?'ssl://':'';
 
     parent::__construct($url->host, $port, $enctype);
