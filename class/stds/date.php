@@ -92,7 +92,7 @@ class date {
             $USER_TZ = exyks::retrieve("USER_TZ");
 
     $datef = $date+$USER_TZ; //date to display (use client TZ to format)
-    list($d, $m, $n, $Y, $H, $i, $s, $z, $N) = explode(',',date("d,m,n,Y,H,i,s,z,N",$datef));
+    list($d, $m, $n, $Y, $H, $i, $s, $z, $N, $j) = explode(',',date("d,m,n,Y,H,i,s,z,N,j",$datef));
     $p = $USER_TZ/3600; $p = ($p>0?'+':'').substr("0$p", -2);$P = "{$p}:00"; $O="{$p}00";
     //P=+02:00 O=+0200
 
