@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="yyyymm" type="text" volatility="IMMUTABLE">
+    <param type="timestamp"/>
+    <def>
+BEGIN
+RETURN extract(year FROM $1) || '-' || right('0' || extract(month FROM $1),2);
+END
+</def>
+  </procedure>
+  <procedure name="yyyymm" type="text" volatility="IMMUTABLE">
+    <param type="int"/>
+    <def>
+BEGIN
+RETURN  extract(year FROM from_unix_timestamp($1)) || '-' || right('0' || extract(month FROM from_unix_timestamp($1)),2);
+END
+</def>
+  </procedure>
+</myks>
