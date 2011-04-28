@@ -1,7 +1,7 @@
 <?php
 
 class url  extends __native {
-  protected $_accessibles = array('query', 'host');
+  protected $_accessibles = array('query', 'host', 'port');
 
   function __construct($url){
     $this->data  = urls::parse($url);
@@ -21,11 +21,12 @@ class url  extends __native {
 
     $path = files::paths_merge($this->path, $url->path);
     $merge = array_filter(array(
-        'host'=>$this->host,
-        'scheme'=>$this->scheme,
-        'path'=>$path,
-        'query'=> $url->query?$url->query:($path!=$this->path?false:$this->query),
-        'fragment'=>$url->fragment,
+        'host'     => $this->host,
+        'port'     => $this->port,
+        'scheme'   => $this->scheme,
+        'path'     => $path,
+        'query'    => $url->query?$url->query:($path!=$this->path?false:$this->query),
+        'fragment' => $url->fragment,
     ));
     return new url($merge);
   }
@@ -48,7 +49,7 @@ class url  extends __native {
   function get_hash($full = false){
     if(!$this->scheme || !$this->host)
        $str = "[Partial url]";
-    else $str = "{$this->scheme}://{$this->host}";
+    else $str = "{$this->scheme}://{$this->http_host}";
     $str .= $this->get_client_part($full);
     return $str;
   }
@@ -62,10 +63,27 @@ class url  extends __native {
     return $str;
   }
 
+// http://google.fr/test -> match (http://google/) == true
+  function match($url){
+    return starts_with((string)$this, (string)$url);
+  }
+
   function get_http_query(){
     $str = $this->path;
     if($this->query)$str.="?".($this->query);
+    $str = str_replace(" ", "%20", $str);
+
+    //if(preg_match("#[0x80-0xFF]#", $str))die("$str!!");
     return $str;
+  }
+
+  //host:(nonstandart port)
+  function get_http_host(){
+    $http_host = $this->host;
+    $port = pick($this->port, $this->is_ssl?443:80);
+    if($port != ($this->is_ssl ? 443 : 80))
+      $http_host .= ":$port";
+    return $http_host;
   }
 
 

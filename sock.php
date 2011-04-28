@@ -6,7 +6,8 @@ class sock   {
 
   const TRANSPORT_USER = 1;
   const TRANSPORT_NATIVE = 2; //file_get_contents
-  const HTTP_VERSION = 1.1; //Or 1.0
+  const HTTP_1_0 = "1.0"; //Or 1.0
+  const HTTP_1_1 = "1.1"; //Or 1.0
 
 
   private $lnk;
@@ -17,7 +18,9 @@ class sock   {
   private $proxy;
   private $proxy_infos;
   public static $trace = false;
+
   public static $transport_type = sock::TRANSPORT_USER;
+  public static $http_version   = sock::HTTP_1_1;
 
   public $response; //headers
   private $contents; //contents
@@ -89,7 +92,7 @@ class sock   {
         'ignore_errors'    => true,
         'timeout'          => 10,
         'max_redirects'    => 1,
-        'protocol_version' => self::HTTP_VERSION,
+        'protocol_version' => self::$http_version,
     ));
 
     if($this->proxy)
@@ -98,7 +101,6 @@ class sock   {
 
     $ctx = stream_context_create($opts);
 
-    
     $this->contents = file_get_contents($this->query['url'], false, $ctx);
 
     $response = join(CRLF, $http_response_header);
@@ -133,16 +135,22 @@ class sock   {
   function process_response() { }
 
 
-  function forge_query_headers($extra_headers){
+  private function host_str(){
+    $host_str = $this->host;
+    if(!in_array($this->port, array(80,443)))
+      $host_str .= ":{$this->port}";
+    return $host_str;
+  }
 
+  function forge_query_headers($extra_headers){
     $headers = array(
-        'Host'          =>$this->host,
-        'Connection'    =>'close',
+        'Host'          => $this->host_str(),
+        'Connection'    => 'close',
     ); // -- 'Referer'       =>'',
 
     if($this->proxy) {
         
-    } elseif (self::HTTP_VERSION == 1.1
+    } elseif (self::$http_version == self::HTTP_1_1
       && self::$transport_type == self::TRANSPORT_USER)
       $headers = array_merge($headers, array(
         'Connection'    =>'keep-alive',
@@ -157,8 +165,10 @@ class sock   {
 
 
   private function forge_query($url, $method, $data, $headers){
+    $host_str = $this->host_str();
+
     $this->query = array();
-    $this->query['url']         = ($this->enctype=="ssl://"?"https":"http")."://{$this->host}{$url}";
+    $this->query['url']         = ($this->enctype=="ssl://"?"https":"http")."://{$host_str}{$url}";
     $this->query['raw_url']     = $url;
     $this->query['data']        = $data;
     $this->query['headers']     = $this->forge_query_headers($headers);
@@ -168,13 +178,12 @@ class sock   {
     if($this->proxy) {
       $this->query['raw'] = "$method {$this->query['url']} HTTP/1.0".CRLF;
     } else {
-      $this->query['raw'] = "$method $url HTTP/1.1".CRLF;
+      $this->query['raw'] = "$method $url HTTP/".(self::$http_version).CRLF;
     }
     $this->query['raw'] .= $this->query['headers_str'];
     $this->query['raw'] .= CRLF;
 
     $this->query['raw'].= $this->query['data'];
-
     return $this->query['raw'];
   }
 
@@ -248,6 +257,7 @@ class sock   {
         elseif($this->proxy)
             return $this->receive_end_lnk($filter, $ret);
 
+        return $this->receive_end_lnk();
         throw new Exception("Invalid transport type");
     }
 
