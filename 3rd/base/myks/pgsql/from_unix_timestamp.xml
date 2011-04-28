@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="from_unix_timestamp" type="timestamptz">
+  <procedure name="from_unix_timestamp" type="timestamptz" volatility="IMMUTABLE">
     <param name="time_in" type="bigint"/>
     <def>
 DECLARE 
@@ -12,7 +12,7 @@ RETURN tmp;
 END;
 </def>
   </procedure>
-  <procedure name="from_unix_timestamp" type="timestamptz">
+  <procedure name="from_unix_timestamp" type="timestamptz" volatility="IMMUTABLE">
     <param name="time_in" type="float"/>
     <def>
 DECLARE 
