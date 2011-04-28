@@ -1,6 +1,6 @@
 <?php
 
-abstract class __wrapper implements ArrayAccess {
+abstract class __wrapper implements ArrayAccess,Countable {
   private $__base;
   protected $base_type;
 
@@ -44,7 +44,10 @@ abstract class __wrapper implements ArrayAccess {
   function offsetGet($key){ return $this->__base[$key];}
   function offsetSet($offset,$value){}
   function offsetUnset($key){ }
- 
+
+  function count(){
+    return count($this->__base);
+  }
 
 
 }
