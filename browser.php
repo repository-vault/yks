@@ -64,6 +64,20 @@ class browser {
     return $this->cookiejar->retrieve($url, $cookie_name);
   }
 
+
+  private $credentials = array();
+  public function register_credential($host_url, $login, $pswd){
+    $url = url::from($host_url);
+    $this->credentials[$url->http_host] = compact('login', 'pswd', 'url');
+  }
+
+  public function get_credentials($url){
+    $credentials = array();
+    foreach($this->credentials as $host => $cred)
+      if($url->match($cred['url'])) $credentials[] = $cred;
+    return $credentials;
+  }
+
     // public 
   public function adopt_cookies($url, $cookies){
     $url = url::from($url);

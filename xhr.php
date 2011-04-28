@@ -75,7 +75,11 @@ class xhr extends sock {
         foreach($cookies as $cookie)
             $cookies_tmp []= "$cookie->name=$cookie->value";
         $headers['Cookie'] = join('; ', $cookies_tmp);
-    }    
+    }
+
+    $credentials = $this->browser->get_credentials($this->url);
+    foreach($credentials as $cred)
+      $headers['Authorization'] = "Basic ".base64_encode(sprintf('%s:%s', $cred['login'], $cred['pswd']));
 
     return $headers;
   }
