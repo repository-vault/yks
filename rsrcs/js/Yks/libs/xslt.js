@@ -5,7 +5,9 @@ var XML = {
     return el.xml;
   },
   makesoup:function(xml_str){
-    return $n("div").set('html', xml_str);//.getFirst(); //dont <null><br/><box/></null>
+   if(xml_str.startsWith("<!DOCTYPE"))
+      xml_str = xml_str.replace(/^<!DOCTYPE[^>]+>/, "");
+   return $n("div").set('html', xml_str);//.getFirst(); //dont <null><br/><box/></null>
   }
 };
 

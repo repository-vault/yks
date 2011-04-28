@@ -22,6 +22,15 @@ String.implement({
   trim: function(flag){
     if(!$defined(flag))flag="\\s";
     return this.replace(new RegExp('^['+flag+']+|['+flag+']+$','g'),'');
+  },
+
+  startsWith: function(str){
+     return (this.indexOf(str) === 0);
+  },
+
+  reduce: function(regex){
+     regex = ((typeof regex == 'string') ? new RegExp(regex, null) : regex);
+     return this.match(regex)[0];
   }
 
 });
