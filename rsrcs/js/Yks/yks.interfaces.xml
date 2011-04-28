@@ -18,7 +18,7 @@
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
     </module>
-    <module key="path://3rd/usage/ColorPicker.js" expose="ColorPicker" matches="input.input_color" head="true">&gt;
+    <module key="path://3rd/usage/ColorPicker.js" expose="ColorPicker" matches="input.input_color" head="true">
       <dep key="path://3rd/Wooly_Sheep.net/MooRainbow/mooRainbow.js"/>
       <description>Extend a basic text input into a small but usefull color picker</description>
     </module>
