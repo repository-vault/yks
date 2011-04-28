@@ -93,19 +93,17 @@ class window extends __native {
     if($lnk->url != $this->url)//has been redirected
         $this->url = $lnk->url;
     $str = $lnk->receive();
- 
-    $charset = strtolower($content_type->extras['charset']);
 
-    $document = new document($this, dom::simplexml_load_html($str, $charset) );
-    $reloc = $document->reloc;
-    if($reloc) { 
-        return $this->go($reloc);
-    }
-
-    $this->document = $document;
-
-
-    if(!$charset){
+    if(strtolower($content_type->value)== "application/octet-stream") {
+      $this->document = $str;
+    } else {
+      $charset = strtolower($content_type->extras['charset']);
+      $document = new document($this, dom::simplexml_load_html($str, $charset) );
+      $reloc = $document->reloc;
+      if($reloc)
+          return $this->go($reloc);
+      $this->document = $document;
+      if(!$charset)
         $this->get_charset();
     }
 
