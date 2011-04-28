@@ -8,13 +8,14 @@ Vous êtes ici : <?=$parent_path?><br/>
 
 foreach($dsp_profile as $field_name=>$field_type){
     $disabled = is_null($user_infos[$field_name])?"disabled='disabled'":'';
-    echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
+    //!!
+    if($field_type == "text") 
+        echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name'>".specialchars_encode($user_infos[$field_name])."</field>\n";
+    else  echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
 }
 ?>
 
 <hr class="clear"/>
-
-
 
 
 <toggler caption="Authentification" class="closed">

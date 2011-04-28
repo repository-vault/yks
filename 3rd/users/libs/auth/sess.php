@@ -79,6 +79,7 @@ class sess  {
     sess::$sess     = user::instanciate($user_id, $users_tree);
     sess::$sess->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
     sess::$_storage = array();
+    $_SESSION['client_addr'] = $_SERVER['REMOTE_ADDR'];
     self::status_check();
   }
 
