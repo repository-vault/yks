@@ -75,7 +75,7 @@ var Box = new Class({
                     me = el.getCoordinates(),
                     dec = el.retrieve('dec', {
                         width:(me.left-p.left + p.right-me.right) + (me.width-inner.x) +20,
-                        height:(me.top-p.top + p.bottom-me.bottom) +(me.height-inner.y)+20,
+                        height:(me.top-p.top + p.bottom-me.bottom) +(me.height-inner.y)+20
                     });
                 el.store('dec', dec); //.setStyle('position', 'absolute');
             });
