@@ -49,6 +49,8 @@ class foorder extends order {
     ); $data = array_merge($data, $order_extras);
 
     $order_id = sql::insert("ks_shop_orders", $data, true);
+    if($order_extras['order_id'])
+        $order_id = $order_extras['order_id']; //h4<k
 
     return $order_id;
   }
