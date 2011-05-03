@@ -188,9 +188,6 @@ class files {
     $filename = utf8_decode($filename);
     // $filename = rfc_-2047::header_encode($filename); ie crap
     header(sprintf($mask, $filename));
-
-    readfile($file);
-
   }
   
   public static function download_str($contents, $filename, $mime_type = false ){
