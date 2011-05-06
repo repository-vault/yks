@@ -117,7 +117,8 @@ class date {
     $t = $timestamp;
     $out = array();
     foreach($steps as $name => $step_time){
-
+      if($step_time == 0) break;
+      
       $current = $t % $step_time;
       $t /= $step_time;
       if($current > 0)
