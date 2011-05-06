@@ -103,6 +103,28 @@ class date {
     return preg_replace(VAR_MASK,VAR_REPL,$rel&&$format_rel?$format_rel:$format);
   }
 
+  
+  public static function human_diff($timestamp, $max = 2){
+    $steps = array(
+      's' => 60,
+      'min' => 60,
+      'hour' => 24,
+      'day' => 30,
+      'month' => 12,
+      'year' => 0,
+    );
+    
+    $t = $timestamp;
+    $out = array();
+    foreach($steps as $name => $step_time){
+
+      $current = $t % $step_time;
+      $t /= $step_time;
+      if($current > 0)
+        $out[] = "$current $name".($name != 's' && $current > 1 ? 's' : '');
+    }
+    return implode(' ', array_slice(array_reverse($out), 0, $max));
+  }
 
 
 }
