@@ -11,7 +11,8 @@ class exyks_auth_api {
    * @return string
    **/
   public static function login($user_login, $user_pswd){
-    $user_login = strtolower($user_login);
+    
+    //$user_login = strtolower($user_login); // WTF POURQUOI C'EST LA VU QUE CA FAIT TOUT CHIER !? (quentin 15/02/2011)
 
     sess::connect();
     if(!isset(sess::$sess['user_id']))
@@ -27,6 +28,33 @@ class exyks_auth_api {
 
     return self::output($data);
   }
+  
+    /**
+   * @param int $user_id
+   * @return string
+   **/
+  public static function loginFromId($user_id){
+    //DebugBreak("1@172.51.1.88");
+    $trusted_ips = explode(";", yks::$get->config->apis->authapi['trusted_ip']);
+    $is_trusted = in_array($_SERVER['REMOTE_ADDR'] , $trusted_ips);
+    if(!$is_trusted)
+      throw new Exception("Only from trusted ip");
+
+
+    sess::connect();
+    if(!isset(sess::$sess['user_id']))
+        sess::renew(); //sess::$id is now set
+
+    $auth_success = sess::update($user_id, true); //skip authentification
+    if(!$auth_success)
+        throw new Exception("Invalid user ( $user_id) ");
+
+    $data = sess::$sess->computed;
+    $data['users_tree'] =  sess::$sess['users_tree'];
+
+    return self::output($data);
+  }
+  
 
   /**
    * @param string $access_zone
