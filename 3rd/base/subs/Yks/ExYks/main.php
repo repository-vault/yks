@@ -1,11 +1,11 @@
 <?
 
+$action = pick($action, $sub0);
 
-list($get_action, $arg0) = array($sub0, $sub1);
+//RewriteRule ^(fr-fr|en-us)$  /?/Yks/ExYks//set_lang;$1 [L]
 
 if($action == "set_lang") try {
-
-    $base = $_POST['lang_key'];
+    $base = pick($_POST['lang_key'], $sub1);
     $user_lang =  locales_manager::find_best_lang($base, exyks::retrieve('LANGUAGES'));
     $_SESSION['langs']['current'] = $user_lang;
 
@@ -15,7 +15,7 @@ if($action == "set_lang") try {
 } catch(rbx $e){}
 
 
-if($get_action == "rsrcs") try {
+if($action == "rsrcs") try {
     ///?/Yks/ExYks//rsrcs|video_player;320;240
     $file = $argv0;
     if($file == "flvplayer") {
