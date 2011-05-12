@@ -140,7 +140,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     if(is_null($this->contents)) foreach($this->children() as $children)
         $str .= $children->asXML($tmp);
     else
-        $str .= $this->contents;
+        $str .= htmlspecialchars($this->contents);
     $str.= "</{$this->name}>";
 
     return $str;
@@ -149,8 +149,9 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     //***********************************
 
   private static function join_args($attrs){
-    foreach($attrs as $k=>&$v)$v = "$k=\"$v\"";
-    return join(' ',$attrs);
+    $ret = array();
+    foreach($attrs as $k=>$v)$ret[] = "$k=\"".htmlspecialchars($v) ."\"";
+    return join(' ', $ret);
   }
 
 
