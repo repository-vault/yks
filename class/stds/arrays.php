@@ -175,10 +175,7 @@ function array_filter_criteria($list, $criteria){
 }
 
 
-/**
-* LOL
-**/
-function xml_to_constants($xml, $pfx, $set = false){
+function xml_to_dict($xml, $pfx){
     if(is_string($xml))
         $xml = simplexml_load_file($xml);
     $ret  = array();
@@ -193,12 +190,13 @@ function xml_to_constants($xml, $pfx, $set = false){
         
     foreach($children as $child)
         $ret = array_merge($ret, xml_to_constants($child, $name.'_'));
-        
-    if($set)
-      foreach($ret as $k=>$v) define($k, $v);
-
     return $ret;
 }
 
-
+function xml_to_constants($xml, $pfx, $set = false){
+  $ret = xml_to_dict($xml, $pfx);
+   if($set)
+      foreach($ret as $k=>$v) define($k, $v);
+    return $ret;
+}
 
