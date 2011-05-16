@@ -6,6 +6,17 @@
       <dep key="mootools.lite"/>
       <dep key="path://3rd/usage/locales/DatePicker.%USER_LANG%.js"/>
     </module>
+
+    <module key="path://3rd/Devthought/TextboxList/TextboxList.js" head="true">
+      <description>TextboxList.js - Devthought TextboxList class</description>
+      <dep key="mootools.lite"/>
+    </module>
+
+    <module key="path://3rd/Devthought/TextboxList/TextboxList.Autocomplete.js" head="true">
+      <description>TextboxList autocompletion module</description>
+      <dep key="path://3rd/Devthought/TextboxList/TextboxList.js"/>
+    </module>
+
   </package>
   <package name="Locales">
     <module key="path://3rd/usage/locales/DatePicker.%USER_LANG%.js"/>
