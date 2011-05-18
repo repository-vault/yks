@@ -220,7 +220,7 @@ TextboxList.Autocomplete.Methods = {
 	
 	standard: {
 		filter: function(values, search, insensitive, max){
-			var newvals = [], regexp = new RegExp('\\b' + search.escapeRegExp(), insensitive ? 'i' : '');
+			var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : '');
 			for (var i = 0; i < values.length; i++){
 				if (newvals.length === max) break;
 				if (values[i][1].test(regexp)) newvals.push(values[i]);
@@ -229,7 +229,7 @@ TextboxList.Autocomplete.Methods = {
 		},
 		
 		highlight: function(element, search, insensitive, klass){
-			var regex = new RegExp('(<[^>]*>)|(\\b'+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
+			var regex = new RegExp('(<[^>]*>)|('+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
 			return element.set('html', element.get('html').replace(regex, function(a, b, c){
 				return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>'; 
 			}));

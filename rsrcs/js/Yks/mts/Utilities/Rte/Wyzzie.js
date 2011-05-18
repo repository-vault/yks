@@ -85,9 +85,14 @@ var Wyzzie = new Class({
   sync:function(){ if (this.designed) this.area.value = this.doc.body.innerHTML; },
     
   action: function(cmd, html) {
-    var action=window.ie?this.doc.selection.createRange():this.doc;
+    var action=Browser.Engine.trident?this.doc.selection.createRange():this.doc;
     if ($type(cmd) != 'array') cmd = [cmd];
-    if (this.designed) try { action.execCommand(cmd[0],false,cmd[1]) } catch(e) {}
+    if (this.designed) try {
+      if(Browser.Engine.trident && cmd[0].toLowerCase() == "inserthtml" && action.pasteHTML)
+         action.pasteHTML(html);
+      else 
+         action.execCommand(cmd[0],false,html);
+    } catch(e) {}
     this.focus();
  },
 
