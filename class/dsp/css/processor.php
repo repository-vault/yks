@@ -117,8 +117,14 @@ class css_processor {
 //inline style rewrite callback
   function style_rewrite($doc, $node){
     $contents = $node->nodeValue;
-    $css = new self("path://public/a", $contents);
-    $contents = $css->output();
+
+    try {
+      $css = new self("path://public/a", $contents);
+      $contents = $css->output();
+    } catch(Exception $e){
+      error_log("Corrupted inline css..."); 
+      return;
+    }
     $node->nodeValue= $contents;
   }
 
