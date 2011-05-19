@@ -8,7 +8,7 @@
 class sql_integrity {
 
   function __construct(){
-    self::check();
+
   }
   //permet de formater un tuple de recherche pour une destruction des elements 
   // e.g : user_tree : (user_id, parent_id)
@@ -87,6 +87,61 @@ class sql_integrity {
 
 
 
+  function check_sql(){
+    $verif_fk = array('constraint_type' => 'FOREIGN KEY');
+    $cols = "constraint_catalog, constraint_schema, constraint_name, table_schema, table_name";
+
+    $restrict = ""; //$restrict =  "LIMIT 2";
+    sql::select("information_schema.table_constraints", $verif_fk, $cols, $restrict);
+    $constraints_list = sql::brute_fetch('constraint_name');
+
+
+    $verif_fks = array('constraint_name' => array_keys($constraints_list));
+
+    $order = (SQL_DRIVER=="pgsql") ? "ORDER BY position_in_unique_constraint ASC" : "";
+    sql::select("information_schema.key_column_usage", $verif_fks, "constraint_name,column_name", $order);
+    while($l=sql::fetch())
+        $constraints_list[$l['constraint_name']]['members'][$l['column_name']]=$l['column_name'];
+
+
+    sql::select("information_schema.constraint_column_usage", $verif_fks );
+    while($l=sql::fetch()) {
+        $constraints_list[$l['constraint_name']]['definition']['table_schema'] = $l['table_schema'];
+        $constraints_list[$l['constraint_name']]['definition']['table_name']   = $l['table_name'];
+        $constraints_list[$l['constraint_name']]['definition']['columns'][] = $l['column_name'];
+    }
+
+    
+    foreach($constraints_list as $constraint_name=>$constraint)
+      self::clean_fk($constraint);
+
+  }
+
+  function clean_fk($constraint){
+    $constraint_name = $constraint['constraint_name'];
+    rbx::ok("Checking $constraint_name");
+
+    $src = $constraint['definition'];
+    $src_name = sql::resolve("`{$src['table_schema']}`.`{$src['table_name']}`");
+
+    $dst_name = sql::resolve("`{$constraint['table_schema']}`.`{$constraint['table_name']}`");
+
+
+    $cols = self::tuplize($src['columns'], "`"); //sql::quote
+    $query_src = "SELECT $cols FROM {$src_name['safe']}";
+
+    $query = "SELECT COUNT(*) FROM {$dst_name['safe']}";
+    $query .= " WHERE ".self::tuplize($constraint['members'],'`')." NOT IN ($query_src) ";
+
+    $errors = sql::qvalue($query);
+    if(!$errors){
+      rbx::ok("No integrity errors on $constraint_name");
+      return;
+    }
+
+    rbx::error("Found $errors integrity errors on $constraint_name");
+    cli::pause();
+  }
 
 
 }
