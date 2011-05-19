@@ -1,30 +1,29 @@
 <?
 /*
     Manualy check data integrity
-    only do basic "deletecascade", i should support "set_null" action
 */
 
-if(SQL_DRIVER!= "mysqli") 
-    throw rbx::error("You DONT want to do that");
 
 
-$types_xml = yks::$get->types_xml;
-$parent_types = $types_xml->xpath("/myks/*[@birth]");
-foreach($parent_types as &$type) $type=$type->getName();
+class sql_integrity {
 
-$myks_types  = $parent_types;
+  function tuplize($v, $s="'"){ return count($v)>1?"($s".join("$s, $s",$v)."$s)":"$s".reset($v)."$s"; }
 
-
-function clean($myks_type){
-    sql::$queries=array();
+  public static function check(){
 
     $types_xml = yks::$get->types_xml;
-    $tables_xml = yks::$get->tables_xml;
+    $parent_types = $types_xml->xpath("/myks/*[@birth]");
+    foreach($parent_types as &$type) $type=$type->getName();
+    foreach($myks_types as $myks_type)
+      clean($myks_type);
+  }
 
+ public function clean($myks_type){
+    sql::$queries=array();
 
-    $mykse = $types_xml->$myks_type;
+    $mykse = yks::$get->types_xml->$myks_type;
     $birth_table = (string)$mykse['birth'];
-    $birth_xml = $tables_xml->$birth_table;
+    $birth_xml = yks::$get->tables_xml->$birth_table;
     if(!$birth_xml)
         throw rbx::error("Unable to find element's birth table");
 
@@ -72,13 +71,5 @@ function clean($myks_type){
         echo join(CRLF, $queries).CRLF;
         rbx::line();
     }
-
+  }
 }
-
-function tuplize($v, $s="'"){ return count($v)>1?"($s".join("$s, $s",$v)."$s)":"$s".reset($v)."$s"; }
-
-foreach($myks_types as $myks_type)
-    clean($myks_type);
-
-
-die;
