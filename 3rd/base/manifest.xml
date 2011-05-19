@@ -22,6 +22,7 @@
     <class name="sql_runner" path="path://here/libs/sql/runner.php"/>
     <class name="__sql_sync" path="path://here/libs/sql/sync.php"/>
     <class name="sql_sync" path="path://here/libs/sql/{SQL_DRIVER}/sql_sync.php"/>
+    <class name="sql_integrity" path="path://here/libs/sql/integrity.php"/>
 <!--  myks -->
     <class name="myks" path="path://here/libs/myks/myks.php"/>
     <class name="mykses" path="path://here/libs/myks/mykses.php"/>
