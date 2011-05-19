@@ -12,7 +12,7 @@ class sql_integrity {
   }
   //permet de formater un tuple de recherche pour une destruction des elements 
   // e.g : user_tree : (user_id, parent_id)
-  function tuplize($v, $s="'"){
+  private static function tuplize($v, $s="'"){
     return count($v)>1 ? "($s".join("$s, $s",$v)."$s)" : "$s".reset($v)."$s";
   }
 
@@ -117,7 +117,7 @@ class sql_integrity {
 
   }
 
-  function clean_fk($constraint){
+  private static function clean_fk($constraint){
     $constraint_name = $constraint['constraint_name'];
     rbx::ok("Checking $constraint_name");
 
