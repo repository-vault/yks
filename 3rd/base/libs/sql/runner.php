@@ -114,6 +114,9 @@ class sql_runner {
 
   }
 
+  function integrity(){
+    interactive_runner::start("sql_integrity");
+  }
 
   function gc(){
     rbx::ok("Cleaning expired sessions");
