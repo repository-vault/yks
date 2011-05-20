@@ -24,6 +24,11 @@ class timeout {
     return (microtime(true) - $this->start_time) > $this->delay;
   }
 
+  public function sleep($sec){
+    usleep(1000000 * $sec);
+    return true;
+  }
+
   function __get($key){
     if($key=="expired")
         return $this->is_expired();
