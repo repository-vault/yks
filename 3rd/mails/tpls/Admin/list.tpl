@@ -1,4 +1,4 @@
-<box id="mails_list" theme="&pref.dft;" caption="Liste des mails">
+<box id="mails_list" theme="&pref.dft;" caption="Liste des mails" style="width:100%">
 
 <table class="table" style="width:100%">
 <tr class='line_head'>
@@ -13,6 +13,7 @@
 
 if($mails_list) foreach($mails_list as $mail_id=>$mail_infos){
   $actions ="";
+  $actions .= "<a href='/?&href_fold;/Manage//$mail_id/send' target='sendmail'>Send</a>";
   $actions .= "<a ext='/?$href_fold/Manage//$mail_id' class='std'>
         <img alt='edit_icon' src='/css/Yks/icons/edit_24'/>
       </a>";
