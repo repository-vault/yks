@@ -63,6 +63,7 @@ classes::register_class_paths(array(
     "cli"                 => CLASS_PATH."/cli/cli.php",
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/exts/cli/interactive_runner.php",
+    "namedpipewrapper"    => CLASS_PATH."/exts/cli/namedpipewrapper.php",
     "win32_service"       => CLASS_PATH."/exts/cli/win32_service.php",
     "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
 
