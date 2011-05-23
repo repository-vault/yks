@@ -96,11 +96,13 @@ class dsp_titles {
   public static function gen_img($data){ extract($data);
 
     $text_tmp = imagettfbbox($font_size,0,$font,$text);
-    $text_w=max(abs($text_tmp[4]-$text_tmp[0]),abs($text_tmp[2]-$text_tmp[6]));
+    $text_tmp_h = imagettfbbox($font_size,0,$font,"$text dp"); // ! :s
+
+    $text_w = max(abs($text_tmp[4]-$text_tmp[0]),abs($text_tmp[2]-$text_tmp[6]));
 
 
     $db=(bool)$drop_bottom;$db=false;
-    $text_h=max(abs($text_tmp[7]-($db?0:$text_tmp[1])),abs($text_tmp[5]-($db?0:$text_tmp[3])));
+    $text_h = max(abs($text_tmp_h[7]-($db?0:$text_tmp_h[1])),abs($text_tmp_h[5]-($db?0:$text_tmp_h[3])));
 
     if(!is_array($box_grid)) {
         list($tmp_x,$tmp_y) = explode(";",$box_grid);
@@ -142,7 +144,7 @@ imgs::imagecolorize($box_img, imgs::colordec($colorize));
 
     $text_align = $text_align?$text_align:"center";
 
-    $text_y= floor(($box_mu+$text_h+$img_h-$box_md)/2);if(!$db)$text_y-=$text_tmp[1];
+    $text_y= floor(($box_mu+$text_h+$img_h-$box_md)/2);if(!$db)$text_y-=$text_tmp_h[1];
     $text_x= 0;
     if($text_align=="left") $text_x = $box_ml; //left
     elseif($text_align=="right") $text_x = $img_w - ($text_w+$box_mr); //right
