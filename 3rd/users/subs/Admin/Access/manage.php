@@ -9,7 +9,7 @@ if($action == "zone_manage") try {
     $data = array(
         'access_zone'         => $_POST['access_zone'],
         'access_zone_parent'  => $_POST['access_zone_parent'],
-        'zone_descr'          => rte_clean($_POST['zone_descr']),
+        'zone_descr'          => $_POST['zone_descr'],
     );
 
     if(!$data['access_zone_parent']) //si la zone est racine
