@@ -201,10 +201,9 @@ class files {
   public static function download($file_path, $filename = false, $mime_type = false ){
     while(@ob_end_clean());
     $metas = array('filesize' => filesize($file_path));
-    self::download_forge_headers($filename ? $filename : basename($file_path), $mime_type);
+    self::download_forge_headers($filename ? $filename : basename($file_path), $mime_type, $metas);
     readfile($file_path);
     die;
-
   }
 
   public static function content_type($file_path){
