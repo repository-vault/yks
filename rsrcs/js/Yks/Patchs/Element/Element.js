@@ -1,9 +1,13 @@
 
 Element.implement({
   dispose: function(){
-    if(this.fireEvent) $(this).fireEvent("onRemove");
+     try {
+      if(this.fireEvent) $(this).fireEvent("onRemove");
         //legacy code here
-    return (this.parentNode) ? this.parentNode.removeChild(this): this;
+      return (this.parentNode) ? this.parentNode.removeChild(this): this;
+    } catch(err) {
+      return this;
+    }
   },
 
   effect: function(property,options){
