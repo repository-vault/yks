@@ -9,7 +9,7 @@ SELECT
     (n.nspname)::information_schema.sql_identifier AS trigger_schema,
     (t.tgname)::information_schema.sql_identifier AS trigger_name,
     (em.text)::information_schema.character_data AS event_manipulation,
-    t.tgenabled AS trigger_enabled,
+    (t.tgenabled != 'D') AS trigger_enabled, -- thx 8.3
     (current_database())::information_schema.sql_identifier AS event_object_catalog,
     (n.nspname)::information_schema.sql_identifier AS event_object_schema,
     (c.relname)::information_schema.sql_identifier AS event_object_table,
