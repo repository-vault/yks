@@ -84,10 +84,10 @@ class auth {
     return $access;
   }
 
-  static function verif($access_zones='', $lvl='access', $die=false){     global $action;
+  static function verif($access_zones='', $lvl='access', $die=false, $user=false){     global $action;
 
     if(!is_array($access_zones)) $access_zones=array($access_zones);
-    $base = sess::$sess['user_access'];
+    $base = $user ? $user['user_access'] : sess::$sess['user_access'];
     foreach($access_zones as $access_zone) $base=$base[$access_zone];
     $valid = isset($base[$lvl]);
     if(!$die || $valid) return $valid;
