@@ -286,7 +286,6 @@ class files {
   }
 
   public static function extract($archive_file, $extract_path = "."){
-    if(!extension_loaded("zip")) dl("zip.so");
     $zip = new ZipArchive();
     $zip->open($archive_file);
     $zip->extractTo($extract_path);
@@ -296,8 +295,6 @@ class files {
 
     //creer une archive et en retourne le path
   public static function archive($files_list, $options =  array() ){
-
-    if(!extension_loaded("zip")) dl("zip.so");
 
     $base_dir   = $options['base_dir'];
     $extra_path = $options['extra_path'];
