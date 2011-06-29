@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?
+
+$user = trim(fgets(STDIN));
+$pswd = trim(fgets(STDIN));
+
+$context = explode(' ',  $_SERVER['CONTEXT']);
+$wsdl   = $context[0];
+$auth   = $context[1];
+$expire = $context[2];
+$now    = time();
+if(!$expire) $expire = 2200;
+
+$range = floor($now/$expire);
+
+
+$cache_path = sys_get_temp_dir().DIRECTORY_SEPARATOR."yks_auth_".$_SERVER['HTTP_HOST'];
+
+if(!file_exists($cache_path) && !touch($cache_path))
+    die(1);
+
+
+$hash = md5("$range-{$_SERVER['IP']}-{$_SERVER['HTTP_HOST']}-$user-$pswd");
+
+
+$storage = @unserialize(file_get_contents($cache_path));
+if(isset($storage[$hash])) 
+    die($storage[$hash][0]);
+
+
+
+try {
+    $client = new SoapClient($wsdl);
+    $client->login($user, $pswd);
+    if(!$client->verifAuth($auth, "access"))
+        throw new Exception("Failure");
+
+    $storage[$hash] = array(0, $now);
+} catch(Exception $e){
+    $storage[$hash] = array(1, $now);
+}
+
+//gc
+foreach($storage as $k=>$infos)
+    if($now - $infos[1] > $expire) unset($storage[$k]);
+
+file_put_contents($cache_path, serialize($storage));
+
+die($storage[$hash][0]);
