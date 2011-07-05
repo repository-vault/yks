@@ -150,13 +150,16 @@ function array_merge_deep($array0, $array1){
 }
 
   // Find documentation in the manual
-function array_reindex($array,$cols=array()){
-    $res=array();if(!is_array($cols))$cols=array($cols);
-    foreach($array as $v){
-      $tmp=&$res;
-      foreach($cols as $col) $tmp=&$tmp[$v[$col]];
-      $tmp=$v;
-    }return $res;
+function array_reindex($src, $cols=array(), $body = null){
+    $res = array();
+    if(!is_array($cols)) $cols = array($cols);
+    
+    foreach($src as $item){
+      $tmp = &$res;
+      foreach($cols as $col)
+        $tmp = &$tmp[$item[$col]]; // \õ_ (autocreate entries)
+      $tmp = is_null($body) ? $item : $item [$body];
+    } return $res;
 }
 
 function array_filter_criteria($list, $criteria){

@@ -33,10 +33,13 @@ class config extends KsimpleXMLElement {
   }
 
   private static function resolve($tmp){
-    list($file_path, $search) = explode(" ", $tmp[self::xattr]); //!
+    $path  =$tmp[self::xattr];
+    list($file_path, $search) = explode(" ", $path); //!
     $file_path = paths_merge(ROOT_PATH, $file_path);
-    if(! file_exists($file_path))
-        return $tmp;
+    if(! file_exists($file_path)) {
+       error_log("Configuration file do not exists $file_path ($path)");
+       return $tmp; 
+    }
 
     $ret = self::load($file_path);
     if($search) $ret = $ret->search($search, true); //autocreate

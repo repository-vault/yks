@@ -8,7 +8,9 @@ function crpt($msg,$flag,$len=40) {
 
 function paths_merge($path_root, $path, $default="."){
     if(!$path) $path = $default;
-    if($path{0}==DIRECTORY_SEPARATOR || preg_match('#^[A-Z]:\\\#', $path)) return $path;
+    if( $path{0}==DIRECTORY_SEPARATOR
+        || preg_match('#^[A-Z]:\\\#', $path)
+        || starts_with($path, "path://")) return $path;
     return realpath($path_root.DIRECTORY_SEPARATOR.$path);
 }
 
