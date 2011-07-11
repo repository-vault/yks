@@ -15,18 +15,38 @@ class crypt {
     $ppk_infos = openssl_pkey_get_details($ppk);
     if(!openssl_pkey_export ($ppk, $contents))
         throw new Exception("Fail to export private key");
-    $private_key = $contents;
-    $public_key  = $ppk_infos['key'];
+    $private_key = self::cleanupPem($contents);
+    $public_key  = self::cleanupPem($ppk_infos['key']);
 
+    return compact('private_key', 'public_key');
+  }
+  
+  public static function ExtractPublicFromPrivateKey($private_key){
+    
+    //Get private id
+    $private_key = crypt::BuildPemKey($private_key, crypt::PEM_PRIVATE);
+    $openssl_priv = openssl_get_privatekey($private_key);
+    if(!$openssl_priv)
+      throw new Exception("Invalid private key.");
+    
+    //Get details
+    $key_details = openssl_pkey_get_details($openssl_priv);
+    if(!$key_details)
+      throw new Exception("Invalid public key.");
+
+    openssl_pkey_free($openssl_priv);
+
+    return self::cleanupPem($key_details['key']);
+  }
+  
+  private static function cleanupPem($key){
     $cleanup = array(
       '#^-+(BEGIN|END)( RSA)? (PUBLIC|PRIVATE) KEY-+$#m' => '',
       "#\r?\n#" => ''
     );
-    $private_key = preg_areplace($cleanup, $private_key);
-    $public_key = preg_areplace($cleanup, $public_key);
-
-    return compact('private_key', 'public_key');
+    return preg_areplace($cleanup, $key);
   }
+  
   
   private static function cypherInit($passphrase){
     $algo    = MCRYPT_RIJNDAEL_128;
