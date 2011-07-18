@@ -5,6 +5,8 @@
 **/
 class _storage_sql {
   private static $config;
+  private static $secure_key = false;
+  
   static function init() {
     $xml = yks::$get->config->storage;
     self::$config = array(
@@ -15,9 +17,22 @@ class _storage_sql {
 
   }
 
-  private static function input($obj){ return serialize($obj); }
-  private static function output($str){ return unserialize($str); }
+  private static function input($obj){
+    if(!self::$secure_key)
+      return serialize($obj);
+    return crypt::encrypt(serialize($obj), self::$secure_key, true);
+  }
+  
+  private static function output($str){
+    if(!self::$secure_key)
+      return unserialize($obj);
+    return unserialize(crypt::decrypt($str), self::$secure_key, true);
+  }
 
+  public static function set_key($key) {
+    self::$secure_key = $key;
+  }
+  
   static function store($k, $v, $ttl=0) {
 
     $verif_key = array(self::$config['key_field']=>$k);
