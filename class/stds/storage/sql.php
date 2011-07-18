@@ -25,7 +25,7 @@ class _storage_sql {
   
   private static function output($str){
     if(!self::$secure_key)
-      return unserialize($obj);
+      return unserialize($str);
     return unserialize(crypt::decrypt($str, self::$secure_key, true));
   }
 
