@@ -48,40 +48,97 @@ class crypt {
   }
   
   
-  private static function cypherInit($passphrase){
+  private static function cypherInit($passphrase, $raw = false){
     $algo    = MCRYPT_RIJNDAEL_128;
 //    $algo    = MCRYPT_DES;
 
     $cipher  = mcrypt_module_open($algo, '', MCRYPT_MODE_CBC, '');
-    $key256 = md5($passphrase);
+    
+    // Don't touch the pass pharse, i know what i'm doing
+    $key256 = $raw ? md5($passphrase) : $passphrase;
 
     $iv_size  = mcrypt_enc_get_iv_size($cipher);
     $key_size = mcrypt_enc_get_key_size($cipher);
 
+    if(strlen($key256) > $key_size && $raw)
+      throw new Exception("The raw passphrase is too large and would be truncated.");
+    
     $key    = substr($key256, 0, $key_size);
     $iv     = substr($key256, 0, $iv_size);
 
     mcrypt_generic_init($cipher, $key, $iv);
+    
     return $cipher;
   }
 
 
-  static function encrypt($clearText, $passphrase, $out64 = false) {
-    $cipher  = self::cypherInit($passphrase);
-    //$clearText = self::pad($clearText);
-
+  static function encrypt($clearText, $passphrase, $out64 = false, $raw = false) {
+    $cipher  = self::cypherInit($passphrase, $raw);
+    
     $cipherText = mcrypt_generic($cipher, $clearText);
     if($out64) $cipherText = base64_encode($cipherText);
     return $cipherText;
   }
 
-  static function decrypt($cipherText, $passphrase, $in64 = false) {
-    $cipher  = self::cypherInit($passphrase);
+  static function decrypt($cipherText, $passphrase, $in64 = false, $raw = false) {
+    $cipher  = self::cypherInit($passphrase, $raw);
 
     if($in64) $cipherText = base64_decode($cipherText);
     $cleartext = mdecrypt_generic($cipher, $cipherText);
     if($in64) $cleartext = rtrim($cleartext, "\0");
     return $cleartext ;
+  }
+
+  //Use streams for this function
+  function crypt_file($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
+
+    // Use ONE cypher
+    $cypher = crypt::cypherInit($passphrase); 
+
+    $offset = strlen($token);
+
+    while(!feof($input_stream)){
+      $buffer = fread($input_stream, $bufferSize - $offset);
+      if(!$buffer)
+        break;
+      $bufferCrypted = mcrypt_generic($cypher, $buffer.$token);
+      
+      $bCSize = strlen($bufferCrypted);
+      if($bCSize != $bufferSize && !feof($input_stream))
+        throw new Exception("Encrypted Buffer size mismatch ($bCSize != $bufferSize).");
+      
+      fwrite($output_stream, $bufferCrypted);
+    }
+    
+    fclose($output_stream);
+    fclose($input_stream);
+  }
+  
+  //Use streams for this function
+  function decrypt_file($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
+
+    // Use ONE cypher
+    $cypher = crypt::cypherInit($passphrase);
+
+    $offset = strlen($token);
+
+    while(!feof($input_stream)){
+      $buffer = fread($input_stream, $bufferSize);
+      if(!$buffer)
+        break;
+      $bufferDecrypted = mdecrypt_generic($cypher, $buffer);
+      $bufferDecrypted = rtrim($bufferDecrypted, "\0");
+
+      //Remove token
+      if(substr($bufferDecrypted, -$offset) != $token)
+        throw new Exception("Token not found !");
+      $bufferDecrypted = substr($bufferDecrypted, 0, -$offset);
+      
+      fwrite($output_stream, $bufferDecrypted);
+    }
+    
+    fclose($output_stream);
+    fclose($input_stream);
   }
 
   const PEM_PUBLIC = "public";
