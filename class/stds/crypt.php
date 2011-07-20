@@ -72,16 +72,16 @@ class crypt {
   }
 
 
-  static function encrypt($clearText, $passphrase, $out64 = false, $raw = false) {
-    $cipher  = self::cypherInit($passphrase, $raw);
+  static function encrypt($clearText, $passphrase, $out64 = false) {
+    $cipher  = self::cypherInit($passphrase);
     
     $cipherText = mcrypt_generic($cipher, $clearText);
     if($out64) $cipherText = base64_encode($cipherText);
     return $cipherText;
   }
 
-  static function decrypt($cipherText, $passphrase, $in64 = false, $raw = false) {
-    $cipher  = self::cypherInit($passphrase, $raw);
+  static function decrypt($cipherText, $passphrase, $in64 = false) {
+    $cipher  = self::cypherInit($passphrase);
 
     if($in64) $cipherText = base64_decode($cipherText);
     $cleartext = mdecrypt_generic($cipher, $cipherText);
@@ -90,10 +90,10 @@ class crypt {
   }
 
   //Use streams for this function
-  function crypt_file($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
+  function crypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
 
     // Use ONE cypher
-    $cypher = crypt::cypherInit($passphrase); 
+    $cypher = crypt::cypherInit($passphrase, true); 
 
     $offset = strlen($token);
 
@@ -115,10 +115,10 @@ class crypt {
   }
   
   //Use streams for this function
-  function decrypt_file($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
+  function decrypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
 
     // Use ONE cypher
-    $cypher = crypt::cypherInit($passphrase);
+    $cypher = crypt::cypherInit($passphrase, true);
 
     $offset = strlen($token);
 
