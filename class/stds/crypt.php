@@ -97,6 +97,9 @@ class crypt {
 
     $offset = strlen($token);
 
+    //Hash while reading
+    $hasher = hash_init('md5');
+    
     while(!feof($input_stream)){
       $buffer = fread($input_stream, $bufferSize - $offset);
       if(!$buffer)
@@ -107,11 +110,15 @@ class crypt {
       if($bCSize != $bufferSize && !feof($input_stream))
         throw new Exception("Encrypted Buffer size mismatch ($bCSize != $bufferSize).");
       
+      hash_update($hasher, $bufferCrypted);
+      
       fwrite($output_stream, $bufferCrypted);
     }
     
     fclose($output_stream);
     fclose($input_stream);
+    
+    return hash_final($hasher);
   }
   
   //Use streams for this function
