@@ -146,7 +146,8 @@ class crypt {
       $cpt += strlen($bufferDecrypted);
     }
     
-    fclose($output_stream);
+    if($output_stream)
+      fclose($output_stream);
     fclose($input_stream);
     
     return $cpt;
