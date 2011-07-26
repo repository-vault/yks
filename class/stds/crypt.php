@@ -128,7 +128,7 @@ class crypt {
     $cypher = crypt::cypherInit($passphrase, true);
 
     $offset = strlen($token);
-
+    $cpt = 0;
     while(!feof($input_stream)){
       $buffer = fread($input_stream, $bufferSize);
       if(!$buffer)
@@ -140,12 +140,16 @@ class crypt {
       if(substr($bufferDecrypted, -$offset) != $token)
         throw new Exception("Token not found !");
       $bufferDecrypted = substr($bufferDecrypted, 0, -$offset);
+      if($output_stream)
+        fwrite($output_stream, $bufferDecrypted);
       
-      fwrite($output_stream, $bufferDecrypted);
+      $cpt += strlen($bufferDecrypted);
     }
     
     fclose($output_stream);
     fclose($input_stream);
+    
+    return $cpt;
   }
 
   const PEM_PUBLIC = "public";
