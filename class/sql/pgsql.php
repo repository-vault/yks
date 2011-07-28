@@ -293,6 +293,12 @@ class sql {
     $where=array('table_schema'=>'public','table_name'=>sql::unquote($table_name));
     return sql::row("information_schema.tables",$where);
  }
+
+
+  static function make_search_blob($search_field, $qs, $LIKE = "ILIKE"){
+    return sql_func::make_search_blob($search_field, $qs, $LIKE);
+  }
+
     // return an unquoted associative array of schema , name, safe name
   static function resolve($raw){
     if(!$raw) return array();

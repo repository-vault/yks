@@ -276,6 +276,10 @@ abstract class isql {
   }
 
 
+  static function make_search_blob($search_field, $qs, $LIKE = "ILIKE"){
+    return sql_func::make_search_blob($search_field, $qs, $LIKE);
+  }
+
   static function limit_rows(){
     if(self::$_tmp_rows!==null) {
         $tmp = self::$_tmp_rows;
