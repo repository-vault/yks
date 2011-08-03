@@ -122,11 +122,14 @@ class crypt {
   }
   
   //Use streams for this function
-  function decrypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
+  function decrypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '=', $fullOutput = false){
 
     // Use ONE cypher
     $cypher = crypt::cypherInit($passphrase, true);
 
+    //Hash while reading
+    $hasher = hash_init('md5');
+    
     $offset = strlen($token);
     $cpt = 0;
     while(!feof($input_stream)){
@@ -143,6 +146,8 @@ class crypt {
       if($output_stream)
         fwrite($output_stream, $bufferDecrypted);
       
+      hash_update($hasher, $bufferDecrypted);
+      
       $cpt += strlen($bufferDecrypted);
     }
     
@@ -150,6 +155,12 @@ class crypt {
       fclose($output_stream);
     fclose($input_stream);
     
+    $hash = hash_final($hasher);
+    if($fullOutput)
+      return array(
+        'md5' => $hash,
+        'size'  => $cpt,
+      );
     return $cpt;
   }
 
