@@ -64,12 +64,12 @@ class cli {
   }
 
   static function console_out($str){
-    return charset_map::Utf8StringDecode($str, charset_map::$_toUtfMap);
+    return txt::utf8_to_cp950($str);
   }
 
   static function console_in($str){
     if(self::$OS != self::OS_WINDOWS) return $str;
-    return charset_map::Utf8StringEncode($str, charset_map::$_toUtfMap);
+    return txt::cp950_to_utf8($str);
   }
 
   public static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = self::pad){

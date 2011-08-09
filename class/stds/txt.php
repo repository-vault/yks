@@ -2,11 +2,14 @@
 
 function truncate($str,$len=10){return preg_replace('#&[^;]*?$#m','…',mb_strimwidth($str,0,$len,'…'));}
 function unicode_decode($str){return preg_replace('#\\\u([0-9a-f]{4})#e',"unicode_value('\\1')",$str);}
+
+
 function unicode_value($code) {
     if(($v=hexdec($code))<0x0080) return chr($v);
     elseif($v<0x0800) return chr((($v&0x07c0)>>6)|0xc0).chr(($v&0x3f)|0x80);
     else return chr((($v&0xf000)>>12)|0xe0).chr((($v&0x0fc0)>>6)|0x80).chr(($v&0x3f)|0x80);
 }
+
 
 function allentities_decode($str){
     $str = htmlspecialchars_decode($str,ENT_QUOTES);
@@ -72,3 +75,75 @@ function hex2bin($str) {
 }
 
 
+class txt {
+
+
+  static function cp_to_utf8($cp){
+    if(!is_array($cp)) $cp = array($cp);
+    $utf8 = "";
+    foreach($cp as $cp)
+      $utf8 .= self::_cps_to_utf8($cp);
+    return $utf8;
+  }
+
+  private static function _cps_to_utf8($cp){
+    if ($cp < 0x80)
+        $utf8 = chr($cp);
+    else if($cp<0x800)     // 2 bytes
+        $utf8 = (chr(0xC0 | $cp>>6) . chr(0x80 | $cp & 0x3F));
+    else if($cp<0x10000)   // 3 bytes
+        $utf8 = (chr(0xE0 | $cp>>12) . chr(0x80 | $cp>>6 & 0x3F) . chr(0x80 | $cp & 0x3F));
+    else if($cp<0x200000) // 4 bytes
+        $utf8 = (chr(0xF0 | $cp>>18) . chr(0x80 | $cp>>12 & 0x3F) . chr(0x80 | $cp>>6 & 0x3F) . chr(0x80 | $cp & 0x3F));
+    return $utf8;
+  }
+
+  static function utf8_to_cp($str){
+    $chars   = unpack('C*', $str);
+
+    $results = array();
+    $max     = count($chars);
+
+    for ($i=1; $i<=$max; $i++) //unpack start at 1
+      $results []= self::_utf8_to_cp($chars, $i);
+
+    return $results;
+  }
+
+  private static function _utf8_to_cp($chars, &$id)
+    {
+    if( ($chars[$id]>=240)&&($chars[$id]<=255) )
+        $cp =    (intval($chars[$id]-240)<<18)
+               + (intval($chars[++$id]-128)<<12)
+               + (intval($chars[++$id]-128)<<6)
+               + (intval($chars[++$id]-128)<<0);
+    elseif( ($chars[$id]>=224)&&($chars[$id]<=239) )
+        $cp =   (intval($chars[$id]-224)<<12)
+              + (intval($chars[++$id]-128)<<6)
+              + (intval($chars[++$id]-128)<<0);
+    elseif( ($chars[$id]>=192)&&($chars[$id]<=223) )
+        $cp =   (intval($chars[$id]-192)<<6)
+              +(intval($chars[++$id]-128)<<0);
+    else
+        $cp = $chars[$id];
+
+    return $cp;
+  }
+
+
+//cp950 specifics (windows DOS)
+  public static function cp950_to_utf8($str){
+    $out = "";
+    foreach(unpack('C*', $str) as $char)
+      $out.= self::_cps_to_utf8(charset_map::$cps['cp950'][$char]);
+    return $out;
+  }
+
+  public static function utf8_to_cp950($str){
+    $out = "";
+    foreach(self::utf8_to_cp($str) as $cp)
+      $out.= chr(charset_map::$cps['_cp950'][$cp]);
+    return $out;
+  }
+
+}

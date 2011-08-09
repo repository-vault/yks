@@ -34,7 +34,7 @@ class Page  {
   
   function drawText($str,$x,$y){
     $y = $this->zend_h - ( pdf::mm($y) + $this->zend_page->getFontSize() );
-    $this->zend_page->drawText($str, pdf::mm($x), $y,'UTF-8');
+    $this->zend_page->drawText($str, pdf::mm($x), $y, 'UTF-8');
   }
   
   function setFont($font,$size){
@@ -47,9 +47,13 @@ class Page  {
     return $this->zend_page->getFontSize()/2.88;
   }
   
+
+  
   function textBox($str){
+    $font      = $this->zend_page->getFont();
     $font_size = $this->zend_page->getFontSize();
-    $font_path = $this->zend_page->getFont()->file_path;
+
+    $font_path = $font->file_path;
     $font_height = $font_size/2.88;
     
   
@@ -60,9 +64,19 @@ class Page  {
     
     $widths = array();
     foreach($lines_list as $str){
-        
-        $size = imagettfbbox ( $font_size, 0, $font_path, $str);
-        $widths[] = $width = ($size[2]-$size[0])/3.8;
+        if(false) {
+            $size = imagettfbbox ( $font_size, 0, $font_path, $str);
+            $widths[] = $width = ($size[2]-$size[0])/3.8;
+        } else {
+            if(get_class($font) == "Zend_Pdf_Resource_Font_Extracted") //unavalaible
+              $widths[] = $width = null;
+            else {
+              $glyphs = $font->glyphNumbersForCharacters ( txt::utf8_to_cp($str) );
+              $tmp = $font->widthsForGlyphs ( $glyphs );
+              $textWidth = (array_sum ( $tmp ) / $font->getUnitsPerEm ()) * $font_size;
+              $widths[] = $width = ($textWidth)/2.88;
+            }
+        }
         $lines[] = array('width'=>$width, 'str'=>$str, 'height'=>$font_height );
     }
 

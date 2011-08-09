@@ -32,6 +32,58 @@ class pdf {
     );
   }
 
+  
+/* Generate a dummy pdf that embed all necessary glypf for a list of font */
+  public static function make_font_template($fonts, $entities){
+    $pdf = new Zend_Pdf();
+    $page = $pdf->newPage('A4');
+    $pdf->pages[] = $page;
+
+    $font_size = pdf::mm(6);
+
+    foreach($fonts as $font){
+      $page->setFont($font, $font_size);
+
+      foreach($entities as $v)
+        $page->drawText($v, 60, 450, 'UTF-8');
+    }
+
+    return $pdf->render();
+  }
+/* Load a dummy pdf file and returns its fonts
+*  Usage pdf::extracts_fonts_from_template('template.pdf', array(
+*   'classic_font' => 'Calibri',
+*   'chinese_font' => 'ArialUnicodeMS',
+* );
+*/
+
+  public static function load_font_template($file_path, $aliases){
+    $fonts = array();
+    $pdf = Zend_Pdf::load($file_path);
+
+    foreach ($pdf->extractFonts() as $font) {
+      $font_name = $font->getFontName(Zend_Pdf_Font::NAME_POSTSCRIPT, 'en', 'UTF-8');
+      $key = array_search($font_name, $aliases);
+      if(!$key) continue;
+      $fonts[$key] = $font;
+    }
+    $pdf->pages = array();
+    return array($pdf, $fonts);
+  }
+  
+  public static function load_font($file_path){
+    if(!is_file($file_path)) {
+        $file_path = CONFIG_PATH."/fonts/".strip_end($file_path, ".ttf").".ttf";
+        if(!is_file($file_path))
+          throw new Exception("Could not find font $file_path");
+    }
+    
+    $font = Zend_Pdf_Font::fontWithPath($file_path,  Zend_Pdf_Font::EMBED_DONT_EMBED);
+    $font->font_name = $font->getFontName(Zend_Pdf_Font::NAME_POSTSCRIPT, 'en', 'UTF-8');
+    $font->file_path = $file_path;
+    return $font;
+  }
+
 
 
  

@@ -37,6 +37,13 @@ class Box {
         $this->style = $style;
     }
     
+    function printText($page, $contents, $format){
+      $this->inject($page);
+      $this->setContents($contents); 
+      $this->setFormat($format);
+      $this->drawText();
+    }
+    
     function drawText(){
 
         $textBox = $this->textBox($this->contents);
@@ -84,11 +91,12 @@ class Box {
     }
     
     function move($x=null, $y=null, $w=null, $h=null){
-        if(isset($x)) $this->x = $x;
-        if(isset($y)) $this->y = $y;
-        if(isset($w)) $this->w = $w;
-        if(isset($h)) $this->h = $h;
+        if(!is_null($x)) $this->x = $x;
+        if(!is_null($y)) $this->y = $y;
+        if(!is_null($w)) $this->w = $w;
+        if(!is_null($h)) $this->h = $h;
     }
+    
     function render($border=1){
         if($border) $this->drawBox();
         $this->drawText();
