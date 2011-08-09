@@ -1,0 +1,14 @@
+#locale_tags_list_contents .locale_tag {
+    float:left;
+    margin:10px;
+    width:220px;
+    height:220px;
+    overflow:hidden;
+
+}
+
+#img_container .item {
+    border:1px solid red;
+    position:absolute;
+    z-index:11;
+}

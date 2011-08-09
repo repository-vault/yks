@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module PUBLIC "-//YKS//MODULE" "">
+<module base="/Locale">
+  <paths>
+    <ns name="skin.locale" path="path://here/www/css" public="public"/>
+  </paths>
+  <myks>
+    <path path="path://here/myks"/>
+  </myks>
+  <classes>
+    <class name="locale" path="path://here/libs/locale.php"/>
+  </classes>
+</module>

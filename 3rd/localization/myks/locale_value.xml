@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="ks_locale_values">
+    <fields>
+      <field type="item_key" key="primary"/>
+      <field type="lang_key" key="primary"/>
+      <field type="locale_value" name="value"/>
+    </fields>
+  </table>
+  <mykse type="locale_value">
+    <text/>
+  </mykse>
+</myks>

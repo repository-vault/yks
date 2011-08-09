@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_locale_tags_list">
+    <fields>
+      <field type="locale_tag" name="tag_id" key="primary"/>
+      <field type="locale_tag" name="parent_tag"/>
+      <field type="title" name="tag_name"/>
+      <field type="project_id"/>
+<!-- le prefix est affiché comme valeur par default dans le nom des items
+qu'on ajouterai sur ce tag-->
+      <field type="title" name="tag_prefix"/>
+    </fields>
+  </table>
+  <mykse type="locale_tag" null="null" birth="ks_locale_tags_list">
+    <int/>
+  </mykse>
+  <table name="ks_locale_tag_items">
+    <fields>
+      <field type="locale_tag" name="tag_id"/>
+      <field type="item_key" delete="cascade"/>
+    </fields>
+  </table>
+</myks>

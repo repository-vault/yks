@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_locale_tags_list">
+    <fields>
+      <field type="sshot_coords" name="sshot_width"/>
+      <field type="sshot_coords" name="sshot_height"/>
+    </fields>
+  </table>
+  <mykse type="sshot_coords" null="null">
+    <int/>
+  </mykse>
+  <mykse type="locale_tag" birth="ks_locale_tags_list">
+    <int/>
+  </mykse>
+  <table name="ks_locale_tag_items">
+    <fields>
+      <field type="sshot_coords" name="item_x"/>
+      <field type="sshot_coords" name="item_y"/>
+      <field type="sshot_coords" name="item_w"/>
+      <field type="sshot_coords" name="item_h"/>
+    </fields>
+  </table>
+</myks>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="ks_projects_list">
+    <fields>
+      <field type="project_id"/>
+      <field type="count" name="project_order"/>
+      <field type="title" name="project_name"/>
+      <field type="project_parent" name="parent_id"/>
+    </fields>
+  </table>
+  <mykse type="project_parent" null="null">
+    <mykse type="project_id"/>
+  </mykse>
+  <mykse type="project_id" birth="ks_projects_list">
+    <int/>
+  </mykse>
+</myks>

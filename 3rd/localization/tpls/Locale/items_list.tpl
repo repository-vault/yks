@@ -1,0 +1,76 @@
+<box>
+<ks_form class="box" ks_action="item_save" id="trad_save">
+
+<table style='width:100%' class="table items_list" id="items_list" cellspacing="0">
+<tr class='line_head'>
+    <th style='width:12em'>Item #</th>
+    <th style='width:5em'>Language</th>
+    <th style='width:400px'>Translation US</th>
+    <th style='width:400px'>Translation</th>
+    <th>Notes</th>
+</tr>
+<?
+
+$tab = 1;
+foreach($items_list as $item_infos){ $tab++;
+    $item_key  = $item_infos['item_key'];
+    $lang_key  = $item_infos['lang_key'];
+    $value     = $item_infos['value'];
+    $value_us  = $item_infos['value_us'];
+    
+    $item_infos = $items_infos[$item_key];
+
+    $item_safe = trim(base64_encode($item_key),"=");
+    $height    = max(strlen($value_us)/70,min(strlen(value)/60,15),3);
+    
+    $item_integration = "";
+    if(bool($item_infos['item_sshot']))
+        $item_integration .= "<a target='sshot_item' href='/?&href_fold;/Manage/Items//$item_safe/pict//embeded'><img src='/?&href_fold;/Manage/Items//$item_safe/pict' alt='integration'/></a>";
+
+    if($item_infos['item_comment'])
+        $item_integration .=  (bool($item_infos['item_sshot'])?"<hr/>":"")
+                             .specialchars_encode(strip_replace($item_infos['item_comment']));
+    if(!$item_integration)
+        $item_integration= "-";
+
+
+echo "<tr class='line_pair' item_pict='$item_pict' item_safe='$item_safe' item_key='$item_key' lang_key='$lang_key'>
+    <td class='item_key'>".dsp::element_truncate($item_key,16,"span")."</td>
+    <td>$lang_key</td>
+    <td>".specialchars_encode($value_us)."</td>
+    <td><textarea tabindex='$tab' rows='$height' name='items_vals[{$item_safe}][{$lang_key}]'>".specialchars_encode($value).XML_EMPTY."</textarea></td>
+    <td>$item_integration</td>
+  </tr>";
+} if(!$items_list) echo "<tfail>No element found</tfail>";
+
+
+?>
+
+</table>
+<domready>
+$$('.item_key').addEvent('click', function(){
+    if(this.opened) return;
+    var d = $n('input', {type:'text',value:this.getElement('span').get('title') || this.get('text')});
+    this.empty().adopt(d);
+    this.opened  = true;
+});
+
+$('items_list').getElements('textarea')
+    .addEvent('reset', function(){ this.removeClass('changed').store('base', this.value); })
+    .addEvent('blur', function(){
+        if(this.value == this.retrieve('base')) return; //nothing to do
+        var me = (/^items_vals\[(.*?)\]\[(.*?)\]$/).exec(this.name),
+            data = $H({ks_action:'item_save','items_vals':{}}), tmp={};
+        if(!me) return false;
+            //[item_key][lang_key] = value;
+        tmp[me[2]] = this.value; data.items_vals[me[1]] = tmp;
+        Jsx.action(data, this);
+      })
+    .addEvent('change', function(){this.addClass('changed'); })
+    .fireEvent('reset');
+
+</domready>
+
+<p class="end">Pages : <?=$pages_str?> - <i>If you think some elements were not automatically saved, you can <button>force data saving</button></i></p>
+</ks_form>
+</box>
