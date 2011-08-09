@@ -148,24 +148,18 @@ class yks
   }
 
 
-  public function get($key, $args = false){ //dont use it as a static, use yks::$get->get(
-    $flag = $args?"{$key}_{$args}":$key;
-    if(isset($this->$flag)) return $this->$flag;
+  private function get($key){
+    if(isset($this->$key)) return $this->$key;
     if($key == "tables_xml")
-        $this->$flag = data::load($key);
+        $this->$key = data::load($key);
 
     if($key == "types_xml")
-        $this->$flag = data::load($key);
-
+        $this->$key = data::load($key);
 
     if($key == "config")
-        $this->$flag = config::load(self::$config_file);
+        $this->$key = config::load(self::$config_file);
 
-
-    if($key == "entities")
-        $this->$flag = data::load($key, $args);
-
-    return $this->$flag;
+    return $this->$key;
   }
 
   public function __get($key){ return $this->get($key);  }

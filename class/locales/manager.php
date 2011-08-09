@@ -31,10 +31,13 @@ class locales_manager {
   public static function translate($str, $lang_key = false){
     if(!$lang_key) $lang_key = exyks::retrieve("USER_LANG");
 
-    $entities = yks::$get->get("entities", $lang_key);
 
-
+    $entities = data::load("entities", $lang_key);
     if(!$entities) $entities = array();
+
+    if(bool(yks::$get->config->locales['babelmode']))
+      $entities = array_merge($entities, data::load("entities", "babel"));
+
     $entities = array_merge(
         array('&USER_LANG;' => $lang_key),
         $entities,

@@ -39,13 +39,14 @@ class locales_fetcher {
     $locales          = yks::$get->config->locales;
     $languages        = exyks::retrieve('LANGUAGES');
 
-
     $languages_order  = array_filter(preg_split(VAL_SPLITTER, $locales['order']));
     $languages_order  = array_intersect($languages_order, $languages);
 
 
     foreach($locales->cache->iterate("sql") as $cache_def)
         self::$locale_tables[] = $cache_def['table'];
+
+    $babelmode = bool(yks::$get->config->locales['babelmode']);
 
     $done = array();
     data::store("entities_en-us", $done); //fallback no lang (en-us)
@@ -57,13 +58,22 @@ class locales_fetcher {
     foreach(yks::$get->config->site->errors->iterate("err") as $err)
         $entities["&err_{$err['code']};"] = $err['sys'];
 
-
+    $babel = array();
     foreach($languages_order as $lang_key){
-        $flag_full = "entities_$lang_key";
         $entities = self::load_entities((string)$lang_key, $entities);
-        data::store($flag_full, $entities);
+        if($babelmode) foreach($entities as $k=>$v)
+            $babel["&$lang_key.".substr($k,1)] = $v;
+
+        data::store("entities_{$lang_key}", $entities);
         $done[] = array($lang_key, count($entities));
-    } return $done;
+    }
+    
+    if($babelmode)  {
+        data::store("entities_babel", $babel);
+        $done[] = array("babel", count($babel));
+    }
+
+    return $done;
   }
 
   private static function load_entities($lang_key, $entities=array()){ 
@@ -77,12 +87,17 @@ class locales_fetcher {
         $entities = array_merge($entities, self::ent_get($file, $lang_key));
 
     foreach(self::$locale_tables as $table_name)
-        $entities = array_merge($entities, locales_sql_scanner::scan_all($table_name, $lang_key));
+        $entities = array_merge($entities, self::sql_get($table_name, $lang_key));
 
-    
     return $entities;
   }
 
+  private static function sql_get($table_name, $lang_key){
+    sql::select($table_name, compact('lang_key')); $entities = array();
+    while($l = sql::fetch()) $entities["&{$l['item_key']};"] = $l['value'];
+    return $entities;
+  }
+  
   private static function ent_get($xml_file, $lang_key){
     $items = array();
     $xml = simplexml_load_file($xml_file);
