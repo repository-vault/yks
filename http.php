@@ -64,6 +64,15 @@ class http {
     return $res;
   }
 
+  
+  public static function connection_aborted(){
+    $client_port = $_SERVER['REMOTE_PORT'];
+    $client_addr = $_SERVER['REMOTE_ADDR'];
+    $cmd = "netstat -lan | grep $client_addr:$client_port";
+    exec($cmd, $out);
+    $status = end(preg_split("#\s#", join('', $out)));
+    return ($status != "ESTABLISHED");
+  }
 
   public static function head($src_url, $timeout = 3, $ip = false, $end = false){
          //timeout is unused yet
