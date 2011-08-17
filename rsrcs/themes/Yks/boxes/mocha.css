@@ -1,0 +1,46 @@
+.mocha {
+  box-image:url(mocha.png);
+  box-grid-x:14 1 14m;
+  box-grid-y:30 15 30;
+}
+
+
+.mocha_u, .mocha_d { line-height:0px; }
+
+.mocha_mm {
+  background-image:url('/?/Yks/Imgs/bgs//7eb1da/13');
+  background-image:url(mm.png);
+  height:100%;
+}
+
+.mocha_mu { 
+  background-repeat:repeat-x;
+  vertical-align:middle;
+}
+
+.mocha_caption {  
+  float:right;position:relative;margin-top:-18px;
+}
+
+.mocha_rm div {
+  position:relative;
+  width:16px;
+  height:16px;
+  float:right;
+  display:block;
+  margin-right:-5px;
+}
+
+.mocha_close { background-image:url(close.png);  }
+.mocha_reload { background-image:url(reload.png);  }
+
+.mocha_rd div {
+  width:8px;
+  height:9px;
+  margin:auto;
+  background-image:url(drag.png);
+}
+
+.mocha_table a {
+  color:black;
+}
