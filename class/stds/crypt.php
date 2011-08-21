@@ -55,7 +55,7 @@ class crypt {
     $cipher  = mcrypt_module_open($algo, '', MCRYPT_MODE_CBC, '');
     
     // Don't touch the pass pharse, i know what i'm doing
-    $key256 = $raw ? md5($passphrase) : $passphrase;
+    $key256 = $raw ? $passphrase : md5($passphrase);
 
     $iv_size  = mcrypt_enc_get_iv_size($cipher);
     $key_size = mcrypt_enc_get_key_size($cipher);
