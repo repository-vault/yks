@@ -93,7 +93,7 @@ class crypt {
   function crypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
 
     // Use ONE cypher
-    $cypher = crypt::cypherInit($passphrase, true); 
+    $cypher = crypt::cypherInit($passphrase); 
 
     $offset = strlen($token);
 
@@ -125,7 +125,7 @@ class crypt {
   function decrypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '=', $fullOutput = false){
 
     // Use ONE cypher
-    $cypher = crypt::cypherInit($passphrase, true);
+    $cypher = crypt::cypherInit($passphrase);
 
     //Hash while reading
     $hasher = hash_init('md5');
