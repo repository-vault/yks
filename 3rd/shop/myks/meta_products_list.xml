@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_shop_meta_products_list">
+    <fields>
+      <field type="meta_product_id"/>
+      <field type="meta_product_name"/>
+    </fields>
+  </table>
+
+  <mykse type="meta_product_id" birth="ks_shop_meta_products_list">
+    <int/>
+  </mykse>
+  
+  <mykse type="meta_product_name" null="null">
+    <string length="128"/>
+  </mykse>
+  
+</myks>

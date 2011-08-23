@@ -3,8 +3,8 @@
 <myks>
   <table name="ks_shop_products_specifications">
     <fields>
-      <field type="product_id" delete="cascade"/>
-      <field type="specification_key"/>
+      <field type="product_id" delete="cascade" key="primary"/>
+      <field type="specification_key" key="primary"/>
       <field type="specification_value"/>
     </fields>
   </table>

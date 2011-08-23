@@ -24,13 +24,13 @@ class basket {
   }
 
   /*
-    Fermeture du panier, on insere tt le contenu de la session dans la table order_parts
-    et on detruit le pannier
-  */
+   * Fermeture du panier, on insere tt le contenu de la session dans la table order_parts
+   * et on detruit le pannier
+   */
   function close(){
     $order_id = $this->order->order_id; $verif_order = compact('order_id');
 
-    $verif_update=array('order_id'=> $order_id, 'order_status' => array('process','config'));
+    $verif_update = array('order_id'=> $order_id, 'order_status' => array('process','config'));
     $data=array('order_status'=>'config'); //status : spécificité de la commander
 
     if(!sql::update("ks_shop_orders", $data, $verif_update))
@@ -69,22 +69,27 @@ class basket {
   }
 
   function  product_add($product_id, $product_options=array('product_qty'=>1)){
-    $product_qty = abs((int)$product_options['product_qty']); unset($product_options['product_qty']);
+
+    $product_qty = abs((int)$product_options['product_qty']);
+    unset($product_options['product_qty']);
 
     if(!$product_qty)
         throw rbx::error("Please specify a quantity");
 
+    $product = $this->order->shop->retrieve_product($product_id);
 
-    if(!$product_infos = $this->order->shop->products_list[$product_id])
+    if(!$product)
         throw rbx::error("This product is unavailable");
 
-    if($product_infos['product_options']['unsellable'])
+    if($product['products_specifications']['unsellable'])
         throw rbx::error("You must specify options");
 
     if(!$this->products_list[$product_id])
-        $this->products_list[$product_id] = $product_infos;
+        $this->products_list[$product_id] = clone $product;
 
-    $this->products_list[$product_id]['product_qty']+=$product_qty;
+    $this->products_list[$product_id]->product_qty += $product_qty;
+
+
   }
 
 }

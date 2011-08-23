@@ -1,10 +1,11 @@
 <?
-include "products_list.lib.php";
+
 
 $user_id = (int) $sub0;
+$with_parent = (bool)$sub1;
 tpls::export(compact('user_id'));
 
-sql::select("ks_shop_products_list", true, "user_id");
+sql::select("ivs_shop_products_owners",true,"user_id");
 $products_owners = array_unique(array_filter(sql::brute_fetch(false, "user_id")));
 $products_users_tree = array();
 

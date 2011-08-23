@@ -4,7 +4,7 @@
   <table name="ks_shop_product_pack">
     <fields>
       <field type="product_id" name="pack_id" key="primary"/>
-      <field type="product_id" key="primary"/>
+      <field type="product_id" key="primary" delete="cascade"/>
       <field type="pack_mode"/>
     </fields>
   </table>

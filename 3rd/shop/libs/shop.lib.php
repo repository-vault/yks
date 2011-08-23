@@ -56,20 +56,12 @@ class shop {
   }
 
   private function load_products_list($verif_products) {
-    sql::select("ks_shop_products_list", $verif_products, "product_id");
-    $products_list = sql::fetch_all();
-    $this->products = new products_list($products_list);
-
-  }
-
-  protected function get_head_products_list(){
-    return $this->head_products_list = $this->products->get_head_products_list();
+    sql::select("ivs_shop_products_owners", $verif_products, "product_id");
+    $products_list = array_unique(sql::fetch_all());
+    $this->products_list = products::from_ids($products_list);
   }
 
 
-  protected function get_products_list(){
-    return $this->products_list = $this->products->get_products_list();
-  }
 
   function get_order($verif_order){
     $order_key = $this->shop_key.'_order';
@@ -82,11 +74,22 @@ class shop {
 
   function get_displayed_products($verif_products) {
     if(is_string($verif_products))
-        $verif_products = array('product_categs'=>$verif_products);
+        $verif_products = array('products_categories'=>$verif_products);
 
-    $displayed_products_list = array_filter_criteria($this->head_products_list, $verif_products);
+    $displayed_products_list = array_filter_criteria($this->products_list, $verif_products);
     $displayed_products_list = array_sort_deep($displayed_products_list, "product_order");
     return $displayed_products_list;
+  }
+
+
+//donne les infos complete sur un produit, qu'il soit "HEAD" oupa
+  function retrieve_product($product_id){
+   $raw = $this->products_list[$product_id];
+   if($raw) return $raw;
+   foreach($this->products_list as $parent_id=>$product)
+    if($product->product_declinaisons && isset($product->product_declinaisons[$product_id]))
+      return $product->product_declinaisons[$product_id];
+   return null;
   }
 }
 

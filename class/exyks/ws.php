@@ -22,7 +22,6 @@ class exyks_ws {
   }
 
 
-
   // return tupple list($class_name, $wsdl_file)
   public static function resolve($class){
 

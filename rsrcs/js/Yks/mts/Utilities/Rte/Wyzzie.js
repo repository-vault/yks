@@ -17,7 +17,7 @@ var Wyzzie = new Class({
     this.designed=false;
 
     var box_size=this.area.getSize();
-    var container_size={'width':box_size.x,'height':box_size.y-30};
+    var container_size={'width':box_size.x,'height':box_size.y-40};
 
 
     this.container = new Element('div',{'class':'rte_container',styles:container_size}).inject(this.area,'before');

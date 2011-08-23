@@ -7,8 +7,9 @@ class orders_manager extends _sql_base {
 
   public static function  close_products(order $order) {
 
-    foreach($order->products_list as $product_id=>$product_infos){
-        $profile_key = $product_infos['product_options']['profile_key'];
+    foreach($order->products_ordered_list as $product_id=>$product_infos){
+
+        $profile_key = $product_infos['products_specifications']['profile_key']['specification_value'];
         if(!$profile_key) continue; 
         list($table_name, $field_name, $profile_key)
             = preg_list('#^(.*?)\[(.*?)\]\[(.*?)\]$#', $profile_key);
@@ -19,15 +20,28 @@ class orders_manager extends _sql_base {
     }
   }
 
+  
+  function get_products_available_list(order $order) {
+    if($order->shop)
+      return $order->shop->products_list;
+    else
+      return $order->get_products_ordered_list();
+  }
 
-  function get_products_list(order $order){
+  //function get_products_list(order $order){
+  function get_products_ordered_list(order $order){
 
     sql::select("ks_shop_orders_parts", $order);
-    $products_list   = sql::brute_fetch('product_id');
-    $basket          = new products_list(array_keys($products_list));
-    $products_infos  = $basket->get_head_products_list();
+    $products_list_ordered = sql::brute_fetch('product_id');
+    $products_infos = products::from_ids(array_keys($products_list_ordered));
 
-    return $order->products_list = array_merge_numeric($products_list, $products_infos);
+
+    foreach($products_infos as $prod_info_key=>$prod_info)
+      if($products_list_ordered[$prod_info_key])
+        foreach($products_list_ordered[$prod_info_key] as $product_ordered_key => $product_ordered) 
+          $products_infos[$prod_info_key]->$product_ordered_key = $product_ordered;
+
+    return $order->products_list = $products_infos;
   }
   
 
@@ -37,18 +51,15 @@ class orders_manager extends _sql_base {
 
          //gestion complexe sur les options ici
     sql::select("ks_shop_orders_parts", $verif_order);
-    $products_list = sql::brute_fetch('product_id');
+    $products_list = $order->get_products_ordered_list();
 
-    $products_infos = products::get_infos_splat(array_keys($products_list));
-        //completion de product_qty & options
-    $products_list  = array_merge_numeric($products_list, $products_infos);
 
     return $order->precalc($products_list);
   }
 
     //$products_list = array($product_id=>&$product_infos )
   public static function precalc(order $order, $products_list) {
-
+DebugBreak();
     $order_infos = array();
 
     $order_infos['order_id'] = $order->order_id;
@@ -58,10 +69,10 @@ class orders_manager extends _sql_base {
     $order_infos['delivery_time'] = null; // Null par défaut, mis à jour dans le hook
 
     foreach($products_list as $product_id=>&$product_infos){
-      $product_infos['shipping_cost'] = shipping::get($product_infos['shipping_type'], $order->addrs['delivery'])*$product_infos['product_qty'];
-      $product_infos['tax_rate'] = taxes::get($product_infos['tax_type'], $order->addrs['addr_billing']);
-      $product_infos['price_ce'] = $product_infos['product_qty']*$product_infos['product_price'];
-      $product_infos['price_ci'] = $product_infos['price_ce']*(1+$product_infos['tax_rate']);
+      $product_infos->shipping_cost = shipping::get($product_infos['shipping_type'], $order->addrs['delivery'])*$product_infos['product_qty'];
+      $product_infos->tax_rate = taxes::get($product_infos['tax_type'], $order->addrs['addr_billing']);
+      $product_infos->price_ce = $product_infos['product_qty']*$product_infos['product_price'];
+      $product_infos->price_ci = $product_infos['price_ce']*(1+$product_infos['tax_rate']);
 
       $order_infos['delivery_time'] = max($order_infos['delivery_time'], $product_infos['product_delivery_delay']);
 

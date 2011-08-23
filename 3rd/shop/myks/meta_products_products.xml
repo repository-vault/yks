@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_shop_meta_products_products">
+    <fields>
+      <field type="meta_product_id" delete="cascade"/>
+      <field type="product_id" delete="cascade"/>
+    </fields>
+  </table>
+</myks>  

@@ -10,6 +10,12 @@ tpls::$nav[$href_fold]['children']["$href_fold/Products"]=array(
     'target'=>'_top',
 );
 
+tpls::$nav[$href_fold]['children']["$href_fold/Meta list"]=array(
+    'href'=>"/?$href_fold/Meta",
+    'title'=>'Meta',
+    'target'=>'_top',
+);
+
 
 if($href == "$href_fold/") reloc("/?$href_fold/Orders");
 

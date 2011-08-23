@@ -13,7 +13,6 @@ if($action=="product_manage") try {
         'product_descr_long'=>rte_clean($_POST['product_descr_long']),
         'parent_id'=>(int)$_POST['parent_id'],
         'user_id'=>(int)$_POST['user_id'],
-        'product_relation_type'=>$_POST['product_relation_type'],
      ); 
 
     if($product_id) {

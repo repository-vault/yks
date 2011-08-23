@@ -2,8 +2,6 @@
 
 if(!$user_id) $user_id = null;
 
-
-
 if($action == "product_delete") try {
     $product_id = (int)$_POST['product_id'];
     $verif_product = compact('product_id');
@@ -16,23 +14,21 @@ if($action == "product_delete") try {
 
 }catch(rbx $e){}
 
+$user_ids = array($user_id);
+if($with_parent)
+  $user_ids = users::get_parents($user_id);
 
 $verif_products = array(
-    'user_id'=>$user_id,
+    'user_id'=>$user_ids,
 );
-/*
-    "(parent_id IS NULL
-        OR parent_id = product_id
-        OR ( parent_id != product_id AND product_relation_type='derivation') 
-    )"
-*/
 
-    //products_tree
-sql::select("ks_shop_products_list", $verif_products, "product_id");
-$products_list = sql::fetch_all();
+// Products tree
+if(!$user_id)
+  sql::select("ivs_shop_products_list", array(sql::true), "product_id", "ORDER BY product_id");
+else
+  sql::select("ivs_shop_products_owners", $verif_products, "product_id", "ORDER BY product_id");
 
-
-$products_infos = new products_list($products_list);
-$products_infos = $products_infos->get_products_definition();
-
+$products_ids = sql::fetch_all();
+$products_list = products::from_ids($products_ids);
+//DebugBreak();
 

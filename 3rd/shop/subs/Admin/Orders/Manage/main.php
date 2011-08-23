@@ -2,7 +2,7 @@
 
 $order_id = (int) $sub0;
 
-$order = new order($order_id);
+$order = order::instanciate($order_id);
 
 if(!in_array($order->distributor_id, $distributors_list))
     abort(109);
@@ -13,8 +13,6 @@ if(!$order->order_id)
 
     //formatte les données pour une validation en sortie (date..)
 $shop_orders_fields = fields(yks::$get->tables_xml->ks_shop_orders);
-
-$order_dsp = $order->format_output();
 
 
 

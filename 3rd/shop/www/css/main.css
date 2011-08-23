@@ -6,6 +6,7 @@
 }
 .shop_icon_edit { background-image:url(path://skin/icons/edit_24.png); }
 .shop_icon_trash { background-image:url(path://skin/icons/trash_24.png); }
+.shop_icon_clone { background-image:url(path://skin/icons/clone_24.png); }
 
 
 #products_list_tools {
