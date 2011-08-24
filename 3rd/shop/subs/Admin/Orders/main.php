@@ -3,8 +3,6 @@
 $sess_flag = "yks_list.ks_shop_orders";
 $current_liste = sess::retrieve($sess_flag);
 
-include_once "products_list.lib.php";
-
 
 tpls::export(array('orders_list'=> "$href_fold/list"));
 
