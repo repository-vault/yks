@@ -59,7 +59,7 @@ class orders_manager extends _sql_base {
 
     //$products_list = array($product_id=>&$product_infos )
   public static function precalc(order $order, $products_list) {
-DebugBreak();
+
     $order_infos = array();
 
     $order_infos['order_id'] = $order->order_id;
