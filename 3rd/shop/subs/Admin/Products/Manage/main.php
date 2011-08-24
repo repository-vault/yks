@@ -23,7 +23,6 @@ if($clone) {
 
 // Retrieve roots products informations
 $verif_roots = array(
-    'user_id'=>$user_ids,
     "parent_id IS NULL",
 );
 sql::$queries = null;
