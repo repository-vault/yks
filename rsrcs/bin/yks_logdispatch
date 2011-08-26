@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?
+
+include "yks/cli.php";
+$pipe_file = "/etc/syslog.pipes/yks_alog";
+$sendto    = "fleurent@domain.com";
+
+openlog ( 'yks_alog' ,LOG_ODELAY , LOG_LOCAL2 );
+
+
+$logger = new stdlogdispatch($pipe_file);
+$logger->sendto = $sendto;
+
+$cmd = $argv[1];
+if(!$cmd)
+  interactive_runner::start($logger);
+else $logger->$cmd();
