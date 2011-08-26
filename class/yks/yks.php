@@ -58,21 +58,29 @@ class yks
     if(!is_a($config, "config"))
         yks::fatality(yks::FATALITY_CONFIG, "\$config is no config");
 
+    if($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'])
+      $_SERVER['SERVER_ADDR'] = $_SERVER['REMOTE_ADDR'] = "127.0.0.1"; //obviously
+      
+            // Yks configuration directive can use constants in the form {CONSTANT_NAME}
+    $envs_vars = array_merge(
+            array_key_map('strtoupper', array_mask($_ENV, "%s", "{%s}")),
+            array_mask($_SERVER, "%s", "{%s}"),
+            retrieve_constants("#_PATH$#")
+    );
 
         //******************** Usefull constants **************
+    
+    if($config->site['url']) 
+        $SITE_URL = $config->site['url'];
 
-    $domain = parse_url($config->site['url']);
+    if($config->site['cli_url'] && PHP_SAPI == "cli")
+        $SITE_URL = $config->site['cli_url'];
 
-    if(!$domain['host']){
-        $domain['host'] = SERVER_NAME;
-        $config->site['url'] = "http://{$domain['host']}";
-        $port = $_SERVER['SERVER_PORT'];
-        if($port != 80) $config->site['url'].=":$port";
+    if(!$SITE_URL)
+      $SITE_URL = "http://{SERVER_NAME}:{SERVER_PORT}";
 
-        if(!$config->site['code'])
-            $config->site['code'] = pick(join('.',array_slice(explode(".",$domain['host']),0,-2)), SERVER_NAME);
-    }
-
+    $SITE_URL =  strip_end(str_set($SITE_URL, $envs_vars), ":80"); //bandwith enhancement
+    $domain = parse_url($url);
 
     define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
 
@@ -82,9 +90,10 @@ class yks
     define('STORAGE_DRIVER',  pick($config->storage['driver'], PHP_SAPI=='cli'?'var':'apc'));
 
     define('SITE_CODE',      strtolower($site_code));
-    define('SITE_URL',       $config->site['url']);
+   
+    define('SITE_URL',       $SITE_URL);
     define('SITE_BASE',      ucfirst($site_code));
-    define('SITE_DOMAIN',    $domain['host']);
+    define('SITE_DOMAIN',    pick($config->site['domain'], $domain['host']));
     define('SESS_DOMAIN',    pick($config->site->sess['domain'], SITE_DOMAIN) );
     
       //enable default module & define yks rsrcs
@@ -95,14 +104,9 @@ class yks
     define('FLAG_LOG',       $config->flags['log']);
     define('FLAG_FILE',      $config->flags['file'].FLAG_DOMAIN);
     define('FLAG_SESS',      $config->flags['sess'].SESS_DOMAIN);
-
     define('CACHE_REL',      'cache/'.FLAG_DOMAIN);
     define('CACHE_URL',      SITE_URL.'/'.CACHE_REL);
 
-    $consts = array_merge(
-            array_key_map('strtoupper', array_mask($_ENV, "%s", "{%s}")),
-            retrieve_constants("#_PATH$#")
-    );
 
     $attrs = $config->paths->attributes();
     $attrs = array_merge(array_diff_key(array(
@@ -112,9 +116,9 @@ class yks
     ), $attrs), $attrs); //order is relevant ! (CACHE_PATH might = {TMP_PATH})
 
     foreach($attrs as $k=>$v){
-        $k = strtoupper($k); $v = str_set($v, $consts);
+        $k = strtoupper($k); $v = str_set($v, $envs_vars);
         $v = paths_merge(ROOT_PATH, $v);
-        define($k, $v); $consts["{{$k}}"] = $v;
+        define($k, $v); $envs_vars["{{$k}}"] = $v;
     }
 
     define ('PCLZIP_TEMPORARY_DIR', TMP_PATH.'/'); //!!!

@@ -80,7 +80,7 @@ function vals($enum,$chld="val"){
     $tmp=array(); if($enum->$chld) foreach($enum->$chld as $v)$tmp[]="$v"; return $tmp;
 }
 
-
+  //recursive strtr
 function str_set($str, $vals){ 
   while($tmp!=$str) $str=strtr($tmp=$str, $vals);
   return $str;

@@ -17,6 +17,8 @@ class myks_runner {
     if(!classes::init_need(__CLASS__)) return;
 
     define('XML_CACHE_PATH',  CACHE_PATH."/xml");
+    define('XML_CACHE_URL',   CACHE_URL."/xml");
+    
     define('XSL_CACHE_PATH',  CACHE_PATH."/xsl");
   }
 
@@ -25,7 +27,7 @@ class myks_runner {
     $this->xsl_filename     = RSRCS_PATH."/xsl/metas/xsl_gen.xsl";     //meta XSL stylesheet
 
     $this->mykse_file_path  = XML_CACHE_PATH."/myks.xml";
-    $this->mykse_file_url   = SITE_URL."/".ltrim(end(explode(WWW_PATH, $this->mykse_file_path,2)),"/");
+    $this->mykse_file_url   = XML_CACHE_URL."/myks.xml";
 
     $this->browsers_engines = array( 'trident', 'gecko', 'webkit', 'presto', 'mobile');
     $this->rendering_sides  = array( 'server', 'client');
