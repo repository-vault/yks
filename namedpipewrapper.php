@@ -16,8 +16,8 @@ abstract class namedpipewrapper {
    do {
     $fp = fopen($this->pipe_file, 'r');
 
-    while($fp && !feof($fp)){
-      $line = fread ($fp, 1024);
+    while($line = fgets ($fp, 1024)){
+
       if($line === false)
         die("Error ?");
 
@@ -94,7 +94,7 @@ abstract class namedpipewrapper {
             
          pcntl_wait($status); //Protect against Zombie children
     } else {
-         file_put_contents($this->pipe_file, 'ping');
+         file_put_contents($this->pipe_file, "ping\n");
          die;//end execution here
     }
   }
