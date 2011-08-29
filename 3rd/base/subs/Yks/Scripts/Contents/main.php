@@ -42,6 +42,10 @@ switch(files::ext($full)) {
     header(TYPE_JPEG);
     files::delivers($full);
     break; 
+  case 'ttf' :
+    header("Content-type:application/x-font-ttf");
+    files::delivers($full);
+    break; 
 }
 
 
