@@ -6,7 +6,8 @@
 
 define('Ex/yks', 'A cloudy tool');
 
-
+  //CLI need to know the server port (80 by default)
+  if(!isset($_SERVER['SERVER_PORT'])) $_SERVER['SERVER_PORT'] = 80;
       //first thing first, where am i
   if(!defined('PUBLIC_PATH')) {
       //where am i
