@@ -73,7 +73,7 @@ class products extends _sql_base {
  
    // Vignettes
     foreach($products as $product)
-     $product->product_img = "/imgs/".SITE_CODE."/products/{$product['product_id']}";
+     $product->product_img = "/imgs/".SITE_BASE."/products/{$product['product_id']}";
     
     // Heritage
     self::product_variations($products);
