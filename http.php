@@ -5,18 +5,21 @@ class http {
   static private $headers_multiple = array('Set-Cookie');
   static private $headers_onlyraw  = array('Location');
 
+  static private $WIN = false;
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
     classes::register_class_paths(array(
-        'header'     => CLASS_PATH."/exts/http/header.php",
-        'request'    => CLASS_PATH."/exts/http/request.php",
-        'sock'       => CLASS_PATH."/exts/http/sock.php",
-        'url'        => CLASS_PATH."/exts/http/url.php",
-        'http_proxy' => CLASS_PATH."/exts/http/proxy.php",
-        'urls'       => CLASS_PATH."/exts/http/urls.php",
-        'tlds'       => CLASS_PATH."/exts/http/tlds.php",
+        'header'       => CLASS_PATH."/exts/http/header.php",
+        'request'      => CLASS_PATH."/exts/http/request.php",
+        'sock'         => CLASS_PATH."/exts/http/sock.php",
+        'url'          => CLASS_PATH."/exts/http/url.php",
+        'http_proxy'   => CLASS_PATH."/exts/http/proxy.php",
+        'urls'         => CLASS_PATH."/exts/http/urls.php",
+        'tlds'         => CLASS_PATH."/exts/http/tlds.php",
+        'console_host' => CLASS_PATH."/exts/cli/console_host.php",
     ));
+    self::$WIN = stripos($_SERVER['OS'], 'windows')!==false || isset($_SERVER['WINDIR']);
   }
 
   static function parse_headers($headers_str){
@@ -64,13 +67,25 @@ class http {
     return $res;
   }
 
-  
+  private static $console_host;
   public static function connection_aborted(){
+
     $client_port = $_SERVER['REMOTE_PORT'];
     $client_addr = $_SERVER['REMOTE_ADDR'];
-    $cmd = "netstat -lan | grep $client_addr:$client_port";
-    exec($cmd, $out);
-    $status = end(preg_split("#\s#", join('', $out)));
+
+    $server_port = $_SERVER['SERVER_PORT'];
+    $server_addr = $_SERVER['SERVER_ADDR'];
+
+    if(self::$WIN) {
+      if(!self::$console_host) 
+          self::$console_host = new console_host('C:\\Windows\\system32\\netstat.exe -n -p tcp');
+      $output = self::$console_host->exec();
+    } else {
+      exec("netstat -p tcp -n", $output); $output = join(CRLF, $output);  
+    }
+    
+    $mask = "#^\s*TCP.*{$server_addr}:{$server_port}\s*{$client_addr}:{$client_port}\s*([A-Z]+)\s*$#mi";
+    $status = preg_reduce($mask, $output);
     return ($status != "ESTABLISHED");
   }
 
