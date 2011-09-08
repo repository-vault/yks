@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?
+
+array_shift($argv); //me
+
+$soap_url    = array_shift($argv);
+$soap_method = array_shift($argv);
+$soap_args   = $argv;
+
+$client = new SoapClient($soap_url);
+return call_user_func_array(array($client, $soap_method), $soap_args);
+
