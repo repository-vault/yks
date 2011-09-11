@@ -43,25 +43,29 @@ class torrent implements ArrayAccess {
   function tracker_exclude($domain){
     if($this['announce-list'])
     foreach($this['announce-list'] as $tid=>$tracker){
-       foreach($tracker as $aid=>$announce) {
-        $announce = @parse_url($announce);
-        if(ends_with($announce['host'], $domain))
+       foreach($tracker as $aid=>$announcestr) {
+        $announce = @parse_url($announcestr);
+        if(ends_with($announce['host'], $domain) || $announcestr== $domain)
           unset($this->struct['announce-list'][$tid][$aid]);
       }
     }
 
     $announce = parse_url($this['announce']);
-    if(ends_with($announce['host'], $domain)) {
+    if(ends_with($announce['host'], $domain) || $this['announce'] == $domain) {
       if(!$this['announce-list'])
         throw new Exception("No tracker to fallback");
        $this->struct['announce'] = reset(reset($this['announce-list']));
     }
+
     $this->trackers_cleanup();
   }
 
   function tracker_add($tracker){
+    $announce = $this['announce']; $this['announce'] = null;
+
     if(!in_array($tracker, $this->trackers))
       $this->struct['announce-list'][] = array($tracker);
+    $this['announce'] = $announce;
   }
 
   function __toString(){
@@ -72,7 +76,7 @@ class torrent implements ArrayAccess {
 
 
   function offsetGet ($key){ return $this->struct[$key];}
-  function offsetSet($key, $v) { }
+  function offsetSet($key, $v) { return $this->struct[$key]= $v; }
   function offsetExists( $key){ }
   function offsetUnset($key){ unset($this->struct[$key]); }
 

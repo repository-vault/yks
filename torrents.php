@@ -5,13 +5,15 @@ class torrents {
     $str = "";
     $str .="<h2>{$torrent['info']['name']}</h2>";
 
-    $str .= "<p>Tracker(s) : ".join(', ', $torrent->trackers)."</p>";
+    $trackers = $torrent->trackers;
+    $str .= "<p>Tracker(".count($trackers).") : ".join(', ', $trackers)."</p>";
     $files = array();
     foreach($torrent->files as $file)
       $files[] = "<tr>
           <td>{$file['path']}</td>
           <td>".dsp::file_size($file['size'])."</td>
       </tr>";
+
     if(!$files) $files = "<tr class='line_fail'><td colspan='2'>Aucun fichier</td></tr>";
     else $files = join('', $files);
     $str .= "<p>Files</p>";
