@@ -50,6 +50,7 @@ classes::register_class_paths(array(
     "stdflow_filter"      => CLASS_PATH."/apis/stdflow_filter.php",
     "php_legacy"          => CLASS_PATH."/apis/legacy.php",
     "unix"                => CLASS_PATH."/apis/unix.php",
+    "yphar"               => CLASS_PATH."/apis/yphar.php",
     "yksauthdrupal"       => CLASS_PATH."/apis/drupal/AuthDrupal.php",
 
 
@@ -64,6 +65,7 @@ classes::register_class_paths(array(
     "pclzip"              => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"  => CLASS_PATH."/exts/cli/interactive_runner.php",
     "namedpipewrapper"    => CLASS_PATH."/exts/cli/namedpipewrapper.php",
+    "stdlogdispatch"      => CLASS_PATH."/exts/cli/stdlogdispatch.php",
     "win32_service"       => CLASS_PATH."/exts/cli/win32_service.php",
     "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
 

@@ -11,7 +11,7 @@ class cli {
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
-    $win = stripos($_SERVER['OS'],'windows')!==false;
+    $win = stripos($_SERVER['OS'],'windows')!==false || isset($_SERVER['WINDIR']);
     $tty = isset($_SERVER['SSH_TTY']);
     self::$OS = $win && !$tty ? self::OS_WINDOWS : self::OS_UNIX;
 

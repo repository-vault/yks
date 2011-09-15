@@ -98,6 +98,7 @@ class txt {
     return $utf8;
   }
 
+  //to unicode code point
   static function utf8_to_cp($str){
     $chars   = unpack('C*', $str);
 

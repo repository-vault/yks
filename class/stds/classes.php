@@ -49,6 +49,13 @@ class classes {
     if($load) array_walk(array_keys($paths), array(__CLASS__, 'autoload'));
   }
 
+  static function get_class_code($class_name){
+    $file_path = self::$classes_paths[$class_name];
+    $contents = file_get_contents($file_path);
+    $code = substr($contents, strpos($contents, "class"));
+    return $code;
+  }
+
   static function autoload($class_name){
     if(!$class_name) return false;
 
