@@ -309,7 +309,7 @@ class files {
         $file_archive_path = basename($file_path);
         if($extra_path) $file_archive_path = $extra_path."/".$file_archive_path;
 
-        $file_archive_path = charset_map::Utf8StringDecode($file_archive_path, charset_map::$_toUtfMap);
+        $file_archive_path = txt::utf8_to_cp950($file_archive_path);
         $zip->addFile($file_path, $file_archive_path);
 
     }
