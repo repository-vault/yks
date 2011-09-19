@@ -30,5 +30,4 @@ else
 
 $products_ids = sql::fetch_all();
 $products_list = products::from_ids($products_ids);
-//DebugBreak();
 

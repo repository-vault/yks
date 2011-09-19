@@ -41,6 +41,8 @@ class orders_manager extends _sql_base {
         foreach($products_list_ordered[$prod_info_key] as $product_ordered_key => $product_ordered) 
           $products_infos[$prod_info_key]->$product_ordered_key = $product_ordered;
 
+    $products_infos = array_intersect_key($products_infos, $products_list_ordered ); //!
+
     return $order->products_list = $products_infos;
   }
   
