@@ -3,7 +3,7 @@
 class yphar {
   private static $in_phar;
   public static function init(){
-    self::$in_phar = true; //todo : detect
+    self::$in_phar = defined('PHAR_CURRENT');
   }
 
   public static function phar_include($path){

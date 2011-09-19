@@ -132,6 +132,13 @@ class yks
         $paths[] = paths_merge(ROOT_PATH, $path);//?
      }
 
+    foreach($config->classes->iterate("class") as $class) {
+      $class_name = $class['name'];
+      
+      $class_path = exyks_paths::resolve($class['path']);
+      classes::register_class_path($class_name, $class_path);
+    }
+    
     $exts = (string) $config->classes['exts'];
     $call_init = ((string)$config->classes['call_init']) != 'false';
 

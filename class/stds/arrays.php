@@ -59,14 +59,6 @@ function json_encode_lite($json){
     return $json;
 }
 
-
-function array_extract($array, $col, $clean=false){
-    $ret=array();
-    if(is_array($col)) foreach($array as $k=>$v) $ret[$k] = array_sort($v, $col);
-    elseif($array instanceof simplexmlelement) foreach($array as $k=>$v) $ret[] = (string)$v[$col];
-    else foreach($array as $k=>$v) $ret[$k]=$v[$col];
-    return $clean?array_filter(array_unique($ret)):$ret;
-}
 function array_get($array,$col){return $col?$array[$col]:$array; }
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
