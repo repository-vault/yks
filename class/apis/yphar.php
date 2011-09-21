@@ -46,7 +46,7 @@ class yphar {
     $phar->setStub($stub);
     $phar->addFromString('boot', $init_code);
     foreach($files as $file)
-      $phar->addFile($file);
+      $phar->addFile($file, basename($file));
 
     //Compress 
     $phar->compressFiles(Phar::BZ2);
