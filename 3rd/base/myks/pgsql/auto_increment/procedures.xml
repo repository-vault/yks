@@ -6,24 +6,25 @@
     <param type="string"/>
     <def>
 DECLARE
-rec RECORD;
 value integer;
 BEGIN
 
- SELECT * FROM zks_autoincrement WHERE increment_key=$1 AND increment_table=$2 INTO rec;
+ UPDATE zks_autoincrement
+ SET increment_value   = increment_value + 1 ,
+     increment_lastval = increment_value +1
+  WHERE TRUE
+        AND increment_key = $1
+        AND increment_table = $2
+  RETURNING  increment_value INTO value;
 
-IF(rec.increment_value  NOTNULL ) THEN
-	value = rec.increment_value+1;
-	 UPDATE zks_autoincrement SET increment_value=value, increment_lastval=value
-      WHERE increment_key=$1 AND increment_table=$2;
-ELSE
-	value=1;
-	INSERT INTO zks_autoincrement (increment_key,increment_table,increment_value,increment_lastval) 
+
+IF(value IS NULL) THEN
+  value=1;
+  INSERT INTO zks_autoincrement (increment_key,increment_table,increment_value,increment_lastval) 
     VALUES($1,$2,value,value);
 END IF;
 
 RETURN value;
-
 END;
 </def>
   </procedure>
