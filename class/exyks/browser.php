@@ -3,7 +3,7 @@
      //engine detection
 
     $agent = " ".strtolower($_SERVER['HTTP_USER_AGENT']);
-    $platform  = preg_match('/mac|win|android|blackberry/', $agent, $out)?$out[0]:'other';
+    $platform  = preg_match('/mac|win|android|blackberry|ipad/', $agent, $out)?$out[0]:'other';
 
 
 
@@ -32,6 +32,6 @@
     define('GECKO', $engine=="gecko");
     define('ROBOT', $engine=="robot");
 
-    define('PLATFORM_MOBILE', in_array($platform, array("ipod", "blackberry", "android")));
+    define('PLATFORM_MOBILE', in_array($platform, array("ipod", "blackberry", "android", "ipad")));
 
  
