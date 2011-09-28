@@ -81,9 +81,12 @@ class crypt {
   }
 
   static function decrypt($cipherText, $passphrase, $in64 = false) {
-    $cipher  = self::cypherInit($passphrase);
 
+    $cipher  = self::cypherInit($passphrase);
     if($in64) $cipherText = base64_decode($cipherText);
+    if(!$cipherText )
+      return "";
+
     $cleartext = mdecrypt_generic($cipher, $cipherText);
     if($in64) $cleartext = rtrim($cleartext, "\0");
     return $cleartext ;

@@ -25,7 +25,7 @@ class timeout {
   }
 
   public function sleep($sec){
-    usleep(1000000 * $sec);
+    usleep(1000* 1000 * $sec);
     return true;
   }
 
