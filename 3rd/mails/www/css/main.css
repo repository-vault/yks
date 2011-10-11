@@ -28,7 +28,7 @@ div.part_actions a {
 }
 
 div.part_actions .collapse {   background-image:url(out.png);}
-div.part_actions .trash {   background-image:url(../../icons/trash);}
+div.part_actions .trash {   background-image:url(path://skin/icons/trash);}
 
 div.mail_part_box {
     margin-left:10px;

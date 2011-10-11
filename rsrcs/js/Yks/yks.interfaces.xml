@@ -69,6 +69,8 @@
     <module key="path://yks/Interface/Title.js" expose="Title" matches="img.button.effects,input.button.effects" head="true">
       <description>Title</description>
     </module>
+
+    <module key="path://yks/Interface/Selection.js" head="true"/>
     <dep key="path://mt.more/Fx/Fx.Accordion.js" head="true"/>
     <dep key="path://mt.core/Utilities/Cookie.js" head="true"/>
     <dep key="path://mt.more/Drag/Slider.js" head="true"/>

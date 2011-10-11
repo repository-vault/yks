@@ -8,17 +8,18 @@ class exyks_ws {
     exyks::init();
 
     $wsdls = yks::$get->config->wsdls;
+
+    $default_use_sess = bool($wsdls['use_sess']);
+
     foreach($wsdls->iterate("class") as $class) {
         $class_name = $class['name']; $aliases = array();
-        $data = compact('class_name', 'aliases');
+        $use_sess = isset($class['use_sess']) && bool($class['use_sess']) ? (string) $class['use_sess'] : $default_use_sess;
+        $data = compact('class_name', 'aliases', 'use_sess');
         foreach($class->iterate("alias") as $alias)
             $data['aliases'][] = $alias['name'];
         self::$classes[$class_name] = $data;
     }
 
-    $use_sess = bool($wsdls['use_sess']);
-    if($use_sess)
-      sess::connect();
   }
 
 
@@ -33,7 +34,8 @@ class exyks_ws {
         break;
     }
     
-    if(!isset(self::$classes[$class_name])) {
+    $wsdl_infos = self::$classes[$class_name];
+    if(!isset($wsdl_infos)) {
         if($_SERVER['HTTP_SOAPACTION'])
             throw new SoapFault("server", "No valid class selected");
         header(TYPE_TEXT);
@@ -42,7 +44,7 @@ class exyks_ws {
 
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     $wsdl_file = "$wsdls_path/$class_name.wsdl";
-    return array($class_name, $wsdl_file);
+    return array($class_name, $wsdl_file, $wsdl_infos['use_sess']);
   }
 
   public static function serve() {
@@ -51,12 +53,28 @@ class exyks_ws {
 
     rbx::$output_mode = 0;
 
-    list($class_name, $wsdl_file) = self::resolve($_GET['class']);
+    list($class_name, $wsdl_file, $use_sess) = self::resolve($_GET['class']);
 
     if($_SERVER['REQUEST_METHOD']=='GET') {
         readfile($wsdl_file);
         die;
     }
+
+        //autodetect if current argument is session_id, init session if so
+    $SOAP_SESSION_ID = null;
+    if($use_sess == "auto") {
+        $url_infos = parse_url(trim($_SERVER['HTTP_SOAPACTION'],'"'));
+        parse_str($url_infos['query'], $soap_action);
+        //$class_name = pick($soap_action['class'], $_GET['class'], $_POST['class']);
+        $method     = pick($soap_action['method']);
+        $xml = simplexml_load_string(stream_get_contents(fopen("php://input", "r")));
+        $xml->registerXPathNamespace("me", SITE_CODE);
+        $xml->registerXPathNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
+        $SOAP_SESSION_ID = (string) reset($xml->xpath("//env:Body/me:{$method}/*[1][name()='session_id']"));
+    } define('SOAP_SESSION_ID', $SOAP_SESSION_ID);
+
+    if($use_sess)
+        sess::connect(SOAP_SESSION_ID);
 
     $options = array(
         'actor'      => SITE_CODE,

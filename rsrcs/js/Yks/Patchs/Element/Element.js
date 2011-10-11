@@ -50,6 +50,12 @@ Element.implement({
     return Xhr.encode_urlencode(this.toQueryList());
   },
 
+  removeAll:function(){
+    var ctn = [];
+    for(var i = 0, end = this.childNodes.length ; i< end; i++)
+      ctn.push(this.removeChild(this.firstChild));  
+    return ctn;
+  },
 
   blink:function(times){
     if(!times) return;
@@ -61,3 +67,26 @@ Element.implement({
   }
 
 });
+
+
+
+Element.FixedDelayed = function(el){
+
+    var ctn = el.removeAll();
+
+    var coords = el.getCoordinates();
+
+    var stuff =  {
+      position:'fixed',
+      top:coords.top,
+      left:coords.left,
+      right:window.innerWidth - coords.right,
+      bottom:window.innerHeight - coords.bottom,
+      width:'auto',
+      height:'auto',
+      display:'block',
+    }; el.setStyles(stuff);
+
+    Array.each(ctn, function(node){el.appendChild(node)});
+
+};

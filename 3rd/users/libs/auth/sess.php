@@ -36,7 +36,8 @@ class sess  {
     return crpt($id, FLAG_SESS, 10);
   }
 
-  static function connect(){
+  static function connect($session_id = null){
+    if($session_id) session_id($session_id) ;
     session_start();
     self::$sess = &$_SESSION['user'];
     self::$id = session_id();
@@ -46,7 +47,7 @@ class sess  {
 
   static function logout(){
     $_COOKIE['user_id'] = false;
-    setcookie("user_pswd_".sess::$sess['user_id'],false);
+    setcookie("user_pswd_".sess::$sess['user_id'], false);
     self::renew(); 
     rbx::ok("&auth_deco;");
   }

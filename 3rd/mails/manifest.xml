@@ -15,4 +15,7 @@
 <!-- transport -->
     <class name="smtp_lite" path="path://here/libs/rfc/2821_smtp/smtp_lite.php"/>
   </classes>
+  <paths>
+    <ns name="mails.skin" path="path://here/www/css" public="public"/>
+  </paths>
 </module>
