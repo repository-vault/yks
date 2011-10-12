@@ -1,8 +1,17 @@
 Selection = {};
 
 Selection.makeSelectable = function(container, options){
-  options = options || {allowDrag:false};
-  container.getChildren().addClass('selectable');
+  options = options || {allowDrag:false,excludes:false};
+
+  var children = container.getChildren();
+  if(options.excludes) {
+    container.getElements(options.excludes).each(function(excluded){ 
+        children.erase(excluded);
+    });
+  }
+
+  children.addClass('selectable');
+
   container.dragmode = false;
   container.lastSelected = -1;
 
@@ -41,7 +50,7 @@ Selection.makeSelectable = function(container, options){
         if(event.shift && container.lastSelected != -1 ) {
             var i = el.getAllPrevious('.selectable').length;
             var start = Math.min(i, container.lastSelected), end = Math.max(i, container.lastSelected);
-            for(var list = container.getChildren(), i = start; i <= end; i++)
+            for(var list = container.getChildren(".selectable"), i = start; i <= end; i++)
                 toggle(list[i], true);
         } else toggle(el);
       }
