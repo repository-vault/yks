@@ -43,7 +43,7 @@ class user_geomaps extends geomaps {
 
     $verif_area = compact('area_id');
     if(isset($this->area_user[$area_id]))
-        sql::delete("ks_users_geomaps_area", $area_id);
+        sql::delete("ks_users_geomaps_area", $verif_area);
 
     $data = compact('area_id', 'user_id');
     $data['map_id'] = $this->data['map_id'];
