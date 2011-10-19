@@ -51,12 +51,13 @@ class css_processor {
   }
 
   private function resolve_boxes(){
+
     $boxes = $this->css->xpath("//rule[starts-with(@name,'box')]/ancestor::ruleset[1]");
 
-    foreach($boxes as $box) {
+    foreach($boxes as $box) try {
         $box = new css_box($this->css, $box);
         $box->write_cache();
-    }
+    }catch(Exception $e){ syslog(LOG_WARNING, "Invalid css box : ".$e->getMessage()); }
   }
 
 
@@ -122,7 +123,7 @@ class css_processor {
       $css = new self("path://public/a", $contents);
       $contents = $css->output();
     } catch(Exception $e){
-      error_log("Corrupted inline css..."); 
+      syslog(LOG_INFO, "Corrupted inline css..."); 
       return;
     }
     $node->nodeValue= $contents;
