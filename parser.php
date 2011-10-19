@@ -44,7 +44,7 @@ class css_parser {
       $str = self::strip_comments($str);
       return self::parse_block($str, $i, $file_path);
     } catch(Exception $e){
-      error_log($e->getMessage());
+      syslog(LOG_INFO, $e->getMessage());
       throw new Exception(__METHOD__. " parsing failure on $file_path");
     }
   }

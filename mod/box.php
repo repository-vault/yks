@@ -43,6 +43,8 @@ class css_box extends ibase {
   }
   
   public function write_cache(){ 
+    if(!file_exists($this->box_image))
+        throw new Exception("'{$this->box_image}' is not an image");
 
     $theme_name = $this->box_theme;
     $theme_path = "path://cache/themes/$theme_name";
