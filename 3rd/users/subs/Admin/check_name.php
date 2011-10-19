@@ -30,9 +30,13 @@ if($action=="check_names")try{
         $users_checked[$user_id]=$tmp[$user_id]['user_name'];
     }
     
-    $vals = join(' > ',$users_checked);
+    $vals = join(' > ', $users_checked);
+
     jsx::js_eval("\$('$field_name').set('value', $user_id);");
     jsx::js_eval("this.set('value', '$vals' ).focus();");
 
+    //no jsx::end, as jsx::end is translate - compatible (TODO fix client side js instead)
+    header(TYPE_JSON);
+    die(specialchars_decode(jsx::encode(rbx::$rbx)));
 }catch(rbx $e){}
 
