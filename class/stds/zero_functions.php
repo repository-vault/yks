@@ -30,6 +30,15 @@ function pick(){
   return $val ? $val : end($args);
 }
 
+    //return the first non empty valid value (last arg is a list of possibles values)
+function pick_in(){
+    $args = func_get_args();
+
+    $possibles = array_pop($args);
+    $value = reset(array_filter($args));
+    return in_array($value, $possibles) ? $value : reset($possibles);
+}
+
 
 function array_mask($array, $vmask, $kmask="%s"){ 
   $ret = array();
