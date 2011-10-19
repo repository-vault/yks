@@ -34,7 +34,7 @@ if($action=="upload_tmp")try {
 
     rbx::$rbx['upload'] = array(
         'src'  => $upload_src,
-        'name' => $file['name'],
+        'name' => utf8_encode($file['name']),
         'ext'  => $file_ext,
         'size' => $file['size'],
     );
