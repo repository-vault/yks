@@ -54,7 +54,7 @@ class sess  {
 
   static function renew(){
     setcookie('user_id', false, 0, "/", SESS_DOMAIN);
-    sess::$sess     = new ArrayObject();
+    sess::$sess     = new _ArrayObject();
     sess::$_storage = array();
     self::$renewed  = true;
     $sess_infos     = auth::valid_tree(exyks::retrieve('USERS_ROOT'));
