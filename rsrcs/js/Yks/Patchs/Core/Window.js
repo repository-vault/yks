@@ -35,7 +35,17 @@ Window.implement({
 
   $uniqueID:function(length){
     return ("abcdef0123456789"+$time()).split('').shuffle().join('').substr(0,length||8);
-  }
+  },
+
+  $instanceOf:function(item, object){
+    if (item == null) return false;
+    var constructor = item.$constructor || item.constructor;
+    while (constructor){
+        if (constructor === object) return true;
+        constructor = constructor.parent;
+    }
+    return item instanceof object;
+  },
 
 });
 
