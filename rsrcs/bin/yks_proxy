@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?
+
+include "yks/cli.php";
+
+$test = new http_proxy();
+//$test->throttle(25, 25);
+$test->run();
