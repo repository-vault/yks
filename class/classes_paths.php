@@ -39,6 +39,8 @@ classes::register_class_paths(array(
     "http"                => CLASS_PATH."/exts/http/http.php",
     "urls"                => CLASS_PATH."/exts/http/urls.php",
     "sock"                => CLASS_PATH."/exts/http/sock.php",
+    "http_aserver"        => CLASS_PATH."/exts/http/aserver.php",
+    "http_server"         => CLASS_PATH."/exts/http/server.php",
     "http_proxy"          => CLASS_PATH."/exts/http/proxy.php",
     "http_cb_proxy"       => CLASS_PATH."/exts/http/proxy_callback.php",
 
