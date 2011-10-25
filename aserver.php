@@ -7,7 +7,6 @@
 class http_aserver {
 
   private $ip;
-  private $client_bind;
   private $port;  
   private $server;
 
@@ -17,7 +16,9 @@ class http_aserver {
 
   function __construct($ip = '0.0.0.0', $port = '8080'){
     $bind = "tcp://$ip:$port";
-  
+
+    if($this->trace)
+      echo "Starting server at {$bind}\r\n";
     $this->server = stream_socket_server($bind, $errno, $errstr);
     if (!$this->server) 
       throw new Exception ("$errstr ($errno)");
@@ -33,8 +34,9 @@ class http_aserver {
   }
 
   protected function wait_for_clients(){
-    if($this->trace) echo "Waiting for clients \r\n";
     $serve_client = extension_loaded('pcntl') ? "fork_client" : "serve_client";
+    if($this->trace)
+      echo "Waiting for clients (mode is $serve_client) \r\n";
     //$serve_client = "serve_client";
 
     do {
@@ -102,20 +104,47 @@ class http_aserver {
     return $headers_str;
    }
 
+  private $throttle_download = 0;
+  private $throttle_upload   = 0;
 
-  protected function stream_copy_to_stream($src, $dest){
-    while($tmp=fread($src,1024)) fwrite($dest, $tmp);
+    //bandwith limiter (in kbytes)
+  public function throttle($download, $upload) {
+    $this->throttle_download = $download * 1024;
+    $this->throttle_upload   = $upload   * 1024;
   }
 
+  protected function stream_copy_to_stream($src, $dest){
+    while($tmp=fread($src,1024)) {
+      //do throttle here
+      fwrite($dest, $tmp);
+    }
+  }
+
+    //stream_copy_to_stream with content-length limiter (used for POST)
   protected function stream_copy_to_stream_nb($src, $dst, $content_length){
     $sent_bytes = 0;
     stream_set_blocking($src, 0);
+    $packet_size = 8193;
+    $last_time   = microtime(true); $last_bytes = 0;
+
     while($sent_bytes< $content_length) {
       $read = array($src);
       $res = stream_select($read, $null, $null, null);
       if($res === false) break;
       if(feof($src) || feof($dst)) break;
-      $sent_bytes += fwrite($dst, fread($src, 8193));
+      $sent_bytes += fwrite($dst, fread($src, $packet_size));
+
+      if($this->throttle_upload) {
+        $now_time   = microtime(true);
+        $delta_time  = $now_time - $last_time;
+        $delta_bytes = $sent_bytes - $last_bytes;
+        $last_time  = $now_time; $last_bytes = $sent_bytes;
+        if(!$delta_bytes) continue;
+        
+        $instant_speed   = $delta_bytes/$delta_time ; //FYI
+        $sleep = max(0, ($delta_bytes/$this->throttle_upload ) - $delta_time );
+        usleep( 1000 * 1000 * $sleep);
+      }
     }
   }
 

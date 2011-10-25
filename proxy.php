@@ -4,8 +4,8 @@
 *  http://doc.exyks.org/wiki/Source:ext/http/proxy
 */
 
-class http_proxy extends http_server {
-
+class http_proxy extends http_aserver {
+  private $client_bind;
   protected $auths  = array();
   protected $exclude_dests  = array();
 
