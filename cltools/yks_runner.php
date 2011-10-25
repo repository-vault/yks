@@ -139,36 +139,6 @@ class yks_runner {
   }
 
 
-  function install(){
-    $root_path  = ROOT_PATH;
-    $www_path  = $root_path.DIRECTORY_SEPARATOR.'www';
-    $tpls_path  = $root_path.DIRECTORY_SEPARATOR.'tpls';
-    $subs_path  = $root_path.DIRECTORY_SEPARATOR.'subs';
-    $config_path  = $root_path.DIRECTORY_SEPARATOR.'config';
-
-
-        //creating base dirs
-    files::create_dir($www_path);
-    files::create_dir($tpls_path);
-    files::create_dir($subs_path);
-    files::create_dir($config_path);
-
-    $host_name = cli::text_prompt("Host name");
-    $host_key  = join('.',array_slice(explode(".",$host_name),0,-2));
-    do {
-        $prompt = "Host key".($host_key?" [{$host_key}]":"");
-        $host_key = pick(cli::text_prompt($prompt), $host_key);
-    } while(!$host_key);
-
-    $config = simplexml_load_string(XML_HEAD."<config/>");
-    
-    echo $config->asXML();
-  }
-
-
-
-
-
 /**
 * Check caches directory
 */
@@ -202,7 +172,7 @@ class yks_runner {
     $myks_http_url = SITE_URL."/?/Yks/Scripts//$runner;$command|cli";
     $http_contents = self::wget_dnsless($myks_http_url);
     rbx::ok("Running $myks_http_url");
-    echo $http_contents;
+    echo $http_contents.CRLF;
   }
 
 
@@ -221,22 +191,25 @@ class yks_runner {
         throw new Exception("Make sure cache directory '".CACHE_PATH."' is world writable");
  
     $http_contents = self::wget_dnsless($ping_url);
-    unlink($ping_file);
 
     if($http_contents != $rnd) {
         rbx::box("http_contents ($ping_url)", $http_contents, "rnd ($ping_file)", $rnd);
         throw new Exception("Http self check failed, please make sure <site><local @ip/> is configured");
     }
+    unlink($ping_file);
     return true;
   }
 
 
   private static function wget_dnsless($url){
     $local_ip      = (string) yks::$get->config->site->local['ip'];
+
     $url_infos = parse_url($url);
-    $url           = "{$url_infos['scheme']}://{$local_ip}{$url_infos['path']}";
+    if($local_ip)
+        $url = "{$url_infos['scheme']}://{$local_ip}{$url_infos['path']}";
     if($url_infos['query'])
         $url.="?{$url_infos['query']}";
+
     $options = array(
       'timeout' => 3,
       'header' => "Host:{$url_infos['host']}".CRLF,
