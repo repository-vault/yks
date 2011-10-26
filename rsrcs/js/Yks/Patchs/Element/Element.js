@@ -84,7 +84,7 @@ Element.FixedDelayed = function(el){
       bottom:window.innerHeight - coords.bottom,
       width:'auto',
       height:'auto',
-      display:'block',
+      display:'block'
     }; el.setStyles(stuff);
 
     Array.each(ctn, function(node){el.appendChild(node)});
