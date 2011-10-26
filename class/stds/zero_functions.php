@@ -17,11 +17,11 @@ function paths_merge($path_root, $path, $default="."){
 
 
 function array_extract($array, $col, $clean=false){
-    $ret=array();
+    $ret = array();
     if(is_array($col)) foreach($array as $k=>$v) $ret[$k] = array_sort($v, $col);
     elseif($array instanceof simplexmlelement) foreach($array as $k=>$v) $ret[] = (string)$v[$col];
-    else foreach($array as $k=>$v) $ret[$k]=$v[$col];
-    return $clean?array_filter(array_unique($ret)):$ret;
+    elseif($array) foreach($array as $k=>$v) $ret[$k]=$v[$col];
+    return $clean ? array_filter(array_unique($ret)):$ret;
 }
     //return the first non empty value, or the last one
 function pick(){
