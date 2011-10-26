@@ -298,6 +298,9 @@ class sql {
     return sql::row("information_schema.tables",$where);
  }
 
+  static function trace($message){
+    self::$queries [] = $message;
+  }
 
   static function make_search_blob($search_field, $qs, $LIKE = "ILIKE"){
     return sql_func::make_search_blob($search_field, $qs, $LIKE);
