@@ -14,7 +14,8 @@ class exyks_ws {
     foreach($wsdls->iterate("class") as $class) {
         $class_name = $class['name']; $aliases = array();
         $use_sess = isset($class['use_sess']) && bool($class['use_sess']) ? (string) $class['use_sess'] : $default_use_sess;
-        $data = compact('class_name', 'aliases', 'use_sess');
+        $wsdl_ns  = pick($class['ns'], "urn:".SITE_CODE);
+        $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns');
         foreach($class->iterate("alias") as $alias)
             $data['aliases'][] = $alias['name'];
         self::$classes[$class_name] = $data;
@@ -44,7 +45,7 @@ class exyks_ws {
 
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     $wsdl_file = "$wsdls_path/$class_name.wsdl";
-    return array($class_name, $wsdl_file, $wsdl_infos['use_sess']);
+    return array($class_name, $wsdl_file, $wsdl_infos['use_sess'], $wsdl_infos['wsdl_ns']);
   }
 
   public static function serve() {
@@ -53,7 +54,7 @@ class exyks_ws {
 
     rbx::$output_mode = 0;
 
-    list($class_name, $wsdl_file, $use_sess) = self::resolve($_GET['class']);
+    list($class_name, $wsdl_file, $use_sess, $wsdl_ns) = self::resolve($_GET['class']);
 
     if($_SERVER['REQUEST_METHOD']=='GET') {
         readfile($wsdl_file);
@@ -67,8 +68,10 @@ class exyks_ws {
         parse_str($url_infos['query'], $soap_action);
         //$class_name = pick($soap_action['class'], $_GET['class'], $_POST['class']);
         $method     = pick($soap_action['method']);
-        $xml = simplexml_load_string(stream_get_contents(fopen("php://input", "r")));
-        $xml->registerXPathNamespace("me", SITE_CODE);
+        $query = stream_get_contents(fopen("php://input", "r"));
+        //file_put_contents(TMP_PATH."/query", $query);
+        $xml = simplexml_load_string($query);
+        $xml->registerXPathNamespace("me", $wsdl_ns);
         $xml->registerXPathNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
         $SOAP_SESSION_ID = (string) reset($xml->xpath("//env:Body/me:{$method}/*[1][name()='session_id']"));
     } define('SOAP_SESSION_ID', $SOAP_SESSION_ID);

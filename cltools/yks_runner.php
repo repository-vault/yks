@@ -53,6 +53,7 @@ class yks_runner {
     
     foreach($wsdl_config->iterate("class") as $class){
         $class_name    = $class['name'];
+        $wsdl_ns       = pick((string) $class['ns'], "urn:".SITE_CODE);
         $encoding      = pick_in($wsdl_config['encoding'], $class['encoding'], $encoding_values)
                              == 'encoded' ? SOAP_ENCODED : SOAP_LITERAL;
         $binding       = pick_in(@constant($class['binding']), SOAP_RPC, $binding_types);
@@ -60,9 +61,10 @@ class yks_runner {
         $wsdl_url      = sprintf($wsdl_uri_mask, $class_name);
         $wsdl_filepath = sprintf($wsdl_file_mask, $class_name);
 
+
         $class = new IPReflectionClass($class_name);
-        
-        $wsdl = new WSDLStruct(SITE_CODE, $wsdl_url, $binding, $encoding);
+
+        $wsdl = new WSDLStruct($wsdl_ns, $wsdl_url, $binding, $encoding);
         $wsdl->setService($class);
         $wsdl_contents = $gendoc = $wsdl->generateDocument();
         file_put_contents($wsdl_filepath, $wsdl_contents);
