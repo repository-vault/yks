@@ -53,7 +53,7 @@ class yks_runner {
     
     foreach($wsdl_config->iterate("class") as $class){
         $class_name    = $class['name'];
-        $wsdl_ns       = pick((string) $class['ns'], "urn:".SITE_CODE);
+        $wsdl_ns       = pick((string) $class['ns'], SITE_CODE);
         $encoding      = pick_in($wsdl_config['encoding'], $class['encoding'], $encoding_values)
                              == 'encoded' ? SOAP_ENCODED : SOAP_LITERAL;
         $binding       = pick_in(@constant($class['binding']), SOAP_RPC, $binding_types);

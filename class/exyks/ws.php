@@ -14,7 +14,7 @@ class exyks_ws {
     foreach($wsdls->iterate("class") as $class) {
         $class_name = $class['name']; $aliases = array();
         $use_sess = isset($class['use_sess']) && bool($class['use_sess']) ? (string) $class['use_sess'] : $default_use_sess;
-        $wsdl_ns  = pick($class['ns'], "urn:".SITE_CODE);
+        $wsdl_ns  = pick($class['ns'], SITE_CODE);
         $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns');
         foreach($class->iterate("alias") as $alias)
             $data['aliases'][] = $alias['name'];
