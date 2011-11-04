@@ -53,5 +53,10 @@ class _storage_sql {
     $verif_key = array(self::$config['key_field']=>$k);
     sql::delete(self::$config['table_name'], $verif_key);
   }
+  
+
+  public static function clean(){
+    sql::truncate(self::$config['table_name']);
+  }
 
 }
