@@ -9,6 +9,7 @@ class exyks_paths {
 
   public static function init(){
 
+
     if(!classes::init_need(__CLASS__)) return;
 
     self::register("yks", YKS_PATH);
@@ -19,9 +20,11 @@ class exyks_paths {
     self::register("skin.js", RSRCS_PATH."/js", self::default_ns, true);
     self::register("public",  PUBLIC_PATH, self::default_ns, true);
     self::register("cache",   CACHE_PATH, self::default_ns, true);
+    self::register("config",  CONFIG_PATH, self::default_ns, true);
 
 
-    foreach(yks::$get->config->paths->iterate("ns") as $ns)
+    if(yks::$get->config)
+      foreach(yks::$get->config->paths->iterate("ns") as $ns)
         self::register($ns['name'], self::resolve($ns['path']), self::default_ns, $ns['public']=='public' );
 
 
@@ -33,6 +36,7 @@ class exyks_paths {
     );
 
     self::$consts_cache = retrieve_constants();
+
   }
 
   public static function register($key, $dest, $ns = self::default_ns, $public = false){
@@ -121,7 +125,7 @@ class ExyksPathsResolver { //implements streamWrapper
   function stream_open($path, $mode, $options, &$opened_path) {
     $write = in_array(trim($mode, 'bt'), self::$write_modes);
     $this->file_path = exyks_paths::resolve($path);
-    
+
     if(!$write && !is_file($this->file_path)) {
         trigger_error ("Invalid file path resolution {$this->file_path}", E_USER_WARNING);
         return false;
