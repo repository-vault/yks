@@ -133,7 +133,8 @@ class cli {
     return $result;
   }
 
-  public static function text_prompt($prompt=false, &$args = null){
+  public static function text_prompt($prompt=false, $default = null, &$args = null){
+    if($default) $prompt .= " [{$default}]";
     if($prompt) echo "$prompt : ";
 
     $data_str = "";
@@ -153,7 +154,11 @@ class cli {
     } while( ! ($complete || in_array($control, array(26))) );
 
     if($control == 26) $args = array();
-    return trim($data_str);
+    $out = trim($data_str);
+
+    if($out == "" && !is_null($default))
+        return $default;
+    return $out;
   }
 
 /**
