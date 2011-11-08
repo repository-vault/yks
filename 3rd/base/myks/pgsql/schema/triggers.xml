@@ -30,10 +30,12 @@ SELECT
     (NULL::timestamp with time zone)::information_schema.time_stamp AS created
 
 FROM
-    pg_namespace n, pg_class c, pg_trigger t
+    pg_namespace n,
+    pg_class c,
+    pg_trigger t
+
 LEFT OUTER JOIN pg_proc p ON t.tgfoid = p.oid
-LEFT JOIN 
- pg_namespace pn ON pn.oid = p.pronamespace
+LEFT JOIN  pg_namespace pn ON pn.oid = p.pronamespace
  
 , ((
     SELECT 4, 'INSERT'
@@ -44,13 +46,19 @@ UNION ALL
 SELECT 16, 'UPDATE') em(num, text)
 
 
-WHERE ((((((n.oid = c.relnamespace) AND (c.oid = t.tgrelid)) AND
-    (((t.tgtype)::integer & em.num) <> 0)) AND (NOT t.tgisconstraint)) AND (NOT
-    pg_is_other_temp_schema(n.oid))) AND (((((pg_has_role(c.relowner,
-    'USAGE'::text) OR has_table_privilege(c.oid, 'INSERT'::text)) OR
-    has_table_privilege(c.oid, 'UPDATE'::text)) OR has_table_privilege(c.oid,
-    'DELETE'::text)) OR has_table_privilege(c.oid, 'REFERENCES'::text)) OR
-    has_table_privilege(c.oid, 'TRIGGER'::text)))
+WHERE ((((((n.oid = c.relnamespace) AND (c.oid = t.tgrelid))
+    AND (((t.tgtype)::integer & em.num) <> 0))
+    AND (NOT t.tgisconstraint))
+    AND ( NOT pg_is_other_temp_schema(n.oid)))
+    AND (
+          pg_has_role(c.relowner, 'USAGE'::text)
+          OR has_table_privilege(c.oid, 'INSERT'::text)
+          OR has_table_privilege(c.oid, 'UPDATE'::text)
+          OR has_table_privilege(c.oid, 'DELETE'::text)
+          OR has_table_privilege(c.oid, 'REFERENCES'::text)
+          OR has_table_privilege(c.oid, 'TRIGGER'::text)
+    )
+  )
  
 ]]></def>
   </view>

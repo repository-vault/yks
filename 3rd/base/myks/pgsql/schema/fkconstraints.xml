@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+<!-- Helper to check foreign key constraint's triggers -->
+  <view name="zks_information_schema_fkconstraints">
+    <def><![CDATA[
+
+SELECT
+    (current_database())::information_schema.sql_identifier AS trigger_catalog,
+    (n.nspname)::information_schema.sql_identifier AS trigger_schema,
+    (t.tgname)::information_schema.sql_identifier AS trigger_name,
+    (t.tgconstrname) AS constraint_name,
+    (t.tgenabled != 'D') AS trigger_enabled, -- thx 8.3
+    (current_database())::information_schema.sql_identifier AS event_object_catalog,
+    (n.nspname)::information_schema.sql_identifier AS event_object_schema,
+    (c.relname)::information_schema.sql_identifier AS event_object_table
+
+FROM
+    pg_namespace n,
+    pg_class c,
+    pg_trigger t
+
+WHERE   (n.oid = c.relnamespace)
+	AND (c.oid = t.tgrelid)
+    AND ( t.tgisconstraint)
+    AND (
+          pg_has_role(c.relowner, 'USAGE'::text)
+          OR has_table_privilege(c.oid, 'INSERT'::text)
+          OR has_table_privilege(c.oid, 'UPDATE'::text)
+          OR has_table_privilege(c.oid, 'DELETE'::text)
+          OR has_table_privilege(c.oid, 'REFERENCES'::text)
+          OR has_table_privilege(c.oid, 'TRIGGER'::text)
+    )
+  
+
+ 
+]]></def>
+  </view>
+</myks>
