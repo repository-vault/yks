@@ -205,7 +205,7 @@ class interactive_runner {
 
       try {
         $command_split = array();
-        cli::text_prompt('$'.$this->className, $command_split);
+        cli::text_prompt('$'.$this->className, null, $command_split);
         if($command_split == self::$REPLAY_COMMAND)
             $command_split = $this->last_command;
         else 
@@ -317,7 +317,7 @@ class interactive_runner {
   static public function start(){//$obj, $args
     $args = func_get_args();
     $obj = array_shift($args);
-    $runner = new self($obj, count($args) !=0 ? $args : null);
+    $runner = new self($obj, count($args) !=0 && $args != array(null) ? $args : null);
     $runner->main_loop(); //private internal
   }
 }
