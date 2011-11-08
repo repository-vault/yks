@@ -76,6 +76,7 @@ classes::register_class_paths(array(
 
 
     "yks_runner"          => CLTOOLS_PATH."/yks_runner.php",
+    "install_runner"      => CLTOOLS_PATH."/install_runner.php",
 
     "torrent"             => CLASS_PATH."/exts/torrents/torrent.php",
     "bencode"             => CLASS_PATH."/exts/torrents/bencode.php",
