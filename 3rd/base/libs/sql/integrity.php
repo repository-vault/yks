@@ -88,6 +88,15 @@ class sql_integrity {
 
 
   function check_sql(){
+    rbx::ok("Checking foreign key internal triggers");
+    $verif_triggers = array('trigger_enabled' => false);
+    $mistakes = sql::value("zks_information_schema_fkconstraints", $verif_triggers, "COUNT(*)");
+    if($mistakes) {
+        rbx::error("Please activate FK triggers !! ($mistakes mistakes)");
+        cli::pause();
+    } else rbx::ok("All is fine");
+
+
     $verif_fk = array('constraint_type' => 'FOREIGN KEY');
     $cols = "constraint_catalog, constraint_schema, constraint_name, table_schema, table_name";
 
@@ -140,6 +149,15 @@ class sql_integrity {
     }
 
     rbx::error("Found $errors integrity errors on $constraint_name");
+    $query = "DELETE FROM {$dst_name['safe']} \r\n";
+    $query.= "WHERE ".self::tuplize($constraint['members'],'`')." NOT IN ($query_src) ";
+    echo sql::unfix($query).CRLF;
+
+    $prompt = cli::text_prompt("(d : doit)");
+    if($prompt == "d") {
+        rbx::ok("Running query");
+        sql::query($query);
+    }
     cli::pause();
   }
 
