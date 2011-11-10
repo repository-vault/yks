@@ -57,7 +57,7 @@ class ftp_http_put {
     $ftp_remote = $_SERVER[self::HTTP_SERVER_FTP_HEADER];
     $sign       = $_SERVER[self::HTTP_SERVER_FTP_SIGN];
     $challenge = hash_hmac("sha1", $ftp_remote, self::$secret);
-    if($challenge != $sign)
+    if(strtolower($challenge) != strtolower($sign))
         throw new Exception("Invalid hash challenge");
 
     $ftp  = parse_url($ftp_remote);
