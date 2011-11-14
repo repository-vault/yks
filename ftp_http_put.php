@@ -9,14 +9,16 @@ class ftp_http_put {
   const HTTP_CLIENT_FTP_SIGN = "X-HTTP-Put-Sign";
   const HTTP_SERVER_FTP_SIGN = "HTTP_X_HTTP_PUT_SIGN";
 
-  public static $secret;
+  private static $servers = array();
 
+  static function register_server($server_id,  $server_host, $server_secret){
+    if(!is_array($server_host)) $server_host = array($server_host);
+    foreach($server_host as &$tmp) $tmp = "^".str_replace("*", ".*?", $tmp).'$';
+    $server_host = '#('.join('|', $server_host).')#';
+    self::$servers[$server_id] = compact('server_secret', 'server_host');
+  }
 
-  static function send($file_path, $ftp_remote, $ftp_put_gw) {
-    if(!self::$secret)
-        throw new Exception("Specify secret first !!");
-        
-
+  static function send($file_path, $ftp_remote, $ftp_put_gw, $secret) {
 
         //ftp_remote is ftp://user:passwd@host/remote_path
     $ftp = parse_url($ftp_remote);
@@ -32,7 +34,7 @@ class ftp_http_put {
     $file_size = filesize($file_path);
     $file      = fopen($file_path, "r");
 
-    $sign = hash_hmac("sha1", $ftp_remote, self::$secret);
+    $sign = hash_hmac("sha1", $ftp_remote, $secret);
 
     $CRLF = "\r\n";
     $query_head = "PUT {$gw['path']} HTTP/1.0".$CRLF
@@ -42,6 +44,7 @@ class ftp_http_put {
         .self::HTTP_CLIENT_FTP_SIGN.": $sign".$CRLF
          .$CRLF;
 
+    echo $query_head;
     $res=  fwrite($fp, $query_head);
     stream_copy_to_stream($file, $fp);
 
@@ -50,19 +53,29 @@ class ftp_http_put {
 
   }
 
-  static function receive(){
-    if(!self::$secret)
-        throw new Exception("Specify secret first !!");
+  private static function resolve_server($ftp){
+    foreach(self::$servers as $server_id=>$server){
+        if(preg_match( $server['server_host'], $ftp['host']))
+            return $server;
+    }
+    return null;
+  }
 
+  static function receive(){
     $ftp_remote = $_SERVER[self::HTTP_SERVER_FTP_HEADER];
     $sign       = $_SERVER[self::HTTP_SERVER_FTP_SIGN];
-    $challenge = hash_hmac("sha1", $ftp_remote, self::$secret);
-    if(strtolower($challenge) != strtolower($sign))
-        throw new Exception("Invalid hash challenge");
 
     $ftp  = parse_url($ftp_remote);
     if($ftp['scheme'] != 'ftp')
         throw new Exception("Invalid $scheme");
+
+    $server = self::resolve_server($ftp);
+    if(!$server)
+        throw new Exception("Unable to retrieve server configuration");
+
+    $challenge = hash_hmac("sha1", $ftp_remote, $server['server_secret']);
+    if(strtolower($challenge) != strtolower($sign))
+        throw new Exception("Invalid hash challenge ($challenge/$sign)");
 
 
     $test = `which ncftpput`;
