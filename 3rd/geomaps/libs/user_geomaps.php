@@ -40,13 +40,14 @@ class user_geomaps extends geomaps {
 
   function toggle_user_at($x,$y, $user_id){
     $area_id = $this->png_map->hash_key_at($x, $y);
+    $map_id = $this->data['map_id'];
 
-    $verif_area = compact('area_id');
+    $verif_area = compact('area_id', 'map_id');
     if(isset($this->area_user[$area_id]))
         sql::delete("ks_users_geomaps_area", $verif_area);
 
     $data = compact('area_id', 'user_id');
-    $data['map_id'] = $this->data['map_id'];
+    $data['map_id'] = $map_id;
     sql::insert("ks_users_geomaps_area", $data);
     $this->area_user[$area_id] = $user_id;
   }
