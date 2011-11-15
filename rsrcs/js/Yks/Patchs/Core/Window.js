@@ -45,7 +45,7 @@ Window.implement({
         constructor = constructor.parent;
     }
     return item instanceof object;
-  },
+  }
 
 });
 
