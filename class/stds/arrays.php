@@ -176,7 +176,7 @@ function xml_to_dict($xml, $pfx){
         $ret["{$name}_".strtoupper($k)] = (string)$v;
         
     foreach($children as $child)
-        $ret = array_merge($ret, xml_to_constants($child, $name.'_'));
+        $ret = array_merge($ret, xml_to_dict($child, $name.'_'));
     return $ret;
 }
 
