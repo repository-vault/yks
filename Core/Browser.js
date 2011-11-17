@@ -46,24 +46,34 @@ var Browser = $merge({
 
 }, Browser || {});
 
+
+
+
+
+
 Browser.Platform[Browser.Platform.name] = true;
 
-Browser.detect = function(){
+(function(){
 
-	for (var engine in this.Engines){
-		var version = this.Engines[engine]();
-		if (version){
-			this.Engine = {name: engine, version: version};
-			this.Engine[engine] = this.Engine[engine + version] = true;
-			break;
-		}
-	}
+var ua = navigator.userAgent.toLowerCase(),
+	platform = navigator.platform.toLowerCase(),
+	UA = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, 'unknown', 0],
+	name =  (UA[1] == 'version') ? UA[3] : UA[1],
+	mode = name && document.documentMode,
+  engine = '';
 
-	return {name: engine, version: version};
+  if(name =='firefox') engine = 'gecko';
+  if(name =='opera') engine = 'presto';
+  if(name =='chrome' || name =='safari' ) engine = 'webkit';
+  if(name =='ie') engine = 'trident';
 
-};
+  var version = Browser.Engines[engine]();
 
-Browser.detect();
+  Browser.Engine = {name: engine, version: version};
+  Browser.Engine[engine] = Browser.Engine[engine + version] = true;
+
+
+})();
 
 Browser.Request = function(){
 	return $try(function(){
