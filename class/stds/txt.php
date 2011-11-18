@@ -45,22 +45,27 @@ function rte_clean($str){
     }
     $doc = new DOMDocument('1.0','UTF-8');
     @$doc->loadHTML("<html><body>$str</body></html>"); $str=$doc->saveXML();
+
     $str=utf8_decode(html_entity_decode($str,ENT_NOQUOTES,"UTF-8"));
     $str=mb_ereg_replace("&","&amp;",mb_ereg_replace("&amp;","&",$str));
     if(mb_strpos($str,"<body/>"))return "";
+
     if(mb_detect_encoding($str,'utf-8,iso-8859-1')!="UTF-8")$str=utf8_encode($str);
     $len=mb_strlen($str);$start=mb_strpos($str,"<body>")+6;$end=mb_strpos($str,"</body>");
     $str=mb_substr($str,$start,$end-$start);
 
     $replaces=array(
-        '#<([a-z/]+[^<>]*?)>#s'=>'&ks_start;$1&ks_end;',
-        '#<#'=>'&lt;',
-        '#>#'=>'&gt;',
-        '#&ks_start;#'=>'<',
-        '#&ks_end;#'=>'>',
-        "#[\r\n]#"=>'',
-        '#^(<br/>)+|(<br/>)+$#'=>'',
-    );$str=preg_areplace($replaces,$str);
+        '#<([a-z/]+[^<>]*?)>#s'    => '&ks_start;$1&ks_end;',
+        '#<#'                      => '&lt;',
+        '#>#'                      => '&gt;',
+        '#&ks_start;#'             => '<',
+        '#&ks_end;#'               => '>',
+        "#[\r\n]#"                 => '',
+        '#^(<br/>)+|(<br/>)+$#'    => '',
+    );$str = preg_areplace($replaces, $str);
+
+    while($tmp != $str && $tmp = $str) 
+        $str = preg_replace('#(<[^>]+)\s+[a-z0-9-]+:=".*?"#', "$1", $str);
 
     return $str;
 }
