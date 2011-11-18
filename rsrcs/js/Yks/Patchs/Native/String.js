@@ -28,6 +28,11 @@ String.implement({
      return (this.indexOf(str) === 0);
   },
 
+  rot13:function(){
+    return this.replace(/[a-zA-Z]/g,function(c){
+        return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);});
+  },
+
   reduce: function(regex){
      regex = ((typeof regex == 'string') ? new RegExp(regex, null) : regex);
      return this.match(regex)[0];
