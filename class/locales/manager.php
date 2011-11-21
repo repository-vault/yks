@@ -48,7 +48,7 @@ class locales_manager {
     if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang_key);
 
     if(preg_match(MASK_INVALID_ENTITIES, $str)) {
-        syslog(LOG_NOTICE, "There are invalid entities in your document");
+        syslog(LOG_INFO, "There are invalid entities in your document");
         $str = preg_replace(MASK_INVALID_ENTITIES,'&amp;',$str);
         if(preg_match("#<!\[CDATA\[(?s:.*?)\]\]>#",$str,$out)){
           $str= str_replace($out[0], str_replace("&amp;",'&',$out[0]),$str );
