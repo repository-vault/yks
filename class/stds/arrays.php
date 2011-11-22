@@ -168,14 +168,12 @@ function xml_to_dict($xml, $pfx){
     $name = strtoupper($xml->getName());
     if($pfx) $name = $pfx.$name;
 
-    $children = $xml->children();
-    
-    if(!$xml->count())
+    if(!$xml->count()) //! != $xml->children()
         $ret[$name] = (string)$xml;
     foreach($xml->attributes() as $k=>$v)
         $ret["{$name}_".strtoupper($k)] = (string)$v;
         
-    foreach($children as $child)
+    foreach($xml->children() as $child)
         $ret = array_merge($ret, xml_to_dict($child, $name.'_'));
     return $ret;
 }
