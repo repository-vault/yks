@@ -170,7 +170,7 @@ function xml_to_dict($xml, $pfx){
 
     $children = $xml->children();
     
-    if($xml->xpath("child::text()") && !$xml->count())
+    if(!$xml->count())
         $ret[$name] = (string)$xml;
     foreach($xml->attributes() as $k=>$v)
         $ret["{$name}_".strtoupper($k)] = (string)$v;
