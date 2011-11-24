@@ -76,8 +76,10 @@ class yks
     if($config->site['cli_url'] && PHP_SAPI == "cli")
         $SITE_URL = $config->site['cli_url'];
 
-    if(!$SITE_URL)
-      $SITE_URL = "http://{SERVER_NAME}:{SERVER_PORT}";
+    if(!$SITE_URL) {
+      $scheme = ($_SERVER['HTTPS'] == 'on') ? "https" : "http";
+      $SITE_URL = "{$scheme}://{SERVER_NAME}:{SERVER_PORT}";
+    }
 
     $SITE_URL =  strip_end(str_set($SITE_URL, $envs_vars), ":80"); //bandwith enhancement
     $domain = parse_url($SITE_URL);
