@@ -88,7 +88,7 @@ class ftp_http_put {
     $ftp_lnk = popen("ncftpput -u {$ftp['user']} -p {$ftp['pass']} -c {$ftp['host']} {$ftp['path']}", "w");
 
     $input_lnk = fopen("php://input", "r");
-    error_log("Stream copy to stream !!");
+    error_log("Stream copy to stream !! no timeout");
 
     stream_set_timeout($input_lnk, 0);
     stream_set_timeout($ftp_lnk, 0);
