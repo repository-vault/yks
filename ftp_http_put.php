@@ -65,6 +65,9 @@ class ftp_http_put {
     $ftp_remote = $_SERVER[self::HTTP_SERVER_FTP_HEADER];
     $sign       = $_SERVER[self::HTTP_SERVER_FTP_SIGN];
 
+
+    error_log("Starting reception with sign $sign");
+
     $ftp  = parse_url($ftp_remote);
     if($ftp['scheme'] != 'ftp')
         throw new Exception("Invalid $scheme");
@@ -85,6 +88,11 @@ class ftp_http_put {
     $ftp_lnk = popen("ncftpput -u {$ftp['user']} -p {$ftp['pass']} -c {$ftp['host']} {$ftp['path']}", "w");
 
     $input_lnk = fopen("php://input", "r");
+    error_log("Stream copy to stream !!");
+
+    stream_set_timeout($input_lnk, 0);
+    stream_set_timeout($ftp_lnk, 0);
+
     stream_copy_to_stream($input_lnk, $ftp_lnk);
   }
 
