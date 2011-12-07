@@ -20,7 +20,9 @@ class exyks_paths {
     self::register("skin.js", RSRCS_PATH."/js", self::default_ns, true);
     self::register("public",  PUBLIC_PATH, self::default_ns, true);
     self::register("cache",   CACHE_PATH, self::default_ns, true);
-    self::register("config",  CONFIG_PATH, self::default_ns, true);
+    self::register("cache",   CACHE_PATH, self::default_ns, true);
+    self::register("config",  CONFIG_PATH); //NOT Public
+    self::register("tmp",     TMP_PATH); //NOT Public
 
 
     if(yks::$get->config)
