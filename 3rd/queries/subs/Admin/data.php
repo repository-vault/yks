@@ -14,9 +14,10 @@ exyks::$head->title = $query['query_name'];
 
 
 try {
-    $query->execute();
+    if($query->ready)
+        $query->execute();
 } catch(Exception $e){
-    rbx::error("L'appel de la requete a echoué");
+    rbx::error("L'appel de la requete a echoué ".specialchars_encode($query->sql_query));
     return;
 }
 

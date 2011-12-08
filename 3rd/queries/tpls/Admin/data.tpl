@@ -1,4 +1,7 @@
 <box theme="&pref.dft;" class="center " caption="<?=$query['query_name']?>" options="reload" style="width:100%">
+<p>
+<?=$query->query_descr?>
+</p>
 <button ext="/?&href;//download">Export Excel</button>
 
 
