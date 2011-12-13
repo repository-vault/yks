@@ -11,13 +11,13 @@ Xhr.encode_urlencode = function(hash){
 Xhr.implement({
  encode_urlencode: {
   transport_callback:'send',
-  encode:function(hash){
+  encode:function(hash, callback){
     var str = Xhr.encode_urlencode(hash);
     this.addHeaders({
         'Content-Type'   : 'application/x-www-form-urlencoded',
         'Content-Length' : str.length
     });
-    return str;
+    callback(str);
   }
  }
 });

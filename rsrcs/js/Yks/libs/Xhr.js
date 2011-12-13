@@ -19,24 +19,25 @@ var Xhr = new Class({
         throw "Unknow encoder";
 
     this.lnk.open( method||'GET' , url, this.async);
-
-    data = this.data_cleanup(data||[]); //data is a list
-    data = encoder.encode.call(this, data);
-
-    this.headers.each(function(val, key){
-        this.lnk.setRequestHeader(key, val);
-    }.bind(this));
-
     this.lnk.onreadystatechange = this.state_change;
 
-    if(method == 'GET')
-        data = null;
+    data = this.data_cleanup(data||[]); //data is a list
 
 
-    this.lnk[encoder.transport_callback](data);
+    encoder.encode.call(this, data, function(data){
+      if(method == 'GET')
+          data = null;
 
-    if((!this.async) && this.lnk.readyState==4)
+      this.headers.each( function(val, key){
+          this.lnk.setRequestHeader(key, val);
+      }.bind(this));
+
+      this.lnk[encoder.transport_callback](data);
+
+      if((!this.async) && this.lnk.readyState==4)
         this.state_change();
+    }.bind(this));
+
   },
 
   isSuccess: function(){
