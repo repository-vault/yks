@@ -95,8 +95,8 @@ class dsp_titles {
 
   public static function gen_img($data){ extract($data);
 
-    $text_tmp = imagettfbbox($font_size,0,$font,$text);
-    $text_tmp_h = imagettfbbox($font_size,0,$font,"$text dp"); // ! :s
+    $text_tmp   = imagettfbbox($font_size,0,$font, "$text ");
+    $text_tmp_h = imagettfbbox($font_size,0,$font, "$text dp"); // ! :s
 
     $text_w = max(abs($text_tmp[4]-$text_tmp[0]),abs($text_tmp[2]-$text_tmp[6]));
 
