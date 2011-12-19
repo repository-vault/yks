@@ -59,9 +59,7 @@ var Screen = {
     liste.setStyle('visibility', 'hidden');
     return $n('div',{'class':'modal_mask',styles:{
         'opacity':0.5,
-        'z-index':Screen.box_zImax-1,
-        'height':scroll_size.y,
-        'width':scroll_size.x
+        'z-index':Screen.box_zImax-1
       }}).addEvent('onRemove',function(){
             Screen.modal_lvl--;
             liste.setStyle('visibility', 'visible');

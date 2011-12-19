@@ -122,7 +122,6 @@ class sql_runner {
     rbx::ok("Cleaning expired sessions");
     $expired = 86400 * 2;
     sql::delete("zks_sessions_list", "session_start < unix_timestamp() - $expired");
-    
   }
 
   private function queries_queue($queries){
@@ -168,6 +167,20 @@ class sql_runner {
     if(!$filter) return false;
     $filter = "#".str_replace("*", ".*", $filter)."#";
     return !preg_match($filter, $value);
+  }
+
+  public function begin(){
+    sql::query("BEGIN");
+    rbx::ok("Begin command sent !");
+  }
+  public function rollback(){
+    sql::query("ROLLBACK");
+    sql::query("22");
+    rbx::ok("Rollback command sent !");
+  }
+  public function commit(){
+    sql::query("COMMIT");
+    rbx::ok("Commit command sent !");
   }
 
 /**
