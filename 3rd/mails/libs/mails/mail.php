@@ -20,14 +20,20 @@ class mail extends mime {
   public static function inline($subject, $body, $content_type = "text/plain"){
     $mail = new self(self::inline_construct);
     $mail->subject = $subject;
-    $first_part = array(
-        'content-type'  => $content_type,
+
+    $mail->first_part = new mime_part($mail, array(
+        'content-type'  => "multipart/mixed",
         'part_id'       => 1,
+    ));
+
+    $mail->first_part->add_child(new mime_part($mail, array(
+        'content-type'  => $content_type,
+        'part_id'       => 2,
         'part_contents' => $body,
-    );
-    $mail->first_part = new mime_part($mail, $first_part);
+    )));
     return $mail;
   }
+
 
   private function __construct_db($mail_infos){
     if(! $mail_infos) 
