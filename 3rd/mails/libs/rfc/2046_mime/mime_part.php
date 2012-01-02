@@ -20,7 +20,7 @@ class mime_part {
     list($this->type_primary,$this->type_extension)=explode('/',$content_type,2);
 
     if($this->is_composed())
-        $this->boundary  = substr($part_infos['part_id'].'-'.md5($part_infos['part_id']._NOW),0,32);
+        $this->boundary  = "---".substr($part_infos['part_id'].'-'.md5($part_infos['part_id']._NOW),0,32);
 
     $this->contents = $part_infos['part_contents'];
 
@@ -43,14 +43,14 @@ class mime_part {
   function add_file($file_path, $file_name=false){
     if(!is_file($file_path )) return false;
 
-
     $part_infos  = array(
         'content-type'  => rfc_2046::content_type($file_path), //depends on file_ext
         'part_contents' => file_get_contents($file_path),
     );
 
     $child_part = new mime_part($this->mail, $part_infos);
-    if($file_name) $child_part->file_name = $file_name;
+    $child_part->file_name = $file_name ? $file_name : basename($file_path);
+
     $child_part->transfer_encoding = "base64";
     $this->add_child($child_part);
   }
@@ -65,23 +65,22 @@ class mime_part {
 
   function headers_output(){
     $str="";
+
     $str.= "Content-Type: $this->type_primary/$this->type_extension";
     if($this->is_textual())
         $str.=";charset=\"UTF-8\"";
     if($this->is_composed())
-        $str.=";boundary=\"$this->boundary\"";
+        $str.="; boundary=\"{$this->boundary}\"";
     if($this->file_name)
-        $str.=";name=\"$this->file_name\"";
+        $str.="; name=\"{$this->file_name}\"";
     $str.=CRLF;
 
-    $str.=  "Content-Transfer-Encoding: $this->transfer_encoding".CRLF;
+    if(!$this->is_composed())
+        $str.=  "Content-Transfer-Encoding: {$this->transfer_encoding}".CRLF;
 
-    if($this->type_primary =="image") {
-        
-    }
-    if($this->file_name) {
-        $str.="Content-Disposition:attachment;filename=\"$this->file_name\"".CRLF;
-    }
+    if($this->file_name) 
+        $str.="Content-Disposition:attachment; filename=\"{$this->file_name}\"".CRLF;
+
     return $str.CRLF;
   }
 
@@ -101,6 +100,8 @@ class mime_part {
             if(!$raw) $str.=CRLF."--$this->boundary".CRLF;
             $str.=$child_part->encode($raw);
         }
+
+        if(!$raw) $str.=CRLF."--{$this->boundary}--";
     } else {
         $contents = $this->apply_context();
         if(!$raw) $contents = rfc_2047::encoding_encode($contents, $this->transfer_encoding);
