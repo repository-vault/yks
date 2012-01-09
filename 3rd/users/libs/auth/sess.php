@@ -32,12 +32,13 @@ class sess  {
   static function retrieve($key){ return self::fetch($key); }
 
   static function flag_ks($connected = true){
-    $id = $connected?self::$id:$_COOKIE[SESSION_NAME];
+    $id = $connected ? self::$id : $_COOKIE[SESSION_NAME];
     return crpt($id, FLAG_SESS, 10);
   }
 
   static function connect($session_id = null){
     if($session_id) session_id($session_id) ;
+
     session_start();
     self::$sess = &$_SESSION['user'];
     self::$id = session_id();

@@ -43,7 +43,7 @@ class exyks {
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
-    define('SESSION_NAME',   crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10));
+    define('SESSION_NAME',  crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10)."_yks");
     self::store('LANGUAGES',
         preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
 
