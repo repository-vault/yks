@@ -58,7 +58,7 @@
             </p>
           </xsl:if>
           <xsl:if test="not(./node())">
-            <a href="{@src}">
+            <a href="{@src}" class="box_default">
               <xsl:value-of select="@src"/>
             </a>
           </xsl:if>
