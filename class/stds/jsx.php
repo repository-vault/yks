@@ -53,6 +53,11 @@ class jsx {
   static function js_eval($msg) { rbx::msg(jsx::JS_EVAL,"$msg;"); }
   static function walk($step){ rbx::msg("walk", floor(100*$step)); jsx::end();}
 
+  //Raw version of reloc
+  public static function reloc($url){
+    header(TYPE_JSON);
+    die(json_encode(array('go' => $url)));
+  }
 
 }
 
