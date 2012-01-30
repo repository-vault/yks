@@ -117,5 +117,36 @@ class http {
     return $body;
   }
 
+  
+  public static function ip_check_cidr ($IP, $CIDR) { 
+    list ($net, $mask) = split ("/", $CIDR);
+    if(!$mask) $mask = 32;
+    $ip_net = ip2long ($net);
+    $ip_mask = ~((1 << (32 - $mask)) - 1);
+    $ip_ip = ip2long ($IP);
+    $ip_ip_net = $ip_ip & $ip_mask;
+    return ($ip_ip_net == $ip_net);
+  }
+
+  public static function ip_allow($ranges, $ip = false){
+    if($ip === false) $ip = $_SERVER['REMOTE_ADDR'];
+    $hostname = gethostbyname($ip);
+    foreach($ranges as $range){
+      //dummy check
+      if($range == $hostname)
+         return true;
+      //if IP, check range
+      if(preg_match("#^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:/[0-9]{1,2})?$#", $range)) {
+        if(self::ip_check_cidr($ip, $range))
+          return true;
+      } else { //ip name, check with wildcard
+        $mask = strtr($range, array("*" => ".*", "." =>  "\."));
+        if(preg_match("#^$mask$#", $hostname))
+          return true;
+      }
+    }
+    return false;
+  }
+
 
 }
