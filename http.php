@@ -148,5 +148,40 @@ class http {
     return false;
   }
 
+  public static function put_file($file_path, $http_remote){
+    $gw = parse_url($http_remote);
+
+    $schemes = array('http' => 80, 'https' => 443);
+    if(!isset($schemes[$gw['scheme']]))
+        throw new Exception("Unsupported scheme");
+    $gw['port'] = $gw['port'] ? $gw['port'] : $schemes[$gw['scheme']];
+
+    $is_ssl = $gw['scheme'] == 'https';
+    $host = $gw['host'];
+    if($is_ssl) $host = "ssl://$host";
+
+    $dest = fsockopen($host, $gw['port']);
+    $file_size = filesize($file_path);
+    $file      = fopen($file_path, "r");
+
+
+    $CRLF = "\r\n";
+    $path = $gw['path']."?".$gw['query'];
+    $query_head = "PUT $path HTTP/1.0".$CRLF
+        ."Host: {$gw['host']}".$CRLF
+        ."Content-Length: $file_size".$CRLF
+         .$CRLF;
+
+    echo $query_head;
+    $res=  fwrite($dest, $query_head);
+    
+    //stream_copy_to_stream($file, $fp);
+
+    stream_copy_to_stream($file, $dest);
+    $res = stream_get_contents($dest);
+    return $res;
+  }
+
+
 
 }
