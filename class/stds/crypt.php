@@ -172,15 +172,7 @@ class crypt {
     return join('', $out);
   }
   
-  public static function BuildPemKey($key, $type=crypt::PEM_PUBLIC) {
-    if($type == crypt::PEM_PRIVATE){
-      $keyMask = "-----BEGIN RSA PRIVATE KEY-----\n%s\n-----END RSA PRIVATE KEY-----"; 
-    }else{
-      $keyMask = "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----";   
-    }
 
-    return sprintf($keyMask, trim(chunk_split($key, 64, "\n")) );
-  }
 
   public static function cleanupPem($key){
     $key = preg_replace("#\r?\n#" , "", $key);
