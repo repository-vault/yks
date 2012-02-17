@@ -43,6 +43,8 @@ classes::register_class_paths(array(
     "http_server"         => CLASS_PATH."/exts/http/server.php",
     "http_proxy"          => CLASS_PATH."/exts/http/proxy.php",
     "http_cb_proxy"       => CLASS_PATH."/exts/http/proxy_callback.php",
+    "ftp_http_put"        => CLASS_PATH."/exts/http/ftp_http_put.php",
+    "rsa_keymgr.php"      => CLASS_PATH."/apis/rsa_keymgr.php",
 
     "exyks_paths"         => CLASS_PATH."/exyks/paths.php",
     "tpls"                => CLASS_PATH."/exyks/tpls.php",

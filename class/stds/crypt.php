@@ -39,14 +39,6 @@ class crypt {
     return self::cleanupPem($key_details['key']);
   }
   
-  private static function cleanupPem($key){
-    $cleanup = array(
-      '#^-+(BEGIN|END)( RSA)? (PUBLIC|PRIVATE) KEY-+$#m' => '',
-      "#\r?\n#" => ''
-    );
-    return preg_areplace($cleanup, $key);
-  }
-  
   
   private static function cypherInit($passphrase, $raw = false){
     $algo    = MCRYPT_RIJNDAEL_128;
@@ -189,4 +181,26 @@ class crypt {
 
     return sprintf($keyMask, trim(chunk_split($key, 64, "\n")) );
   }
+
+  public static function cleanupPem($key){
+    $key = preg_replace("#\r?\n#" , "", $key);
+    $key = preg_reduce("#^-+BEGIN(?: RSA)? (?:PUBLIC|PRIVATE) KEY-+(.*?)-+END(?: RSA)? (?:PUBLIC|PRIVATE) KEY-+#m", $key);
+    return $key;
+  }
+
+  public static function BuildPemKey($key_str, $type=crypt::PEM_PUBLIC) {
+    $lines = str_split($key_str, 64);
+
+    if($type == crypt::PEM_PRIVATE){
+      array_unshift ($lines, "-----BEGIN RSA PRIVATE KEY-----");
+      array_push    ($lines, "-----END RSA PRIVATE KEY-----");
+    }else{
+      array_unshift ($lines, "-----BEGIN PUBLIC KEY-----");
+      array_push    ($lines, "-----END PUBLIC KEY-----");
+    }
+
+    return join("\n", $lines);
+  }
+
+
 }
