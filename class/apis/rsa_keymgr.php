@@ -14,11 +14,9 @@ class rsa_keymgr {
     if(!$this->prikey_id)
         throw new Exception("Error while loading rsa keys ");
 
-    $tmp = files::tmppath();
-    $pubkey_content = `openssl rsa -in $file_path -pubout 2>/dev/null`;
-
-    $this->pubkey_id       = openssl_get_publickey($pubkey_content);
-  }
+    $ppk_infos = openssl_pkey_get_details($this->prikey_id);
+    $this->pubkey_id       = openssl_get_publickey($ppk_infos['key']);
+ }
 
   function sign($str) {
     unset($out_signature);//ref
