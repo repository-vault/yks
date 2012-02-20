@@ -6,9 +6,14 @@ class rsa_keymgr {
   private $private_path;
   private $prikey_content;
 
-  function __construct($file_path){
+  function __construct($file_path = false){
     $this->file_path = $file_path;
-    $this->prikey_content = file_get_contents($file_path);
+    if($this->file_path)
+      $this->load(file_get_contents($file_path));
+  }
+  
+  public function load($private_key){
+    $this->prikey_content = $private_key;
 
     $this->prikey_id = openssl_get_privatekey($this->prikey_content);
     if(!$this->prikey_id)
@@ -54,7 +59,8 @@ class rsa_keymgr {
     $sign = $this->sign($comment);
     $str .="-- Comment: $comment\n";
     $str .="-- Private-MAC: $sign\n";
-    file_put_contents($this->file_path, $str);
+    if($this->file_path)
+      file_put_contents($this->file_path, $str);
     return $str;
   }
 
