@@ -187,6 +187,45 @@ class cli {
     return $args;
   }
 
+  public static function getopt($params, $argv){
+    $shorts = array_keys($params);
+    $longs = array_values($params);
+
+    $options  = array();
+    $unparsed = array();
+
+    while(list(,$chunk) = each($argv)) {
+
+      if($chunk[0] != '-') {
+        $unparsed[] = $chunk;
+        continue;
+      }
+
+      if($chunk[1] == '-') {
+        $name = substr($chunk, 2);
+        if(in_array($name, $longs ))
+          $options[$name][] = false;
+        elseif(in_array("$name:", $longs ))
+          $options[$name][] = reset(each($argv));
+        continue;
+      }
+
+      $chunk = substr($chunk, 1);
+      do {
+        list($name, $chunk) = array($chunk[0], substr($chunk,1));
+        if(in_array($name, $shorts))
+          $options[$name][] = false;
+        elseif(in_array("$name:", $shorts))
+          list($options[$name][], $chunk) =  array($chunk ? $chunk : reset(each($argv)), null);
+      } while($chunk);
+
+    }
+
+    foreach($options as &$option) //splat
+      if(count($option) == 1) $option = $option[0];
+
+    return array($options, $unparsed);
+  }
 
   function exec($cmd, $file_mode = false){
     //write in file so we avoid args parsing issues
