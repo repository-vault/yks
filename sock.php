@@ -242,15 +242,14 @@ class sock   {
 
   function receive($filer = false, &$ret=NULL){
 
-    $file_size = (int)    $this->response['headers']['Content-Length']->value;
+    $file_size = $this->response['headers']['Content-Length']->value; //might be zero
     $chunked   = (string) $this->response['headers']['Transfer-Encoding']->value == "chunked";
 
 
     if(self::$transport_type == self::TRANSPORT_USER) {
 
         if(!$this->lnk) return false;
-     
-        if($file_size)
+        if(is_numeric($file_size))
             return $this->receive_classic($file_size, $filter, $ret);
         elseif($chunked)
             return $this->receive_chunked($filter, $ret);
