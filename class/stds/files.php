@@ -262,6 +262,40 @@ class files {
   }
 
 
+  public static function csv_split($str, $sep = ';'){
+    $str = str_replace('""', "&quot;", $str); //inline quote
+
+    $mask = "#(?:\"([^\"]*)\"|'([^']*)'|([^$sep]*))(?:$sep|$)#";
+    if(!preg_match_all($mask, $str, $out, PREG_SET_ORDER))
+    return array();
+    array_pop($out); //drop last empty
+
+    $line = array();
+    foreach($out as $cel)
+      $line[] = pick(str_replace("&quot;", '"', $cel[1]), $cel[2], $cel[3]);
+    return $line;
+  }
+
+  public static function csv_parse_string($contents, $has_headers = true){
+    
+    $lines = preg_split("#\r?\n#", rtrim($contents));
+    $data = array_map(array(__CLASS__, 'csv_split'), $lines);
+    $cols = max(array_map('count', $data));
+
+    if(!$has_headers)
+        return $data;
+
+    $headers = array_shift($data);
+    for($a=0 ; $a<$cols ; $a++)
+      if(!isset($headers[$a]) || $headers[$a] == "")
+        $headers[$a] = "col_{$a}";
+
+    foreach($data as &$line)
+      $line = array_combine($headers, array_pad($line, $cols, ""));
+
+    return $data;
+  }
+
 
   public static function csv_parse($file_path,  $has_headers = true) {
     $handle   = fopen($file_path, "r");
