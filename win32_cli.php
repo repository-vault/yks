@@ -1,4 +1,9 @@
 <?
+/** 
+<? // this is D:\bin\md5file.phpx
+include 'yks/cli.php';
+win32_cli::dispatch();
+**/
 
 class win32_cli {
 
