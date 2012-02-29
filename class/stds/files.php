@@ -276,6 +276,12 @@ class files {
     return $line;
   }
 
+
+  public static function csv_parse_file($file_path, $has_headers = true){
+    $str   = file_get_contents($file_path);
+    return files::csv_parse_string($str, $has_headers);
+  }
+
   public static function csv_parse_string($contents, $has_headers = true){
     
     $lines = preg_split("#\r?\n#", rtrim($contents));
@@ -345,12 +351,10 @@ class files {
 
         $file_archive_path = txt::utf8_to_cp950($file_archive_path);
         $zip->addFile($file_path, $file_archive_path);
-
     }
 
     $zip->close();
 
-    //self::file_edit_bit($dest_path, true, 4+2, 11);
 
     return $dest_path;
   }
