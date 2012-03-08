@@ -20,6 +20,8 @@ class cli {
       //transcoding UTF-8 to IBM codepage
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
+    if(!defined('STDIN'))
+      define('STDIN', fopen('php://stdin','r'));
   }
 
   
