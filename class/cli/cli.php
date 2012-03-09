@@ -20,11 +20,14 @@ class cli {
       //transcoding UTF-8 to IBM codepage
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
-    if(!defined('STDIN'))
-      define('STDIN', fopen('php://stdin','r'));
   }
 
-  
+  public static function cli_mode(){
+    if(!defined('STDIN'))
+      define('STDIN', fopen('php://stdin','r'));
+    set_time_limit(0);
+  }
+
   private static $paths = false;
   static function extend_path($paths){
     $new_paths      = is_array($paths)?$paths:func_get_args();
