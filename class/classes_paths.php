@@ -37,6 +37,9 @@ classes::register_class_paths(array(
     "dtd"                 => CLASS_PATH."/dom/dtds.php",
 
     "http"                => CLASS_PATH."/exts/http/http.php",
+    "url"                 => CLASS_PATH."/exts/http/url.php",
+    "tlds"                => CLASS_PATH."/exts/http/tlds.php",
+    "browser"             => CLASS_PATH."/exts/browser/browser.php",
     "urls"                => CLASS_PATH."/exts/http/urls.php",
     "sock"                => CLASS_PATH."/exts/http/sock.php",
     "http_aserver"        => CLASS_PATH."/exts/http/aserver.php",
@@ -44,7 +47,7 @@ classes::register_class_paths(array(
     "http_proxy"          => CLASS_PATH."/exts/http/proxy.php",
     "http_cb_proxy"       => CLASS_PATH."/exts/http/proxy_callback.php",
     "ftp_http_put"        => CLASS_PATH."/exts/http/ftp_http_put.php",
-    "rsa_keymgr"      => CLASS_PATH."/apis/rsa_keymgr.php",
+    "rsa_keymgr"          => CLASS_PATH."/apis/rsa_keymgr.php",
 
     "exyks_paths"         => CLASS_PATH."/exyks/paths.php",
     "tpls"                => CLASS_PATH."/exyks/tpls.php",

@@ -1,7 +1,12 @@
 <?php
 
-if(!$upload_def)
-    die("Invalid upload flag");
+if(!$upload_def) {
+    $msg = "Invalid upload flag";
+    rbx::error($msg);
+
+    if(JSX) jsx::end();
+    die($msg);
+}
 
 $valid_exts = preg_split( VAL_SPLITTER, $upload_def['exts'],  -1,  PREG_SPLIT_NO_EMPTY);
 

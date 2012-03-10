@@ -154,7 +154,7 @@ abstract class isql {
 
     $ret  = 'FROM '.sql::fromf(array_shift($tables));
     foreach($tables as $k=>$table)
-      $ret .= is_numeric($k) ? $table : "INNER JOIN ".sql::fromf($table)." USING($k)";
+      $ret .= is_numeric($k) ? $table : "INNER JOIN ".sql::fromf($table)." USING($k) ";
     return $ret;
   }
 

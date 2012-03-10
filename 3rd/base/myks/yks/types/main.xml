@@ -70,4 +70,7 @@
   <mykse type="text" default="''">
     <text/>
   </mykse>
+  <mykse type="html">
+    <mykse type="text"/>
+  </mykse>
 </myks>

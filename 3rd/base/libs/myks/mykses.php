@@ -68,13 +68,13 @@ class mykses {
         if($null && $mykse['null']=='not_null' && is_not_null($mykse['default']))break;
         if($null && $nullable){ $out[$mykse_key]=null; break;}
 
-        if($mykse_type=="text"){
-            $out[$mykse_key]=rte_clean($val);
+        if($mykse_type=="html"){
+            $out[$mykse_key] = rte_clean($val);
         }elseif($mykse_type=='bool'){
-            $out[$mykse_key]=bool($val,true);
+            $out[$mykse_key] = bool($val,true);
         }elseif($mykse_type=='mail'){
             $val = trim(strtolower($val));
-            $out[$mykse_key]= mail_valid($val)?$val:false;
+            $out[$mykse_key] = mail_valid($val)?$val:false;
         } elseif(in_array("time", array($mykse_start_type, $mykse_type)) ){
             if($val=="" && $nullable) { $out[$mykse_key]=null; break;}
             if(is_numeric($val)) $out[$mykse_key] = $val;
@@ -89,10 +89,10 @@ class mykses {
             if($null) break;
             if($val === "") {$out[$mykse_key] = null;break; }
             $out[$mykse_key]=(int) $val;
-        }elseif($mykse_type=='string'){
-            $out[$mykse_key]=$val;
+        }elseif($mykse_type == 'string' || $mykse_type == 'text'){
+            $out[$mykse_key] = $val;
         } elseif($mykse_type=='enum'){
-            $vals=vals($mykse);
+            $vals = vals($mykse);
             if($mykse['set']) {
                 if(!is_array($val)) $val=explode(',',$val);
                 $val=array_intersect($vals, $val);

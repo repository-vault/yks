@@ -24,7 +24,7 @@ class smtp_lite {
 */
   public static function smtpsend($contents, $dests){
 
-    //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
+    throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
 
     foreach(yks::$get->config->apis->iterate("smtp") as $smtp_config ) {
         try {
