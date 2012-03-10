@@ -69,7 +69,7 @@ class sock   {
 
     if(self::$trace) {  
         $str  = CRLF.self::$transport_type." ".str_repeat('-', 60).CRLF.$this->query['raw_url'].CRLF;
-        $str .= print_r($this->query['raw'],1);
+        $str .= print_r($this->query['raw'],1).CRLF;
         $str .= print_r($this->response['raw'], 1);
         $str .= CRLF.str_repeat('-', 60).CRLF;
         self::trace($str);
