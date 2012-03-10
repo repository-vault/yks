@@ -12,6 +12,11 @@ class browser {
 
   private $session_key = 'BROWSING_SESSION';
 
+  function init(){
+    classes::extend_include_path(dirname(__FILE__));
+    http::init();
+  }
+
   function __construct($session_key = false){
     $this->cookiejar = new cookiejar();
     $this->ua        = $this->forge_ua();
