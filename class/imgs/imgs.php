@@ -11,10 +11,10 @@ class imgs {
   const COLOR_WHITE = __COLOR_WHITE;
 
   static function imageoutstring($img, $func ) { //= "imagepng", doit
-    ob_start();
-    $func($img);
-    $str = ob_get_contents();
-    ob_end_clean();
+    $args = func_get_args(); $args = array_slice($args, 2);
+    array_unshift($args, $img);
+    ob_start(); call_user_func_array($func, $args);
+    $str = ob_get_contents(); ob_end_clean();
     return $str;
   }
 
@@ -214,13 +214,13 @@ class imgs {
   }
 
 /** Resize an image based on width and optional height */
-  static function imageresize($img,$w,$h=false,$bigger=false){
-    $old_w=imagesx($img);$old_h=imagesy($img);
-    $ratio=min($w?$w/$old_w:$h/$old_h,$h?$h/$old_h:$w/$old_w);
+  static function imageresize($img, $w, $h=false, $bigger=false){
+    list($old_w, $old_h) = array( imagesx($img), imagesy($img));
+    $ratio = min( $w ? $w/$old_w : $h/$old_h , $h ? $h/$old_h : $w/$old_w);
     if($ratio>1 && !$bigger) $ratio=1;
-    $new_w=$ratio*$old_w;$new_h=$ratio*$old_h;
-    $out = self::imagecreatetruealpha($new_w,$new_h);
-    imagecopyresampled($out,$img,0,0,0,0,$new_w,$new_h,$old_w,$old_h);
+    list($new_w, $new_h) = array($ratio*$old_w, $ratio*$old_h);
+    $out = self::imagecreatetruealpha($new_w, $new_h);
+    imagecopyresampled($out, $img, 0, 0, 0, 0, $new_w, $new_h, $old_w, $old_h);
     return $out;
   }
 

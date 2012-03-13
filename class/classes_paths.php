@@ -45,6 +45,8 @@ classes::register_class_paths(array(
     "http_aserver"        => CLASS_PATH."/exts/http/aserver.php",
     "http_server"         => CLASS_PATH."/exts/http/server.php",
     "http_proxy"          => CLASS_PATH."/exts/http/proxy.php",
+    "http_server"         => CLASS_PATH."/exts/http/server.php",
+    "http_aserver"        => CLASS_PATH."/exts/http/aserver.php",
     "http_cb_proxy"       => CLASS_PATH."/exts/http/proxy_callback.php",
     "ftp_http_put"        => CLASS_PATH."/exts/http/ftp_http_put.php",
     "rsa_keymgr"          => CLASS_PATH."/apis/rsa_keymgr.php",
@@ -65,6 +67,7 @@ classes::register_class_paths(array(
 
 
     "imgs"                => CLASS_PATH."/imgs/imgs.php",
+    "ocr"                 => CLASS_PATH."/imgs/ocr.php",
     "png"                 => CLASS_PATH."/apis/png/png.php",
     "ffmpeg_helper"       => CLASS_PATH."/apis/ffmpeg/helper.php",
 
@@ -74,6 +77,8 @@ classes::register_class_paths(array(
     "namedpipewrapper"    => CLASS_PATH."/exts/cli/namedpipewrapper.php",
     "stdlogdispatch"      => CLASS_PATH."/exts/cli/stdlogdispatch.php",
     "win32_service"       => CLASS_PATH."/exts/cli/win32_service.php",
+    "win32_cli"           => CLASS_PATH."/exts/cli/win32_cli.php",
+
     "charset_map"         => CLASS_PATH."/stds/encodings/cp.php",
 
 
