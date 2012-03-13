@@ -132,7 +132,7 @@ class sock   {
   }
 
 
-  function process_response() { }
+  protected function process_response() { }
 
 
   private function host_str(){
@@ -290,8 +290,10 @@ class sock   {
 
     if($this->proxy) 
       $this->lnk = fsockopen($this->proxy_infos['host'], $this->proxy_infos['port']);
-    else
+    else {
       $this->lnk = @fsockopen($this->enctype.$this->host,$this->port);
+      self::trace("Open link {$this->enctype}{$this->host}:{$this->port}");
+    }
 
     if(!$this->lnk) 
         throw new Exception("Unable to connect '$this->host':$this->port");

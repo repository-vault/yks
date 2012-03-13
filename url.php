@@ -77,8 +77,14 @@ class url  extends __native {
     return $str;
   }
 
+  //return unique scheme params
+  protected function get_sock_lnk(){
+    $enctype = $this->is_ssl?'ssl://':'';
+    return "{$enctype}{$this->host}:{$this->http_host}";
+  }
+
   //host:(nonstandart port)
-  function get_http_host(){
+  protected function get_http_host(){
     $http_host = $this->host;
     $port = pick($this->port, $this->is_ssl?443:80);
     if($port != ($this->is_ssl ? 443 : 80))
