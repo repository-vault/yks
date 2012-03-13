@@ -24,7 +24,7 @@ class xhr extends sock {
 
 
   private function set_url($url){
-    if($this->url->host && $url->host != $this->url->host)
+    if($this->url->sock_lnk && $url->sock_lnk != $this->url->sock_lnk)
         $this->close();
 
     $this->url     = $url;
