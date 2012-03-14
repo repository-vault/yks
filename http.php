@@ -148,32 +148,66 @@ class http {
     return false;
   }
 
-  public static function put_file($file_path, $http_remote){
+  
+  public static function delete_file($http_remote){
+    
     $gw = parse_url($http_remote);
 
     $schemes = array('http' => 80, 'https' => 443);
     if(!isset($schemes[$gw['scheme']]))
         throw new Exception("Unsupported scheme");
-    $gw['port'] = $gw['port'] ? $gw['port'] : $schemes[$gw['scheme']];
+    $gw['port'] = pick($gw['port'], $schemes[$gw['scheme']]);
 
     $is_ssl = $gw['scheme'] == 'https';
     $host = $gw['host'];
     if($is_ssl) $host = "ssl://$host";
 
-    $dest = fsockopen($host, $gw['port']);
+    $dest      = fsockopen($host, $gw['port']);
+
+    $CRLF = "\r\n";
+    $path = $gw['path']."?".$gw['query'];
+    $query_head = "DELETE $path HTTP/1.0".$CRLF
+        ."Host: {$gw['host']}".$CRLF
+         .$CRLF;
+    $res =  fwrite($dest, $query_head);
+    $res = stream_get_contents($dest);
+    return $res;
+  }
+  
+  public static function put_file($file_path, $http_remote, $extras_headers = array()){
+    if(!is_file($file_path))
+        throw new Exception("Invalid file path");
+
+    $gw = parse_url($http_remote);
+
+    $schemes = array('http' => 80, 'https' => 443);
+    if(!isset($schemes[$gw['scheme']]))
+        throw new Exception("Unsupported scheme");
+    $gw['port'] = pick($gw['port'], $schemes[$gw['scheme']]);
+
+    $is_ssl = $gw['scheme'] == 'https';
+    $host = $gw['host'];
+    if($is_ssl) $host = "ssl://$host";
+
+    $dest      = fsockopen($host, $gw['port']);
     $file_size = filesize($file_path);
     $file      = fopen($file_path, "r");
 
 
     $CRLF = "\r\n";
     $path = $gw['path']."?".$gw['query'];
-    $query_head = "PUT $path HTTP/1.0".$CRLF
-        ."Host: {$gw['host']}".$CRLF
-        ."Content-Length: $file_size".$CRLF
-         .$CRLF;
+    $headers = array_merge(array(
+      "Host"           => $gw['host'],
+      "Content-Length" =>  $file_size,
+    ), $extras_headers);
+      
+    
+    $query_head = "PUT $path HTTP/1.0".CRLF
+                  .mask_join(CRLF, $headers, '%2$s: %1$s').CRLF
+                  .CRLF;
 
-    echo $query_head;
-    $res=  fwrite($dest, $query_head);
+    
+    $res =  fwrite($dest, $query_head);
     
     //stream_copy_to_stream($file, $fp);
 
@@ -181,7 +215,4 @@ class http {
     $res = stream_get_contents($dest);
     return $res;
   }
-
-
-
 }
