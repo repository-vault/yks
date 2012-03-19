@@ -72,10 +72,12 @@ class privileges {
   }
 
   private static function parse($grant){
-    if(!$grant['actions']) $grant['actions']="select";
-    if(!$grant['to']) $grant['to']="PUBLIC";
-    $vals = preg_split(VAL_SPLITTER, strtoupper($grant['actions']));
-    $to   = preg_split(VAL_SPLITTER, $grant['to']);
+    $vals = array_filter(preg_split(VAL_SPLITTER, strtoupper($grant['actions'])));
+    $to   = array_filter(preg_split(VAL_SPLITTER, $grant['to']));
+    if(!$vals)
+      throw rbx::error("Invalid actions on grant ! ");
+    if(!$to)
+      throw rbx::error("Invalid to on grant !");
     return array_fill_keys($to, array_combine($vals, $vals));
   }
 
