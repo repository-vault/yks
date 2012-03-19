@@ -11,7 +11,7 @@
   <mykse type="specification_value" null="null">
     <string length="128"/>
   </mykse>
-  <mykse type="specification_key" null="null">
+  <mykse type="specification_key">
     <enum>
       <val>color_id</val>
       <val>profile_key</val>
