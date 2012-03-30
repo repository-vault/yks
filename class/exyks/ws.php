@@ -15,7 +15,20 @@ class exyks_ws {
         $class_name = $class['name']; $aliases = array();
         $use_sess = isset($class['use_sess']) && bool($class['use_sess']) ? (string) $class['use_sess'] : $default_use_sess;
         $wsdl_ns  = pick($class['ns'], SITE_CODE);
-        $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns');
+
+
+
+
+        $restricted_ip = ((string)$class['restricted'] == "ip");
+        $wsdl_ips = null;
+        if($restricted_ip) {
+            $wsdl_ips= array();
+            foreach($class->allow as $allow)
+                $wsdl_ips[]= (string)$allow;
+        }
+
+
+        $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns', 'wsdl_ips');
         foreach($class->iterate("alias") as $alias)
             $data['aliases'][] = $alias['name'];
         self::$classes[$class_name] = $data;
@@ -45,20 +58,30 @@ class exyks_ws {
 
     $wsdls_path = ROOT_PATH."/wsdls/".FLAG_DOMAIN;
     $wsdl_file = "$wsdls_path/$class_name.wsdl";
-    return array($class_name, $wsdl_file, $wsdl_infos['use_sess'], $wsdl_infos['wsdl_ns']);
+
+    return array($class_name, $wsdl_file, $wsdl_infos['use_sess'], $wsdl_infos['wsdl_ns'], $wsdl_infos['wsdl_ips']);
   }
 
   public static function serve() {
-    header(TYPE_XML);
+
     set_time_limit(90);
 
     rbx::$output_mode = 0;
 
-    list($class_name, $wsdl_file, $use_sess, $wsdl_ns) = self::resolve($_GET['class']);
+    list($class_name, $wsdl_file, $use_sess, $wsdl_ns, $wsdl_ips) = self::resolve($_GET['class']);
+
+    $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips);
+
+
 
     if($_SERVER['REQUEST_METHOD']=='GET') {
+        if(!$access) {
+            header("HTTP/1.0 403 access denied");
+            die("Access denied");
+        }
+        header(TYPE_XML);
         readfile($wsdl_file);
-        die;
+        die; 
     }
 
         //autodetect if current argument is session_id, init session if so
@@ -85,11 +108,16 @@ class exyks_ws {
         'cache_wsdl' => WSDL_CACHE_NONE,
     );
 
+    header(TYPE_XML);
     $server = new SoapServer($wsdl_file, $options);
     $server->setClass($class_name);
     $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
       use_soap_error_handler(true);
-    $server->handle();
+
+    if(!$access)
+        $server->fault("403", "Access denied");
+    else 
+        $server->handle();
   }
 
 }
