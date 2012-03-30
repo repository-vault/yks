@@ -11,6 +11,7 @@ $children_list = users::get_children($user_id,$depth);
 
 if($action=="user_remove") try {
     $verif_user=array('user_id'=>(int)$_POST['sub0']);
+    sql::delete("ks_auth_password", $verif_user);
     sql::delete("ks_users_tree", $verif_user);
 } catch(rbx $e){}
 
