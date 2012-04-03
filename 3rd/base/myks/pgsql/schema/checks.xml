@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <!-- Helper to check foreign key constraint's triggers -->
+  <view name="zks_information_schema_checks">
+    <def><![CDATA[
+
+SELECT 
+    (nc.nspname)::text AS check_schema,
+    (c.conname)::text AS check_name,
+    (nr.nspname)::text AS table_schema,
+    (r.relname)::text AS table_name,
+    pg_get_constraintdef(c.oid, true)::text AS check_clause
+    FROM pg_namespace nc, pg_namespace nr, pg_constraint c, pg_class r
+WHERE TRUE
+     AND (nc.oid = c.connamespace)
+     AND (nr.oid = r.relnamespace)
+     AND (c.conrelid = r.oid)
+     AND (r.relkind = 'r'::"char")
+     AND (c.contype = 'c'::"char")
+     AND (NOT pg_is_other_temp_schema(nr.oid));
+]]></def>
+  </view>
+</myks>

@@ -74,8 +74,25 @@
         <indices>
           <xsl:copy-of select="//table[@name=$name]/indices/*"/>
         </indices>
+        <checks>
+          <xsl:apply-templates select="//table[@name=$name]/fields[@check]"/>
+          <xsl:copy-of select="//table[@name=$name]/checks/*"/>
+        </checks>
       </table>
     </xsl:if>
+  </xsl:template>
+  <xsl:template name="fields_check_alternative" match="fields[@check]">
+    <check type="alternative">
+      <xsl:for-each select="field">
+        <xsl:variable name="name">
+          <xsl:choose>
+          <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <member column="{$name}"/>
+      </xsl:for-each>
+    </check>
   </xsl:template>
   <xsl:template match="procedure">
     <procedure>

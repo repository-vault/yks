@@ -12,6 +12,7 @@ class table extends table_base {
   private $privileges;
   private $triggers;
   private $indices;
+  private $checks;
 
   private $ghost_keys;
 
@@ -22,6 +23,7 @@ class table extends table_base {
     $this->rules    = new rules($this, $table_xml->xpath('rules/rule'), 'table');
     $this->triggers = new myks_table_triggers($this, $table_xml->xpath('triggers/trigger'));
     $this->indices  = new myks_indices($this, $table_xml->xpath('indices/index'));
+    $this->checks   = new myks_checks($this, $table_xml->xpath('checks/check'));
   }
 
 
@@ -41,6 +43,7 @@ class table extends table_base {
     $this->rules->sql_infos();
     $this->triggers->sql_infos();
     $this->indices->sql_infos();
+    $this->checks->sql_infos();
     return true;
   }
 
@@ -50,6 +53,7 @@ class table extends table_base {
     $this->triggers->xml_infos();
     $this->privileges->xml_infos();
     $this->indices->xml_infos();
+    $this->checks->xml_infos();
 
     foreach($this->keys_xml_def as $k=>$key){
         if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
@@ -68,6 +72,7 @@ class table extends table_base {
         || $this->privileges->modified()
         || $this->triggers->modified()
         || $this->indices->modified()
+        || $this->checks->modified()
         || $this->rules->modified();
 
   }
@@ -79,6 +84,7 @@ class table extends table_base {
         $this->privileges->alter_def(),
         $this->triggers->alter_def(),
         $this->indices->alter_def(),
+        $this->checks->alter_def(),
         $this->rules->alter_def()
     );
   }

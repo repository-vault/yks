@@ -11,6 +11,10 @@
 
 
 <!ELEMENT fields (field+)>
+<!ATTLIST fields
+  check  (alternative)  #IMPLIED
+>
+
 <!ELEMENT indices (index+)>
 
 

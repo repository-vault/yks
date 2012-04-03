@@ -30,6 +30,7 @@ classes::register_class_paths(array(
 
 
     "myks_indices"   => "$elements/indices.php",
+    "myks_checks"    => "$elements/checks.php",
 
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",
