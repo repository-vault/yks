@@ -33,7 +33,7 @@ function pict_clean($str){ return strtr($str, '/', ' '); }
 
 
 function rte_clean($str){
-    $str = htmlspecialchars_decode(trim($str));
+    $str = htmlspecialchars_decode(trim($str), ENT_QUOTES); //!! <a href='#flow'> 
     $str = preg_replace("#<!--.*?-->#s","", $str);
     $str=html_entity_decode($str,ENT_NOQUOTES,"UTF-8");
     if(stripos($str,"<body")){
