@@ -6,6 +6,8 @@ class rsa_keymgr {
   private $private_path;
   private $prikey_content;
 
+  private $pubkey_content;
+
   function __construct($file_path = false){
     $this->file_path = $file_path;
     if($this->file_path)
@@ -21,6 +23,7 @@ class rsa_keymgr {
 
     $ppk_infos = openssl_pkey_get_details($this->prikey_id);
     $this->pubkey_id       = openssl_get_publickey($ppk_infos['key']);
+    $this->pubkey_content  = crypt::cleanupPem($ppk_infos['key']);
  }
 
   function sign($str) {
@@ -38,6 +41,10 @@ class rsa_keymgr {
       return true;
   }
 
+
+  function extract_pubkey(){
+    return $this->pubkey_content;
+  }
 
   function extract_comment(){
     $body = crypt::cleanupPem($this->prikey_content);
