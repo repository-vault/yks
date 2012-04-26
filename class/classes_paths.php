@@ -19,6 +19,7 @@ classes::register_class_paths(array(
 
     "dsp"                 => CLASS_PATH."/dsp/display.php",
     "css_processor"       => CLASS_PATH."/dsp/css/processor.php",
+    "data_headers"        => CLASS_PATH."/dsp/data_headers.php",
     "isql"                => CLASS_PATH."/sql/isql.php",
 
     "_sql_pdo"            => CLASS_PATH."/sql/kpdo.php",
