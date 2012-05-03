@@ -9,7 +9,7 @@
 
 class auth_password {
   
-  static function reload($user_login = false, $user_pswd = false, $allow_redirect = true){
+  static function reload($user_login = false, $user_pswd = false, $allow_redirect = true, $skip_auth = false){
     $user_id = &$_COOKIE['user_id']; if($_POST['user_id']) $user_id = $_POST['user_id'];
     $user_id = (int)$user_id; //safe cookie
     if($user_login && $user_login = sql::clean($user_login) )
@@ -19,7 +19,7 @@ class auth_password {
     if($user_pswd)
         $_COOKIE[$cookie_pswd] = crpt($user_pswd, FLAG_LOG);
 
-    if( !($user_id && sess::update($user_id)) ){
+    if( !($user_id && sess::update($user_id, $skip_auth)) ){
         setcookie('user_id', false);
         setcookie($cookie_pswd, false);
         return false;
