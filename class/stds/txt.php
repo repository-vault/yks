@@ -62,7 +62,7 @@ function rte_clean($str){
     );$str = preg_areplace($replaces, $str);
 
     while($tmp != $str && $tmp = $str) 
-        $str = preg_replace('#(<[^>]+)\s+[a-z0-9-]+:=".*?"#', "$1", $str);
+        $str = preg_replace('#(<[^>]+)\s+[a-z0-9-]+:[a-z]*=".*?"#', "$1", $str);
 
     return $str;
 }
