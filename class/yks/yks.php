@@ -23,7 +23,10 @@ class yks
 
     classes::activate();
 
-    if($load_config) self::load_config(SERVER_NAME);
+    if($load_config)
+        self::load_config(SERVER_NAME);
+    else 
+        exyks_paths::init();
 
 
   }
