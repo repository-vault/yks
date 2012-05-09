@@ -23,7 +23,7 @@ class query_db  extends _sql_base {
 
 
    $ready = true;
-    error_log(print_r($this->params_list,1));
+   //error_log(print_r($this->params_list,1));
 
     foreach($this->params_list as $param_uid=>$param) {
         $ready &= isset($params_values[$param_uid]);
