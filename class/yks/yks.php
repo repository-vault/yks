@@ -155,7 +155,7 @@ class yks
 
   static function fatality($fatality_key, $details=false, $render_mode="html"){
     if($details) error_log("[FATALITY] $details");
-    if(PHP_SAPI == "cli" || SITE_STANDALONE) die ("==== Fatality $fatality_key ====\r\n$details");
+    if(PHP_SAPI == "cli" || SITE_STANDALONE) die ("==== Fatality $fatality_key ====\r\n$details\r\n");
     header($render_mode=="jsx"?TYPE_XML:TYPE_HTML);
     $contents  = file_get_contents(RSRCS_PATH."/fatality/-top.html");
     if(DEBUG) $contents .= "\r\n<!-- ".strtr($details,array("-->"=>"--"))."-->\r\n";

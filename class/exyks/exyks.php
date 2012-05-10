@@ -50,6 +50,12 @@ class exyks {
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
+    
+    if(yks::$get->config->site['hostname']) {
+        $hostname = trim(`hostname`);
+        if(yks::$get->config->site['hostname'] != $hostname)
+          yks::fatality(yks::FATALITY_CONFIG, "Invalid local host name");
+    }
         
     self::$get = new self();
 
