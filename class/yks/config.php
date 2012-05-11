@@ -34,7 +34,12 @@ class config extends KsimpleXMLElement {
 
   private static function resolve($tmp){
     $path  =$tmp[self::xattr];
-    list($file_path, $search) = explode(" ", $path); //!
+	$parts = explode(" ", $path);
+	while(count($parts) < 2) {
+		$parts[] = null;
+	}
+
+	list($file_path, $search) = $parts;
     $file_path = paths_merge(ROOT_PATH, $file_path);
     if(! file_exists($file_path)) {
        error_log("Configuration file do not exists $file_path ($path)");

@@ -79,8 +79,8 @@ class yks
     if($config->site['cli_url'] && PHP_SAPI == "cli")
         $SITE_URL = $config->site['cli_url'];
 
-    if(!$SITE_URL) {
-      $scheme = ($_SERVER['HTTPS'] == 'on') ? "https" : "http";
+	if(!isset($SITE_URL)) {
+	  $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
       $SITE_URL = "{$scheme}://{SERVER_NAME}:{SERVER_PORT}";
     }
 

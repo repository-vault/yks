@@ -2,7 +2,8 @@
 // base functions, i'm naked without
 
 function crpt($msg,$flag,$len=40) {
-    return substr($flag?sha1($msg.$flag.yks::$get->config->data['hash']):$msg,0,$len);
+  $msg = $flag?sha1($msg . $flag):$msg;
+  return substr($msg, 0, $len);
 }
 
 
@@ -99,11 +100,18 @@ function vals($enum,$chld="val"){
 
   //recursive strtr
 function str_set($str, $vals){ 
-  while($tmp!=$str) $str=strtr($tmp=$str, $vals);
+  $tmp = null;
+  while($tmp != $str) {
+    $tmp = $str;
+    $str = strtr($str, $vals);
+  }
+
   return $str;
 }
 
-function between($a,$min,$max){return $a>=$min && $a<=$max; }
+function between($a, $min, $max) {
+  return $a >= $min && $a <= $max;
+}
 
 function is_not_null($a){return !is_null($a);}
 

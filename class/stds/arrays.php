@@ -56,9 +56,13 @@ function array_merge_numeric($a,$b, $depth="array_merge"){
     $args = func_get_args(); $res = array_shift($args);
     $depth = is_string(end($args)) ? array_pop($args) : "array_merge";
 
-    for($i=0;$i<count($args);$i++)
-      foreach($args[$i] as $k=>$v)
-        $res[$k] = is_array($v) && is_array($res[$k]) ? $depth($res[$k], $v) : $v;
+    $res = array();
+    for($i=0;$i<count($args);$i++) {
+      foreach($args[$i] as $k=>$v) {
+        $res[$k] = (is_array($v) && isset($res[$k]) && is_array($res[$k]) )? $depth($res[$k], $v) : $v;
+      }
+    }
+    
     return $res;
 }
 
@@ -125,9 +129,9 @@ function array_filter_deep($array,$sort_by,$val){
 
 function array_merge_deep($array0, $array1){
     foreach($array1 as $k=>$v){
-        $array0[$k] = is_array($v) ? array_merge_deep($array0[$k], $v) : $v;
-
+        $array0[$k] = is_array($v) ? array_merge_deep(isset($array0[$k])?$array0[$k]:array(), $v) : $v;
     }
+
     return $array0;
 
 }

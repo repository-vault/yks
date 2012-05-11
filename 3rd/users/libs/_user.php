@@ -8,7 +8,6 @@ abstract class _user extends _sql_base {
   protected $sql_key = self::sql_key;
   private $storage = array();
 
-
   static function from_where($class, $where){
     return parent::from_where($class, self::sql_table, self::sql_key, $where);
   }
@@ -33,6 +32,15 @@ abstract class _user extends _sql_base {
       $user_id    = $tree['user_id'];
       $user_infos = $users_infos[$user_id];
       //$users_infos[$user_id] = $parent_infos - 
+
+    // Ensure that indices are defined.
+    $parent_infos = array_merge(array(
+    'users_types'   => null,
+    'users_tree'    => null,
+    'user_id'       => null,
+    'computed'      => null,
+    ), $parent_infos);
+
       $user_infos['users_types'] = pick($parent_infos['users_types'], array());
       $user_infos['users_types'][$user_infos['user_type']] = $user_id;
       

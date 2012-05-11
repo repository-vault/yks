@@ -46,11 +46,7 @@ include "$class_path/stds/classes.php";
 include "$class_path/stds/zero_functions.php";
 include "$class_path/yks/yks.php";
 
-
-$load_config = PHP_SAPI != 'cli' && !$_SERVER['YKS_FREE'] || defined('yks/cli');
+$__YKS_FREE = isset($_SERVER['YKS_FREE'])?$_SERVER['YKS_FREE']:false;
+$load_config = PHP_SAPI != 'cli' && !$__YKS_FREE || defined('yks/cli');
 
 yks::init($load_config);
-
-
-
-

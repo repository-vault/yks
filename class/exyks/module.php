@@ -13,8 +13,11 @@ class exyks_module {
   private $module_base;
 
   function __construct($module_xml){
+    $this->config = null;
+    if(isset($module_xml->config)) {
+      $this->config = $module_xml->config;
+    }
 
-    $this->config = $module_xml->config;
     $this->key = $module_xml['key'];
     $this->ns  = "module/$this->key"; //or ...
 
@@ -33,8 +36,16 @@ class exyks_module {
     $this->manifest_xml  = ksimplexml::load_file($this->manifest_file);
 
     $this->module_base     = $this->manifest_xml['base'];
-    $this->module_rq_start = pick($module_xml['start'], $this->manifest_xml['start']);
 
+    $this->module_rq_start = null;
+    if(isset($module_xml['start'])) {
+      $this->module_rq_start = $module_xml['start'];
+    }
+    
+    if(isset($this->manifest_xml['start'])) {
+      $this->module_rq_start = pick($this->module_rq_start, $this->manifest_xml['start']);
+    }
+    
     $this->module_root   = dirname($this->manifest_file); //or ...
 
         //two way
