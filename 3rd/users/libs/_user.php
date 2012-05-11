@@ -69,7 +69,8 @@ abstract class _user extends _sql_base {
     $users_id = array_keys(users::linearize_tree($tree));
     $users_infos = users::get_infos($users_id, '*');
       //feed $users_infos with computed, users_tree & users_types
-    if($tree) foreach($tree as $root_id=>$tree)
+    if(isset($tree))
+      foreach($tree as $root_id=>$tree)
         self::feed_tree($tree, $users_infos);
 
     $users = array();

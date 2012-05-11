@@ -97,6 +97,7 @@ class users  {
      foreach(self::$cols_def_vertical as $col_name=>$index_infos)
         $vcols[$index_infos['index_name']]= $col_name;
     }
+
     if(is_array($vcols))
       foreach($vcols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
         $index_name   =  $tmp['index_name'];
@@ -154,12 +155,12 @@ class users  {
          $tree=  array_intersect_key($tree, array($uttermost_user => false));;
      return $tree;
   }
-  
+
   static function get_children($user_id, $depth=-1){
     $users_list = sql_func::get_children($user_id, 'ks_users_tree', 'user_id', $depth);
     return array_unique($users_list);
   }
-  
+
   static private function get_children_query($parent_id){
     $mask_tree = "`ks_users_tree`(%d) AS (user_id INTEGER, parent_id INTEGER, depth INTEGER)";
     if(!is_array($parent_id)) $parent_id = array((int)$parent_id);
@@ -172,6 +173,9 @@ class users  {
     $query_tree = self::get_children_query($parents);
     foreach($parents as $parent_id)
     $query_tree .= " UNION (SELECT $parent_id, $parent_id,  0) ";
+
+    if(!$query_tree)
+      return array(); // Nothing to do
 
     $query = "SELECT * FROM `ks_users_list` INNER JOIN ($query_tree) AS tmp USING(user_id)";
     sql::query($query);
@@ -192,14 +196,13 @@ class users  {
       if(!$tree[$parent_id] ) $tree[$parent_id]  = array();
       $tree[$parent_id]['children'][$user_id] = &$tree[$user_id];
     }
-   
+
     $ret = array();
     foreach($parents as $parent_id )
       $ret[$parent_id] = $tree[$parent_id];
     return $ret;
   }
-  
-  
+
 
   static function clean_children_tree_by_last_node_type($tree, $user_type){
     $me = $tree;
@@ -221,6 +224,7 @@ class users  {
     $ret = array();
     if(!$tree)
         return $ret;
+    if(isset($tree))
     foreach($tree as $cat_id=>$children){
       $ret[$cat_id]=array('id'=>$cat_id,'depth'=>$depth);
       if($children['children'])
