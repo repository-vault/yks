@@ -56,8 +56,8 @@ class KsimpleXMLParser {
     $node = $this->nodes_path[$this->depth];
     $UID  = self::hash($node);
 
-    if( !trim($str) //empty nodes are skipped
-        && is_null($this->nodes_contents[$UID]))
+  if(! (trim($str) //empty nodes are skipped
+    || isset($this->nodes_contents[$UID])))
         return;
 
     $this->nodes_contents[$UID] .= $str;

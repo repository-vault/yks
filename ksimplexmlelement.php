@@ -92,12 +92,14 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
     $this->contents = $value;
   }
 
+  public function __get($key) {
+	  return $this->search($key, true);
+  }
 
-  public function __get($key){ return $this->search($key, true); }  
-  public function __set($key, $value){ return $this->search($key, true)->set($value); }
+  public function __set($key, $value) {
+	  return $this->search($key, true)->set($value);
+  }
 
-
-  
     //******** Interfaces *************************
   public function offsetExists($key){ 
     if(is_numeric($key))
@@ -110,7 +112,7 @@ class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
   public function offsetGet($key){
     if(is_numeric($key))
         return $this->retrieve_siblings($key);
-    return $this->attrs[$key];
+	return isset($this->attrs[$key]) ? $this->attrs[$key] : null;
   }
   public function offsetSet($key, $value){
     if(is_numeric($key))
