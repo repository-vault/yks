@@ -218,7 +218,9 @@ class users  {
     
   
   function linearize_tree($tree,$depth=0){
-    $ret=array();
+    $ret = array();
+    if(!$tree)
+        return $ret;
     foreach($tree as $cat_id=>$children){
       $ret[$cat_id]=array('id'=>$cat_id,'depth'=>$depth);
       if($children['children'])
