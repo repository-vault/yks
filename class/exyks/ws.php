@@ -16,38 +16,35 @@ class exyks_ws {
         $use_sess = isset($class['use_sess']) && bool($class['use_sess']) ? (string) $class['use_sess'] : $default_use_sess;
         $wsdl_ns  = pick($class['ns'], SITE_CODE);
 
-
-
-
         $restricted_ip = ((string)$class['restricted'] == "ip");
         $wsdl_ips = null;
         if($restricted_ip) {
             $wsdl_ips= array();
-            foreach($class->allow as $allow)
-                $wsdl_ips[]= (string)$allow;
+            foreach($class->allow as $allow) {
+              $wsdl_ips[]= (string)$allow;
+	    }
         }
 
-
         $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns', 'wsdl_ips');
-        foreach($class->iterate("alias") as $alias)
-            $data['aliases'][] = $alias['name'];
+        foreach($class->iterate("alias") as $alias) {
+          $data['aliases'][] = $alias['name'];
+	}
+
         self::$classes[$class_name] = $data;
     }
-
   }
 
-
   // return tupple list($class_name, $wsdl_file)
-  public static function resolve($class){
-
+  public static function resolve($class) {
     if(isset(self::$classes[$class]))
         $class_name = $class;
-    else foreach(self::$classes as $_class_name=>$class_infos)
+    else foreach(self::$classes as $_class_name=>$class_infos) {
       if(in_array($class, $class_infos['aliases'])) {
         $class_name = $_class_name;
         break;
+      }
     }
-    
+
     $wsdl_infos = self::$classes[$class_name];
     if(!isset($wsdl_infos)) {
         if($_SERVER['HTTP_SOAPACTION'])
@@ -72,8 +69,6 @@ class exyks_ws {
 
     $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips);
 
-
-
     if($_SERVER['REQUEST_METHOD']=='GET') {
         if(!$access) {
             header("HTTP/1.0 403 access denied");
@@ -81,43 +76,54 @@ class exyks_ws {
         }
         header(TYPE_XML);
         readfile($wsdl_file);
-        die; 
+        die;
     }
 
-        //autodetect if current argument is session_id, init session if so
+    //autodetect if current argument is session_id, init session if so
     $SOAP_SESSION_ID = null;
     if($use_sess == "auto") {
         $url_infos = parse_url(trim($_SERVER['HTTP_SOAPACTION'],'"'));
         parse_str($url_infos['query'], $soap_action);
+
         //$class_name = pick($soap_action['class'], $_GET['class'], $_POST['class']);
         $method     = pick($soap_action['method']);
         $query = stream_get_contents(fopen("php://input", "r"));
+
         //file_put_contents(TMP_PATH."/query", $query);
         $xml = simplexml_load_string($query);
         $xml->registerXPathNamespace("me", $wsdl_ns);
         $xml->registerXPathNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
         $SOAP_SESSION_ID = (string) reset($xml->xpath("//env:Body/me:{$method}/*[1][name()='session_id']"));
-    } define('SOAP_SESSION_ID', $SOAP_SESSION_ID);
+    }
+
+    define('SOAP_SESSION_ID', $SOAP_SESSION_ID);
 
     if($use_sess)
         sess::connect(SOAP_SESSION_ID);
 
     $options = array(
-        'actor'      => SITE_CODE,
-        'classmap'   => array(),
-        'cache_wsdl' => WSDL_CACHE_NONE,
+      'actor'      => SITE_CODE,
+      'classmap'   => array(),
+      'cache_wsdl' => WSDL_CACHE_NONE,
     );
 
     header(TYPE_XML);
     $server = new SoapServer($wsdl_file, $options);
     $server->setClass($class_name);
     $server->setPersistence(SOAP_PERSISTENCE_REQUEST);
-      use_soap_error_handler(true);
 
-    if(!$access)
-        $server->fault("403", "Access denied");
-    else 
+    // We don't want the default handler, unless we are in debug mode.
+    use_soap_error_handler(true);
+
+    if(!$access) {
+      $server->fault("403", "Access denied");
+    } else {
+      try {
         $server->handle();
+      } catch(Exception $e) {
+        // Catch error and produce an anonymous message.
+        $server->fault('generic', 'An unexpected error occured.');
+      }
+    }
   }
-
 }
