@@ -63,7 +63,9 @@ class sql {
 
     if(self::$log) self::$queries[] = $query;
     if(self::$result === false) {
-      throw new SqlException(htmlspecialchars($query)); //!
+      $error = htmlspecialchars(pg_last_error(self::$lnks[self::$link]));
+
+      throw new SqlException($error . ' in request ' . htmlspecialchars($query)); //!
     }
 
     if($arows) {
@@ -206,12 +208,12 @@ class sql {
   }
 
   static function error($msg = '') {
-    $pg_error  = ($serv = self::$lnks[self::$link]) ? pg_last_error($serv) : "?? unknow serv ??";
+    $serv = self::$lnks[self::$link];
+    $pg_error  = $serv? pg_last_error($serv) : "?? unknow serv ??";
     $msg = "<b>".htmlspecialchars($pg_error)."</b> in $msg";
     if(DEBUG && !self::$transaction) error_log($msg);
     return false;
   }
-
 
   static function update($table, $vals, $where = '', $extras = '') {
     if(!$vals) return 0;
