@@ -1,28 +1,27 @@
 <?php
 
 /*  "Exyks MySQL" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2005-2006-2007-2008
+distributed under the terms of GNU General Public License - © 2005-2006-2007-2008
 */
 
 class sql {
 
-   static public $queries=array();
-   static private $link='db_link';
-   static private $result;
-   static public $servs=null;
-   static private $pfx=array();
-   static private $lnks=array();
-   static private $transaction=false;
-   static public $rows;
-   static public $log=true;
-
+  static public $queries=array();
+  static private $link='db_link';
+  static private $result;
+  static public $servs=null;
+  static private $pfx=array();
+  static private $lnks=array();
+  static private $transaction=false;
+  static public $rows;
+  static public $log=true;
 
   static function init() {
     if(!self::$servs) self::$servs = &yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
 
     if(self::$servs->prefixs)
-    foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
+      foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
         self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
 
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
@@ -36,7 +35,7 @@ class sql {
     self::$lnks[$lnk] = @call_user_func_array('mysqli_connect', $credentials);
 
     if(!self::$lnks[$lnk] ) {
-        throw new Exception("Unable to connect sql server ".print_r($serv,1));
+      throw new Exception("Unable to connect sql server ".print_r($serv,1));
     }
 
     mysqli_set_charset(self::$lnks[$lnk],"utf8");
@@ -48,7 +47,7 @@ class sql {
     $lnk = $lnk?$lnk:self::$link;
     $serv = self::$lnks[$lnk];
     if(!($serv||$serv = self::connect($lnk))) return false;
-    
+
     $query = self::unfix($query); if(self::$log) self::$queries[]=$query;
     self::$result = mysqli_query($serv,$query);
 
@@ -78,13 +77,13 @@ class sql {
     return $tmp;
   }
 
-    //This function works the same way array_reindex does, please refer to the manual
+  // This function works the same way array_reindex does, please refer to the manual
   static function brute_fetch_depth(){
-    $result = array(); $cols = func_get_args(); 
+    $result = array(); $cols = func_get_args();
     while(($l = self::fetch())) {
-          $tmp = &$result;
-          foreach($cols as $col) $tmp=&$tmp[$l[$col]];
-          $tmp = $l;
+      $tmp = &$result;
+      foreach($cols as $col) $tmp=&$tmp[$l[$col]];
+      $tmp = $l;
     } return $result;
   }
 
@@ -94,8 +93,6 @@ class sql {
     return $res;
   }
 
-
-
   static function format($vals,$set=true){ $r='';
     $vals=array_map(array('sql','vals'),$vals);
     if($set) return "SET ".mask_join(',',$vals,'`%2$s`=%1$s');
@@ -104,8 +101,8 @@ class sql {
 
   static function vals($v){
     return is_array($v) && (list($type,$val)=each($v))
-			? ( $type==="sql" ? $val : '' )
-			: "'".self::clean($v)."'";
+                        ? ( $type==="sql" ? $val : '' )
+                        : "'".self::clean($v)."'";
   }
 
   static function close($lnk=false){
@@ -125,7 +122,7 @@ class sql {
     if(DEBUG && !self::$transaction) error_log($msg);
     return false;
   }
-  
+
   static function update($table,$vals,$where='',$extras="LIMIT 1") {
     if(!$vals) return false;
     return self::query("UPDATE `$table` ".sql::format($vals)." ".sql::where($where, $table)." $limit");
@@ -151,31 +148,31 @@ class sql {
     sql::select($table, $where, $cols, " $extras LIMIT 1"); return sql::fetch();
   }
 
-    /** move the #nth item down */
+  /** move the #nth item down */
   static function set_order($table,$col,$nth,$where='TRUE'){
     sql::query("SET @pos:=0,@down:=$nth;");
     return sql::query("UPDATE `$table` SET
-        `$col` = IF((@pos:=@pos+1)=@down, @pos+1,IF(@pos=@down+1,@down,@pos))
-        WHERE $where ORDER BY `$col` ;");
+    `$col` = IF((@pos:=@pos+1)=@down, @pos+1,IF(@pos=@down+1,@down,@pos))
+    WHERE $where ORDER BY `$col` ;");
   }
-
 
   static function where($cond, $table=false, $mode='&&'){
     if(is_bool($cond) || !$cond) return $cond?'':'WHERE FALSE';
     if(is_object($cond)) $cond = array($cond);
     if(!is_array($cond)) return $cond&&strpos($cond,"WHERE")===false?"WHERE $cond":$cond;
     foreach(array_filter($cond,'is_object') as $k=>$obj){
-        if(!method_exists($obj, '__sql_where'))continue;
-        unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
+      if(!method_exists($obj, '__sql_where'))continue;
+      unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
     }
+
     $slice=array_filter(array_keys($cond),'is_numeric');
     $conds=array_intersect_key($cond,array_flip($slice));
 
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
-       $conds[]= is_array($v)
-           ?((list($type,$val)=each($v)) && $type==='sql'?
-               " $k $val": ($v?sql::in_join($k,$v):"FALSE") )
-           :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
+      $conds[]= is_array($v)
+          ?((list($type,$val)=each($v)) && $type==='sql'?
+              " $k $val": ($v?sql::in_join($k,$v):"FALSE") )
+          :"$k ".(is_string($v)?"='$v'":(is_int($v)?"=$v":(is_null($v)?"IS NULL":(is_bool($v)&&!$v?"!=TRUE":''))));
     return $conds?"WHERE ".join(" $mode ",$conds):'';
   }
 
@@ -183,16 +180,17 @@ class sql {
     $ret=''; if(!is_array($tables)) $ret = preg_match("#[ ]#",$tables)?$tables:"`$tables`";
     else foreach($tables as $k=>$table)
         $ret.=is_numeric($k)?(($k?',':'')." `$table` "):
-            (((is_array($table)&&list($join,$v)=each($table))
-                ?"$join `$v`":"INNER JOIN `$table`")." USING($k) ");
+        (((is_array($table)&&list($join,$v)=each($table))
+        ?"$join `$v`":"INNER JOIN `$table`")." USING($k) ");
     return 'FROM '.str_replace('.','`.`',$ret).' ';
   }
 
   static function begin(){ sql::$transaction=true;  }
   static function rollback($error=false){
-        if(self::$transaction);
-        sql::$transaction=false;return $error?rbx::error($error):false;
+    if(self::$transaction);
+    sql::$transaction=false;return $error?rbx::error($error):false;
   }
+
   static function commit(){ sql::$transaction=false;}
   static function query_raw($query){ return mysqli_query(self::$lnks[self::$link], $query); }
   static function limit_rows(){$tmp=sql::qrow("SELECT FOUND_ROWS() as tmp");return $tmp['tmp'];}
@@ -210,9 +208,9 @@ class sql {
     return is_numeric($str)?$str:mysqli_escape_string(self::get_lnk(),$str); }
   static function set_link($lnk){ return self::$link = $lnk; }
 
-  static function table_infos($table_name){ 
+  static function table_infos($table_name){
     return sql::qrow("SHOW TABLE STATUS LIKE '".trim(sql::unfix("`$table_name`"),'`')."'");
- }
+  }
   static function table_cols($table_name){
     sql::query("SHOW FULL COLUMNS FROM `$table_name`"); return sql::brute_fetch('Field');
   }
@@ -221,7 +219,7 @@ class sql {
     while($l=sql::fetch()) $keys[$l['Key_name']][$l['Column_name']]=$l; return $keys;
   }
 
-    // return an unquoted associative array of schema , name, safe name
+  // return an unquoted associative array of schema , name, safe name
   static function resolve($name){
 
     if(!$name) return array();
@@ -231,6 +229,4 @@ class sql {
     $safe = sprintf('`%s`.`%s`', $schema, $name ); $hash = str_replace('`','', $safe);
     return compact('name', 'schema', 'safe', 'hash');
   }
-
-
 }

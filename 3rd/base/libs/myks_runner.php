@@ -18,7 +18,7 @@ class myks_runner {
 
     define('XML_CACHE_PATH',  CACHE_PATH."/xml");
     define('XML_CACHE_URL',   CACHE_URL."/xml");
-    
+
     define('XSL_CACHE_PATH',  CACHE_PATH."/xsl");
   }
 
@@ -69,11 +69,11 @@ class myks_runner {
 
     rbx::title("Parsing myks definitions");
 
-    $types_xml      = data::reload("types_xml"); 
+    $types_xml      = data::reload("types_xml");
     $tables_xml     = data::reload("tables_xml");
     rbx::ok("APC types_xml/tables_xml cache reloaded");
 
-    $types_xml->asXML($this->mykse_file_path);	// export
+    $types_xml->asXML($this->mykse_file_path);  // export
 
     myks_parser::trace();
     rbx::ok("Myks types {$this->mykse_file_path} updated");
@@ -117,12 +117,12 @@ class myks_runner {
 
     foreach($this->browsers_engines as $engine_name)
       foreach($this->rendering_sides as $rendering_side) {
-        $file = $xsl_cache->out($engine_name, $rendering_side); 
+        $file = $xsl_cache->out($engine_name, $rendering_side);
         rbx::ok("$engine_name ($rendering_side) reloaded into $file");
     }
 
     $out_file = xsl_cache::out_file("robot", "server");
-    copy(RSRCS_PATH."/xsl/specials/validator.xsl", $out_file); 
+    copy(RSRCS_PATH."/xsl/specials/validator.xsl", $out_file);
     rbx::ok("robot (server) reloaded into $out_file");
 
      rbx::line();

@@ -1,10 +1,10 @@
-<?
+<?php
 
 $error_code=(int)$sub0;
 
 if(JSX){
-	rbx::error("Impossible de trouver la page demandée");
-	jsx::$rbx=true;
+  rbx::error("Impossible de trouver la page demandée");
+  jsx::$rbx=true;
 }
 
 $error_infos = current(yks::$get->config->errors
