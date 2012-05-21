@@ -10,7 +10,7 @@ class doc_parser {
     $res = array();
 
       //remove /** *,*/
-    $str = preg_replace("#^/?\*+\s*(/$)?#m", '', $str);
+    $str = preg_replace("#/?\*+\s*(/$)?#m", '', $str);
       //unix style LF
     $str = preg_replace("#\r?\n#", "\n", $str);
 
