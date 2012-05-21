@@ -316,7 +316,7 @@ class sql_runner {
 
       $build_list[$view_name]=array_merge(
         $build_list[$view_name]?$build_list[$view_name]:array(),
-        $view_infos,
+        $view_infos
       );
 
       foreach($dependencies as $dependency)
