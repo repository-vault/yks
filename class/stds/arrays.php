@@ -53,10 +53,11 @@ function json_encode_lite($json){
 function array_get($array,$col){return $col?$array[$col]:$array; }
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
-    $args = func_get_args(); $res = array_shift($args);
+    $args = func_get_args();
+    $res  = array_shift($args);
     $depth = is_string(end($args)) ? array_pop($args) : "array_merge";
 
-    $res = array();
+
     for($i=0;$i<count($args);$i++) {
       foreach($args[$i] as $k=>$v) {
         $res[$k] = (is_array($v) && isset($res[$k]) && is_array($res[$k]) )? $depth($res[$k], $v) : $v;
