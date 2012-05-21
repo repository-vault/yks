@@ -183,6 +183,7 @@ function ends_with($str, $end){
 
     //cf doc in the manual
 function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MASK) ){
+    $vars = array_map("objectify", $vars);
     extract($vars);
 
     $mask = "#{\\$([a-z&_0-9;-]+)}#ie";
@@ -192,6 +193,14 @@ function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MAS
     $str = preg_replace('#<([a-z]+)>\s*</\\1>#','', $str);
     $str = join("<br/>",array_filter(preg_split('#(<br\s*/>\s*)#', $str)));
     return $str;
+}
+
+  // cf doc aussi!
+function objectify($array) {
+  $out = new stdClass();
+  foreach($array as $k=>$v)
+    $out->$k = is_array($v) ? objectify($v) : $v;
+  return $out;
 }
 
 function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
