@@ -27,10 +27,11 @@ class query_db  extends _sql_base {
 
     foreach($this->params_list as $param_uid=>$param) {
         $ready &= isset($params_values[$param_uid]);
+        $parameter = is_array($params_values[$param_uid]) ? join(',',$params_values[$param_uid]) : $params_values[$param_uid];
         $str = '';
         if($param->query_usage['param_field'])
-            $str = sql::conds($param->query_usage['param_field'], $params_values[$param_uid]);
-        else $str = sql::clean($params_values[$param_uid]);
+            $str = sql::conds($param->query_usage['param_field'], $parameter);
+        else $str = sql::clean($parameter);
 
         $sql_query = str_replace($param->query_usage['search_mask'], $str, $sql_query);
     }
