@@ -1,7 +1,7 @@
 <?
 
 if($action == "talk_create") try {
-    sql::begin();
+    $transaction_token = sql::begin();
     $data = array(
         'talk_title' => $_POST['talk_title'],
         'user_id'    => USERS_ROOT,
@@ -11,5 +11,5 @@ if($action == "talk_create") try {
     rbx::ok("Talk create : {$node->talk_id}");
     jsx::js_eval(jsx::PARENT_RELOAD);
 
-    sql::commit();
+    sql::commit($transaction_token);
 }catch(rbx $e){}

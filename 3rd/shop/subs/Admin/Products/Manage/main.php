@@ -10,14 +10,14 @@ if($product_id){
 }
 
 if($clone) {
-  sql::begin();
+  $transaction_token = sql::begin();
   try {
   $cloned_product = $product->clone_product_and_variations();
   } catch(rbx $e) {
-    sql::rollback();
+    sql::rollback($transaction_token);
     throw $e;
   }
-  sql::commit();
+  sql::commit($transaction_token);
   reloc("?/$href_fold//".$cloned_product->product_id);
 }
 

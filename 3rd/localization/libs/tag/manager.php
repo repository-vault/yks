@@ -7,7 +7,7 @@ class locale_tag_manager {
     if(!$data['tag_name'])
         throw rbx::error("Veuillez donner un nom à votre tag");
 
-    sql::begin();
+    $transaction_token = sql::begin();
 
     try {
         $data['sshot_width']  = 0;
@@ -15,9 +15,12 @@ class locale_tag_manager {
         $tag_id = sql::insert(locale_tag::sql_table, $data, true);
         $tag    = new locale_tag($tag_id);
         if($sshot_file) $tag->attach_file($sshot_file);
-    } catch( Exception $e) { throw sql::rollback("Unable to create tag"); }
+    } catch( Exception $e) { 
+      sql::rollback($transaction_token);
+      throw rbx::error("Unable to create tag");
+    }
 
-    sql::commit();
+    sql::commit($transaction_token);
     return $tag;
 
   }

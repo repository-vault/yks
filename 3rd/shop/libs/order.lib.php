@@ -34,7 +34,7 @@ class order extends _sql_base {
                 && $this->order_status != "done" 
                 &&  $data['order_status'] == "done";
 
-    sql::begin();
+    $transaction_token = sql::begin();
  
     if($final_update){
         if($update_profile){
@@ -44,9 +44,11 @@ class order extends _sql_base {
             $ret = array('infos' => "Explicitly skipping products specifications attributions.");
     }
 
-    if(!parent::sql_update($data))
-        throw sql::rollback("Error while processing order.");
-    sql::commit();
+    if(!parent::sql_update($data)) {
+      throw rbx::error("Error while processing order.");
+      sql::rollback($transaction_token);
+    }
+    sql::commit($transaction_token);
     return $ret;
 
   }
