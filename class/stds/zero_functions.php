@@ -200,12 +200,19 @@ function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MAS
 
 class stdClassSerializable {
   private $string_value;
+  private $value;
   function __construct($value){
     $this->string_value = (is_object($value) && method_exists($value, '__toString')) ? (string) $value : "";
+    $this->value = $value;
   }
+
+  function __get($name) {
+    return $this->value->$name;
+  }
+
   function __toString(){
     return $this->string_value;
-  } 
+  }
 }
 
   // cf doc aussi!
