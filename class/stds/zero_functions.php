@@ -181,7 +181,8 @@ function ends_with($str, $end){
 
 
 
-    //cf doc in the manual
+  // cf doc in the manual
+  // Utilisation : this is my template {$distributor} where i can display {$distributor->addr->addr_zipcode} 
 function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MASK) ){
     $vars = array_map("objectify", $vars);
     extract($vars);
@@ -195,10 +196,25 @@ function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MAS
     return $str;
 }
 
+
+
+class stdClassSerializable {
+  private $string_value;
+  function __construct($value){
+    $this->string_value = (is_object($value) && method_exists($value, '__toString')) ? (string) $value : "";
+  }
+  function __toString(){
+    return $this->string_value;
+  } 
+}
+
   // cf doc aussi!
-function objectify($array) {
-  $out = new stdClass();
-  foreach($array as $k=>$v)
+function objectify($item) {
+  if(is_scalar($item))
+    return $item;
+
+  $out = new stdClassSerializable($item);
+  foreach($item as $k=>$v)
     $out->$k = is_array($v) ? objectify($v) : $v;
   return $out;
 }
@@ -210,6 +226,7 @@ function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
         if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;
     return $constants;
 }
+
 
 
 
