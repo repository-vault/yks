@@ -98,19 +98,22 @@ class users  {
         $vcols[$index_infos['index_name']]= $col_name;
     }
 
-    if(is_array($vcols))
-      foreach($vcols as $col_name) if($tmp = self::$cols_def_vertical[$col_name]) {
-        $index_name   =  $tmp['index_name'];
-        $table_name   = (string)$tmp['table_children_name'];
-        $verif_users  = array('user_id' => array_keys($users_infos));
-        sql::select($table_name, $verif_users);
-        while($line = sql::fetch()) {
-          $index_value = array();
-          foreach($tmp['keys'] as $k=>$v) $index_value[$k] = $line[$k];
-          $index_value = '{'.mask_join(',', $index_value, '%2$s:%1$s').'}';
-          $users_infos[$line['user_id']][$col_name][$index_value] = $line;          
+      if(is_array($vcols)) {
+        foreach($vcols as $col_name) {
+          if($tmp = self::$cols_def_vertical[$col_name]) {
+            $index_name   =  $tmp['index_name'];
+            $table_name   = (string)$tmp['table_children_name'];
+            $verif_users  = array('user_id' => array_keys($users_infos));
+            sql::select($table_name, $verif_users);
+            while($line = sql::fetch()) {
+              $index_value = array();
+              foreach($tmp['keys'] as $k=>$v) $index_value[$k] = $line[$k];
+              $index_value = '{'.mask_join(',', $index_value, '%2$s:%1$s').'}';
+              $users_infos[$line['user_id']][$col_name][$index_value] = $line;          
+            }
+          }
         }
-     }
+      }
     
     
     if(is_null($sort))
@@ -302,7 +305,6 @@ class users  {
         
     // On récupère les tables qui étendent Users_list ! /!\ on va avoir des tables en doubles entre les deux.
         
-
     /*///////////////*/
 
     $tables = array_merge(self::$users_linear_tables, self::$infos_tables);
