@@ -128,10 +128,12 @@ class exyks_session {
       
       if(!auth_password::reload($_POST['user_login'], $_POST['user_pswd'])) {
          //on peut essayer par ldap
-         if(yks::$get->config->users->auth_ldap_soap){
-            if(!auth_ldap_soap::reload($_POST['user_login'], $_POST['user_pswd']))
-                throw new Exception();
-         }
+         if( ! yks::$get->config->users->search('auth_ldap_soap') )
+            throw new Exception("Invalid password");
+
+        if(!auth_ldap_soap::reload($_POST['user_login'], $_POST['user_pswd']))
+            throw new Exception("Invalid password, ldap");
+
        }
        rbx::ok("&auth_success;");
     } catch(Exception $e){ rbx::error("&auth_failed;"); }

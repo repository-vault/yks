@@ -12,16 +12,21 @@ class exyks_auth_api {
    **/
   public static function login($user_login, $user_pswd){
     
-    //$user_login = strtolower($user_login); // WTF POURQUOI C'EST LA VU QUE CA FAIT TOUT CHIER !? (quentin 15/02/2011)
-
     sess::connect();
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
 
 
-    $auth_success = auth_password::reload($user_login, $user_pswd, false); //no redirect
-    if(!$auth_success)
-        return "Invalid login/password ( $user_login, $user_pswd) ";
+    if(!auth_password::reload($user_login, $user_pswd, false)) { //no redirect
+     //on peut essayer par ldap
+       if( ! yks::$get->config->users->search('auth_ldap_soap') )
+        throw new Exception("Invalid password, no fallback");
+
+      if(!auth_ldap_soap::reload($user_login, $user_pswd, false))
+        throw new Exception("Invalid password, all tried");
+
+    }
+
 
     $data = sess::$sess->computed;
     $data['users_tree'] =  sess::$sess['users_tree'];
