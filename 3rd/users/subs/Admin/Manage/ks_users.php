@@ -22,23 +22,33 @@ if($action=="user_edit")try {
         $data = mykses::validate($_POST,$std_profile_def);
         if($data) $res = sql::replace($std_profile_table, $data, $verif_user);
         if(!$res) throw rbx::error("Impossible de proceder à l'enregistrement");
+        
         $data = mykses::validate($_POST,array('auth_type'));
 
 
         sql::update("ks_users_list",$data,$verif_user);
 
+        if($data['auth_type'] != $user_infos['auth_type'] || !$data['auth_type']) { //cleanup
+          sql::delete("ks_auth_password",  $verif_user);
+          sql::delete("ks_auth_ldap_soap", $verif_user);
+        }
 
-        if($data['auth_type']=='auth_password'){
+        if( $data['auth_type'] == 'auth_password' ){
             try {
                 $data = mykses::validate($_POST, array('user_login','user_pswd'));
                 if($data['user_pswd']) 
                     users::update_password($verif_user, $data['user_login'], $data['user_pswd']);
             } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
+        } else  if($data['auth_type']=='auth_ldap_soap'){
+            try {
+                $data = mykses::validate($_POST, array('auth_ldap_soap_endpoint_name'));
+                
+                if($data['auth_ldap_soap_endpoint_name']) 
+                    sql::replace("ks_auth_ldap_soap", $data, $verif_user);
+            } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
 
-        }elseif($data['auth_type']=='') {
-                sql::delete("ks_auth_password",$verif_user);
-        }
-
+        } 
+        
         rbx::ok("Vos modification ont bien été sauvegardées");
 
 }catch(rbx $e){  }

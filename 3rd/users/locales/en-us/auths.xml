@@ -9,7 +9,8 @@
   <item key="auth_success">Authentication success</item>
   <item key="auth_deco">You are now disconnected</item>
   <item key="action.deco">Disconnect</item>
-  <item key="auth_type.auth_password">Password authentification</item>
+  <item key="auth_type.auth_password">Password authentication</item>
+  <item key="auth_type.auth_ldap_soap">LDAP SOAP authentication</item>
   <item key="restreint_access">Restricted Access Area</item>
   <item key="action.login">Connect</item>
   <item key="your_login">Login</item>

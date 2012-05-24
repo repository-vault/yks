@@ -2,19 +2,19 @@
 
 
 class auth {
-
+  
   public static function get_access_zones(){
 
     static $access_zones = false; if($access_zones) return $access_zones;
 
     sql::select("ks_access_zones", sql::true, "
-    *,
-    IF(access_zone_parent IN(access_zone, 'yks'),
-    access_zone,
-    CONCAT(access_zone_parent,':',access_zone)
-    ) AS access_zone_path",
-    "ORDER BY access_zone=access_zone_parent DESC,
-    access_zone_parent, access_zone ASC");
+            *,
+            IF(access_zone_parent IN(access_zone, 'yks'),
+                access_zone,
+                CONCAT(access_zone_parent,':',access_zone)
+            ) AS access_zone_path",
+            "ORDER BY access_zone=access_zone_parent DESC,
+        access_zone_parent, access_zone ASC");
 
     return $access_zones = sql::brute_fetch("access_zone");
   }
@@ -35,18 +35,18 @@ class auth {
 
     $access_lvls=explode(",",(string)$limit['access_lvl']);
     foreach($access_lvls as $access_lvl){
-      $grant=auth::verif($access_zone, $access_lvl);
-      if($grant) continue;
-      if($access_lvl=="action"){
-        if(!$action)continue;$action='';
-        rbx::error("&error.action_canceled;");
-      } else abort(403);
+        $grant=auth::verif($access_zone, $access_lvl);
+        if($grant) continue;
+        if($access_lvl=="action"){
+            if(!$action)continue;$action='';
+            rbx::error("&error.action_canceled;");
+        } else abort(403);
     }return true;
   }
 
-  // return a couple (user_id, users_tree)
+    // return a couple (user_id, users_tree)
   static function valid_tree($user_id, $skip_auth = false){
-    if(!$user_id) return false; //root_id=0 graou ?
+    if(!$user_id) return false;	//root_id=0 graou ?
     //get the tree above user_id, then check if current tree is compatible
     $asked_tree = users::get_parents($user_id);
     $diff = array_intersect((array) sess::$sess['users_tree'], $asked_tree);
@@ -57,14 +57,16 @@ class auth {
 
   static function reloc_chk(){
     if(($reloc=$_POST['redirect_url']) || ($reloc=$_SESSION[SESS_TRACK_ERR] )){
-      unset($_SESSION[SESS_TRACK_ERR]);
-      reloc($reloc);
-    } return true;
+            unset($_SESSION[SESS_TRACK_ERR]);
+            reloc($reloc);
+    } return true; 
   }
 
   static function is_valid($user_id, $auth_types){
     $grant=true;$auth_types=array_filter(explode(',',$auth_types));
-    foreach($auth_types as $auth_type)$grant&=call_user_func(array($auth_type, 'verif'),$user_id);
+    foreach($auth_types as $auth_type){
+      $grant &= call_user_func(array($auth_type, 'verif'),$user_id);
+    }
     return $grant;
   }
 
@@ -74,11 +76,11 @@ class auth {
     if($users_tree===false) $users_tree = (array)sess::$sess['users_tree'];
     sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
     $access = array();while(extract(sql::fetch())) {
-      $zone_path = $access_zones[$access_zone]['access_zone_path'];
-      $access[$zone_path]=array_merge_numeric(
-          $access[$zone_path]?$access[$zone_path]:array(),
-          array_flip(array_filter(explode(',',"$access_lvl")))
-      );
+        $zone_path = $access_zones[$access_zone]['access_zone_path'];
+        $access[$zone_path]=array_merge_numeric(
+            $access[$zone_path]?$access[$zone_path]:array(),
+            array_flip(array_filter(explode(',',"$access_lvl")))
+        );
     }
 
     return $access;
@@ -93,20 +95,22 @@ class auth {
     if(!$die || $valid) return $valid;
 
     if($lvl == "action"){
-      if($action) rbx::error("&error.action_canceled;");
-      $action = '';
+        if($action) rbx::error("&error.action_canceled;");
+        $action = '';
     } else abort($die);
 
   }
 
-  static function get_tree($final_tree, $asked_tree){
+  static function get_tree($final_tree, $asked_tree){    
     //merge current tree with (indirectly) requested tree, stop at join point - meng point
     sql::select("ks_users_list", array('user_id'=>$asked_tree), 'user_id, auth_type');
-    $auths_types = array_sort(sql::brute_fetch('user_id','auth_type'), array_reverse($asked_tree));
-
+    $users_auths = sql::brute_fetch('user_id', 'auth_type');
+    $auths_types = array_sort($users_auths, array_reverse($asked_tree));
+        
     foreach($auths_types as $user_id=>$auth_types) {
-      if(!auth::is_valid($user_id, $auth_types)) return false;
-      if(in_array($user_id, $final_tree) || $user_id == USERS_ROOT) break;
+        if(!auth::is_valid($user_id, $auth_types)) return false;
+        if(in_array($user_id, $final_tree) || $user_id == USERS_ROOT) break;
     } return $asked_tree;
   }
 }
+
