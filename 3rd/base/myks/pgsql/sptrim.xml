@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="sptrim" type="string" volatility='IMMUTABLE'>
+    <param type="string"/>
+    <def>
+BEGIN
+
+RETURN regexp_replace( $1,  '^[\\s ]*(.*?)[\\s ]*$', '\\1', 'g');
+
+END;
+</def>
+  </procedure>
+</myks>
