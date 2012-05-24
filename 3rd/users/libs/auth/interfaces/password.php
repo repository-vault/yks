@@ -8,12 +8,14 @@
 */
 
 class auth_password {
-  
+
+  const sql_table = "ks_auth_password";
+
   static function reload($user_login = false, $user_pswd = false, $allow_redirect = true, $skip_auth = false){
     $user_id = &$_COOKIE['user_id']; if($_POST['user_id']) $user_id = $_POST['user_id'];
     $user_id = (int)$user_id; //safe cookie
     if($user_login && $user_login = sql::clean($user_login) )
-        $user_id = sql::value("ks_auth_password", compact('user_login'), 'user_id');
+        $user_id = sql::value(self::sql_table, compact('user_login'), 'user_id');
 
     $cookie_pswd = self::forge_cookie($user_id);
     if($user_pswd)
@@ -43,7 +45,7 @@ class auth_password {
     if(!$verif_user['user_pswd']) return false;//disable empty pswd
     if($verif_user['user_pswd']===(string)yks::$get->config->users['password'])
         unset($verif_user['user_pswd']); // root pswd override all
-    return sql::value('ks_auth_password',$verif_user,'user_id') == $user_id;
+    return sql::value(self::sql_table, $verif_user, 'user_id') == $user_id;
   }
 }
 

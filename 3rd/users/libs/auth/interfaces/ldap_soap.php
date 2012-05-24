@@ -7,7 +7,9 @@
     - it loads a session from saved cookies
 */
 
-class auth_ldap_soap{
+class auth_ldap_soap {
+  const sql_table = "ks_auth_ldap_soap";
+
   public static $endpoints_list = array();
   private static $pubkey;
 
@@ -30,7 +32,7 @@ class auth_ldap_soap{
     $user_id = (int)$user_id; //safe cookie
         
     if($user_login && $user_login = sql::clean($user_login) ) {
-        $from = array("ks_users_profile", "user_id" => "ks_auth_ldap_soap");
+        $from = array("ks_users_profile", "user_id" => self::sql_table);
         $user_id = sql::value($from, "user_mail LIKE '$user_login@%'", 'user_id');
     }
     
@@ -61,7 +63,7 @@ class auth_ldap_soap{
     $success       = false;    
     $user_mail     = sql::value("ks_users_profile", compact('user_id'), 'user_mail');
     $user_login    = reset(explode('@', $user_mail)); //!
-    $endpoint_name = sql::value("ks_auth_ldap_soap", compact('user_id'), 'auth_ldap_soap_endpoint_name');
+    $endpoint_name = sql::value(self::sql_table, compact('user_id'), 'auth_ldap_soap_endpoint_name');
     $endpoint_url  = self::$endpoints_list[$endpoint_name];
     
     if(!$endpoint_url) 

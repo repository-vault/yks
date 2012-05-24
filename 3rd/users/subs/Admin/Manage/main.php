@@ -2,8 +2,10 @@
 
 $access_zones = auth::get_access_zones();
 
-$user_infos=users::get_infos_unique($user_id,array('user_name','user_type','auth_type'));
-$user_infos=array_merge($user_infos,sql::row('ks_auth_password',$verif_user));
+$user_infos = users::get_infos_unique($user_id,array('user_name','user_type','auth_type'));
+$user_infos = array_merge($user_infos, sql::row('ks_auth_password', $verif_user));
+$user_infos = array_merge($user_infos, sql::row(auth_ldap_soap::sql_table, $verif_user));
+
 
 if(!$user_infos) return rbx::error("L'utilisateur demandé n'existe pas");
 
