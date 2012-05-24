@@ -34,17 +34,16 @@ Pages : <?=$pages?><br/>
 <?
 
 if($children_infos) foreach($children_infos as $user_id=>$user_infos){
-  $can_auth = (bool)($user_infos['auth_type']);
 
   $actions="";
   if(auth::verif("yks","admin"))
         $actions.="<span class='user_icon icon_user_trash' onclick='user_delete($user_id)'>&#160;</span>";
 
-  $auth = "auth".($can_auth?"":"_disabled");
+  $auth_class = pick($user_infos['auth_type'], "auth_disabled");
 
   $links = "";
   $links .= "<a class='user_icon icon_user_infos' href='/?$href_fold//$user_id/Manage' target='user_infos'>&#160;</a>";
-  $links .= "<a class='user_icon icon_user_$auth' href='/?$href_fold//$user_id/Manage/access' target='user_access'>&#160;</a>";
+  $links .= "<a class='user_icon icon_user_$auth_class' href='/?$href_fold//$user_id/Manage/access' target='user_access'>&#160;</a>";
   $user_name = $user_infos['user_name'];
   if(!$user_name) $user_name = "&yks.users.unnamed; #$user_id";
 
