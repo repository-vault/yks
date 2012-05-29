@@ -86,17 +86,17 @@
               <xsl:with-param name="target" select="'upload_file'"/>
               <xsl:with-param name="value" select="@upload_title"/>
             </xsl:call-template>
-            <div class="input_{$item_type}" style="display:none" id="{@name}" upload_type="{@upload_type}"/>
+            <span class="input_{$item_type}" style="display:none" id="{@name}" upload_type="{@upload_type}">&#160;</span>
           </span>
         </xsl:when>
-        <xsl:when test="$type='text'">
+        <xsl:when test="$type='html' or $item_type='html'">
           <textarea class="wyzzie" name="{$name}">
             <xsl:copy-of select="@style|@id"/>
             <xsl:apply-templates/>
             <xsl:comment/>
           </textarea>
         </xsl:when>
-        <xsl:when test="$item_type='textarea'">
+        <xsl:when test="$item_type='textarea' or $item_type='text'">
           <textarea name="{$name}">
             <xsl:copy-of select="@style|@id"/>
             <xsl:apply-templates/>
