@@ -6,6 +6,10 @@ function crpt($msg,$flag,$len=40) {
   return substr($msg, 0, $len);
 }
 
+//same thing as create_function, but returns a closure..( 5.4)
+function create_closure($args, $body){
+  return eval("return function($args){ {$body}  };");
+}
 
 function paths_merge($path_root, $path, $default="."){
     if(!$path) $path = $default;

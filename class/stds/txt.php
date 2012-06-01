@@ -67,13 +67,17 @@ function rte_clean($str){
     return $str;
 }
 
-function hex2bin($str) {
+
+//5.4
+if(!function_exists('hex2bin')) {
+ function hex2bin($str) {
   $r='';
   if(is_array($str))
     foreach($str as $h) $r.=chr(hexdec($h));
   else  //   $str = str_split($str, 2); //is not a so good idea
     for ($a=0, $max = strlen($str); $a<$max; $a+=2)  $r.=chr(hexdec($str{$a}.$str{($a+1)}));
   return $r;
+ }
 }
 
 
