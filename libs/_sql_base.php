@@ -10,7 +10,7 @@ abstract class _sql_base  implements ArrayAccess {
 
   protected function __construct($from){
     if(!($this->sql_table && $this->sql_key))
-        throw "Invalid definition for _sql_base";
+        throw new Exception("Invalid definition for _sql_base");
 
     if(is_array($from))
         $this->feed($from);
