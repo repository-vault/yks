@@ -39,6 +39,7 @@ class mykses {
 * @full_validation : force un-spececified params to "null" (or to the default value /type)
 */
   static function validate($data,$filter_in, $full_validatation = true) {
+
     $types_xml = yks::$get->types_xml;
     $out=array();$filter_unique=false;
     if($filter_in instanceof simpleXmlElement) $filter_in=fields($filter_in);
@@ -52,7 +53,8 @@ class mykses {
 
     //if(!is_array($data))  DONT cast here since $data might of an array type user_flags[]
     foreach($filter_in as $mykse_key=>$mykse_type){
-        if(is_numeric($mykse_key)) $mykse_key=$mykse_type;
+
+        if(is_numeric($mykse_key)) $mykse_key = $mykse_type;
 
         if(!isset($data[$mykse_key]) && !is_null($data[$mykse_key])) continue;
         $val_init = $val = $data[$mykse_key];
@@ -61,6 +63,7 @@ class mykses {
         $mykse_start_type = $mykse_type;
 
       while(true) {    //loop to recurse
+
         if(!$mykse) break;
         $mykse_type=(string) $mykse['type'];
 
@@ -68,7 +71,7 @@ class mykses {
         if($null && $mykse['null']=='not_null' && is_not_null($mykse['default']))break;
         if($null && $nullable){ $out[$mykse_key]=null; break;}
 
-        if($mykse_type=="html"){
+        if(in_array("html", array($mykse_type, $mykse_start_type))){
             $out[$mykse_key] = rte_clean($val);
         }elseif($mykse_type=='bool'){
             $out[$mykse_key] = bool($val,true);
