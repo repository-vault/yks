@@ -75,10 +75,13 @@ class auth_ldap_soap {
     if(!$user_login || !$user_pswd)
       return false;
     
-    try{      
-      $ws = new SoapClient($endpoint_url."/services/?class=WSAuthLdap&wsdl");
-  
-      $success = (bool)$ws->login($user_login, $user_pswd);
+    try {
+      $wsdl_url = $endpoint_url."/services/?class=WSAuthLdap&wsdl";
+
+      $client = new SoapClient($wsdl_url);
+      $client->__setLocation($wsdl_url);
+
+      $success = (bool)$client->login($user_login, $user_pswd);
     }
     catch(Exception $e){
       $success = false;
