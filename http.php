@@ -81,7 +81,7 @@ class http {
           self::$console_host = new console_host('C:\\Windows\\system32\\netstat.exe -n -p tcp');
       $output = self::$console_host->exec();
     } else {
-      exec("netstat -p tcp -n", $output); $output = join(CRLF, $output);  
+      exec("netstat -p tcp -n 2>/dev/null", $output); $output = join(CRLF, $output);  
     }
     
     $mask = "#^\s*TCP.*{$server_addr}:{$server_port}\s*{$client_addr}:{$client_port}\s*([A-Z]+)\s*$#mi";
