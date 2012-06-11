@@ -1,4 +1,4 @@
-﻿/* Data for the 'public.iso_639_languages' table  (Records 1 - 500) */
+/* Data for the 'public.iso_639_languages' table  (Records 1 - 500) */
 
 INSERT INTO "public"."iso_639_languages" ("lang_code", "lang_name", "alpha_3", "alpha_2")
 VALUES ('aaa', 'Ghotuo', 'aaa', '');

@@ -1,4 +1,11 @@
-﻿/* Data for the 'public.iso_3166_countries' table  (Records 1 - 246) */
+-- Activisu a plus d'info. Necessaire? C'est pas très toolkit way of life. A changer un jour
+ALTER TABLE "public"."iso_3166_countries"
+  ADD COLUMN "country_code_old" VARCHAR(10);
+  
+ALTER TABLE "public"."iso_3166_countries"
+  ADD COLUMN "en-us" VARCHAR(50);
+  
+/* Data for the 'public.iso_3166_countries' table  (Records 1 - 246) */
 
 INSERT INTO "public"."iso_3166_countries" ("country_code", "country_name", "country_code_old", "alpha_3", "alpha_2", "en-us")
 VALUES ('deu', 'Germany', 'de', 'deu', 'de', 'Germany');
