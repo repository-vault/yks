@@ -122,6 +122,7 @@ class exyks_ws {
         $server->handle();
       } catch(Exception $e) {
         // Catch error and produce an anonymous message.
+        error_log($e);
         $server->fault('generic', 'An unexpected error occured.');
       }
     }
