@@ -1,7 +1,7 @@
 <?php
 
 /*	"Yks constants" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2007 
+    distributed under the terms of GNU General Public License - © 2012
 */
 
 if(!defined('CLASS_PATH')) define('CLASS_PATH', dirname(__FILE__));
@@ -55,7 +55,7 @@ define('LIBXML_MYKS',LIBXML_YKS|LIBXML_DTDVALID);
 
 
 
-$var_safe='\$[A-Z]?[a-z0-9_>-]*';
+$var_safe='\$[A-Z]?((->)?[a-z0-9_])*';
 define("VAR_MASK","#$var_safe#e");	//usefull with preg_replace / safe mask
 define("VAR_REPL",'$0');
 define("CONST_MASK", "#\[([A-Z_]+)\]#e");

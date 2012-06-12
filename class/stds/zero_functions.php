@@ -45,7 +45,7 @@ function pick_in(){
 }
 
 
-function array_mask($array, $vmask, $kmask="%s"){ 
+function array_mask($array, $vmask, $kmask="%s"){
   $ret = array();
   foreach($array as $k=>$v)
     $ret[sprintf($kmask, $k, $v)] = sprintf($vmask, $v, $k);
@@ -103,7 +103,7 @@ function vals($enum,$chld="val"){
 }
 
   //recursive strtr
-function str_set($str, $vals){ 
+function str_set($str, $vals){
   $tmp = null;
   while($tmp != $str) {
     $tmp = $str;
@@ -186,7 +186,7 @@ function ends_with($str, $end){
 
 
   // cf doc in the manual
-  // Utilisation : this is my template {$distributor} where i can display {$distributor->addr->addr_zipcode} 
+  // Utilisation : this is my template {$distributor} where i can display {$distributor->addr->addr_zipcode}
 function str_evaluate($str, $vars = array(), $replaces = array(FUNC_MASK,VAR_MASK) ){
     $vars = array_map("objectify", $vars);
     extract($vars);
@@ -206,7 +206,9 @@ class stdClassSerializable {
   private $string_value;
   private $value;
   function __construct($value){
-    $this->string_value = (is_object($value) && method_exists($value, '__toString')) ? (string) $value : "";
+    $this->string_value = is_object($value)
+                ? ( method_exists($value, '__toString') ? (string) $value : "")
+                : (string) $value;
     $this->value = $value;
   }
 

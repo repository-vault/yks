@@ -27,7 +27,7 @@ class date {
       '%H' => '(?P<H>[0-9]{2})',
       '%M' => '(?P<M>[0-9]{2})',
       '%S' => '(?P<S>[0-9]{2})',
-    ); 
+    );
     $rexep = "#".strtr(preg_quote($format), $masks)."#";
     if(!preg_match($rexep, $date, $out))
       return false;
@@ -99,11 +99,12 @@ class date {
     if($z<79 or $z>354)$a=4; elseif($z<172)$a=1; elseif($z<265)$a=2; else $a=3; //a = season
 
 
-    $t=ceil($n/3); $rel=$rs["$z/$Y"]; 
-    return preg_replace(VAR_MASK,VAR_REPL,$rel&&$format_rel?$format_rel:$format);
+    $t=ceil($n/3); $rel=$rs["$z/$Y"];
+    $query = $rel&&$format_rel?$format_rel:$format;
+    return preg_replace(VAR_MASK, VAR_REPL, $query);
   }
 
-  
+
   public static function human_diff($timestamp, $max = 2){
     $steps = array(
       's' => 60,
@@ -113,7 +114,7 @@ class date {
       'month' => 12,
       'year' => 0,
     );
-    
+
     $t = $timestamp;
     $out = array();
     foreach($steps as $name => $step_time){
@@ -121,7 +122,7 @@ class date {
         $current = floor($t);
       }else{
         $current = $t % $step_time;
-        $t /= $step_time;        
+        $t /= $step_time;
       }
       if($current > 0)
         $out[] = "$current $name".($name != 's' && $current > 1 ? 's' : '');
