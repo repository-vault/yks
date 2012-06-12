@@ -40,9 +40,9 @@ $access_zone_list = auth::get_access_zones();
 $access_zone_list_dsp =  $requested_zone
     ?array_intersect_key( $access_zone_list, array_flip($requested_zone) )
     :array();
-  
+
 $verif_users = array('user_id'=>array_keys($users_list));
-sql::select("ivs_users_access",  $verif_users , 'user_id, access_zone, access_lvl');
+sql::select("ks_users_access",  $verif_users , 'user_id, access_zone, access_lvl');
 $access_list = sql::brute_fetch();
 foreach($access_list as $access) {
   $user_id = $access['user_id'];
