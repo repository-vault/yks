@@ -17,6 +17,7 @@
     <class name="auth_password" path="path://here/libs/auth/interfaces/password.php"/>
     <class name="auth_restricted_ip" path="path://here/libs/auth/interfaces/restricted_ip.php"/>
     <class name="auth_ldap_soap" path="path://here/libs/auth/interfaces/ldap_soap.php"/>
+    <class name="authfailed" path="path://here/libs/authfailed.php"/>
 <!-- users -->
     <class name="users" path="path://here/libs/users/users.php"/>
     <class name="user_gest" path="path://here/libs/users/gest.php"/>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="ks_auth_ldap_failed">
+    <fields>
+      <field type="auth_ldap_failed_id"/>
+      <field type="failed_ip"/>
+      <field type="failed_login"/>
+      <field type="failed_date"/>
+    </fields>
+  </table>
+
+  <mykse type="auth_ldap_failed_id" birth="ks_auth_ldap_failed">
+    <int/>
+  </mykse>
+  <mykse type="failed_date" null="null">
+    <int size="big"/>
+  </mykse>
+  <mykse type="failed_ip" null="null">
+    <string length="40"/>
+  </mykse>
+   <mykse type="failed_login">
+    <string length="32"/>
+  </mykse>
+</myks>

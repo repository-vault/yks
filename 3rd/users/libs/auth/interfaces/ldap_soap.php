@@ -26,6 +26,7 @@ class auth_ldap_soap {
   }
   
   static function reload($user_login = false, $user_pswd = false, $allow_redirect = true, $skip_auth = false){
+    
     $user_id = &$_COOKIE['user_id'];
     if($_POST['user_id'])
       $user_id = $_POST['user_id'];
@@ -62,7 +63,8 @@ class auth_ldap_soap {
     
     $success       = false;    
     $user_mail     = sql::value("ks_users_profile", compact('user_id'), 'user_mail');
-    $user_login    = reset(explode('@', $user_mail)); //!
+    $exploded_mail = explode('@', $user_mail); //only variables can be passed by reference
+    $user_login    = reset($exploded_mail); //!
     $endpoint_name = sql::value(self::sql_table, compact('user_id'), 'auth_ldap_soap_endpoint_name');
     $endpoint_url  = self::$endpoints_list[$endpoint_name];
     
@@ -80,7 +82,30 @@ class auth_ldap_soap {
 
       $client = new SoapClient($wsdl_url);
       $client->__setLocation($wsdl_url);
+            
+      //Body of the Soap Header. 
+      $headers = array();
+      $headers['IP'] = $_SERVER['REMOTE_ADDR'];
+      
+      if(defined("SOAP_SESSION_ID")){
+        $soap_request = simplexml_load_string(file_get_contents("php://input", "r"), NULL, LIBXML_ERR_NONE);
+        if(isset($soap_request) && $soap_request !== false){
+          $soap_request->registerXPathNamespace("envelope", "http://schemas.xmlsoap.org/soap/envelope/");
 
+          $request_headers = array();
+          foreach($soap_request->xpath("/envelope:Envelope/envelope:Header/*/item") as $header) {
+            $request_headers[(string)$header->key] = (string)$header->value;
+          }
+          
+          if(isset($request_headers['IP']))
+            $headers['IP'] = $request_headers['IP'];
+        }
+      }
+        
+      $soap_headers = new SOAPHeader($endpoint_url, 'Headers', $headers);
+
+      $client->__setSoapHeaders($soap_headers);
+  
       $success = (bool)$client->login($user_login, $user_pswd);
     }
     catch(Exception $e){
