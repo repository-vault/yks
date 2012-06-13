@@ -29,14 +29,16 @@ class pgsql_auto_inc_sync {
         $table_infos = sql::resolve($birth);
         $table_name  = $table_infos['name'];
 
-        $data = array(
-            'increment_value'   => $sql_max,
-            'increment_lastval' => $sql_max,
-        );
-
         $verif_key = array(
             'increment_key'   => $mykse_type,
             'increment_table' => $table_name,
+        ); $existing_value = sql::value("zks_autoincrement", $verif_key, "increment_value");
+
+        $sql_max = max($sql_max, $existing_value, 1);
+
+        $data = array(
+            'increment_value'   => $sql_max,
+            'increment_lastval' => $sql_max,
         );
 
         $done++;
