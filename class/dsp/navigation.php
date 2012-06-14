@@ -32,7 +32,7 @@ class navigation{
         'url'   => $url,
         'help'  => (string)$page['help'],
         'name'  => (string)$page['name'],
-        'active' => starts_with($href, $url),
+        'active' => starts_with($href, starts_with($url, '/?') ? substr($url, 2) : $url),
       );
     }
   }
