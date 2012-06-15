@@ -128,7 +128,7 @@ class sql {
     $c = 0;
     $line = 0;
     if($start) {
-      pg_result_seek(self::$result,$start);
+      pg_result_seek(self::$result, $start);
     }
 
     while(($l=self::fetch()) && ($by?$line++<$by:true)) {
@@ -232,7 +232,7 @@ class sql {
   }
 
   static function delete($table, $where, $extras = ''){
-    return sql::query("DELETE FROM `$table` ".sql::where($where, $table)." $extras",false,true);
+    return sql::query("DELETE FROM `$table` ".sql::where($where, $table) . ' ' . $extras, false, true);
   }
 
   static function select($table, $where = sql::true, $cols = '*', $extras = '') {
@@ -340,6 +340,7 @@ class sql {
       return $res;
     } catch(Exception $e) {  // If it fails, rollback and rethrow.
       sql::rollback($level);
+
       throw $e;
     }
   }

@@ -55,30 +55,50 @@ abstract class _sql_base  implements ArrayAccess {
   function from_id($key_id){
     $verif_base = array($this->sql_key => $key_id);
     $data = sql::row($this->sql_table, $verif_base);
-    if(!$data) throw new Exception("Invalid construction $key_id");
+    if(!$data) throw new Exception("Invalid construction " . $key_id);
     $this->feed($data);
   }
 
-    //proxies to manager's static functions
+  // Proxies to manager's static functions
   function __call($method, $args){
     if(!($this->manager && method_exists($this->manager, $method))) return;
     array_unshift($args, $this);
     return call_user_func_array(array($this->manager, $method), $args);
   }
 
-
   static function from_where($class, $sql_table, $sql_key, $where) {//, optionals
-    $args = array_slice(func_get_args(),4); //retrieve optionals args
-    sql::select($sql_table, $where); $tmp = array();
-    if(!$args) foreach(sql::brute_fetch($sql_key) as $key_id=>$key_infos)
-        $tmp[$key_id] = new $class($key_infos);
-    else {
+    sql::select($sql_table, $where);
+
+    return self::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
+  }
+
+  static function from_where_locked($class, $sql_table, $sql_key, $where) {//, optionals
+    return sql::run_in_transaction(function() use($class, $sql_table, $sql_key, $where) {
+      sql::select($sql_table, $where, '*', 'for update');
+
+      return _sql_base::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
+    });
+  }
+
+  static function repack_results_as_objects($class, $sql_key, $args) {
+    $tmp = array();
+    if(!$args) {
+        foreach(sql::brute_fetch($sql_key) as $key_id => $key_infos) {
+          $tmp[$key_id] = new $class($key_infos);
+        }
+    } else {
         $class = new ReflectionClass($class);
-        foreach(sql::brute_fetch($sql_key) as $key_id=>$key_infos){
-            $args_tmp = array($key_infos); foreach($args as $arg) $args_tmp[] = $arg==PH?false:$arg[$key_id];
+        foreach(sql::brute_fetch($sql_key) as $key_id => $key_infos) {
+            $args_tmp = array($key_infos);
+            foreach($args as $arg) {
+              $args_tmp[] = $arg==PH?false:$arg[$key_id];
+            }
+
             $tmp[$key_id] = $class->newInstanceArgs($args_tmp);
         }
-    } return $tmp;
+    }
+
+    return $tmp;
   }
 
   static function extract_where($array){
