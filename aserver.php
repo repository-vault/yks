@@ -14,7 +14,7 @@ class http_aserver {
     //use binding on connect mode
   protected $bind_on_ssl  = false;
 
-  function __construct($ip = '0.0.0.0', $port = '8080'){
+  function __construct($ip = '127.0.0.1', $port = '8080'){
     $bind = "tcp://$ip:$port";
 
     if($this->trace)
