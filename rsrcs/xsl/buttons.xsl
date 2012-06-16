@@ -23,8 +23,8 @@
         <xsl:attribute name="class">ext</xsl:attribute>
       </xsl:if>
       <xsl:copy-of select="@onclick|@style"/>
-      <img src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}" class="button {@class} {@effects} {name(@effects)}" theme="{@theme}" alt="{$value}" title="{$value}">
-        <xsl:copy-of select="@src"/>
+      <img src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}" class="button {@class} {@effects} {name(@effects)}" alt="{$value}" title="{$value}">
+        <xsl:copy-of select="@src|@theme|@value"/>
       </img>
     </a>
   </xsl:template>
