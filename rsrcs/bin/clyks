@@ -1,3 +1,9 @@
-#!/bin/bash
-`which php` -r "include 'yks/cl.php';" $*
+#!/usr/bin/env php
+<?
+if($_ENV['php_value_include_path'])
+  set_include_path($_ENV['php_value_include_path']);
+
+echo get_include_path();die;
+include 'yks/cl.php';
+
 
