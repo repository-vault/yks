@@ -34,7 +34,9 @@ abstract class mykse_base  {
     // depth==1 est ok
 
 
-
+         //never nullable in pkey
+    if($field_xml['key'] == "primary" && $this->field_def['Null']) 
+      $this->field_def['Null'] = false;
 
     $birth_root   = sql::resolve((string)$this->mykse_xml['birth']);
     if($birth_root){
@@ -46,7 +48,6 @@ abstract class mykse_base  {
         && $field_xml['key'] != "unique"  ){
             $this->table->key_add('primary',$this->field_def["Field"]);
             $this->birth = true;
-            if($this->field_def['Null']) $this->field_def['Null'] = false; //pas de null dans le birth
       } else $this->fk($field_xml, $birth_root);
     }
 
