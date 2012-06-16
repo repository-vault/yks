@@ -1,6 +1,5 @@
 <?php
 
-function truncate($str,$len=10){return preg_replace('#&[^;]*?$#m','…',mb_strimwidth($str,0,$len,'…'));}
 function unicode_decode($str){return preg_replace('#\\\u([0-9a-f]{4})#e',"unicode_value('\\1')",$str);}
 
 
@@ -33,7 +32,7 @@ function pict_clean($str){ return strtr($str, '/', ' '); }
 
 
 function rte_clean($str){
-    $str = htmlspecialchars_decode(trim($str), ENT_QUOTES); //!! <a href='#flow'> 
+    $str = htmlspecialchars_decode(trim($str), ENT_QUOTES); //!! <a href='#flow'>
     $str = preg_replace("#<!--.*?-->#s","", $str);
     $str=html_entity_decode($str,ENT_NOQUOTES,"UTF-8");
     if(stripos($str,"<body")){
@@ -61,7 +60,7 @@ function rte_clean($str){
         '#^(<br/>)+|(<br/>)+$#'    => '',
     );$str = preg_areplace($replaces, $str);
 
-    while($tmp != $str && $tmp = $str) 
+    while($tmp != $str && $tmp = $str)
         $str = preg_replace('#(<[^>]+)\s+[a-z0-9-]+:[a-z]*=".*?"#', "$1", $str);
 
     return $str;
@@ -82,6 +81,10 @@ if(!function_exists('hex2bin')) {
 
 
 class txt {
+
+  static function truncate($str, $len=10){
+    return preg_replace('#&[^;]*?$#m', '…', mb_strimwidth($str,0,$len,'…') );
+  }
 
 
   static function cp_to_utf8($cp){
@@ -162,4 +165,9 @@ class txt {
 function strip_accents($str){
   error_log("Deprecated use of strip_accents");
   return txt::strip_accents($str);
+}
+
+function truncate($str, $len = 10) {
+  error_log("Deprecated use of truncate");
+  return txt::truncate($str, $len);
 }

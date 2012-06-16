@@ -1,7 +1,7 @@
 <?php
 
 /*	"Exyks display" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2007 
+    distributed under the terms of GNU General Public License - © 2007
 */
 
 class dsp{
@@ -121,7 +121,7 @@ class dsp{
 
     //find doc in the manual
   static function element_truncate($str, $len, $element="span", $alternative=false){
-    $empty = !((bool)trim($str)); $truncated = truncate($str, $len);
+    $empty = !((bool)trim($str)); $truncated = txt::truncate($str, $len);
     if($empty && $alternative) $truncated = $alternative;
     $element_name = preg_reduce('#([^\s]+)#', $element);
     $title = !$empty && $truncated!=$str?" title=\"$str\"":'';
@@ -151,7 +151,7 @@ class dsp{
         if( $col == "value" && ( !is_array($v) || is_object($v) ) )
             $v = array("value"=>$v);
 
-        if($opts['mask']) 
+        if($opts['mask'])
             $str = str_evaluate($opts['mask'], $v);
         else $str = $v[$col];
 
@@ -161,7 +161,7 @@ class dsp{
         .($v['disabled']?"disabled='{$v['disabled']}' ":'')
         .($v['selected']||in_array($k,$selected)?'selected="selected" ':'')
         .">".str_repeat($pad,(int)$v['depth']+$depth)
-            .($mykse?"&$mykse.$k;":truncate($str,$truncate))
+            .($mykse?"&$mykse.$k;":txt::truncate($str,$truncate))
         ."</option>";
     } return $options;
   }
@@ -233,7 +233,7 @@ class dsp{
     $domnode = dom_import_simplexml($doc);
     $domnode = $doc->importNode($domnode, true);
     $domnode = $doc->appendChild($domnode);
-    return $doc->saveXML(); 
+    return $doc->saveXML();
   }
 
 }

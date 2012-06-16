@@ -57,11 +57,17 @@ class exyks_paths {
     if(starts_with($path1, "path://")) return $path1;
 
     $info = parse_url($path0);
-    
+
     $path0 = '/'.strip_start($path0, "path://");
     $path = files::paths_merge($info['path'], $path1);
     return "path://{$info['host']}/".ltrim($path, '/');
   }
+
+   public static function resolve_url($path) {
+    if(!starts_with($path, "path://public/"))
+        return SITE_URL;
+     return SITE_URL.'/'.strip_start($path, "path://public/");
+   }
 
   public static function resolve_public($path, $ns = self::default_ns){
     $path_infos = parse_url($path);
@@ -77,7 +83,7 @@ class exyks_paths {
   public static function resolve($path, $ns = false){
 
     $path  = str_set($path, self::$consts_cache);
-    
+
         //namespace list resolution order
     if(!$ns) $ns_list = array_values(array_extract(self::$paths, "ns", true));
     elseif(!is_array($ns)) $ns_list = array($ns);
@@ -137,7 +143,7 @@ class ExyksPathsResolver { //implements streamWrapper
     return true;
   }
 
-  static function url_stat($path, $flags) { 
+  static function url_stat($path, $flags) {
     //if($flags & STREAM_URL_STAT_QUIET)
     $path = exyks_paths::resolve($path);
     if(file_exists($path)) return stat($path);
