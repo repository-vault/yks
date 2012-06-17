@@ -388,8 +388,9 @@ class sql {
     self::query($query,$lnk); return self::fetch();
   }
 
-  static function qvalue($query) {
-    return current(sql::qrow($query));
+  static function qvalue($query, $col = null) {
+    $row = sql::qrow($query);
+    return is_null($col) ? current($row) : $row[$col];
   }
 
   static function value() {
