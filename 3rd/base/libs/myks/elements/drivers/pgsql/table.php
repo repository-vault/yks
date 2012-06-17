@@ -28,8 +28,9 @@ class table extends table_base {
 
 
   function sql_infos(){
-    $res = parent::sql_infos();
-    if(!$res) return $res;
+    parent::sql_infos();
+    if(!$this->fields_sql_def)
+        return;
 
     foreach($this->keys_sql_def as $k=>$key)
         if($this->ghost_keys[$k]) {
@@ -37,17 +38,15 @@ class table extends table_base {
             unset($this->keys_sql_def[$k]);
         }
 
-
-
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
     $this->triggers->sql_infos();
     $this->indices->sql_infos();
     $this->checks->sql_infos();
-    return true;
   }
 
   function xml_infos(){
+
     parent::xml_infos();
     $this->rules->xml_infos();
     $this->triggers->xml_infos();
@@ -120,7 +119,7 @@ class table extends table_base {
 */
 
  protected function table_fields(){
-    
+
     sql::select("zks_information_schema_columns", $this->table_where());
     $columns = sql::brute_fetch('column_name'); $table_cols=array();
 

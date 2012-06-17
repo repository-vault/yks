@@ -3,6 +3,8 @@
 
 
 abstract class table_base  extends myks_installer {
+  protected $sql_type = 'TABLE';
+
   protected $escape_char="`";
 
   protected $table_name;
@@ -25,12 +27,12 @@ abstract class table_base  extends myks_installer {
   private $tmp_key;
 
   protected $keys_name = array(        // $this->table_name, $field, $type
-    'PRIMARY'=>"%s_pkey", 
+    'PRIMARY'=>"%s_pkey",
     'UNIQUE'=>"%s_%s_%s",
     'FOREIGN'=>"%s_%s_%s",
   );
 
-
+  public $comment_xml;
 
   function get_name(){
     return $this->table_name;
@@ -56,7 +58,7 @@ abstract class table_base  extends myks_installer {
     }
 
   }
-  
+
   protected function table_where(){
     return array(
         'table_name'   => $this->table_name['name'],
@@ -72,11 +74,10 @@ abstract class table_base  extends myks_installer {
         return array();
     }
 
-    $this->xml_infos();
-    if(!$this->sql_infos())
+    if(!$this->fields_sql_def)
         return $this->create();
 
-    if(!$this->modified()) 
+    if(!$this->modified())
         return array();
 
     //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def,"sql","xml"));die;
@@ -104,6 +105,7 @@ abstract class table_base  extends myks_installer {
   function modified(){
     $modified = $this->fields_xml_def != $this->fields_sql_def;
     $modified |= $this->keys_xml_def != $this->keys_sql_def;
+    $modified |= $this->comment_raw != $this->comment_new;
 
     if($this->abstract)
         $modified |= $this->abstract->modified();
@@ -118,17 +120,59 @@ abstract class table_base  extends myks_installer {
 */
 
   public function sql_infos(){
-    $this->sql = sql::row("information_schema.tables", $this->table_where());
 
-    if(!$this->sql) return false;
+    if($this->fields_sql_def)
+        return; //already processed
+
+    $this->sql = sql::row("information_schema.tables", $this->table_where());
+        //load comment
+   $where = sql::where( array(
+        "c.relkind" => "r",
+        "c.relname" => $this->table_name['name'],
+        "n.nspname" => $this->table_name['schema'],
+    ));
+    $query = "SELECT
+        n.nspname             AS schema_name,
+        c.relname             AS table_name,
+        pg_get_viewdef(c.oid) AS compiled_definition,
+        d.description         AS full_description
+      FROM
+        pg_class AS c
+        LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
+        LEFT JOIN pg_description AS d ON c.relfilenode = d.objoid
+      $where;
+    ";
+    $this->comment_raw = sql::qvalue($query, 'full_description');
+    $this->comment_xml = @simplexml_load_string(XML_VERSION."<comment>{$this->comment_raw}</comment>");
+
+
+    //$len=mb_strlen($str);$start=mb_strpos($str,"<body>")+6;$end=mb_strpos($str,"</body>");
+//echo ;die;
+    if(!$this->sql)
+        return ;
+
     $this->fields_sql_def = $this->table_fields();
     $this->keys_sql_def   = $this->table_keys();
 
     if($this->abstract)
         $this->abstract->sql_infos();
 
-    return true;
   }
+
+  protected function get_comment_new(){
+    $str = strip_start($this->comment_xml->asXML(), XML_VERSION);
+    $str = preg_reduce("#^<comment>(.*?)</comment>$#e", $str);
+    return $str;
+  }
+
+  public function save_comment(){
+    if($this->comment_raw == $this->comment_new) return; //ras
+    $comment_sql = sprintf("COMMENT ON %s %s IS %s",
+            $this->sql_type,
+            $this->table_name['safe'],
+            sprintf("E'%s'", addslashes($this->comment_new)));
+    return array($comment_sql);
+ }
 
 /*
     populate fields_xml_def and keys_xml_def definition based on the xml structure
@@ -179,7 +223,7 @@ abstract class table_base  extends myks_installer {
     $todo = array();
     //fields sync
     foreach($this->fields_xml_def as $field_name=>$field_xml){
-        $field_sql = $this->fields_sql_def[$field_name]; 
+        $field_sql = $this->fields_sql_def[$field_name];
         if($field_sql){
             unset($this->fields_sql_def[$field_name]);
             if($field_sql==$field_xml) continue;
@@ -265,7 +309,6 @@ abstract class table_base  extends myks_installer {
   }
 
 
-
   protected function table_keys(){
     $where = $this->table_where();
     $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
@@ -307,7 +350,7 @@ abstract class table_base  extends myks_installer {
 
         $constraint_infos['type']=$type=$types[$key['constraint_type']];
         if($type=="FOREIGN") {
- 
+
             list($usage_schema, $usage_fields) = each($usages[$constraint_name]);
             list($usage_table, $usage_fields)  = each($usage_fields);
 
