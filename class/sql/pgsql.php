@@ -306,7 +306,7 @@ class sql {
   }
 
   static function rollback($level = -1) {
-    if(!is_integer($level) || $level != self::$transaction_level || $level < 0) {
+    if(!is_integer($level) || $level < 0) {
       throw new InvalidArgumentException('Incorrect level passed : ' . $level);
     }
 
