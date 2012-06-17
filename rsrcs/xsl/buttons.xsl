@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:template match="button[not(@href) and not(@ext)]" name="button">
     <xsl:param name="value" select="."/>
-    <input alt="{$value}" class="button {@class} {@effects} {name(@effects)}" type="image" title="{$value}" src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}" theme="{@theme}">
+    <input alt="{$value}" class="button {@class} {@effects} {name(@effects)}" type="image" title="{$value}" src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}">
       <xsl:if test="@confirm">
         <xsl:attribute name="onclick">return window.confirm(<xsl:value-of select="@confirm"/>+' ?')</xsl:attribute>
       </xsl:if>
@@ -10,7 +10,7 @@
         <xsl:if test="@ks_action">
           <xsl:attribute name="name">ks_action[<xsl:value-of select="@ks_action"/>]</xsl:attribute>
         </xsl:if>
-        <xsl:copy-of select="@name|@src|@onclick|@id|@style|@alt|@title"/>
+        <xsl:copy-of select="@name|@src|@onclick|@id|@style|@alt|@title|@theme|@value"/>
       </xsl:if>
     </input>
   </xsl:template>

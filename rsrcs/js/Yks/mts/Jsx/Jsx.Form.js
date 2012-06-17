@@ -19,7 +19,7 @@ Jsx.Form = new Class({
     var self = this;
     form.getElements('input[type=image]').addEvent('click', function(event){
         if(!this.name)return;
-        self.action_image = {key:this.name, value:'on'};
+        self.action_image = {key:this.name, value:this.value||'on'};
     });
   },
 

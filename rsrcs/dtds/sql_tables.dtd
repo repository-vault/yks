@@ -1,4 +1,4 @@
-<!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger)+)>
+<!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger|checks)+)>
 <!ELEMENT def (#PCDATA)>
 <!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance|tree_integral)">
 
@@ -9,6 +9,11 @@
 >
 <!ENTITY % fk_actions "(cascade|set_null|no_action)">
 
+<!ELEMENT checks (check+)>
+<!ELEMENT check (#PCDATA)>
+<!ATTLIST check
+  type  (alternative|def) 'def'
+>
 
 <!ELEMENT fields (field+)>
 <!ATTLIST fields
