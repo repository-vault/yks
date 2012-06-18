@@ -37,7 +37,13 @@ abstract class _sql_base  implements ArrayAccess {
     if(method_exists($this, $getter = "get_$key")
         || $this->manager && method_exists($this->manager, $getter))
         return $this->$getter();
+    if(method_exists($this, $getter = "load_$key")
+        || $this->manager && method_exists($this->manager, $getter)) {
+        call_user_func(array(get_class($this), $getter), $this->batch());
+        return $this->$key;
+    }
   }
+
   function get_hash_key(){
     $key = $this->sql_key;
     return $this->$key;
