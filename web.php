@@ -1,6 +1,7 @@
 <?
 
 if(!defined('Ex/yks')) die("Ex/yks is not loaded");
+  $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
 
   ob_start( );
   exyks::bench('generation_start');
