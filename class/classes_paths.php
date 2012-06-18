@@ -94,6 +94,7 @@ classes::register_class_paths(array(
     "bencode"             => CLASS_PATH."/exts/torrents/bencode.php",
     "torrents"            => CLASS_PATH."/exts/torrents/torrents.php",
 
+    "cache"            => CLASS_PATH."/cache/cache.php",
 ));
 
 if(SQL_DRIVER == "pgsql")
