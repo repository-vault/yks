@@ -22,6 +22,7 @@ classes::register_class_paths(array(
     "data_headers"        => CLASS_PATH."/dsp/data_headers.php",
     "navigation"          => CLASS_PATH."/dsp/navigation.php",
     "isql"                => CLASS_PATH."/sql/isql.php",
+    "sql_tunner"          => CLASS_PATH."/sql/tunner.php",
 
     "_sql_pdo"            => CLASS_PATH."/sql/kpdo.php",
     "_sql_pgsql"          => CLASS_PATH."/sql/kpgsql.php",
