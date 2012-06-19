@@ -466,4 +466,36 @@ class sql {
     return compact('name', 'schema', 'safe', 'raw', 'hash');
   }
 
+  const TUNE_INDEXSCAN = 1;
+  const TUNE_SEQSCAN   = 2;
+  const TUNE_SORT      = 4;
+  const TUNE_HASHJOIN  = 8;
+  const TUNE_HASHAGG   = 16;
+
+  protected static $plans = array(
+    self::TUNE_INDEXSCAN => 'indexscan',
+    self::TUNE_SEQSCAN   => 'seqscan',
+    self::TUNE_SORT      => 'sort',
+    self::TUNE_HASHJOIN  => 'hashjoin',
+    self::TUNE_HASHAGG   => 'hashagg',
+  );
+  protected static $_last_tune = null;
+  protected static function tune($mode, $enable){
+    $query = array();
+    foreach(self::$plans as $plan_mask => $set){
+      if($mode & $plan_mask)
+        $query []= "SET enable_{$set} = ".bool($enable, true);
+    }
+    if($query)
+      sql::query(join(';', $query));
+  }
+
+  static function tune_on($mode){ return self::tune($mode, true); }
+  static function tune_off($mode){
+    self::$_last_tune = $mode;
+    return self::tune($mode, false);
+  }
+  static function tune_reset(){
+      return self::tune_on(self::$_last_tune);
+  }
 }
