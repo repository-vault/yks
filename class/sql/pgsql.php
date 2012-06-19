@@ -16,8 +16,8 @@ class sql {
 
   const true  = 'TRUE';
   const false = 'FALSE';
-
   static private $lnks = array();
+
 
   static function init() {
     if(!self::$servs) {
@@ -59,9 +59,11 @@ class sql {
     if(!$serv) return false;
 
     $query = self::unfix($query);
+        $start_time = microtime(true);
     self::$result = pg_query($serv, $query);
-
-    if(self::$log) self::$queries[] = $query;
+        $duration = microtime(true) - $start_time;
+        $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
+    if(self::$log) self::$queries["log_". $running] = $query . " -- $duration";
     if(self::$result === false) {
       $error = htmlspecialchars(pg_last_error(self::$lnks[self::$link]));
 
@@ -463,4 +465,5 @@ class sql {
     $hash = str_replace('"','', $safe);
     return compact('name', 'schema', 'safe', 'raw', 'hash');
   }
+
 }
