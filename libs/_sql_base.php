@@ -75,7 +75,8 @@ abstract class _sql_base  implements ArrayAccess {
   static function from_where($class, $sql_table, $sql_key, $where) {//, optionals
     sql::select($sql_table, $where);
 
-    return self::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
+    $args = func_get_args();
+    return self::repack_results_as_objects($class, $sql_key, array_slice($args, 4));
   }
 
   static function from_where_locked($class, $sql_table, $sql_key, $where) {//, optionals
