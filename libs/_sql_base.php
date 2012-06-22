@@ -79,11 +79,20 @@ abstract class _sql_base  implements ArrayAccess {
   }
 
   static function from_where_locked($class, $sql_table, $sql_key, $where) {//, optionals
-    return sql::run_in_transaction(function() use($class, $sql_table, $sql_key, $where) {
+    $token = sql::begin();
+
+    try {
       sql::select($sql_table, $where, '*', 'for update');
 
-      return _sql_base::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
-    });
+      $result = _sql_base::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
+    } catch(Exception $e) {
+      sql::rollback($token);
+      throw $e;
+    }
+
+    sql::commit($token);
+
+    return $result;
   }
 
   static function repack_results_as_objects($class, $sql_key, $args) {
