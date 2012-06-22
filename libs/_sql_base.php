@@ -84,7 +84,8 @@ abstract class _sql_base  implements ArrayAccess {
     try {
       sql::select($sql_table, $where, '*', 'for update');
 
-      $result = _sql_base::repack_results_as_objects($class, $sql_key, array_slice(func_get_args(), 4));
+      $args = func_get_args();
+      $result = _sql_base::repack_results_as_objects($class, $sql_key, array_slice($args, 4));
     } catch(Exception $e) {
       sql::rollback($token);
       throw $e;
