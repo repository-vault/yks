@@ -119,7 +119,7 @@ class http {
 
   
   public static function ip_check_cidr ($IP, $CIDR) { 
-    list ($net, $mask) = split ("/", $CIDR);
+    list ($net, $mask) = explode ("/", $CIDR);
     if(!$mask) $mask = 32;
     $ip_net = ip2long ($net);
     $ip_mask = ~((1 << (32 - $mask)) - 1);
