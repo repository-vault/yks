@@ -25,20 +25,20 @@ define('Ex/yks', 'A cloudy tool');
   }
 
 
-  $class_path  = realpath(dirname(__FILE__).'/..');
+  $class_path  = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..');
 
 
   define('WWW_PATH',    PUBLIC_PATH);
   define('ROOT_PATH',   dirname(WWW_PATH));
-  define('CONFIG_PATH', realpath(ROOT_PATH."/config")); 
+  define('CONFIG_PATH', realpath(ROOT_PATH.DIRECTORY_SEPARATOR."config")); 
   define('CLASS_PATH',  $class_path);
   define('YKS_PATH',    realpath("$class_path/.."));
 
-  define('LIBS_PATH',    YKS_PATH.'/libs');
-  define('RSRCS_PATH',   YKS_PATH.'/rsrcs');
-  define('CLTOOLS_PATH', YKS_PATH.'/cltools');
+  define('LIBS_PATH',    YKS_PATH.DIRECTORY_SEPARATOR.'libs');
+  define('RSRCS_PATH',   YKS_PATH.DIRECTORY_SEPARATOR.'rsrcs');
+  define('CLTOOLS_PATH', YKS_PATH.DIRECTORY_SEPARATOR.'cltools');
 
-  define('EXYKS',        YKS_PATH.'/web.php');
+  define('EXYKS',        YKS_PATH.DIRECTORY_SEPARATOR.'web.php');
   define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
 
 include "$class_path/constants.php";
@@ -50,3 +50,4 @@ $__YKS_FREE = isset($_SERVER['YKS_FREE'])?$_SERVER['YKS_FREE']:false;
 $load_config = PHP_SAPI != 'cli' && !$__YKS_FREE || defined('yks/cli');
 
 yks::init($load_config);
+

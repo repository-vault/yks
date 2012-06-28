@@ -61,14 +61,13 @@ class yks_runner {
         $wsdl_url      = sprintf($wsdl_uri_mask, $class_name);
         $wsdl_filepath = sprintf($wsdl_file_mask, $class_name);
 
-
         $class = new IPReflectionClass($class_name);
 
         $wsdl = new WSDLStruct($wsdl_ns, $wsdl_url, $binding, $encoding);
         $wsdl->setService($class);
         $wsdl_contents = $gendoc = $wsdl->generateDocument();
         file_put_contents($wsdl_filepath, $wsdl_contents);
-        rbx::ok("Generating #$class_name into $wsdl_filepath ".strlen($wsdl_contents));
+        rbx::ok("Generating #$class_name ".$class->getFileName()." into $wsdl_filepath ".strlen($wsdl_contents));
     }
   }
 
