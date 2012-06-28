@@ -170,11 +170,11 @@ function html_entity_encode_numeric($str) {
 }
 
 function strip_end($str, $end){
-    return ends_with($str, $end) ? substr($str, 0,-strlen($end)): $str;
+    return ends_with($str, $end) ? (string) substr($str, 0,-strlen($end)): $str;
 }
 
 function strip_start($str, $start){
-    return  starts_with($str, $start) ? substr($str, strlen($start)) : $str;
+    return  starts_with($str, $start) ? (string) substr($str, strlen($start)) : $str;
 }
 function starts_with($str, $start){
     return substr($str, 0, strlen($start)) == $start;
