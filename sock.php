@@ -84,6 +84,9 @@ class sock   {
   private function request_native(){
     global $http_response_header;
 
+    if (version_compare(PHP_VERSION, '5.3.0') < 0) 
+      throw new Exception("Need at lease PHP 5.3 (chunk filter)");
+
     $opts = array('http' => array(
         'method'  => $this->query['method'],
         'header'  => $this->query['headers_str'],
@@ -189,84 +192,37 @@ class sock   {
 
 
 
-  private function receive_chunked($filter = false, &$ret = NULL){
-    $bfilter = (bool)$filter;
-    $body='';
-
-    stream_set_blocking($this->lnk,1);
-     do {
-        $tmp=fgets($this->lnk);
-        $chunk=substr($tmp,0,strspn($tmp,"abcdef0123456789"));
-        $chunk_size=hexdec($chunk);$file_size+=$chunk_size;$tmp='';
-        while(strlen($tmp)<$chunk_size && !feof($this->lnk))
-            $tmp.=fgets($this->lnk);
-        $body.=substr($tmp,0,$chunk_size);
-        if($bfilter && preg_match($filter,$body,$ret)){$this->end_headers();return true;}
-    } while($chunk!=="0");$this->end_headers();
-
-    return $body;
+  private function receive_chunked($out){
+    stream_filter_append($this->lnk, "dechunk", STREAM_FILTER_READ);
+    stream_copy_to_stream($this->lnk, $out);
   }
 
-  private function receive_classic($file_size, $filter=false, &$ret=NULL){
-    $bfilter = (bool)$filter;
-
-    $body='';
-    $time_limit = 20;
-    $start_time = time();
-
-    stream_set_blocking($this->lnk, 0);
-    while(strlen($body)<$file_size-1 ){
-        if(time() - $start_time > $time_limit)
-            throw new Exception("Too much time for receiving content block");
-
-        if(!$tmp=fgets($this->lnk, 1024)) continue; $body.=$tmp;
-
-        $start_time = time(); 
-        if($bfilter && preg_match($filter,$body,$ret)) return true;
-        if(strlen($body)>=$file_size-1) return $body;
-    } $this->end_headers();
-
-    return $body;
+  private function receive_classic($out, $file_size){
+    stream_copy_to_stream($this->lnk, $out, $file_size);
   }
 
-  private function receive_end_lnk($filter=false, &$ret=NULL){
-    $body = '';
-    do {
-      $body .= fgets($this->lnk, 1024);
-    } while(!feof($this->lnk));
-    if($filter && preg_match($filter, $body, $ret))
-      return true;
-
-    return $body;
+  private function receive_end_lnk($out){
+    stream_copy_to_stream($this->lnk, $out);
   }
 
-  function receive($filer = false, &$ret=NULL){
+  function receive($out){
 
     $file_size = $this->response['headers']['Content-Length']->value; //might be zero
     $chunked   = (string) $this->response['headers']['Transfer-Encoding']->value == "chunked";
 
-
     if(self::$transport_type == self::TRANSPORT_USER) {
 
         if(!$this->lnk) return false;
+
         if(is_numeric($file_size))
-            return $this->receive_classic($file_size, $filter, $ret);
+            $this->receive_classic($out, $file_size, $filter, $ret);
         elseif($chunked)
-            return $this->receive_chunked($filter, $ret);
+            $this->receive_chunked($out, $filter, $ret);
         elseif($this->proxy)
-            return $this->receive_end_lnk($filter, $ret);
-
-        return $this->receive_end_lnk();
-        throw new Exception("Invalid transport type");
+            $this->receive_end_lnk($out, $filter, $ret);
+        else $this->receive_end_lnk($out);
     }
-
-
-    if($chunked)
-        $this->contents = http::chunked_deflate($this->contents);
-
-    $bfilter = (bool)$filter;
-    if($bfilter && preg_match($filter, $this->contents, $ret)) return true;
-
+      //in native mode, this->contents contains the already downloaded contents
     return $this->contents;
   }
 
