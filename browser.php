@@ -22,7 +22,7 @@ class browser {
     $this->ua        = $this->forge_ua();
     if($session_key) $this->session_load($session_key);
   }
-  
+
   function set_proxy($proxy_url){
     $this->proxy = $proxy_url;
   }
@@ -70,6 +70,7 @@ class browser {
   }
 
 
+
   private $credentials = array();
   public function register_credential($host_url, $login, $pswd){
     $url = url::from($host_url);
@@ -83,7 +84,7 @@ class browser {
     return $credentials;
   }
 
-    // public 
+    // public
   public function adopt_cookies($url, $cookies){
     $url = url::from($url);
     foreach($cookies as $name=>$value)
@@ -111,19 +112,40 @@ class browser {
   }
 
 
-  function download($url, $to = false){
+  function download($url, $out = false, $headers = array()){
     $url = url::from($url);
 
     if(!$url->is_browsable)
         throw new Exception("Invalid url");
 
+    if(is_resource($out))
+      $out_stream = $out;
+    elseif(is_string($out))
+      $out_stream = fopen($file_path, "w");
+    else $out_stream = fopen('php://temp', 'w');
+
+
     $lnk = $this->get_lnk($url);
     $query = new request($url, "GET");
-    $lnk->execute($query);
+    if($headers)
+      $query->addHeaders($headers);
 
-    $str = $lnk->receive();
-    return $to ? file_put_contents($to, $str) : $str;
+    $lnk->execute($query);
+    $lnk->receive($out_stream);
+
+    if(is_resource($out))
+      return;
+    elseif(is_string($out)) {
+      fclose($out_stream);
+      return;
+    } else {
+      rewind($out_stream);
+      return stream_get_contents($out_stream);
+    }
+
   }
+
+
 
   function close(){
     $this->lnk->close();

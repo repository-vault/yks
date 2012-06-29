@@ -37,21 +37,15 @@ class window extends __native {
     return $url;
   }
 
-  function download($from, $to = false){
+  function download($from, $out = false){
     $url = self::extract_url($from);
 
-        //HERE
-    $lnk = $this->browser->get_lnk($url);
-
     $headers = array();
-    if($this->referer) $headers["Referer"] = (string)$this->referer;
+    if($this->referer)
+      $headers["Referer"] = (string)$this->referer;
 
-    $query = new request($url, "GET");
-    $query->addHeaders($headers);
-    $lnk->execute($query);
+    return $this->browser->download($url, $out, $headers);
 
-    $str = $lnk->receive();
-    return $to ? file_put_contents($to, $str) : $str;
   }
 
 
@@ -92,7 +86,12 @@ class window extends __native {
 
     if($lnk->url != $this->url)//has been redirected
         $this->url = $lnk->url;
-    $str = $lnk->receive();
+
+    $out_stream = fopen('php://temp', 'w');
+    $lnk->receive($out_stream);
+    rewind($out_stream);
+    $str = stream_get_contents($out_stream);
+
 
     if(strtolower($content_type->value)== "application/octet-stream") {
       $this->document = $str;
