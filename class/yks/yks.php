@@ -83,7 +83,7 @@ class yks
     $SITE_URL =  strip_end(str_set($SITE_URL, $envs_vars), ":80"); //bandwith enhancement
     $domain = parse_url($SITE_URL);
 
-    define('DEBUG',          strpos($config->site['debug'],$_SERVER['REMOTE_ADDR'])!==false);
+    define('DEBUG', false); //use yks::$get->config->is_debug()
 
     $site_code = strtr($config->site['code'], '.', '_');
 

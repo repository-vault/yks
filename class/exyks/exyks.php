@@ -30,7 +30,8 @@ class exyks {
 
     if(bool((string)yks::$get->config->site['closed'])) {
         error_log($_SERVER['REMOTE_ADDR']);
-        if(PHP_SAPI!='cli' && !DEBUG) yks::fatality(yks::FATALITY_SITE_CLOSED);
+        if(PHP_SAPI!='cli' && !yks::$get->config->is_debug())
+            yks::fatality(yks::FATALITY_SITE_CLOSED);
     }
 
     if(!yks::$get->config)
@@ -197,8 +198,11 @@ class exyks {
     exyks::store('generation_time', exyks::tick('generation_start'));
 
     $str = ob_get_contents(); ob_end_clean(); //did subs provide contents ?
-    if(DEBUG && $str){ header(TYPE_TEXT);die($str.print_r(sql::$queries,1)); }
-    if(JSX && jsx::$rbx)jsx::end();
+    if($str && yks::$get->config->is_debug() ) {
+        header(TYPE_TEXT);
+        die($str.print_r(sql::$queries,1));
+    }
+    if(JSX && jsx::$rbx) jsx::end();
   }
 
   static function render_prepare($vars = array()){
@@ -240,7 +244,8 @@ class exyks {
 
     $str = locales_manager::translate($str);
 
-    if(DEBUG) $str.=sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
+    if(yks::$get->config->is_debug())
+        $str .= sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 
 
     $render_mode  = exyks::retrieve('RENDER_MODE');

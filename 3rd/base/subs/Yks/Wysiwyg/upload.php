@@ -10,7 +10,7 @@ if(!$upload_def) {
 
 $valid_exts = preg_split( VAL_SPLITTER, $upload_def['exts'],  -1,  PREG_SPLIT_NO_EMPTY);
 
-if(!sess::$connected && !DEBUG){
+if(!sess::$connected && !yks::$get->config->is_debug()){
     jsx::$rbx = true;
     return rbx::error("Upload denied to anonymous user.");
 }

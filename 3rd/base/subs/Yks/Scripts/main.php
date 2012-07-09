@@ -12,7 +12,7 @@ if(!$runner)
   //******* valid access ***************
 $valid_runners = array('yks_runner', 'myks_runner', 'sql_runner');
 $access = 
-  ( DEBUG || $_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'] ) //REMOTE
+  ( yks::$get->config->is_debug() || $_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'] ) //REMOTE
   && in_array($runner, $valid_runners);
 
 if(!$access)

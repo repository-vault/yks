@@ -79,7 +79,7 @@ if($uids) {
 //    print_r($files_list);
     $packer->feed( $files_list );
 
-    if(DEBUG)
+    if(yks::$get->config->is_debug())
         $packer->feed("path://yks.root/tmp/trash/trace.js");
 
     $headers = $packager->output_headers($package_root);

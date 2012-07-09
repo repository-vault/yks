@@ -1,7 +1,5 @@
 <?php
 
-//if( 0&& DEBUG && preg_match_all('#&[\#a-z0-9\._]*?[^;a-z0-9\._]#',$str,$out))
-
 
 define('JSX_PLACE',         jsx::PLACE);
 define('JSX_MODAL',         jsx::MODAL);

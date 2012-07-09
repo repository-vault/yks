@@ -213,7 +213,7 @@ class sql {
     $serv = self::$lnks[self::$link];
     $pg_error  = $serv? pg_last_error($serv) : "?? unknow serv ??";
     $msg = "<b>".htmlspecialchars($pg_error)."</b> in $msg";
-    if(DEBUG && !self::$transaction) error_log($msg);
+    if(yks::$get->config->is_debug() && !self::$transaction) error_log($msg);
     return false;
   }
 

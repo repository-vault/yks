@@ -55,6 +55,16 @@ class config extends KsimpleXMLElement {
       return $ret;
   }
 
+  public function is_debug(){
+    static $result = null;
+    if(!is_null($result)) return $result;
+
+    $base = yks::$get->config->site['debug'];
+    $base = preg_split(VAL_SPLITTER, $base);
+    $result = http::ip_allow($base);
+    return $result;
+  }
+
   public function asSimpleXML(){
     $tmp = simplexml_load_string("<null>".$this->asXML(true)."</null>");
     return $tmp->{$this->getName()};  //document != documentElement

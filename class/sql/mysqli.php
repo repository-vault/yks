@@ -119,7 +119,7 @@ class sql {
 
   static function error($msg=''){
     $msg = "<b>".htmlspecialchars(mysqli_error(self::$lnks[self::$link]))."</b> in $msg";
-    if(DEBUG && !self::$transaction) error_log($msg);
+    if(yks::$get->config->is_debug() && !self::$transaction) error_log($msg);
     return false;
   }
 

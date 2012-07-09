@@ -68,7 +68,7 @@ class _sql_mysqli extends isql {
   static function error($msg='') {
     $error = mysqli_error(sql::$links[sql::$link]);
     $msg = "<b>".htmlspecialchars($error)."</b> in $msg";
-    if(DEBUG && !sql::$transaction) error_log($msg);
+    if(yks::$get->config->is_debug() && !sql::$transaction) error_log($msg);
     return false;
   }
 

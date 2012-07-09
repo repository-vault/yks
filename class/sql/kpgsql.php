@@ -73,7 +73,7 @@ class ksql extends isql {
   static function error($msg=''){
     $pg_error = pg_last_error(ksql::$links[ksql::$link]);
     $msg = "<b>".htmlspecialchars($pg_error)."</b> in $msg";
-    if(DEBUG && !ksql::$transaction) error_log($msg);
+    if(yks::$get->config->is_debug() && !ksql::$transaction) error_log($msg);
     return false;
   }
 

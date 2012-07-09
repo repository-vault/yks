@@ -2,7 +2,7 @@
 
 
 abstract class myks_collection extends myks_parsed {
-  public $elements = array(); //DEBUG
+  public $elements = array(); //trace
 
   function stack($element, $hash = null){
     $key = pick($hash, $element->hash_key());
