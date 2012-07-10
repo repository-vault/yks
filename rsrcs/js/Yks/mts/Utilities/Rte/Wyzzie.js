@@ -31,9 +31,25 @@ var Wyzzie = new Class({
 
     this.toolbar=new Element('div',{'class':'rte_toolbar topbar'}).inject(this.container,'top');
     for(var key in this.actions){ var item=this.actions[key];
+
+        // Drop list (if needed)
+        if(item['dropdown_title'] != null) {
+          var select_elem = new Element('select',{'style':'float:left', 'name':key+'_dd'});
+
+          for(var option_key in item['dropdown_title']) {
+            var option_elem =  new Element('option');
+            option_elem.inject(select_elem);
+            option_elem.setProperty('value',option_key);
+            option_elem.appendText(item['dropdown_title'][option_key]);
+          }
+          select_elem.inject(this.toolbar);
+
+        }
+
+        // Button (always)
         item.div=new Element('div',{'class':key+' rte_button','unselectable':'on'});
         item.div.inject(this.toolbar);
-        if(item.action) item.div.onclick=this.action.pass(item.action,this);
+        if(item.action) item.div.onclick=this.action.pass(item.action.concat([key]), this);
         if(item.onclick)item.div.onclick=item.onclick.bind(this);
     }
 
@@ -84,7 +100,15 @@ var Wyzzie = new Class({
 
   sync:function(){ if (this.designed) this.area.value = this.doc.body.innerHTML; },
     
-  action: function(cmd, html) {
+  action: function(cmd, html, key) {
+
+    // Drop down : html = sub html
+    var dd_key = key+'_dd';
+    if($N(dd_key) != null) {
+      dd_selected_id = $N(dd_key).value;
+      html = html[dd_selected_id];
+    }
+
     var action=Browser.Engine.trident?this.doc.selection.createRange():this.doc;
     if ($type(cmd) != 'array') cmd = [cmd];
     if (this.designed) try {
