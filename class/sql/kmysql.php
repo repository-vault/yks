@@ -9,7 +9,11 @@ class _sql_mysql extends isql{
   static function connect(){
     $serv = sql::$config->links->search(sql::$link);
     $credentials = array();
-    sql::$links[sql::$link] = mysql_connect($serv['host'], $serv['user'], $serv['pass']);
+
+    $port = pick($serv['port'], ini_get("mysql.default_port"));
+    $host = $serv['host'].":".$port;
+
+    sql::$links[sql::$link] = mysql_connect($host, $serv['user'], $serv['pass'], $port);
     if(!sql::$links[sql::$link])
       throw new Exception("Unable to load link #{".sql::$link."} configuration");
 

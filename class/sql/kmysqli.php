@@ -8,7 +8,10 @@ class _sql_mysqli extends isql {
 
   static function connect(){
     $serv = sql::$config->links->search(sql::$link);
+
     $credentials = array($serv['host'], $serv['user'], $serv['pass'], $serv['db']);
+    if($serv['port']) $credentials[] = $serv['port'];
+
     sql::$links[sql::$link] = @call_user_func_array('mysqli_connect', $credentials);
 
     if(!sql::$links[sql::$link])
