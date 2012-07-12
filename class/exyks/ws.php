@@ -5,6 +5,9 @@ class exyks_ws {
   private static $classes = array();
 
   static public function init(){
+    if(!$_SERVER['REQUEST_TIME_FLOAT'])
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
+
     exyks::init();
 
     $wsdls = yks::$get->config->wsdls;
