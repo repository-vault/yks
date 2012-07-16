@@ -205,7 +205,7 @@ class interactive_runner {
 
       try {
         $command_split = array();
-        cli::text_prompt('$'.$this->className, null, null, $command_split);
+        cli::text_prompt('$'.$this->className, null, $command_split);
         if($command_split == self::$REPLAY_COMMAND)
             $command_split = $this->last_command;
         else 
