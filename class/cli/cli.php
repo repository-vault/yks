@@ -8,6 +8,9 @@ class cli {
 
   const pad = 70;
 
+  private static $args = array(); //unparsed arguments
+  private static $dict = array(); //parsed arguments
+
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
@@ -19,6 +22,15 @@ class cli {
       //transcoding UTF-8 to IBM codepage
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
+
+    foreach($_SERVER['argv'] as $raw ) {
+        if (starts_with($raw, "-")) {
+            if(!preg_match("#^--?([a-z_0-9-]+)(?:=(.*))?#i", $raw, $out))
+                continue;
+            self::$dict[$out[1]] = $out[2] == "" ? true : $out[2];
+        } else self::$args[] = $raw;
+    }   
+
   }
 
   public static function cli_mode(){
@@ -137,7 +149,10 @@ class cli {
     return $result;
   }
 
-  public static function text_prompt($prompt=false, $default = null, &$args = null){
+  public static function text_prompt($prompt=false, $default = null, $cli_arg = null, &$args = null){
+    if($cli_arg)
+        $default = pick(self::$dict[$cli_arg], $default);
+
     if($default) $prompt .= " [{$default}]";
     if($prompt) echo "$prompt : ";
 
