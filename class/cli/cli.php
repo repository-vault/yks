@@ -149,9 +149,9 @@ class cli {
     return $result;
   }
 
-  public static function text_prompt($prompt=false, $default = null, $cli_arg = null, &$args = null){
-    if($cli_arg)
-        $default = pick(self::$dict[$cli_arg], $default);
+  public static function text_prompt($prompt=false, $default = null, &$args = null){
+    if(starts_with($default, "argv://"))
+        $default = self::$dict[strip_start($default, "argv://")];
 
     if($default) $prompt .= " [{$default}]";
     if($prompt) echo "$prompt : ";
