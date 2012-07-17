@@ -345,4 +345,15 @@ class sql_runner {
       }
     }
   }
+  
+  //Find the usage of a native type for a given value
+  function find_key($myks_type, $value){
+    $sub_sql = mykses::build_find_query($myks_type);
+    $data = array(
+      $myks_type => $value,
+    );
+    $sql = " ($sub_sql) as data";
+    sql::select($sql, $data);
+    return array_extract(sql::brute_fetch(), 'table_name');
+  }
 }
