@@ -116,6 +116,53 @@ class mykses {
     }
     return $filter_unique?$out[$filter_unique]:$out;
   }
+  
+  /*
+  * Build a huge query listing all the usage 
+  * of a native myks type
+  */
+  public static function build_find_query($myks_type, $ignored_tables = array()){
+
+    //Setup env
+    $birth_table  = self::get_birth_table($myks_type);
+    if(!$birth_table)
+      throw new Exception("Type $myks_type is not a native myks type.");
+    $ignored_tables = array_merge(array($birth_table), $ignored_tables);
+
+    $joins = array();
+    foreach(yks::$get->tables_xml as $table_name => $table_fields){
+      if(in_array($table_name, $ignored_tables))
+        continue;
+
+      //Find typed fields
+      $fields = array_keys(fields($table_fields), $myks_type);
+      if(!$fields)
+        continue;
+
+      //Save joins  
+      foreach($fields as $join_key){
+        $from = sql::from($table_name);
+        $sql_used = "SELECT DISTINCT $join_key as $myks_type, '$table_name' as table_name $from WHERE $join_key IS NOT NULL";
+        $joins[] = $sql_used;
+      }
+    }
+
+    //Link joins
+    $sql = implode("\n UNION \n", $joins);
+    
+    return $sql;
+  }
+  
+  //Get the birth table of a type
+  private static function get_birth_table($myks_type){
+    $type = yks::$get->types_xml->$myks_type;
+    if(!$type)
+      return false;
+    $birth = (string)$type['birth'];
+    if(!$birth)
+      return false;
+    return $birth;
+  }
 
 }
 
