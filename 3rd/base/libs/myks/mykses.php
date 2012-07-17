@@ -142,7 +142,7 @@ class mykses {
       //Save joins  
       foreach($fields as $join_key){
         $from = sql::from($table_name);
-        $sql_used = "SELECT DISTINCT $join_key as $myks_type, '$table_name' as table_name $from WHERE $join_key IS NOT NULL";
+        $sql_used = "SELECT DISTINCT $join_key as $myks_type, '$table_name' as table_name, '$join_key' AS mykse_column $from WHERE $join_key IS NOT NULL";
         $joins[] = $sql_used;
       }
     }
