@@ -46,13 +46,25 @@ class smtp_lite {
 * $dests is ALL recipients list (TO/CC/CCi)
 */
   private static function host_smtpsend($smtp_config , $contents, $dests){
-    
-    $smtp_sender = $smtp_config['sender'];
 
-    $sock=fsockopen($smtp_config['host'], 25, $errno, $errstr, 20);
+    $smtp_sender = $smtp_config['sender'];
+    $smtp_port   = pick($smtp_config['port'], 25);
+
+    $sock=fsockopen($smtp_config['host'], $smtp_port, $errno, $errstr, 20);
     self::server_sync($sock, "220");
     fputs($sock, "EHLO ".$smtp_config['host'].CRLF);
     self::server_sync($sock, "250");
+
+    if(bool($smtp_config['tls'])){
+      fputs($sock, "STARTTLS".CRLF);
+      self::server_sync($sock, "220");
+      if(!stream_socket_enable_crypto($sock, true, STREAM_CRYPTO_METHOD_TLS_CLIENT))
+        throw new Exception("Could not start tls negociation");
+
+      fputs($sock, "EHLO ".$smtp_config['host'].CRLF);
+      self::server_sync($sock, "250");
+    }
+
 
     if($smtp_config['login'] ) {
         fputs($sock, "AUTH LOGIN".CRLF);
