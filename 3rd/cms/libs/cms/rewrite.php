@@ -38,7 +38,7 @@ class cms_rewrite {
     $str = strtr($str, array('&'=>'and', "'"=>'’', '"'=>'-', '!'=>''));
     $str = preg_replace("#\s+#"," ", $str); 
     $str = str_replace(" ", "_", $str);
-    $str = strip_accents($str);
+    $str = txt::strip_accents($str);
     return $str;
   }
   static function resolve_links($doc, $node){

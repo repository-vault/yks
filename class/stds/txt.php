@@ -162,12 +162,4 @@ class txt {
   }
 }
 
-function strip_accents($str){
-  error_log("Deprecated use of strip_accents");
-  return txt::strip_accents($str);
-}
 
-function truncate($str, $len = 10) {
-  error_log("Deprecated use of truncate");
-  return txt::truncate($str, $len);
-}
