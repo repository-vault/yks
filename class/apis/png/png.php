@@ -69,7 +69,16 @@ class png {
 //********** COMMENT ******************/
   function get_comment(){
     $chunk = $this->find_chunk("text");
-    if(!$chunk) return null;
+    if(!$chunk) {
+        $chunk = $this->find_chunk("itxt");
+        if(!$chunk) return null;
+        $itxt_parser = '#^(?P<keyword>[^\x00]{1,79})\x00(?P<compression_flag>\x00|\x01)(?P<compression_method>.)(?P<language_tag>[^\x00]*)\x00(?P<translated_keyword>[^\x00]*)\x00(?P<text>.*)#s';
+
+        if(!preg_match($itxt_parser, $chunk->data, $out))
+            return null;
+        return $out['text'];
+        
+    }
     list($ckey, $data) = explode("\0", $chunk->data,2);
     return $data;
   }

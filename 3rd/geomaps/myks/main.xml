@@ -1,24 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
 <myks>
-  <table name="ks_geomaps_area_list">
-    <fields>
-      <field type="area_id"/>
-      <field type="area_key"/>
-      <field type="title" name="area_name"/>
-    </fields>
-  </table>
-  <mykse type="area_id" birth="ks_geomaps_area_list">
+  <mykse type="area_id">
     <string length="50"/>
-  </mykse>
-  <mykse type="area_key">
-    <string length="20"/>
   </mykse>
   <table name="ks_users_geomaps_list">
     <fields>
       <field type="map_id"/>
       <field type="title" name="map_name"/>
       <field type="user_id"/>
+      <field type="uri" name="map_path"/>
     </fields>
   </table>
   <mykse type="map_id" birth="ks_users_geomaps_list">

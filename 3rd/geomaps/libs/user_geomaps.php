@@ -9,15 +9,37 @@ class user_geomaps extends geomaps {
   function __construct($map_id, $users_colors = false){
     parent::__construct($map_id);
     $verif_map = compact('map_id');
+
     sql::select("ks_users_geomaps_area", $verif_map);
     $this->area_user = sql::brute_fetch("area_id", "user_id"); //one area per user in this one
+
     if($users_colors === false) {
         $users_list  = array_unique(array_filter(array_values($this->area_user)));
         $users_colors = array();
-        foreach($users_list as $user_id) $users_colors[$user_id] = self::user_color($user_id);
+        foreach($users_list as $user_id)
+            $users_colors[$user_id] = self::user_color($user_id);
     }
     $this->users_colors = $users_colors;
   }
+
+
+  public static function filter_zipcode($areas_list, $addr_zipcode){
+    $success = array();
+
+    foreach($areas_list as $area_id){
+        if(starts_with($area_id, "fra-dep-")
+           && starts_with($addr_zipcode, strip_start($area_id, "fra-dep-")) )
+        $success ["fra-dep"]= $area_id;
+
+        if(starts_with($area_id, "fra-75-")
+           && starts_with($addr_zipcode, "750".strip_start($area_id, "fra-75-")) )
+        $success ["fra-75"]= $area_id;
+    }
+
+        //prefer paris district 
+    return array_sort($success, array('fra-75', 'fra-dep'));
+  }
+
 
 
   static function user_color($user, $hex = false){
@@ -40,6 +62,9 @@ class user_geomaps extends geomaps {
 
   function toggle_user_at($x,$y, $user_id){
     $area_id = $this->png_map->hash_key_at($x, $y);
+    if(!$area_id)
+        return;
+
     $map_id = $this->data['map_id'];
 
     $verif_area = compact('area_id', 'map_id');

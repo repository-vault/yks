@@ -8,12 +8,6 @@ class geomaps {
   protected $data;
   static function init(){
     classes::register_class_path("png_map",  CLASS_PATH."/apis/png/map.php");
-
-
-    self::$maps_path = yks::$get->config->geomaps['maps_path'];
-    if(!is_dir(self::$maps_path))
-        throw new Exception("Geomaps directory is not ready");
-
   }
 
   public function __construct($map_id){
@@ -22,8 +16,9 @@ class geomaps {
     if(!$this->data)
         throw new Exception("Invalid map #");
 
-    $file_path = self::$maps_path."/$map_id.png";
-    $this->png_map = new png_map($file_path);
+    if(!is_file($this->data['map_path']))
+        throw new Exception("Map $map_id file not ready");
+    $this->png_map = new png_map($this->data['map_path']);
     
   }
 
