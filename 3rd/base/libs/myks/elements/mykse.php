@@ -15,7 +15,7 @@ abstract class mykse_base  {
   protected $depth      = 0;
   public $base_type     = 0;
 
-  function  __construct($field_xml, $table){
+  function  __construct($field_xml, $table = null){
 
     $this->table = $table;
     $this->type  = $field_xml['type'];
@@ -39,7 +39,7 @@ abstract class mykse_base  {
       $this->field_def['Null'] = false;
 
     $birth_root   = sql::resolve((string)$this->mykse_xml['birth']);
-    if($birth_root){
+    if($birth_root && $this->table){
        $table = $this->table->get_name();
        if($birth_root['name']==(string)$table['name']
         && $this->depth==1
@@ -64,7 +64,7 @@ abstract class mykse_base  {
         && $this->depth > 1)
             $this->fk($field_xml, $birth_deep);
 
-    if($field_xml['key'])
+    if($field_xml['key'] && $this->table )
         $this->table->key_add("{$field_xml['key']}","{$this->field_def['Field']}");
 
   }

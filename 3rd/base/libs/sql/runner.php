@@ -50,6 +50,7 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
+    //$this->dblink("crm_chains_list");die;
     //$this->scan_tables("sessions_results_heap");
     //$this->scan_procedures("spli", true);
     //$this->scan_views("ttriggers", true);
@@ -345,7 +346,36 @@ class sql_runner {
       }
     }
   }
-  
+
+  function dblink($table_name){
+    $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name}']"));
+    if(!$table_xml)
+      throw rbx::error("Cannot resolve $table_name");
+
+    $table_name = sql::resolve( $table_name );
+
+    $cols = array();
+    $dsn = yks::$get->config->sql->links->db_link;
+    $dsn = sprintf('host=%s dbname=%s', $dsn['host'], $dsn['db']);
+
+    foreach($table_xml->fields->field as $field_xml){
+      $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
+      $mykse      = new mykse($field_xml);
+      $field_type = (string) $mykse->field_def['Type'];
+      $cols [$field_name] = $field_type;
+    }
+    
+
+    $str = "SELECT ".mask_join(', ', $cols, '%2$s').CRLF.
+           "FROM dblink('$dsn',".CRLF.
+          "'SELECT ".mask_join(', ', $cols, '%2$s')." FROM {$table_name['safe']} '".CRLF.
+          ") AS {$table_name['name']} (".mask_join(', ', $cols, '%2$s %1$s').")". ";";
+
+    rbx::line();
+    echo $str.CRLF;
+    rbx::line();
+  }
+
 /**
 * Find the usage of a native type for a given value
 * @alias find
