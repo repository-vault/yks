@@ -355,8 +355,20 @@ class sql_runner {
     $table_name = sql::resolve( $table_name );
 
     $cols = array();
-    $dsn = yks::$get->config->sql->links->db_link;
-    $dsn = sprintf('host=%s dbname=%s', $dsn['host'], $dsn['db']);
+    $dsn = yks::$get->config->sql->links->search("db_link_dblink");
+    if(!$dsn){
+      rbx::error("db_link_dblink not found, fallback to main db_link");
+      cli::pause();
+      $dsn = yks::$get->config->sql->links->search("db_link");
+    }
+    $dsn_str = array();
+    $dsn_str["dbname"] = $dsn['db'];
+    if($dsn['host']) $dsn_str["host"] = $dsn['host'];
+    if($dsn['user']) $dsn_str["user"] = $dsn['user'];
+    if($dsn['pass']) $dsn_str["password"] = $dsn['pass'];
+    if($dsn['port']) $dsn_str["port"] = $dsn['port'];
+    $dsn_str = mask_join(' ', $dsn_str, '%2$s=%1$s');
+
 
     foreach($table_xml->fields->field as $field_xml){
       $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
@@ -367,7 +379,7 @@ class sql_runner {
     
 
     $str = "SELECT ".mask_join(', ', $cols, '%2$s').CRLF.
-           "FROM dblink('$dsn',".CRLF.
+           "FROM dblink('$dsn_str',".CRLF.
           "'SELECT ".mask_join(', ', $cols, '%2$s')." FROM {$table_name['safe']} '".CRLF.
           ") AS {$table_name['name']} (".mask_join(', ', $cols, '%2$s %1$s').")". ";";
 
