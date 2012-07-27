@@ -67,7 +67,7 @@ class sock   {
     }
 
 
-    if(self::$trace) {  
+    if(self::$trace) {
         $str  = CRLF.self::$transport_type." ".str_repeat('-', 60).CRLF.$this->query['raw_url'].CRLF;
         $str .= print_r($this->query['raw'],1).CRLF;
         $str .= print_r($this->response['raw'], 1);
@@ -84,7 +84,7 @@ class sock   {
   private function request_native(){
     global $http_response_header;
 
-    if (version_compare(PHP_VERSION, '5.3.0') < 0) 
+    if (version_compare(PHP_VERSION, '5.3.0') < 0)
       throw new Exception("Need at lease PHP 5.3 (chunk filter)");
 
     $opts = array('http' => array(
@@ -152,7 +152,7 @@ class sock   {
     ); // -- 'Referer'       =>'',
 
     if($this->proxy) {
-        
+
     } elseif (self::$http_version == self::HTTP_1_1
       && self::$transport_type == self::TRANSPORT_USER)
       $headers = array_merge($headers, array(
@@ -221,9 +221,10 @@ class sock   {
         elseif($this->proxy)
             $this->receive_end_lnk($out, $filter, $ret);
         else $this->receive_end_lnk($out);
-    }
+    } else {
       //in native mode, this->contents contains the already downloaded contents
-    return $this->contents;
+      fwrite($out, $this->contents);
+    }
   }
 
 
@@ -244,18 +245,18 @@ class sock   {
     if(self::$transport_type == self::TRANSPORT_NATIVE)
         return;
 
-    if($this->proxy) 
+    if($this->proxy)
       $this->lnk = fsockopen($this->proxy_infos['host'], $this->proxy_infos['port']);
     else {
       $this->lnk = @fsockopen($this->enctype.$this->host,$this->port);
       self::trace("Open link {$this->enctype}{$this->host}:{$this->port}");
     }
 
-    if(!$this->lnk) 
+    if(!$this->lnk)
         throw new Exception("Unable to connect '$this->host':$this->port");
   }
 
-  protected function close(){ 
+  protected function close(){
     if(self::$transport_type == self::TRANSPORT_NATIVE)
         return;
 
