@@ -10,6 +10,7 @@ class cli {
 
   private static $args = array(); //unparsed arguments
   private static $dict = array(); //parsed arguments
+  private static $UNATTENDED_MODE = false;
 
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
@@ -29,7 +30,9 @@ class cli {
                 continue;
             self::$dict[$out[1]] = $out[2] == "" ? true : $out[2];
         } else self::$args[] = $raw;
-    }   
+    }
+
+    self::$UNATTENDED_MODE = (bool) self::$dict['unattended'];
 
   }
 
@@ -95,8 +98,9 @@ class cli {
             str_repeat($pad, max($left,0)) . $title . str_repeat($pad, max($pad_len - $left,0)));
   }
 
-  public static function pause(){
-    echo "[PAUSE Press Any key]";
+  public static function pause($prompt = ''){
+    if(self::$UNATTENDED_MODE) return;
+    echo "[PAUSE $prompt Press Any key]";
     self::text_prompt();
   }
   public static function box($title, $msg){
@@ -142,16 +146,16 @@ class cli {
     return $password;
   }
 
-  public static function bool_prompt($prompt=""){
-    if($prompt) echo "$prompt (yes/no) : ";
-    $line =  strtolower(trim(fread(STDIN, 1024)));
-    $result = $line == "yes" || $line =="y" || bool($line);
-    return $result;
+  public static function bool_prompt($prompt="", $default = null){
+    return bool(self::text_prompt("$prompt (Y/n)", $default ));
   }
 
   public static function text_prompt($prompt=false, $default = null, &$args = null){
-    if(starts_with($default, "argv://"))
+    if(starts_with($default, "argv://")) {
         $default = self::$dict[strip_start($default, "argv://")];
+        if($default && self::$UNATTENDED_MODE) //unattended
+          return $default;
+    }
 
     if($default) $prompt .= " [{$default}]";
     if($prompt) echo "$prompt : ";
