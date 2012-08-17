@@ -118,7 +118,7 @@ var Jsx = new Class({
         script.dispose();
     });
 
-    Doms.context_box= Screen.boxer(anchor,$merge({
+    Screen.boxer(anchor, $merge({
         box_name:this.options.target,
         url:this.options.url,
         opener:this.box

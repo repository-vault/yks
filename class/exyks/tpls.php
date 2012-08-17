@@ -115,16 +115,14 @@ class tpls {
     if(!self::$customs) return;
 
     $xpath = new DOMXPath($doc);
-    $query = mask_join("|", array_keys(self::$customs), "//%s");
-    $entries = $xpath->query($query);
-    if(!$entries->length) return;
-
-    foreach ($entries as $entry) {
-        $nodeName = $entry->nodeName;
-        $callback = self::$customs[$nodeName];
-        if($callback)
-            call_user_func($callback, $doc, $entry);
+    foreach(self::$customs as $mask => $callback){
+      $query = sprintf("//%s", $mask);
+      $entries = $xpath->query($query);
+      if(!$entries->length) continue ;
+      foreach ($entries as $entry) 
+        call_user_func($callback, $doc, $entry);
     }
+
   }
 
 

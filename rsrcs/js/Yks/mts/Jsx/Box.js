@@ -12,16 +12,17 @@ var Box = new Class({
     if (this.occlude(anchor)) return ;
 
     options = options || {};
-    this.anchor = anchor.store('box',this);
+    this.anchor   = anchor.store('box',this);
     this.box_name = options.box_name || anchor.id || Screen.get_lambda_box();
 
     this.fly = $defined(options.fly)?options.fly: (this.anchor.hasClass('fly') ||false);
 
-    var src = anchor.getAttribute('src');
+    var src = anchor.getAttribute('src'), 
+        url = anchor.getAttribute('url');
 
     this.anchor.id = this.box_name;
     var parent_box = anchor.getParent().getBox()
-    this.url = options.url || src || parent_box.url || href_ks ;
+    this.url = url || options.url || src || parent_box.url || href_ks;
     this.opener = options.opener || parent_box || false;
     Screen.boxes_list[this.box_name] = this;
 

@@ -17,6 +17,8 @@ class exyks {
   private static $modules_list;
   public static $get;
 
+  public static $vars = array();
+
   static function get_modules_list(){    return self::$modules_list;  }
   
 
@@ -104,7 +106,10 @@ class exyks {
         'jsx-server'=>TYPE_XML,//no TYPE_XHTML as it's irrelevant (DOM is more important)
     );
 
-       
+    //work in progress
+    //tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
+
+
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
 
@@ -240,12 +245,56 @@ class exyks {
   }
 
 
+    //inline controler for boxes
+  public static function inline_box($doc, $elem){
+    if(JSX)
+      return;
+    $src = $elem->getAttribute("src");
+    $src = strip_start($src, "/?");
+    $src = strip_start($src, "?");
+
+    list($context) = exyks_urls::parse($src);
+    $included_files = get_included_files();
+
+    foreach($context as $depth=>$infos){
+        list($subs_path, $subs_fold, $page, $args, $href_fold, $href_base) = $infos;
+        if($depth == $depths) exyks::$href = $href = "$href_base/$page";
+        list($sub0, $sub1, $sub2, $sub3, $sub4) = $args;
+        $subs_file = "$subs_fold/$page"; exyks::$page_def = "home";
+        if(!is_file($file = "$subs_path/$page.php")) return;
+        $mask = $file.join(',', $args);
+        if(isset(exyks::$vars[$mask])) {
+            foreach(exyks::$vars[$mask] as $var) global $$var;
+            continue;
+        }
+        include $file;
+    }
+
+    $body = tpls::tpl($subs_file);
+    ob_start();
+    include $body;
+    error_log($body);
+    $str = ob_get_contents(); ob_end_clean();
+
+    $str  = locales_manager::translate($str);
+    $new_doc = xml::load_string(XML_VERSION.$str);
+    if(!$new_doc) return;
+
+    $new_node = $new_doc->getElementsByTagName("box")->item(0);
+    $new_node = $doc->importNode($new_node, true);
+    $new_node->setAttribute("url", "/?$src");
+    $parent = $elem->parentNode;
+    $parent->replaceChild($new_node, $elem);
+
+    //tpls::process_customs_elements($doc);
+  }
+
+
+
   static function render($str){
 
     $str = locales_manager::translate($str);
 
-    if(yks::$get->config->is_debug())
-        $str .= sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
 
 
     $render_mode  = exyks::retrieve('RENDER_MODE');
@@ -264,6 +313,10 @@ class exyks {
         tpls::process_customs_elements($doc);
         if($render_side=="client") $str = $doc->saveXML();
     }
+
+    if(yks::$get->config->is_debug())
+        $str .= sys_end( exyks::retrieve('generation_time'), exyks::tick('display_start'));
+
 
     if($render_side == "client"){
         if($xsl_client && !is_file($xsl_client))

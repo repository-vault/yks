@@ -6,6 +6,7 @@ if(!defined('Ex/yks')) die("Ex/yks is not loaded");
   ob_start( );
   exyks::bench('generation_start');
 
+  $vars = array();
   list($context, $href, $href_ks, $depths, $argv0) = exyks::context_prepare($_SERVER['QUERY_STRING']);
     foreach($context as $depth=>$infos){
         list($subs_path, $subs_fold, $page, $args, $href_fold, $href_base) = $infos;
@@ -13,7 +14,9 @@ if(!defined('Ex/yks')) die("Ex/yks is not loaded");
         list($sub0, $sub1, $sub2, $sub3, $sub4) = $args;
         $subs_file = "$subs_fold/$page"; exyks::$page_def = "home";
         if(!is_file($file = "$subs_path/$page.php"))abort(404);
+        exyks::$vars['tmp'] = array_keys($GLOBALS);
         include $file;
+        exyks::$vars[$file.join(',', $args)] = array_diff(array_keys($GLOBALS), exyks::$vars['tmp']);
     }
   exyks::context_end();
 
