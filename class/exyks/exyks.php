@@ -107,7 +107,7 @@ class exyks {
     );
 
     //work in progress
-    //tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
+    tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
 
 
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
@@ -247,9 +247,21 @@ class exyks {
 
     //inline controler for boxes
   public static function inline_box($doc, $elem){
+    static $moved = array();
+
     if(JSX)
       return;
-    $src = $elem->getAttribute("src");
+    $src = $href_ks = $elem->getAttribute("src");
+
+
+    $domready_nodes = $doc->getElementsByTagName("domready");
+      //move all domready before the requested box
+    if($domready_nodes->length) foreach($domready_nodes as $domready){
+      if(in_array($domready, $moved )) continue;
+      $moved [] = $domready;
+      $elem->parentNode->insertBefore($domready, $elem);
+    }
+      //echo $doc->saveXML();die;
     $src = strip_start($src, "/?");
     $src = strip_start($src, "?");
 
@@ -276,17 +288,40 @@ class exyks {
     error_log($body);
     $str = ob_get_contents(); ob_end_clean();
 
+    tpls::export(compact('href_base', 'href_fold', 'subs_file', 'href', 'href_ks'));
+
+    //!href_base
     $str  = locales_manager::translate($str);
     $new_doc = xml::load_string(XML_VERSION.$str);
     if(!$new_doc) return;
 
-    $new_node = $new_doc->getElementsByTagName("box")->item(0);
+    tpls::process_customs_elements($new_doc); //recurse
+
+    $xpath = new DOMXPath($new_doc);
+    $entries = $xpath->query("//div[@class='box']|//box");
+    if(!$entries->length)
+      return;
+
+    $new_node = $entries->item(0);
     $new_node = $doc->importNode($new_node, true);
-    $new_node->setAttribute("url", "/?$src");
+
+    foreach($elem->attributes as $attribute) {
+      if($attribute->name == "src")
+        $new_node->setAttribute("url", $href_ks);
+      else if(!$new_node->hasAttribute($attribute->name))
+        $new_node->setAttribute($attribute->name, $attribute->value);
+    }
+
+
+    $forms = $new_node->getElementsByTagName("ks_form");
+    if($forms->length) foreach($forms as $form) {
+      if(!$form->hasAttribute("action"))
+        $form->setAttribute("action", $href_ks);
+    }
+
     $parent = $elem->parentNode;
     $parent->replaceChild($new_node, $elem);
 
-    //tpls::process_customs_elements($doc);
   }
 
 
