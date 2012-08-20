@@ -35,10 +35,6 @@ abstract class mykse_base  {
     // depth==1 est ok
 
 
-         //never nullable in pkey
-    if($field_xml['key'] == "primary" && $this->field_def['Null']) 
-      $this->field_def['Null'] = false;
-
     $birth_root   = sql::resolve($this->birth_table);
     if($birth_root && $this->table){
        $table = $this->table->get_name();
@@ -48,15 +44,18 @@ abstract class mykse_base  {
             || $field_xml['key'] == "primary")
         && $field_xml['key'] != "unique"  ){
             $this->table->key_add('primary',$this->field_def["Field"]);
+            $this->field_def['Null'] = false;
             $this->birth = true;
       } else $this->fk($field_xml, $birth_root);
     }
+
+
 
     $this->get_def(); 
 
 
     if(is_null($this->field_def['Null']))
-        $this->field_def['Null'] = true;
+        $this->field_def['Null'] = false;
 
 
     $birth_deep = sql::resolve($this->birth_table);
@@ -103,7 +102,9 @@ abstract class mykse_base  {
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
         throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
 
-    $this->field_def['Null'] = $this->field_def['Null'] || $this->mykse_xml['null']=='null';
+
+    if(is_null($this->field_def['Null']) && isset($this->mykse_xml['null']))
+        $this->field_def['Null'] = $this->mykse_xml['null']=='null';
 
     if(is_null($this->birth_table) && $this->mykse_xml['birth']) //override
         $this->birth_table = (string)$this->mykse_xml['birth'];

@@ -25,7 +25,7 @@
   <mykse type="ip">
     <int size="giga"/>
   </mykse>
-   <mykse type="ipstr">
+  <mykse type="ipstr">
     <string length="15"/>
   </mykse>
   <mykse type="price">

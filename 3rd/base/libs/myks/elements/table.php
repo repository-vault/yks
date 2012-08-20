@@ -231,7 +231,7 @@ abstract class table_base  extends myks_installer {
             $diff = array_diff_assoc($field_xml,$field_sql);
             foreach($diff as $diff_type=>$new_value){
                 if($diff_type=="Null"){
-                    if(!$new_value && !is_null($field_xml['Default']))
+                    if(!$new_value && !is_null($field_xml['Default']) && sql::row($this->table_name['raw'], array($field_name=>null))  )
                         $todo[] = "UPDATE {$this->table_name['safe']} "
                             ."SET {$ec}$field_name{$ec}={$field_xml['Default']} WHERE {$ec}$field_name{$ec} IS NULL";
                     $todo[] = "$table_alter ALTER COLUMN {$ec}$field_name{$ec} "

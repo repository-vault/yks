@@ -6,12 +6,9 @@
 
 
 <!ENTITY % null
-  "null  (null|not_null) 'not_null'"
+  "null  (null|not_null)  #IMPLIED"
 >
 
-<!ENTITY % nullable
-  "null  (null|not_null) #IMPLIED"
->
 
 <!ENTITY % block
  "block CDATA	 #IMPLIED"
