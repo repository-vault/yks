@@ -10,7 +10,8 @@ abstract class mykse_base  {
   public $field_def = array();
   protected $table;
   protected $types_tree = array();
-  protected $birth      = false;
+  protected $birth       = false;
+  protected $birth_table = null;
   protected $depth_max  = 10;
   protected $depth      = 0;
   public $base_type     = 0;
@@ -38,7 +39,7 @@ abstract class mykse_base  {
     if($field_xml['key'] == "primary" && $this->field_def['Null']) 
       $this->field_def['Null'] = false;
 
-    $birth_root   = sql::resolve((string)$this->mykse_xml['birth']);
+    $birth_root   = sql::resolve($this->birth_table);
     if($birth_root && $this->table){
        $table = $this->table->get_name();
        if($birth_root['name']==(string)$table['name']
@@ -58,10 +59,10 @@ abstract class mykse_base  {
         $this->field_def['Null'] = true;
 
 
-    $birth_deep = sql::resolve((string)$this->mykse_xml['birth']);
+    $birth_deep = sql::resolve($this->birth_table);
     if($birth_deep
         && !$birth_root
-        && $this->depth > 1)
+        && $this->depth > 1) 
             $this->fk($field_xml, $birth_deep);
 
     if($field_xml['key'] && $this->table )
@@ -96,12 +97,17 @@ abstract class mykse_base  {
   }
 
   protected function resolve($type){
+
     $this->mykse_xml = myks_gen::$mykse_xml->$type;
     $this->base_type = (string)$this->mykse_xml['type'];
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
         throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
 
     $this->field_def['Null'] = $this->field_def['Null'] || $this->mykse_xml['null']=='null';
+
+    if(is_null($this->birth_table) && $this->mykse_xml['birth']) //override
+        $this->birth_table = (string)$this->mykse_xml['birth'];
+
     $this->default_value($type);
 
     $this->type=$type;
