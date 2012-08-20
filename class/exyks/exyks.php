@@ -57,7 +57,7 @@ class exyks {
     if(yks::$get->config->site['hostname']) {
         $hostname = trim(`hostname`);
         if(yks::$get->config->site['hostname'] != $hostname)
-          yks::fatality(yks::FATALITY_CONFIG, "Invalid local host name");
+          yks::fatality(yks::FATALITY_CONFIG, "Invalid local host name {$hostname}");
     }
         
     self::$get = new self();
@@ -106,7 +106,7 @@ class exyks {
         'jsx-server'=>TYPE_XML,//no TYPE_XHTML as it's irrelevant (DOM is more important)
     );
 
-    //work in progress
+
     tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
 
 
@@ -249,8 +249,6 @@ class exyks {
   public static function inline_box($doc, $elem){
     static $moved = array();
 
-    if(JSX)
-      return;
     $src = $href_ks = $elem->getAttribute("src");
 
 
@@ -285,7 +283,6 @@ class exyks {
     $body = tpls::tpl($subs_file);
     ob_start();
     include $body;
-    error_log($body);
     $str = ob_get_contents(); ob_end_clean();
 
     tpls::export(compact('href_base', 'href_fold', 'subs_file', 'href', 'href_ks'));
