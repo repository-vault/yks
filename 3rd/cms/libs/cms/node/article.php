@@ -1,7 +1,7 @@
 <?
 
 class cms_node_article extends cms_node {
-  var $editables = array("node_contents");
+  var $editables = array("node_contents", "node_title", "lang_key");
 
 
   function __toString(){

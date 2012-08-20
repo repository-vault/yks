@@ -12,11 +12,14 @@
   </table>
   <table name="ks_cms_nodes_log">
     <fields>
-      <field type="node_id"/>
+      <field type="node_ref" name="node_id"/>
       <field type="now" name="node_date"/>
       <field type="text" name="node_state"/>
     </fields>
   </table>
+  <mykse type="node_ref" null="null" birth="">
+    <mykse type="node_id"/>
+  </mykse>
   <mykse type="node_id" birth="ks_cms_nodes_list" null="null">
     <int/>
   </mykse>

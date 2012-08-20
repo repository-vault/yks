@@ -3,8 +3,8 @@
 <myks>
   <table name="ks_cms_nodes_link">
     <fields>
-      <field type="node_id"/>
-      <field type="node_id" name="link_dest_node"/>
+      <field type="node_id" delete="cascade"/>
+      <field type="node_id" name="link_dest_node" delete="cascade"/>
       <field type="url" name="link_dest_href"/>
       <field type="title" name="link_target"/>
       <field type="title" name="link_reverse"/>
