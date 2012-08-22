@@ -154,10 +154,10 @@ class sql {
     $vals = array_map(array('sql', 'vals'), $vals);
 
     if($set) {
-      return "SET ".mask_join(',', $vals, '`%2$s`=%1$s');
+      return "SET ".mask_join(',', $vals, sql::$esc.'%2$s'.sql::$esc.'=%1$s');
     }
 
-    return "(`" . join('`,`', array_keys($vals)) . "`) VALUES(" . join(',', $vals) . ")";
+    return "(".sql::$esc . join(sql::$esc.','.sql::$esc, array_keys($vals)) . sql::$esc.") VALUES(" . join(',', $vals) . ")";
   }
 
   static function close($lnk = false) {
