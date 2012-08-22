@@ -107,7 +107,8 @@ class exyks {
     );
 
 
-    tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
+    if(yks::$get->config->site['render'] == 'inline')
+      tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
 
 
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
