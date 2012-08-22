@@ -289,7 +289,7 @@ class sql {
     foreach($tables as $k=>$table) {
       $ret .= is_numeric($k)?(($k?',':'FROM ') . self::fromf($table)):
       (((is_array($table) && list($join, $v) = each($table))
-      ?"$join `$v`":"INNER JOIN `$table`") . " USING($k) ");
+      ?"$join ".self::$esc.$v.self::$esc :" INNER JOIN `$table`") . " USING($k) ");
     }
 
     return $ret;

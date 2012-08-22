@@ -140,8 +140,8 @@ abstract class isql {
   static function format_prepare($data, $set=true){ $r='';
     $keys = array_keys($data);
     $vals = array_combine($keys, array_mask($keys, ":i%s"));
-    if($set) $format = "SET ".mask_join(',',$vals,'`%2$s`=%1$s');
-    else $format = "(`".join('`,`',array_keys($vals))."`) VALUES(".join(',',$vals).")";
+    if($set) $format = "SET ".mask_join(',',$vals, sql::$esc .'%2$s'.sql::$esc .'=%1$s');
+    else $format = "(".sql::$esc.join(sql::$esc.','.sql::$esc,array_keys($vals)).sql::$esc") VALUES(".join(',',$vals).")";
 
     $vals = array_combine($vals, $data);
     return array($format, $vals);
@@ -161,14 +161,15 @@ abstract class isql {
 
     //format conditions
   static function conds($k, $v, &$params = null){
+    $ke = sql::$esc.$k.sql::$esc;
     if(is_array($v))  return sql::in_join($k,$v);
 
     if(is_string($v) || is_int($v)) {
         $params[":w$k"] = $v;
-        return "`$k`=:w$k";
+        return "$ke=:w$k";
     }
-    if(is_null($v))   return "`$k` IS NULL";
-    if(is_bool($v))   return $v?"`$k`":"not(`$k`)";
+    if(is_null($v))   return "$ke IS NULL";
+    if(is_bool($v))   return $v?"$ke":"not($ke)";
   }
 
   static function where($cond, $table = false, $mode = 'AND') {
