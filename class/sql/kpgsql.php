@@ -1,7 +1,7 @@
 <?php
 
 class ksql extends isql {
-
+  public static $esc = '"';
   static function init() {
     ksql::$pfx['search'][]  = "#`(.*?)`#";
     ksql::$pfx['replace'][] = "\"$1\"";
