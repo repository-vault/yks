@@ -7,22 +7,21 @@ class urls {
 
     $host = $infos['host'];
     if($host) {
-        $infos = array_merge($infos, self::resolve_tld($host, self::$tlds));
+        $infos = array_merge($infos, self::parse_host($host));
         if(!$infos['path']) $infos['path'] = '/';
     }
     return $infos;
   }
 
-  static function init(){
-    if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
-
+  private static function tlds(){
     if(!self::$tlds)
         self::$tlds = tlds::get_list();
+    return self::$tlds;
   }
 
     //return compact('domain', 'tld', 'sub', 'host')
-  private static function resolve_tld($host, $tlds){
-
+  static function parse_host($host){
+    $tlds = self::tlds();
     $parts = explode('.', $host);
     $stack = false; $tld_level = 1; //unknown tld are 1st level
     foreach(array_reverse($parts) as $part) {
