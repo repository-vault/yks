@@ -13,6 +13,7 @@ class sql_runner {
   private static $myks_config;
   private static $sql_ready = false;
 
+
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
@@ -79,6 +80,7 @@ class sql_runner {
     $this->procedures_xml = simplexml_import_dom($myks_parser->out("procedure"));
     $this->views_xml      = simplexml_import_dom($myks_parser->out("view"));
 
+    $this->last_execution_count = 0;
 
     //echo chunk_split($this->tables_xml->asXML(),90);die('here');
     if(!$this->types_xml instanceof SimpleXMLElement) die("Unable to load types_xml");
@@ -132,6 +134,8 @@ class sql_runner {
    */
   private $stack_mode = false;
   private function queue($run_queue, $stack = false){
+    $this->last_execution_count = 0;
+
     if($stack === "start" ) {
       $this->stack_mode = true;
       return;
@@ -156,7 +160,8 @@ class sql_runner {
     }
 
     //at least, we can run queries
-    cli::trace("-- Running %d queries", count($this->queries));
+    $this->last_execution_count = count($this->queries);
+    cli::trace("-- Running %d queries", $this->last_execution_count );
     array_walk($this->queries, array('sql', 'query_raw'));
 
     $this->queries = array();
