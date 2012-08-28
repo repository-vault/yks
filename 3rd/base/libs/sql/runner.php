@@ -353,13 +353,9 @@ class sql_runner {
   }
 
   function dblink($table_name){
-    $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name}']"));
-    if(!$table_xml)
-      throw rbx::error("Cannot resolve $table_name");
-
     $table_name = sql::resolve( $table_name );
+    //for views, we use information schema reflection, for table, xml definition
 
-    $cols = array();
     $dsn = yks::$get->config->sql->links->search("db_link_dblink");
     if(!$dsn){
       rbx::error("db_link_dblink not found, fallback to main db_link");
@@ -375,18 +371,31 @@ class sql_runner {
     $dsn_str = mask_join(' ', $dsn_str, '%2$s=%1$s');
 
 
-    foreach($table_xml->fields->field as $field_xml){
-      $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
-      $mykse      = new mykse($field_xml);
-      $field_type = (string) $mykse->field_def['Type'];
-      $cols [$field_name] = $field_type;
-    }
-    
+    $table_columns = array();
 
-    $str = "SELECT ".mask_join(', ', $cols, '%2$s').CRLF.
+    if($this->views_list[$table_name['raw']]) {
+      $verif_table = array(
+        'table_schema' => $table_name['schema'],
+        'table_name'   => $table_name['name']
+      ); sql::select("zks_information_schema_columns", $verif_table);
+      $table_columns = sql::brute_fetch('column_name', 'data_type');
+    } else {
+      $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
+      if(!$table_xml)
+        throw rbx::error("Cannot resolve {$table_name['raw']}");
+
+      foreach($table_xml->fields->field as $field_xml){
+        $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
+        $mykse      = new mykse($field_xml);
+        $field_type = (string) $mykse->field_def['Type'];
+        $table_columns [$field_name] = $field_type;
+      }
+    }
+
+    $str = "SELECT ".mask_join(', ', $table_columns, '%2$s').CRLF.
            "FROM dblink('$dsn_str',".CRLF.
-          "'SELECT ".mask_join(', ', $cols, '%2$s')." FROM {$table_name['safe']} '".CRLF.
-          ") AS {$table_name['name']} (".mask_join(', ', $cols, '%2$s %1$s').")". ";";
+          "'SELECT ".mask_join(', ', $table_columns, '%2$s')." FROM {$table_name['safe']} '".CRLF.
+          ") AS {$table_name['name']} (".mask_join(', ', $table_columns, '%2$s %1$s').")". ";";
 
     rbx::line();
     echo $str.CRLF;
