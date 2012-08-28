@@ -125,26 +125,12 @@ class table extends table_base {
 
 
     foreach($columns as $column_name=>$column){
-        //on transtype ici (à la facon de ce qui est fait dans mykse->XXX_mode()
-        $transtype = array(
-            'string'  => "varchar({$column['character_maximum_length']})",
-            'mini'    => "smallint",
-            'small'   => "smallint",
-            'int'     => "integer",
-            'big'     => "integer",
-            'giga'    => "bigint",
-            'float'   => "double precision",
-            'decimal' => "float(10,5)",
-            'bool'    => "boolean",
-            'sql_timestamp' => "timestamptz",
-            'text'    => "text",
-        ); $type = pick($transtype[$column['data_type']], $column['data_type']);
 
         $table_cols[$column_name] = array(
             'Extra'     => '',
             'Default'   => $column['column_default'],
             'Field'     => $column['column_name'],
-            'Type'      => $type,
+            'Type'      => $column['data_type'],
             'Null'      => bool($column['is_nullable']),
         );
     } return $table_cols;

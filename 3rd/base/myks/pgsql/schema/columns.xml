@@ -13,16 +13,12 @@ SELECT
 -- chk routines.xml
     (CASE data_type
         WHEN '"trigger"' THEN 'trigger'
-        WHEN 'boolean' THEN 'bool'
-        WHEN 'integer' THEN 'int'
-        WHEN 'character varying' THEN 'string'
+        WHEN 'character varying' THEN 'varchar(' || character_maximum_length || ')'
         WHEN 'timestamp with time zone' THEN 'timestamptz'
         WHEN 'timestamp without time zone' THEN 'timestamp'
-        WHEN 'double precision' THEN 'float'
         ELSE data_type
     END ) AS data_type, 
 
-    character_maximum_length,
     (is_nullable='YES') as is_nullable,
 
 
