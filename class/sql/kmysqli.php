@@ -5,6 +5,7 @@
 **/
 class _sql_mysqli extends isql {
 
+  public static $esc = '"';
 
   static function connect(){
     $serv = sql::$config->links->search(sql::$link);

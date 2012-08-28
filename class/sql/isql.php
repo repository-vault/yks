@@ -141,9 +141,10 @@ abstract class isql {
     $keys = array_keys($data);
     $vals = array_combine($keys, array_mask($keys, ":i%s"));
     if($set) $format = "SET ".mask_join(',',$vals, sql::$esc .'%2$s'.sql::$esc .'=%1$s');
-    else $format = "(".sql::$esc.join(sql::$esc.','.sql::$esc,array_keys($vals)).sql::$esc") VALUES(".join(',',$vals).")";
+    else $format = "(".sql::$esc.join(sql::$esc.','.sql::$esc, array_keys($vals)).sql::$esc.") VALUES(".join(',',$vals).")";
 
     $vals = array_combine($vals, $data);
+
     return array($format, $vals);
   }
 
@@ -162,7 +163,7 @@ abstract class isql {
     //format conditions
   static function conds($k, $v, &$params = null){
     $ke = sql::$esc.$k.sql::$esc;
-    if(is_array($v))  return sql::in_join($k,$v);
+    if(is_array($v))  return sql::in_join($ke, $v);
 
     if(is_string($v) || is_int($v)) {
         $params[":w$k"] = $v;

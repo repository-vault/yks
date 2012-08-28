@@ -7,6 +7,9 @@ class _sql_pdo extends isql {
   const true  = '1';
   const false = '0';
 
+
+  public static $esc = '"';
+
   static function init() {
 //    self::$pfx['search'][]  = "#`(.*?)`#";
 //    self::$pfx['replace'][] = "\"$1\"";
