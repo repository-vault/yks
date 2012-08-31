@@ -30,10 +30,10 @@ class navigation{
         foreach($page->distributor as $distributor){
           $v = (string)$distributor;
           if(!$v) continue;
-          if(!in_array($v, $user_tree)){
-            $valid = false;
-            break;
-          }          
+          if(in_array($v, $user_tree)){
+            break; // valid
+          }
+          $valid = false; // not valid
         }
         
         if(!$valid) continue;
