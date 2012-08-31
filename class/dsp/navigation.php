@@ -11,11 +11,13 @@ class navigation{
   
   private function load($href){
     
+    $user_tree = pick(sess::$sess['users_tree'], array());
+    
     foreach($this->conf->page as $page){
       
-      //Check rights
       if($page->children()){
         $valid = true;
+        //Check rights
         foreach($page->right as $right){
           $mode = pick((string)$right['mode'], 'access');
           if(!auth::verif((string)$right, $mode)){
@@ -23,6 +25,17 @@ class navigation{
             break;
           }
         }
+        
+        //Check distributor
+        foreach($page->distributor as $distributor){
+          $v = (string)$distributor;
+          if(!$v) continue;
+          if(!in_array($v, $user_tree)){
+            $valid = false;
+            break;
+          }          
+        }
+        
         if(!$valid) continue;
       }
 
