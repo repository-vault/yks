@@ -31,7 +31,8 @@ class navigation{
           $v = (string)$distributor;
           if(!$v) continue;
           if(in_array($v, $user_tree)){
-            break; // valid
+            $valid = true;
+            break;
           }
           $valid = false; // not valid
         }
