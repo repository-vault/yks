@@ -152,7 +152,8 @@ class cli {
 
   public static function text_prompt($prompt=false, $default = null, &$args = null){
     if(starts_with($default, "argv://")) {
-        $default = self::$dict[strip_start($default, "argv://")];
+        list($key, $default_value)   = explode("=", strip_start($default, "argv://"),2);
+        $default = pick(self::$dict[$key], $default_value);
         if($default && self::$UNATTENDED_MODE) //unattended
           return $default;
     }
