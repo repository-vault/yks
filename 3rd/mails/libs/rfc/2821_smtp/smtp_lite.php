@@ -1,5 +1,7 @@
 <?php
 
+
+
 class smtp_lite {
   private static function server_sync($sock,$response){
     while(!preg_match("#^[0-9]{3}(?=\s)#",$tmp=fgets($sock,256),$out) );
@@ -8,15 +10,19 @@ class smtp_lite {
   }
 
   public static function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
+    $to = is_array($to) ? $to : array($to);
+
     $contents = $headers.CRLF;
     $contents.= "Subject: ".rfc_2047::header_encode($subject).CRLF;
     $contents.= "From: ".rfc_2047::header_encode("[".SITE_DOMAIN."] <webmaster@".SITE_DOMAIN.">").CRLF;
-    $contents.= "To: ".rfc_2047::header_encode($to).CRLF;
+    $contents.= "To: ".rfc_2047::header_encode(join(',', $to)).CRLF;
     $contents.= CRLF.CRLF.$body;
 
     $name_mask = "#<\s*([^<]*)\s*>#";
-    $to = preg_match($name_mask, $to,$out)?$out[1]:$to;
-    return self::smtpsend($contents, array($to));
+    foreach($to as &$dest) {
+      $dest = preg_match($name_mask, $dest, $out) ? $out[1] : $dest;
+    }
+    return self::smtpsend($contents, $to);
   }
 
 /**
