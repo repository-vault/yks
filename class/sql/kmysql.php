@@ -18,10 +18,12 @@ class _sql_mysql extends isql{
     if(!sql::$links[sql::$link])
       throw new Exception("Unable to load link #{".sql::$link."} configuration");
 
-    mysql_select_db($serv['db'], sql::$links[sql::$link]);
-    //mysql_set_charset ( "UTF-8",  sql::$links[sql::$link]);
-    mysql_query("SET NAMES utf8", sql::$links[sql::$link]);
-    return sql::$links[sql::$link];
+    $lnk = sql::$links[sql::$link];
+
+    mysql_select_db($serv['db'], $lnk);
+    mysql_query("SET sql_mode='ANSI'", $lnk);
+    mysql_query("SET NAMES utf8", $lnk);
+    return $lnk;
   }
 
 
