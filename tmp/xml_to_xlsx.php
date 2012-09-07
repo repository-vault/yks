@@ -23,9 +23,9 @@ Class xml_to_xlsx {
   const worksheet_rels_path= 'worksheets/';
   const worksheet_path     = 'xl/worksheets/';
   
-  const sheet_xml          = 'xl/worksheets/sheet1.xml';
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
-  
+  const URI_RELATIONSHIP   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+
   function __construct($data_xml_file){
     
     $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
@@ -68,7 +68,7 @@ Class xml_to_xlsx {
     $sheet = $this->workbook_xml->sheets->addChild('sheet');
     $sheet->addAttribute('name', $name);
     $sheet->addAttribute('sheetId', $this->nb_worksheet);
-    $sheet->addAttribute('r:id', $new_rid, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+    $sheet->addAttribute('r:id', $new_rid, self::URI_RELATIONSHIP);
     
     
     $content_sheet = $this->content_types_xml->addChild('Override');
@@ -83,7 +83,7 @@ Class xml_to_xlsx {
     $new_sheet = simplexml_load_string(
           '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.CRLF.
           '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" 
-                      xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                      xmlns:r="'.self::URI_RELATIONSHIP.'"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac"
                       mc:Ignorable="x14ac"
@@ -92,12 +92,14 @@ Class xml_to_xlsx {
     
     if(count($worksheet->Cols) > 0){
       $new_sheet->addChild('cols');
+      $col_nb = 0;
       foreach($worksheet->Cols->Col as $col){
-        
+        $col_nb++; $col_id = pick($col['Id'], $col_nb);
         $xml_col = $new_sheet->cols->addChild('col');
-        $xml_col->addAttribute('min', $col['Id']);
-        $xml_col->addAttribute('max', $col['Id']);
+        $xml_col->addAttribute('min', $col_id);
+        $xml_col->addAttribute('max', $col_id);
         $xml_col->addAttribute('width', $col['Width']);
+        $xml_col->addAttribute('customWidth', 1);
       }
     }
     
@@ -251,22 +253,4 @@ Class xml_to_xlsx {
     $zip->close();
   }
   
-  private function list_file($dir, $parent = null) {    
-    $files_list =  array();
-     
-    if ($handle = opendir($dir)) {
-      while (false !== ($entry = readdir($handle))) {
-        if ($entry != "." && $entry != "..") {
-          $absolute_path = $dir.$entry;
-          if(is_dir($absolute_path))
-            $files_list = array_merge($this->list_file($absolute_path.'/', $parent.$entry.'/'), $files_list);
-          else
-            $files_list[] = $parent.$entry;
-        }
-      }
-      closedir($handle);
-    }
-    
-    return $files_list;
-  }
 }
