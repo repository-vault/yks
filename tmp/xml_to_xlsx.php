@@ -1,4 +1,5 @@
 <?
+
 Class xml_to_xlsx {
   
   private $data_xml;
@@ -146,10 +147,16 @@ Class xml_to_xlsx {
   }
   
   public function save($path){
-    $path = $path.posix_getpid().'/';
     
     files::delete_dir($path, false);
     files::copy_dir($this->excel_dir, $path);
+    $files = files::find($path, "#\.(git|svn)#");
+    foreach($files as $file_path) {
+      if(is_file($file_path))
+          unlink($file_path);
+       if(is_dir($file_path))
+          files::delete_dir($file_path);
+    }
         
     $this->workbook_xml->asXML($path.self::workbook_file);
     $this->workbook_rels_xml->asXML($path.self::workbook_rels_file);
@@ -200,12 +207,3 @@ Class xml_to_xlsx {
     return $files_list;
   }
 }
-
-$current_dir    = realpath(dirname(__FILE__));
-$excel_dir      = $current_dir.'/zipbase/';
-$data_xml_file  = $current_dir."/data.xml";
-
-
-$xlsx = new xml_to_xlsx($excel_dir, $data_xml_file);
-$xlsx->create();
-$xlsx->save($current_dir.'/tmp/');
