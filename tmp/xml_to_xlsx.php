@@ -27,6 +27,7 @@ Class xml_to_xlsx {
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
   
   function __construct($data_xml_file){
+    
     $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
     $this->data_xml          = simplexml_load_file($data_xml_file);
     $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
@@ -79,8 +80,29 @@ Class xml_to_xlsx {
   }
   
   private function create_sheet_xml($worksheet){
-    $new_sheet = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::sheet_xml);
+    $new_sheet = simplexml_load_string(
+          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.CRLF.
+          '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" 
+                      xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac"
+                      mc:Ignorable="x14ac"
+          />' );
     $nb_row = 1;
+    
+    if(count($worksheet->Cols) > 0){
+      $new_sheet->addChild('cols');
+      foreach($worksheet->Cols->Col as $col){
+        
+        $xml_col = $new_sheet->cols->addChild('col');
+        $xml_col->addAttribute('min', $col['Id']);
+        $xml_col->addAttribute('max', $col['Id']);
+        $xml_col->addAttribute('width', $col['Width']);
+      }
+    }
+    
+    if(count($worksheet->Row))
+      $new_sheet->addChild('sheetData');
     
     foreach($worksheet->Row as $row){
       $sheet_row = $new_sheet->sheetData->addChild('row');
@@ -89,23 +111,60 @@ Class xml_to_xlsx {
       
       //chr(65) = A      
       foreach($row->Cell as $cell){
+        $style = null;
+        $cell_merge_start = $this->create_col_prefix($nb_cell).$nb_row;
         
         $excel_cell = $sheet_row->addChild('c');
-        $excel_cell->addAttribute('r', $this->create_col_prefix($nb_cell).$nb_row);
+        $excel_cell->addAttribute('r', $cell_merge_start);
         $excel_cell->addAttribute('t','s');
+        $nb_cell++;
+        
+        if($cell['Style']){
+          $style = $this->generate_style($cell['Style']);
+          $excel_cell->addAttribute("s", $style);
+        }
         
         if($cell){
           $id_shared_string = $this->add_shared($cell, $cell['Type']);
-          $excel_cell->addChild('v', $id_shared_string);
+          $excel_cell->addChild('v', $id_shared_string);            
         }
         
-        $nb_cell++;
+        if($cell['Colspan']){
+          $nb_colspan = $cell['Colspan'] - 1;
+          
+          for($i = $nb_colspan; $i > 0; $i--){
+            $cell_merge_end = $this->create_col_prefix($nb_cell).$nb_row;
+            $excel_cell = $sheet_row->addChild('c');
+            $excel_cell->addAttribute('r', $cell_merge_end);
+            if($style){
+              $excel_cell->addAttribute("s", $style);
+            }
+            $nb_cell++;
+          }
+          
+          if(!$new_sheet->mergeCells)
+            $new_sheet->addChild('mergeCells');
+          
+          $merge_cell = $new_sheet->mergeCells->addChild('mergeCell');
+          $merge_cell->addAttribute('ref', $cell_merge_start.':'.$cell_merge_end);
+        }
       }
       
       $nb_row++;
     }    
     
     $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
+  }
+  
+  private function generate_style($style){
+    switch($style){
+      case 'Bold':
+        return 1;
+      break;
+      default:
+        return 0;
+        break;
+    }
   }
   
   private function create_col_prefix($i){
@@ -147,6 +206,7 @@ Class xml_to_xlsx {
   }
   
   public function save($dest_file){
+    
     $path = files::tmpdir();
     files::delete_dir($path, false);
     files::copy_dir($this->excel_dir, $path);
