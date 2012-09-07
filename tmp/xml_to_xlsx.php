@@ -26,13 +26,13 @@ Class xml_to_xlsx {
   const sheet_xml          = 'xl/worksheets/sheet1.xml';
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
   
-  function __construct($excel_dir, $data_xml_file){
-    $this->excel_dir         = $excel_dir;
+  function __construct($data_xml_file){
+    $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
     $this->data_xml          = simplexml_load_file($data_xml_file);
-    $this->workbook_xml      = simplexml_load_file($this->excel_dir.self::workbook_file);
-    $this->workbook_rels_xml = simplexml_load_file($this->excel_dir.self::workbook_rels_file);
-    $this->sharedstring_xml  = simplexml_load_file($this->excel_dir.self::shared_string_file);
-    $this->content_types_xml = simplexml_load_file($this->excel_dir.self::content_types_file);
+    $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
+    $this->workbook_rels_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_rels_file);
+    $this->sharedstring_xml  = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::shared_string_file);
+    $this->content_types_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::content_types_file);
         
     $this->nb_relationship = count($this->workbook_rels_xml->Relationship);
   }
@@ -79,7 +79,7 @@ Class xml_to_xlsx {
   }
   
   private function create_sheet_xml($worksheet){
-    $new_sheet = simplexml_load_file($this->excel_dir.self::sheet_xml);
+    $new_sheet = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::sheet_xml);
     $nb_row = 1;
     
     foreach($worksheet->Row as $row){
@@ -146,8 +146,8 @@ Class xml_to_xlsx {
     return $this->next_id_shared_string++;
   }
   
-  public function save($path){
-    
+  public function save($dest_file){
+    $path = files::tmpdir();
     files::delete_dir($path, false);
     files::copy_dir($this->excel_dir, $path);
     $files = files::find($path, "#\.(git|svn)#");
@@ -158,31 +158,34 @@ Class xml_to_xlsx {
           files::delete_dir($file_path);
     }
         
-    $this->workbook_xml->asXML($path.self::workbook_file);
-    $this->workbook_rels_xml->asXML($path.self::workbook_rels_file);
-    $this->sharedstring_xml->asXML($path.self::shared_string_file);
-    $this->content_types_xml->asXML($path.self::content_types_file);
+    $this->workbook_xml->asXML($path.DIRECTORY_SEPARATOR.self::workbook_file);
+    $this->workbook_rels_xml->asXML($path.DIRECTORY_SEPARATOR.self::workbook_rels_file);
+    $this->sharedstring_xml->asXML($path.DIRECTORY_SEPARATOR.self::shared_string_file);
+    $this->content_types_xml->asXML($path.DIRECTORY_SEPARATOR.self::content_types_file);
         
     foreach($this->worksheet_list_xml as $id => $sheet){
-      $sheet->asXML($path.sprintf(self::pattern_sheet_xml, $id));
+      $sheet->asXML($path.DIRECTORY_SEPARATOR.sprintf(self::pattern_sheet_xml, $id));
     }
     
-    $this->create_archive($path.'test.xlsx', $path);
+    $this->create_archive($dest_file, $path);
+    files::delete_dir($path);
   }
   
-  private function create_archive($filename, $dir){
+  private function create_archive($file_path, $dir){
+    rbx::ok("Create archive on $file_path");
     $zip = new ZipArchive();
-    
-    if ($zip->open($filename, ZIPARCHIVE::CREATE)!==TRUE) {
+
+    if ($zip->open($file_path, ZIPARCHIVE::CREATE)!==TRUE)
         Throw new Exception("cannot open archive");
-    }
+
+    $files_list = files::find($dir);
     
-    
-    $files_list = $this->list_file($dir);
-    
-    foreach($files_list as $file){      
-      $zip->addFile($dir.$file, $file);
+    foreach($files_list as $file_path){
       
+      if(is_dir($file_path)) continue;
+      $local_name = strip_start($file_path, $dir.DIRECTORY_SEPARATOR);
+      $zip->addFile($file_path, $local_name);
+      rbx::ok("Add $file_path as $local_name");
     }
     
     $zip->close();
