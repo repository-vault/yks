@@ -2,9 +2,6 @@
 
 Class xml_to_xlsx {
 
-  static function  init(){
-    classes::register_class_path('xlsx_style', 'yks/tmp/xlsx_style.php');
-  }
 
   private $data_xml;
   private $workbook_xml;
