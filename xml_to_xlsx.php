@@ -28,10 +28,17 @@ Class xml_to_xlsx {
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
   const URI_RELATIONSHIP   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 
-  function __construct($data_xml_file){
+  function __construct($data_xml){
     
     $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
-    $this->data_xml          = simplexml_load_file($data_xml_file);
+    
+    if(is_file($data_xml)){
+      $this->data_xml = simplexml_load_file($data_xml);
+    }
+    else{
+      $this->data_xml = simplexml_load_string($data_xml);
+    }
+    
     $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
     $this->workbook_rels_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_rels_file);
     $this->sharedstring_xml  = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::shared_string_file);
@@ -196,7 +203,7 @@ Class xml_to_xlsx {
     }
     
     $shared_string = $this->sharedstring_xml->addChild('si');
-    $shared_string->addChild('t', $value);
+    $shared_string->addChild('t', htmlspecialchars($value, ENT_COMPAT, 'UTF-8'));
     $this->shared_string_list[$value] = $this->next_id_shared_string;
     
     return $this->next_id_shared_string++;
