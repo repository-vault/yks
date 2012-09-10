@@ -10,8 +10,8 @@ class exyks_renderer_excel {
     self::$XSL_SERVER_PATH = RSRCS_PATH."/xsl/specials/excel.xsl";
   }
 
-  static function process(){ //prepare exyks rendering engine
-
+  static function process(){ //prepare exyks rendering engine    
+    /*
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xls")); //filename
     exyks::$headers["excel-server"] = TYPE_CSV;
     exyks::store('XSL_SERVER_PATH', self::$XSL_SERVER_PATH);
@@ -19,7 +19,86 @@ class exyks_renderer_excel {
     exyks::store('RENDER_MODE', 'excel');
     exyks::store('RENDER_START', '<html');
     tpls::top(self::$XSL_TPL_TOP, tpls::STD, "excel");
-    tpls::bottom(self::$XSL_TPL_BOTTOM, tpls::STD, "excel");
+    tpls::bottom(self::$XSL_TPL_BOTTOM, tpls::STD, "excel");*/
+    
+    tpls::register_custom_element("table[contains(@class,'table')]", array(__CLASS__, 'extract_data'));
+  }
+  
+  /**
+  * 
+  * 
+  * @param DOMDocument $doc
+  * @param DOMDocument $table_xml
+  */
+  public static function extract_data($doc, $table_xml){
+    
+    $out_xml = new DOMDocument('1.0', 'utf-8');
+    
+    $root_xml = $out_xml->createElement("data");
+    
+    $worksheet = $out_xml->createElement('Worksheet');
+    $worksheet->setAttribute('Name', exyks::$head->title);
+        
+    $headers = $table_xml->getElementsByTagName("th");
+    
+    //Pour les headers
+    $header_row = $out_xml->createElement('Row');
+    
+    foreach($headers as $header){      
+      $cell = $out_xml->createElement('Cell');
+      
+      if($header->nodeValue){
+        $cell->appendChild($out_xml->createTextNode($header->nodeValue));
+        $cell->setAttribute('Type', 'String');
+      }
+      
+      $header_row->appendChild($cell);
+      
+    }
+    
+    $worksheet->appendChild($header_row);
+    
+    if(count($headers) > 0)
+      $table_xml->removeChild($headers->item(0)->parentNode);
+    
+    //Pour les datas
+    foreach($table_xml->getElementsByTagName("tr") as $row){
+      $xml_row = $out_xml->createElement('Row');
+      
+      foreach($row->getElementsByTagName('td') as $td){
+        
+        $cell = $out_xml->createElement('Cell');
+      
+        if($td->nodeValue){
+          $cell->appendChild($out_xml->createTextNode($td->nodeValue));
+          $cell->setAttribute('Type', 'String');
+        }
+        
+        $xml_row->appendChild($cell);
+      }
+      
+      $worksheet->appendChild($xml_row);
+    }
+    
+    $root_xml->appendChild($worksheet);
+    $out_xml->appendChild($root_xml);
+    
+    
+    
+    $xml_to_xlsx = new xml_to_xlsx($out_xml->saveXML());
+    $xml_to_xlsx->create();
+    
+    header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    
+    $file_path = files::tmpdir().exyks::$head->title.".xlsx";
+    $xml_to_xlsx->save($file_path);
+    
+    
+    echo file_get_contents($file_path);
+    unlink($file_path);
+    die;
   }
 
   public static function render($str){
