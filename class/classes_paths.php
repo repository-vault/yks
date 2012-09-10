@@ -88,8 +88,8 @@ classes::register_class_paths(array(
 
 
     "dom"                  => CLASS_PATH."/exts/selectors/dom.php",
-
-
+    "xml_to_xlsx"          => CLASS_PATH."/exts/xlsx/xml_to_xlsx.php",
+    "xlsx_style"           => CLASS_PATH."/exts/xlsx/xlsx_style.php",
     "yks_runner"           => CLTOOLS_PATH."/yks_runner.php",
     "install_runner"       => CLTOOLS_PATH."/install_runner.php",
 
