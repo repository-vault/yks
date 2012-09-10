@@ -1,7 +1,11 @@
 <?
 
 Class xml_to_xlsx {
-  
+
+  static function  init(){
+    classes::register_class_path('xlsx_style', 'yks/tmp/xlsx_style.php');
+  }
+
   private $data_xml;
   private $workbook_xml;
   private $workbook_rels_xml;
@@ -14,10 +18,11 @@ Class xml_to_xlsx {
   private $next_id_shared_string = 0;
   private $shared_string_list = array();
   
-  
+  private $styles;
   const workbook_rels_file = 'xl/_rels/workbook.xml.rels';
   const shared_string_file = 'xl/sharedStrings.xml';
   const workbook_file      = 'xl/workbook.xml';
+  const style_file         = 'xl/styles.xml';
   const content_types_file = '[Content_Types].xml';
   
   const worksheet_rels_path= 'worksheets/';
@@ -36,6 +41,8 @@ Class xml_to_xlsx {
     $this->content_types_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::content_types_file);
         
     $this->nb_relationship = count($this->workbook_rels_xml->Relationship);
+    $this->styles           = new xlsx_style((string)$this->data_xml->style);
+
   }
   
   public function create(){
@@ -121,8 +128,8 @@ Class xml_to_xlsx {
         $excel_cell->addAttribute('t','s');
         $nb_cell++;
         
-        if($cell['Style']){
-          $style = $this->generate_style($cell['Style']);
+        if(  $cell['class']){
+          $style = $this->styles->pick($cell['class']);
           $excel_cell->addAttribute("s", $style);
         }
         
@@ -158,16 +165,6 @@ Class xml_to_xlsx {
     $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
   }
   
-  private function generate_style($style){
-    switch($style){
-      case 'Bold':
-        return 1;
-      break;
-      default:
-        return 0;
-        break;
-    }
-  }
   
   private function create_col_prefix($i){
     $b = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -189,6 +186,7 @@ Class xml_to_xlsx {
   private function add_shared($value, $type){
     switch($type){
       case 'String':
+      default:
         return $this->add_shared_string($value);
     }
   }
@@ -228,6 +226,9 @@ Class xml_to_xlsx {
     foreach($this->worksheet_list_xml as $id => $sheet){
       $sheet->asXML($path.DIRECTORY_SEPARATOR.sprintf(self::pattern_sheet_xml, $id));
     }
+
+
+    $this->styles->output($path.DIRECTORY_SEPARATOR.self::style_file);
     
     $this->create_archive($dest_file, $path);
     files::delete_dir($path);
@@ -235,6 +236,7 @@ Class xml_to_xlsx {
   
   private function create_archive($file_path, $dir){
     rbx::ok("Create archive on $file_path");
+    if(is_file($file_path)) unlink($file_path);
     $zip = new ZipArchive();
 
     if ($zip->open($file_path, ZIPARCHIVE::CREATE)!==TRUE)

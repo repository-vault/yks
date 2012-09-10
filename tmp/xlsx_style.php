@@ -6,7 +6,7 @@ class xlsx_style {
 
   private $_fonts        = array();
   private $_borders      = array();
-  private $_fills        = array();
+  private $_fills        = array(array('type'=>'none'), array('type' => 'gray125')); //placeholders
   private $_alignments   = array();
 
   private $_styles = array(); //compact('border', 'fill', 'font', 'alignment');
@@ -23,6 +23,7 @@ class xlsx_style {
   private $css_default = array(
     'font-size'        => 11,
     'font-family'      => 'Calibri',
+    'font-weight'      => null,
     'background-color' => null,
     'text-align'       => null,
     'vertical-align'   => null,
@@ -78,22 +79,24 @@ class xlsx_style {
 
 
     $font = $border = $fill = $alignment = null;
-    foreach($this->_fonts as $k=>$v) if($this->same('font', $v, $css)) $font = $k ;
+    foreach($this->_fonts as $k=>$v){ if($this->same('font', $v, $css)) $font = $k ;break;}
     if(is_null($font)) $font = $this->save('font', $css);
 
-    foreach($this->_fills as $k=>$v) if($this->same('fill', $v, $css)) $fill = $k;
+    foreach($this->_fills as $k=>$v) {if($this->same('fill', $v, $css)) $fill = $k;break;}
     if(is_null($fill)) $fill = $this->save('fill', $css);
 
-    foreach($this->_borders as $k=>$v) if($this->same('border', $v, $css)) $border = $k;
+    foreach($this->_borders as $k=>$v){ if($this->same('border', $v, $css)) $border = $k;break;}
     if(is_null($border)) $border = $this->save('border', $css);
 
-    foreach($this->_alignments as $k=>$v) if($this->same('alignment', $v, $css)) $alignment = $k;
+    foreach($this->_alignments as $k=>$v){ if($this->same('alignment', $v, $css)) $alignment = $k;break;}
     if(is_null($alignment)) $alignment = $this->save('alignment', $css);
 
     $style = compact('font', 'border', 'fill', 'alignment');
     $style_id = array_search($style, $this->_styles, true);
     if($style_id === false) $style_id = array_push($this->_styles, $style) - 1;    
 
+    rbx::ok("Pushing $classes_hash into hash");
+    $this->css_styles[$classes_hash] = $style_id;
     return $style_id;
   }
 
@@ -114,8 +117,9 @@ class xlsx_style {
 
   function format_font($css){
     return array(
-      'font-family' => $css['font-family'],
-      'font-size'   => $css['font-size'],
+      'font-family'   => $css['font-family'],
+      'font-size'     => $css['font-size'],
+      'font-weight'   => $css['font-weight'],
     );
   }
 
@@ -149,8 +153,8 @@ class xlsx_style {
     $fills = "<fills count='".count($this->_fills)."'>";
     foreach($this->_fills as $fill) {
       $fill_str = "<fill>";
-      if(is_null($fill['background-color'])) {
-        $fill_str .="<patternFill patternType='none'/>";
+      if(isset($fill['type'])) {
+        $fill_str .="<patternFill patternType='{$fill['type']}'/>";
       } else {
         $color = $this->acolor($fill['background-color']);
         $fill_str .= "<patternFill patternType='solid'>
@@ -168,8 +172,8 @@ class xlsx_style {
   function output_borders(){
     $borders = "<borders count='".count($this->_borders)."'>";
     foreach($this->_borders as $border){
-      $border_str = "<border><diagonal/>";
-      foreach(array('top', 'bottom', 'left', 'right') as $side) {
+      $border_str = "<border>";
+      foreach(array('left', 'right', 'top', 'bottom') as $side) {
         $style = $border["border-$side-style"];
         $color = $border["border-$side-color"];
         if(is_null($style)) {$border_str.="<$side/>"; continue; }
@@ -266,7 +270,7 @@ class xlsx_style {
 
 
 
-  function output($file_path){
+  function output($file_path = false){
     $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.CRLF;
     $str .='<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">'.CRLF;
 
@@ -277,10 +281,10 @@ class xlsx_style {
     $str .= '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'.CRLF;
     $str .= $this->output_styles().CRLF;
     $str .= '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'.CRLF;
-    $str .= '<dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/>'.CRLF;
-    $str .= '<colors><mruColors><color rgb="FF838485"/></mruColors></colors>'.CRLF;
     $str .= '</styleSheet>';
-    file_put_contents($file_path, $str);
+    if(!$file_path)
+      return $str;
+    else file_put_contents($file_path, $str);
   }
 
   public static function init(){
