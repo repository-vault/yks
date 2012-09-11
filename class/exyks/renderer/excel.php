@@ -75,7 +75,7 @@ class exyks_renderer_excel {
     
     
     
-    $xml_to_xlsx = new xml_to_xlsx($out_xml->saveXML());
+    $xml_to_xlsx = new xml_to_xlsx($out_xml);
     $xml_to_xlsx->create();
     
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
