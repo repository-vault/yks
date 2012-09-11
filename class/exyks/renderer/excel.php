@@ -10,22 +10,13 @@ class exyks_renderer_excel {
     self::$XSL_SERVER_PATH = RSRCS_PATH."/xsl/specials/excel.xsl";
   }
 
-  static function process(){ //prepare exyks rendering engine    
-    /*
-    header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xls")); //filename
-    exyks::$headers["excel-server"] = TYPE_CSV;
-    exyks::store('XSL_SERVER_PATH', self::$XSL_SERVER_PATH);
-    exyks::store('RENDER_SIDE', 'server');
-    exyks::store('RENDER_MODE', 'excel');
-    exyks::store('RENDER_START', '<html');
-    tpls::top(self::$XSL_TPL_TOP, tpls::STD, "excel");
-    tpls::bottom(self::$XSL_TPL_BOTTOM, tpls::STD, "excel");*/
-    
+  static function process(){ //prepare exyks rendering engine
     tpls::register_custom_element("table[contains(@class,'table')]", array(__CLASS__, 'extract_data'));
   }
   
   /**
-  * 
+  * Creation d un xml puis generation excel grâce à un tableau html.
+  * Attention die à la fin de la methode
   * 
   * @param DOMDocument $doc
   * @param DOMDocument $table_xml
@@ -53,7 +44,6 @@ class exyks_renderer_excel {
       }
       
       $header_row->appendChild($cell);
-      
     }
     
     $worksheet->appendChild($header_row);
