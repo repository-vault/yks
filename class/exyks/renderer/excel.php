@@ -21,49 +21,43 @@ class exyks_renderer_excel {
   * @param DOMDocument $doc
   * @param DOMDocument $table_xml
   */
+  const styles = "
+    .header {
+        font-weight:bold;
+        background-color:#AEAEAE;
+        font:Calibri 11;
+    }
+    .cell {
+      font:Calibri 9;
+      vertical-align:middle;
+      border:1px solid #000000;
+    }
+  ";
+
   public static function extract_data($doc, $table_xml){
     
     $out_xml = new DOMDocument('1.0', 'utf-8');
-    
     $root_xml = $out_xml->createElement("data");
-    
+    $root_xml->appendChild($out_xml->createElement('style'))
+      ->appendChild($out_xml->createTextNode(self::styles));
+
     $worksheet = $out_xml->createElement('Worksheet');
     $worksheet->setAttribute('Name', exyks::$head->title);
-        
-    $headers = $table_xml->getElementsByTagName("th");
-    
-    //Pour les headers
-    $header_row = $out_xml->createElement('Row');
-    
-    foreach($headers as $header){      
-      $cell = $out_xml->createElement('Cell');
-      
-      if($header->nodeValue){
-        $cell->appendChild($out_xml->createTextNode($header->nodeValue));
-        $cell->setAttribute('Type', 'String');
-      }
-      
-      $header_row->appendChild($cell);
-    }
-    
-    $worksheet->appendChild($header_row);
-    
-    if(count($headers) > 0)
-      $table_xml->removeChild($headers->item(0)->parentNode);
-    
+
     //Pour les datas
     foreach($table_xml->getElementsByTagName("tr") as $row){
+      $is_header  = (bool) $row->getElementsByTagName('th')->length ;
       $xml_row = $out_xml->createElement('Row');
-      
-      foreach($row->getElementsByTagName('td') as $td){
-        
+      foreach($row->childNodes   as $td){
+
         $cell = $out_xml->createElement('Cell');
-      
+        $cell->setAttribute('class', $is_header ? 'header cell' : 'cell');
+
         if($td->nodeValue){
           $cell->appendChild($out_xml->createTextNode($td->nodeValue));
           $cell->setAttribute('Type', 'String');
         }
-        
+
         $xml_row->appendChild($cell);
       }
       
@@ -72,9 +66,6 @@ class exyks_renderer_excel {
     
     $root_xml->appendChild($worksheet);
     $out_xml->appendChild($root_xml);
-    
-    
-    
     $xml_to_xlsx = new xml_to_xlsx($out_xml);
     $xml_to_xlsx->create();
     
