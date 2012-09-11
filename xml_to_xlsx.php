@@ -28,16 +28,23 @@ Class xml_to_xlsx {
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
   const URI_RELATIONSHIP   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 
-  function __construct($data_xml){
+  function __construct($input){
     
     $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
-    
-    if(is_file($data_xml)){
-      $this->data_xml = simplexml_load_file($data_xml);
-    }
-    else{
-      $this->data_xml = simplexml_load_string($data_xml);
-    }
+
+    if(gettype($input) == "object") {
+      $class = get_class($input);
+      if($class == 'SimpleXMLElement')
+        $this->input = $input;
+      elseif($class == 'DOMDocument')
+        $this->input = simplexml_import_dom($input);
+      else throw new Exception("Invalid class type $class");
+
+    } elseif(is_file($input))
+      $this->input = simplexml_load_file($input);
+    elseif(is_string($input))
+      $this->input = simplexml_load_string($input);
+    else throw new Exception("Invalid class type $class");
     
     $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
     $this->workbook_rels_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_rels_file);
@@ -45,7 +52,7 @@ Class xml_to_xlsx {
     $this->content_types_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::content_types_file);
         
     $this->nb_relationship = count($this->workbook_rels_xml->Relationship);
-    $this->styles           = new xlsx_style((string)$this->data_xml->style);
+    $this->styles           = new xlsx_style((string)$this->input->style);
 
   }
   
