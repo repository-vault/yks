@@ -35,15 +35,15 @@ Class xml_to_xlsx {
     if(gettype($input) == "object") {
       $class = get_class($input);
       if($class == 'SimpleXMLElement')
-        $this->input = $input;
+        $this->data_xml = $input;
       elseif($class == 'DOMDocument')
-        $this->input = simplexml_import_dom($input);
+        $this->data_xml = simplexml_import_dom($input);
       else throw new Exception("Invalid class type $class");
 
     } elseif(is_file($input))
-      $this->input = simplexml_load_file($input);
+      $this->data_xml = simplexml_load_file($input);
     elseif(is_string($input))
-      $this->input = simplexml_load_string($input);
+      $this->data_xml = simplexml_load_string($input);
     else throw new Exception("Invalid class type $class");
     
     $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
@@ -52,7 +52,7 @@ Class xml_to_xlsx {
     $this->content_types_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::content_types_file);
         
     $this->nb_relationship = count($this->workbook_rels_xml->Relationship);
-    $this->styles           = new xlsx_style((string)$this->input->style);
+    $this->styles           = new xlsx_style((string)$this->data_xml->style);
 
   }
   
