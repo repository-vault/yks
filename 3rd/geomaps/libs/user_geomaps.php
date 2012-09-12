@@ -65,6 +65,9 @@ class user_geomaps extends geomaps {
     if(!$area_id)
         return;
 
+    if(in_array(SITE_DOMAIN, array('admin.qmansuy.ac.ivsdev.net', 'admin.activisu.com')) && class_exists('crm_api'))
+      crm_api::register_departement_visibility($area_id, array($user_id));
+
     $map_id = $this->data['map_id'];
 
     $verif_area = compact('area_id', 'map_id');
