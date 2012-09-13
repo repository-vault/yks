@@ -4,6 +4,34 @@
 */
 class json_parser {
   const pad = " \t\n\r";
+
+  public static function json_to_xml($obj){
+    $str = "";
+    if(is_null($obj))
+      return "<null/>";
+    elseif(is_array($obj)) {
+        //a list is a hash with 'simple' incremental keys
+      $is_list = array_keys($obj) == array_keys(array_values($obj));
+      if(!$is_list) {
+        $str.= "<hash>";
+        foreach($obj as $k=>$v)
+          $str.="<item key=\"$k\">".self::json_to_xml($v)."</item>".CRLF;
+        $str .= "</hash>";
+      } else {
+        $str.= "<list>";
+        foreach($obj as $v)
+          $str.="<item>".json_to_xml($v)."</item>".CRLF;
+        $str .= "</list>";
+      }
+      return $str;
+    } elseif(is_string($obj)) {
+      return htmlspecialchars($obj) != $obj ? "<![CDATA[$obj]]>" : $obj;
+    } elseif(is_scalar($obj))
+      return $obj;
+    else
+      throw new Exception("Unsupported type $obj");
+  }
+
   public static function parse($str){
     try {
       $i = 0;

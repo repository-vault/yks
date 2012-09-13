@@ -62,6 +62,20 @@ class exyks_ws {
     return array($class_name, $wsdl_file, $wsdl_infos['use_sess'], $wsdl_infos['wsdl_ns'], $wsdl_infos['wsdl_ips']);
   }
 
+  public static function extract_headers($input = null){
+    if(is_null($input)) 
+      $input = file_get_contents("php://input", "r");
+    $soap_request = simplexml_load_string($input, NULL, LIBXML_ERR_NONE);
+    if($soap_request === false)
+      return array();
+
+    $soap_request->registerXPathNamespace("envelope", "http://schemas.xmlsoap.org/soap/envelope/");
+    $out = array();
+    foreach($soap_request->xpath("/envelope:Envelope/envelope:Header/*") as $header) 
+      $out[(string)$header->getName()] = (string)$header;
+    return $out;
+  }
+
   public static function serve() {
 
     set_time_limit(90);
