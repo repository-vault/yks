@@ -407,5 +407,24 @@ class files {
 
   }
 
+  public static function extract_phar($phar_path, $out_dir = null){
+    if(!$out_dir)
+      $out_dir = strip_end(basename($phar_path), files::ext($phar_path));
+
+    $tmp_file = self::tmppath('phar');
+    copy($phar_path, $tmp_file);
+    $p = new Phar($tmp_file);
+    $root_path = str_replace("\\", '/', "phar://".realpath($tmp_file).'/');
+    files::empty_dir($out_dir);
+    foreach($p as $data) {
+       $rel_path  = strip_start($data, $root_path);
+       $dest_path = $out_dir."/".$rel_path;
+       files::create_dir(dirname($dest_path));
+       copy($data, $dest_path);
+    }
+    $p = null;
+    unlink($tmp_file);
+  }
+
 }
 
