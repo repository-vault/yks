@@ -223,9 +223,9 @@ class stdClassSerializable {
 
   // cf doc aussi!
 function objectify($item) {
-  if(is_scalar($item))
+  if(is_scalar($item) || is_null($item))
     return $item;
-
+    
   $out = new stdClassSerializable($item);
   foreach($item as $k=>$v)
     $out->$k = is_array($v) ? objectify($v) : $v;
