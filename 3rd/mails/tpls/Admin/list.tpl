@@ -10,7 +10,6 @@
 </tr>
 
 <?
-
 if($mails_list) foreach($mails_list as $mail_id=>$mail_infos){
   $actions ="";
   $actions .= "<a href='/?&href_fold;/Manage//$mail_id/send' target='sendmail'>Send</a>";
@@ -23,7 +22,7 @@ if($mails_list) foreach($mails_list as $mail_id=>$mail_infos){
   echo "<tr class='line_pair'>
     <td>$mail_id</td>
     <td>{$mail_infos['mail_name']}</td>
-    <td>".truncate($mail_infos['mail_title'],20)."</td>
+    <td>".txt::truncate($mail_infos['mail_title'],20)."</td>
     <td>{$mail_infos['content-type']}</td>
     <td>$actions</td>
   </tr>";
