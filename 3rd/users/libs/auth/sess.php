@@ -44,6 +44,25 @@ class sess  {
     self::$id = session_id();
     self::$_storage = &$_SESSION['storage'];
     self::status_check();
+
+    if($_POST)
+      self::log($_POST);
+  }
+
+  private static function log($data, $key = 'data'){
+    if(is_array($data)) unset($data['user_pswd']);
+
+    $message = json_encode(array(
+      'time'  => _NOW,
+      'ip'    => $_SERVER['REMOTE_ADDR'],
+      'agent' => $_SERVER['HTTP_USER_AGENT'],
+      'uri'   => $_SERVER['REQUEST_URI'],
+      $key    => $data,
+    ));
+    $log_dir  = sprintf('%s/users_sess/%s', sys_get_temp_dir(), SITE_DOMAIN);
+    files::create_dir($log_dir);
+    $log_file = "{$log_dir}/".self::$sess['user_id'];
+    file_put_contents($log_file, $message.",".CRLF,  FILE_APPEND);
   }
 
   static function logout(){
@@ -81,6 +100,9 @@ class sess  {
     sess::$sess     = user::instanciate($user_id, $users_tree);
     sess::$sess->sql_update(array('user_connect'=>_NOW), "ks_users_profile");
     sess::$_storage = array();
+
+    self::log(sess::$sess, "log");
+
     $_SESSION['client_addr'] = $_SERVER['REMOTE_ADDR'];
     self::status_check();
   }
