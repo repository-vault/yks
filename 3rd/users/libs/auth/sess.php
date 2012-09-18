@@ -50,6 +50,9 @@ class sess  {
   }
 
   private static function log($data, $key = 'data'){
+    $user_id = self::$sess['user_id'];
+    if(!$user_id) return;
+
     if(is_array($data)) unset($data['user_pswd']);
 
     $message = json_encode(array(
@@ -61,7 +64,7 @@ class sess  {
     ));
     $log_dir  = sprintf('%s/users_sess/%s', sys_get_temp_dir(), SITE_DOMAIN);
     files::create_dir($log_dir);
-    $log_file = "{$log_dir}/".self::$sess['user_id'];
+    $log_file = "{$log_dir}/".$user_id;
     file_put_contents($log_file, $message.",".CRLF,  FILE_APPEND);
   }
 
