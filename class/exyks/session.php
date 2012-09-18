@@ -113,7 +113,6 @@ class exyks_session {
   private static function load_classic(){
     global $action;
 
-    sess::connect();
 
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
