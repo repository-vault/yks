@@ -66,7 +66,9 @@ class user_geomaps extends geomaps {
         return;
 
     if(in_array(SITE_DOMAIN, array('admin.qmansuy.ac.ivsdev.net', 'admin.activisu.com')) && class_exists('crm_api'))
-      crm_api::register_departement_visibility($area_id, array($user_id));
+      crm_api::register_departement_visibility($area_id, array($user_id), 'ac');
+    else if(in_array(SITE_DOMAIN, array('admin.activscreen.com')) && class_exists('crm_api'))
+      crm_api::register_departement_visibility($area_id, array($user_id), 'as');
 
     $map_id = $this->data['map_id'];
 
