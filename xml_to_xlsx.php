@@ -84,7 +84,12 @@ Class xml_to_xlsx {
         
     //puis le workbook
     $sheet = $this->workbook_xml->sheets->addChild('sheet');
-    $sheet->addAttribute('name', txt::truncate($name, 31));
+
+    $worksheet_name = $name;
+    $worksheet_name = files::safe_name($worksheet_name);
+    $worksheet_name = txt::truncate($worksheet_name, 31);
+
+    $sheet->addAttribute('name', $worksheet_name);
     $sheet->addAttribute('sheetId', $this->nb_worksheet);
     $sheet->addAttribute('r:id', $new_rid, self::URI_RELATIONSHIP);
     
