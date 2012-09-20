@@ -72,11 +72,11 @@ class exyks_renderer_excel {
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     
-    
-    $file_path = files::tmpdir().exyks::$head->title.".xlsx";
+    $safe_name = files::safe_name(exyks::$head->title.".xlsx");
+    $file_path = files::tmpdir().DIRECTORY_SEPARATOR.$safe_name;
+
+
     $xml_to_xlsx->save($file_path);
-    
-    
     echo file_get_contents($file_path);
     unlink($file_path);
     die;

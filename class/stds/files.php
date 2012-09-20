@@ -20,6 +20,13 @@ class files {
     return $cache_contents;
   }
 
+  public static function safe_name($file_name){
+    $file_name = preg_replace('#[/\\:*?<>"|]#', " ", $file_name);
+    $file_name = preg_replace('#\s+#', ' ', $file_name);
+    $file_name = trim($file_name);
+    return $file_name;
+  }
+
   public static function rp($path, $ds = "/"){
     $out=array();$last=count($from=explode($ds, $path))-1;
     foreach($from as $i=>$fold){
