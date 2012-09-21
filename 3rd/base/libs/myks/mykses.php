@@ -68,7 +68,7 @@ class mykses {
         $mykse_type=(string) $mykse['type'];
 
         $nullable = $mykse['null']=='null';
-        if($null && $mykse['null']=='not_null' && is_not_null($mykse['default']))break;
+        if($null && !$nullable && is_not_null($mykse['default']))break;
         if($null && $nullable){ $out[$mykse_key]=null; break;}
 
         if(in_array("html", array($mykse_type, $mykse_start_type))){

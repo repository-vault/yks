@@ -16,10 +16,13 @@
       <field type="user_mail"/>
       <field type="now" name="user_create"/>
       <field type="now" name="user_update"/>
-      <field type="now" name="user_connect" default="0"/>
+      <field type="never" name="user_connect"/>
       <field type="user_flags"/>
     </fields>
   </table>
+  <mykse type="never" default="0">
+    <mykse type="time"/>
+  </mykse>
   <mykse type="user_flags" null="null">
     <enum set="set">
       <val>main</val>
