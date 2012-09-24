@@ -113,7 +113,7 @@ class json_parser {
       return $sv;
     }
 
-    return (string)$qv;
+    return (string)stripslashes ($qv);
   }
 
 }
