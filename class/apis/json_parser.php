@@ -54,11 +54,22 @@ class json_parser {
     return $value;
   }
   
+
+  private static function consume($str, $token, &$i){
+    $i += strspn($str, self::pad, $i);
+    if($str[$i] != $token) return false;
+    $i++; //+=strlen($token)
+    return true;
+  }
+
   private static function parse_list($str, &$i){
-    if($str{$i++} != '[')
+    if(!self::consume($str, "[", $i))
       throw new Exception("Invalid list entry");
+
     $data = array();
     do {
+      if(self::consume($str, "]", $i))
+        break;
       $data[] = self::walk($str, $i);
     } while($str{$i++} == ',');
 
@@ -68,8 +79,9 @@ class json_parser {
   }
 
   private static function parse_hash($str, &$i){
-    if($str{$i++} != '{')
+    if(!self::consume($str, "{", $i))
       throw new Exception("Invalid hash entry");
+
     $data = array();
     do {
       $key   = self::parse_simple($str, $i);
