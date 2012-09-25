@@ -23,7 +23,9 @@ class products extends _sql_base {
   static function from_where($where, $related_products=true){
     
     $products  =  parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
-    if(!$products) return false;
+    if(!$products)
+        return array();
+
     $head_products_list = array_keys($products);
 
     $full_list = self::get_product_tree(array_keys($products));
