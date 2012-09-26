@@ -71,8 +71,10 @@ function array_merge_numeric($a,$b, $depth="array_merge"){
     return $res;
 }
 
-function attributes_to_assoc($x, $ns=null, $prefix = false){$r=array(); //php 5.3 grrrr
-    if($x) foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
+function attributes_to_assoc($x, $ns=null, $prefix = false){
+    $r = array(); //php 5.3 grrrr
+    if( gettype($x) != "object" || get_class($x) != "SimpleXMLElement") return $r;
+    foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
     return $r;
 }
 
