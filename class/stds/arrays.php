@@ -20,6 +20,7 @@ function array_step($array, $val, $way=1, $loop=true){
     return $array[$loop?(($tmp+count($array))%count($array)):$tmp];
 }
 
+  //this is array_sort_key
 function array_sort($array, $keys){
     $keys = is_array($keys)?$keys:array_slice(func_get_args(),1);
     if(is_object($array)) {
@@ -30,6 +31,9 @@ function array_sort($array, $keys){
     return array_intersect_key(array_merge_numeric($keys, $array), $keys, $array);
 }
 
+function array_sort_values($array, $values){
+  return array_unique(array_intersect(array_merge($values, $array), $values, $array));
+}
 
 
 function mask_join($glue,$array,$mask){
