@@ -111,6 +111,10 @@ class tpls {
     self::$customs[$tagName] = $callback;
   }
 
+  static function unregister_custom_element($tagName){
+    unset(self::$customs[$tagName]);
+  }
+
   static function process_customs_elements($doc){
     if(!self::$customs) return;
 
