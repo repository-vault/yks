@@ -63,15 +63,20 @@ class cli {
     if(self::$OS == self::OS_UNIX && !$force_use_path )
       return trim(`which $bin_name`);
 
-   
-    if(strpos($bin_name, ".")===false)
-        $bin_name .=".exe";
+    $exts = array_map('strtolower', array_filter(explode(';', $_ENV['PATHEXT'])));
+
+      //all search names
+    $search = array_mask($exts, "$bin_name%s");
+    array_unshift($search, $bin_name);
 
     foreach(self::$paths as $path) {
-      $bin_path = $path.DIRECTORY_SEPARATOR.$bin_name;
-      if(file_exists($bin_path))
-        return $bin_path;
-    }
+      foreach($search as $bin_full_name) {
+      $full_path = $path.DIRECTORY_SEPARATOR.$bin_full_name;
+      if(file_exists($full_path))
+        return $full_path;
+      //prepend valid exts
+      //if(
+    }}
 
     return $bin_name;
   }
