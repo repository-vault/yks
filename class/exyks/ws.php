@@ -25,13 +25,13 @@ class exyks_ws {
             $wsdl_ips= array();
             foreach($class->allow as $allow) {
               $wsdl_ips[]= (string)$allow;
-	    }
+            }
         }
 
         $data = compact('class_name', 'aliases', 'use_sess', 'wsdl_ns', 'wsdl_ips');
         foreach($class->iterate("alias") as $alias) {
           $data['aliases'][] = $alias['name'];
-	}
+        }
 
         self::$classes[$class_name] = $data;
     }
@@ -71,7 +71,8 @@ class exyks_ws {
 
     $soap_request->registerXPathNamespace("envelope", "http://schemas.xmlsoap.org/soap/envelope/");
     $out = array();
-    foreach($soap_request->xpath("/envelope:Envelope/envelope:Header/*") as $header) 
+    $headers = $soap_request->xpath("/envelope:Envelope/envelope:Header/*");
+    if($headers) foreach($headers as $header) 
       $out[(string)$header->getName()] = (string)$header;
     return $out;
   }
