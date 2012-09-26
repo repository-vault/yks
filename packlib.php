@@ -93,6 +93,9 @@ class packlib {
         $code .= $file_contents.CRLF.CRLF;
     $phar[$inner_file] = $code;
 
+    if(!self::syntax_check($code, $out))
+      throw new Exception("Syntax error in yals ".join(CRLF, $out));
+
     $stub = "<?\n";
     if(!$this->has_option(self::OPT_NO_PHAR_INCLUDE))
       $stub .= "include 'phar://{$archive_name}/{$inner_file}';\n";
@@ -109,6 +112,15 @@ class packlib {
       unlink($out_file);
     rename($out_phar, $out_file);
   }
+  
+  public static function syntax_check($code, &$out){
+    $tmp_path = files::tmppath('php');
+    file_put_contents($tmp_path, $code);
+    $cmd = "php -l \"$tmp_path\""; $out = null;
+    exec($cmd, $out, $exit);
+    unlink($tmp_path);
+    return $exit == 0;
+  }
 
   function output($out_file, $mode = self::MODE_DEFAULT) {
 
@@ -124,6 +136,9 @@ class packlib {
         $code .= $file_contents.CRLF.CRLF;
     $code .= $this->init_code;
     file_put_contents($outr_file, $code);
+
+    if(!self::syntax_check($code, $out))
+      throw new Exception("Syntax error ".join(CRLF, $out));
     
     if($mode & self::MODE_DEFAULT)
       copy($outr_file, $out_file);
