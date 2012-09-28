@@ -23,9 +23,9 @@ Class.Mutators.Occlude = function(name){
     this.prototype.occlude = function(element, property){
         element  = document.id(element || this.element);
         property = name || property || this.property;
-
         var instance = element.retrieve(property);
-        if (instance && !$defined(this.occluded))
+
+        if (instance && !this.occluded)
             return this.occluded = instance;
 
         this.occluded = false;

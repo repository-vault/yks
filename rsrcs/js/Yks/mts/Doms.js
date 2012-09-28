@@ -9,7 +9,11 @@ var Doms = {
 
     for(var uid in this.loaders) { infos = this.loaders[uid];
         if(!infos.match) continue;
+        
 
+        if(context.match(infos.match))
+          this.instanciate(infos['class'], context);
+        
         context.getElements(infos.match).each(
           function(el){ this.instanciate(infos['class'], el);}.bind(this));
     }
