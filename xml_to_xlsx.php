@@ -112,11 +112,28 @@ Class xml_to_xlsx {
                       mc:Ignorable="x14ac"
           />' );
     $nb_row = 1;
-    
     if(count($worksheet->Cols) > 0){
+      $cols = $worksheet->Cols[0];
+
+
+      if($cols['freeze'] == 'freeze') {
+        $sheet_view = $new_sheet->addChild("sheetViews")->addChild("sheetView");
+        $sheet_view->addAttribute("tabSelected", 1);
+        $sheet_view->addAttribute("workbookViewId", 0);
+
+        $pane = $sheet_view->addChild("pane");
+        $pane->addAttribute("ySplit", 1);
+        $pane->addAttribute("topLeftCell", "A2");
+        $pane->addAttribute("activePane", "bottomLeft");
+        $pane->addAttribute("state", "frozen");
+
+        $selection = $sheet_view->addChild("selection");
+        $selection->addAttribute("pane", "bottomLeft");
+      }
+
       $new_sheet->addChild('cols');
       $col_nb = 0;
-      foreach($worksheet->Cols->Col as $col){
+      foreach($cols->Col as $col){
         $col_nb++; $col_id = pick($col['Id'], $col_nb);
         $xml_col = $new_sheet->cols->addChild('col');
         $xml_col->addAttribute('min', $col_id);
@@ -124,6 +141,7 @@ Class xml_to_xlsx {
         $xml_col->addAttribute('width', $col['Width']);
         $xml_col->addAttribute('customWidth', 1);
       }
+
     }
     
     if(count($worksheet->Row))
