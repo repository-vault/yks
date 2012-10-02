@@ -9,20 +9,23 @@ SELECT
     (current_database())::information_schema.sql_identifier AS trigger_catalog,
     (n.nspname)::information_schema.sql_identifier AS trigger_schema,
     (t.tgname)::information_schema.sql_identifier AS trigger_name,
-    (t.tgconstrname) AS constraint_name,
+    (cn.conname) AS constraint_name,
     (t.tgenabled != 'D') AS trigger_enabled, -- thx 8.3
     (current_database())::information_schema.sql_identifier AS event_object_catalog,
     (n.nspname)::information_schema.sql_identifier AS event_object_schema,
-    (c.relname)::information_schema.sql_identifier AS event_object_table
+    (c.relname)::information_schema.sql_identifier AS event_object_table,
+    t.tgrelid::INTEGER
 
 FROM
     pg_namespace n,
     pg_class c,
-    pg_trigger t
+    pg_trigger t,
+    pg_constraint cn
 
 WHERE   (n.oid = c.relnamespace)
-	AND (c.oid = t.tgrelid)
-    AND ( t.tgisconstraint)
+    AND (c.oid = t.tgrelid)
+--    AND (cn.contype = 'f' )
+    AND ( cn.confrelid = t.tgconstrrelid)
     AND (
           pg_has_role(c.relowner, 'USAGE'::text)
           OR has_table_privilege(c.oid, 'INSERT'::text)
@@ -31,7 +34,6 @@ WHERE   (n.oid = c.relnamespace)
           OR has_table_privilege(c.oid, 'REFERENCES'::text)
           OR has_table_privilege(c.oid, 'TRIGGER'::text)
     )
-  
 
  
 ]]></def>
