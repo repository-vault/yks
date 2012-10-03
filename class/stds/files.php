@@ -414,24 +414,62 @@ class files {
 
   }
 
+
   public static function extract_phar($phar_path, $out_dir = null){
+
     if(!$out_dir)
-      $out_dir = strip_end(basename($phar_path), files::ext($phar_path));
+      $out_dir = strip_end(basename($phar_path), ".".files::ext($phar_path));
 
     $tmp_file = self::tmppath('phar');
     copy($phar_path, $tmp_file);
-    $p = new Phar($tmp_file);
+
+    $phar = new Phar($tmp_file);
     $root_path = str_replace("\\", '/', "phar://".realpath($tmp_file).'/');
     files::empty_dir($out_dir);
-    foreach($p as $data) {
-       $rel_path  = strip_start($data, $root_path);
+
+    $files = self::extract_phar_files($phar);
+
+    foreach($files as $file_path){
+       $rel_path  = strip_start($file_path, $root_path);
        $dest_path = $out_dir."/".$rel_path;
        files::create_dir(dirname($dest_path));
-       copy($data, $dest_path);
+       copy($file_path, $dest_path);
     }
-    $p = null;
+
+    $phar = null;
     unlink($tmp_file);
   }
+
+  private function extract_phar_files($phar){
+
+    if(is_string($phar) && is_file($phar))
+       return array($phar);
+
+    $files = array();
+    foreach($phar as $entry) {
+       
+       if(is_file($entry))
+         $tmp = array((string)$entry);
+
+       elseif(is_dir($entry)) 
+         $tmp = self::extract_phar_files(self::pharglob($entry));
+
+        $files = array_merge($files, $tmp);
+    }
+    return $files;
+
+  }
+
+  private function pharglob($dir){
+    $files = array();
+    $dh = opendir($dir);
+    if($dh === false) return $files;
+    while (($file = readdir($dh)) !== false) 
+      $files[] = $dir."/".$file;
+    closedir($dh);
+    return $files;
+  }
+
 
 }
 
