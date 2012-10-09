@@ -78,10 +78,13 @@ class exyks_session {
     return "ks_flag";
   }
 
-
-  public static function connect(){
-    if(self::$sess_loaded)
-        sess::connect();
+  
+  public static function connect(){    
+    if(self::$sess_loaded){
+      if($_POST['ks_action'] == 'login' && bool(yks::$get->config->apis->cors['enabled']))
+         sess::cors_connect();
+      else sess::connect();
+    }
     else session_start();
 
     if(!isset($_SESSION['load'])) {
@@ -94,7 +97,7 @@ class exyks_session {
     self::$_storage = &$_SESSION[__CLASS__.'_storage'];
 
     if(is_null($user_tz)) {
-        $_SESSION['client']['tz']  = IDATEZ;
+        $_SESSION['client']['tz']  = IDATEZ; 
     } elseif($_SERVER['HTTP_YKS_CLIENT_TZ']) {
         $_SESSION['client']['tz']  = (int)$_SERVER['HTTP_YKS_CLIENT_TZ'];
     }
@@ -112,19 +115,34 @@ class exyks_session {
     //  Load basic session, if existing, load root user else
   private static function load_classic(){
     global $action;
-
-
+    
+    $parse_origin_url = parse_url($_SERVER['HTTP_ORIGIN']);
+    
+    if($parse_origin_url['host'] == SITE_DOMAIN){
+        header('Access-Control-Allow-Origin: http://'.SITE_DOMAIN);
+    }
+    
+    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+    {
+      header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+      header('Access-Control-Allow-Headers: yks-client-tz,yks-jsx');
+      header('Content-Type:text/plain');
+      header('Content-Length: 0');
+      die;
+    }
+    
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
 
     if($action == "logout" || $action=="deco") //yeah
         sess::logout();
-
+        
     if(sess::$sess['session_ip']!=$_SERVER['REMOTE_ADDR']) auth_restricted_ip::reload();
     if($_COOKIE['user_id'] && ($_COOKIE['user_id']!=sess::$sess['user_id'])) auth_password::reload();
 
     if($action=='login') try {
-      
+     
+    
       if(!auth_password::reload($_POST['user_login'], $_POST['user_pswd'])) {
          //on peut essayer par ldap
          if( ! yks::$get->config->users->search('auth_ldap_soap') )
@@ -143,7 +161,5 @@ class exyks_session {
         error_log("Unable to start user session. ".$e->getMessage());
         rbx::error("Unable to start user session.");
     }
-
   }
-
 }

@@ -42,13 +42,14 @@ foreach($dsp_profile as $field_name=>$field_type){
 <hr/>
 
 <?
-
+/* En attente correction YKS*/
 foreach($tables_children_list as $table_children_name=>$table_children){
   echo "<toggler class='closed users_table_child' caption='$table_children_name'>";
     echo "<box  src='/?/Admin/Yks/Scaffolding/Tables//$table_children_name;user_id=$user_id'/>";
   echo "</toggler>";
 
 }
+/**/
 ?>
 
 <?=$tables_children_list?"<hr/>":''?>

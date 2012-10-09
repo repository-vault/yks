@@ -20,10 +20,20 @@ function abort($code) {
 }
 
 function reloc($url) {
-    if(substr($url,0,1)=="/") $url=SITE_URL.'/'.ltrim($url,'/');
-    if(class_exists('rbx') && rbx::$rbx) rbx::delay();
-    if(JSX===true) {rbx::msg('go',$url);jsx::end();}
-    header("Location: $url"); exit;
+  if(substr($url,0,1)=="/"){
+    $url = '/'.ltrim($url,'/');
+    if($_SERVER['HTTP_ORIGIN']){
+      $parse_origin_url = parse_url($_SERVER['HTTP_ORIGIN']);      
+      if($parse_origin_url['host'] == SITE_DOMAIN)
+        $url = $parse_origin_url['scheme'].'://'.SITE_DOMAIN.$url;
+    } else {
+       $url=SITE_URL.$url;
+    }
+  }
+    
+  if(class_exists('rbx') && rbx::$rbx) rbx::delay();
+  if(JSX===true) {rbx::msg('go',$url);jsx::end();}
+  header("Location: $url"); exit;
 }
 
 function fields($table, $key=false){

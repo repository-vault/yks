@@ -12,8 +12,8 @@ var Xhr = new Class({
     this.encoding = encoding || 'urlencode';
   },
 
-  request:function(url, method, data){
-
+  request:function(url, method, data){   
+  
     var encoder = this["encode_"+this.encoding]
     if(!encoder)
         throw "Unknow encoder";
@@ -27,11 +27,11 @@ var Xhr = new Class({
     encoder.encode.call(this, data, function(data){
       if(method == 'GET')
           data = null;
-
+      
       this.headers.each( function(val, key){
           this.lnk.setRequestHeader(key, val);
       }.bind(this));
-
+      
       this.lnk[encoder.transport_callback](data);
 
       if((!this.async) && this.lnk.readyState==4)
@@ -70,8 +70,17 @@ var Xhr = new Class({
   state_change:function(){ 
     if(!this.isSuccess()) return false;
     this.lnk.onreadystatechange = $empty; //prevent dbl calls
-
-    var headers = Xhr.split_headers(this.lnk.getAllResponseHeaders());
+    
+    var responseHeaders = this.lnk.getAllResponseHeaders();
+    
+    if(!responseHeaders){
+      var lnk = this.lnk;
+      Array.each(['Content-Type'], function(name, index){
+        responseHeaders  += name + ': ' + lnk.getResponseHeader(name);
+      });
+    }
+    
+    var headers = Xhr.split_headers(responseHeaders);
 
     var content_type = (headers['content-type'] || "text/xml").split(';')[0];
     var val;

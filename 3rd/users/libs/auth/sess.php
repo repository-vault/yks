@@ -36,6 +36,20 @@ class sess  {
     return crpt($id, FLAG_SESS, 10);
   }
 
+  public static function cors_connect(){
+    $session_id = null;
+    $origin_host = null;
+    
+    if($_SERVER['HTTP_ORIGIN']){
+      $parse_origin_url = parse_url($_SERVER['HTTP_ORIGIN']);
+      $origin_host = $parse_origin_url['host'];
+      $session_id = $_POST['token'];
+    }
+        
+    self::connect($session_id);
+  }
+  
+  
   static function connect($session_id = null){
     if($session_id) session_id($session_id) ;
 
