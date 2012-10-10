@@ -12,7 +12,7 @@ var Urls = {
         return Urls.parse(Urls.base.site_url+(url.charAt(0)=='/'?'':Urls.base.path)+url);
     } ret.protocol = tmp.shift();
     tmp = tmp[0].split('/',2); ret.domain=tmp.shift();
-    tmp = tmp[0].split('?',2);
+    tmp = (tmp[0] || '').split('?',2);
     if(tmp[1])
         while ((m = /([^=]+)=([^&]+)&?/g.exec(tmp[1]) ))
             ret.args[m[1]] = m[2];
