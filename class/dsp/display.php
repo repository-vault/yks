@@ -46,6 +46,7 @@ class dsp{
     $nbs = sql::lines($birth_table_name);
 
     if($birth_fields[$birth_name]) { //!!We have a birth field description
+
       sql::select($birth_table_name, true, "$birth_name, $field_type", "ORDER BY $birth_name ASC");
       $birth_description = sql::brute_fetch($field_type, $birth_name);
       $str = "<field title='$field_name' $extras><select name='$field_name' $options_str>$default_str"
@@ -61,8 +62,9 @@ class dsp{
             ."</select></field>";
         return $str;
     } elseif($nbs<20) {
-        sql::select($birth_table_name, true, $field_type, "ORDER BY $field_type ASC");
-        $birth_description = sql::brute_fetch($field_type, $field_type);
+        sql::select($birth_table_name, true, $field_name, "ORDER BY $field_name ASC");
+
+        $birth_description = sql::brute_fetch($field_name, $field_name);
         $str = "<field title='$field_name' $extras><select name='$field_name' $options_str>$default_str"
           .dsp::dd($birth_description, $options)
           ."</select></field>";

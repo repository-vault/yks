@@ -8,7 +8,7 @@ function keys($table){
     return $res;
 }
 
-$unique_scaffold_key = substr(md5(join('-', $args)),0,10);
+$unique_scaffold_key = substr(md5(join('-', $subs_args)),0,10);
 
 $unique_scaffold_key_list = "{$unique_scaffold_key}_list";
 
@@ -17,10 +17,10 @@ tpls::export(compact('unique_scaffold_key_list'));
 
 
 
-$table_name = array_shift($args);
+$table_name = array_shift($subs_args);
 
 
-$initial_criteria = array_filter($args);
+$initial_criteria = array_filter($subs_args);
 if(!$initial_criteria) $initial_criteria = array("true");
 else {
     parse_str(join("&", $initial_criteria), $initial_criteria);
