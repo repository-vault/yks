@@ -43,7 +43,8 @@ class sess  {
     if($_SERVER['HTTP_ORIGIN']){
       $parse_origin_url = parse_url($_SERVER['HTTP_ORIGIN']);
       $origin_host = $parse_origin_url['host'];
-      $session_id = $_POST['token'];
+      if($parse_origin_url['host'] == SITE_DOMAIN)
+        $session_id = $_POST['token'];
     }
         
     self::connect($session_id);
