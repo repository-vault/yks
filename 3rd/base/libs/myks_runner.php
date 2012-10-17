@@ -6,9 +6,6 @@ class myks_runner {
   var $xml_filename;
   var $xsl_filename;
 
-  var $mykse_file_path;
-  var $mykse_file_url;
-
   var $browsers_engines;
   var $rendering_sides;
 
@@ -16,18 +13,12 @@ class myks_runner {
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
-    define('XML_CACHE_PATH',  CACHE_PATH."/xml");
-    define('XML_CACHE_URL',   CACHE_URL."/xml");
-
     define('XSL_CACHE_PATH',  CACHE_PATH."/xsl");
   }
 
   function __construct(){
     $this->xml_filename     = RSRCS_PATH."/xsl/root.xsl";              //meta XSL source
     $this->xsl_filename     = RSRCS_PATH."/xsl/metas/xsl_gen.xsl";     //meta XSL stylesheet
-
-    $this->mykse_file_path  = XML_CACHE_PATH."/myks.xml";
-    $this->mykse_file_url   = XML_CACHE_URL."/myks.xml";
 
     $this->browsers_engines = array( 'trident', 'gecko', 'webkit', 'presto', 'mobile');
     $this->rendering_sides  = array( 'server', 'client');
@@ -64,19 +55,13 @@ class myks_runner {
     if(PHP_SAPI == "cli")
         return yks_runner::httpd_tunnel(__CLASS__, "manage_types");
 
-    files::delete_dir(XML_CACHE_PATH, false); //cleaning...
-    files::create_dir(XML_CACHE_PATH);        //... and go
-
     rbx::title("Parsing myks definitions");
 
     $types_xml      = data::reload("types_xml");
     $tables_xml     = data::reload("tables_xml");
     rbx::ok("APC types_xml/tables_xml cache reloaded");
 
-    $types_xml->asXML($this->mykse_file_path);  // export
-
     myks_parser::trace();
-    rbx::ok("Myks types {$this->mykse_file_path} updated");
 
         //before export ? after ? i don't know is it's very usefull anymore
     if(!$types_xml->myks_type) {
@@ -109,11 +94,6 @@ class myks_runner {
     $doc->load($this->xml_filename);
 
     $xsl_cache = new xsl_cache($doc, $xsl);
-
-    $xsl_cache->parameters_add( array(
-        'mykse_file_path' => $this->mykse_file_path,
-        'mykse_file_url'  => $this->mykse_file_url,
-    ));
 
     foreach($this->browsers_engines as $engine_name)
       foreach($this->rendering_sides as $rendering_side) {

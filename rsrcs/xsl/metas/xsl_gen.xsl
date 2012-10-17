@@ -2,12 +2,10 @@
 <wxsl:stylesheet xmlns:wxsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="temp" xmlns:ewxsl="http://exslt.org/common" version="1.0">
   <wxsl:namespace-alias stylesheet-prefix="xsl" result-prefix="wxsl"/>
   <wxsl:strip-space elements="*"/>
-<!-- params -->
+  <!-- params -->
   <wxsl:param name="rendering_side" value="client"/>
   <wxsl:param name="engine_name" value="gecko"/>
-  <wxsl:param name="mykse_file_url" value="http//site_url"/>
-  <wxsl:param name="mykse_file_path" value="/path/to/file.xsl"/>
-<!-- /params -->
+  <!-- /params -->
   <wxsl:template match="/wxsl:stylesheet">
     <wxsl:variable name="external_mode">
       <wxsl:choose>
@@ -21,27 +19,6 @@
         <wxsl:attribute name="extension-element-prefixes">ewxsl</wxsl:attribute>
       </wxsl:if>
       <wxsl:apply-templates select="wxsl:output|wxsl:variable"/>
-      <wxsl:choose>
-        <!--
-        <wxsl:when test="$external_mode='XSL_DOCUMENT'">          
-          <wxsl:element name="xsl:variable">
-            <wxsl:attribute name="name">myks_types</wxsl:attribute>
-            <wxsl:attribute name="select">document('<wxsl:value-of select="$mykse_file_url"/>')</wxsl:attribute>
-          </wxsl:element>
-        </wxsl:when>
-        -->
-        <wxsl:when test="$external_mode='XSL_NODE_SET'">
-          <wxsl:element name="xsl:variable">
-            <wxsl:attribute name="name">myks_types_tree</wxsl:attribute>
-            <wxsl:copy-of select="document($mykse_file_path)/*"/>
-          </wxsl:element>
-          <wxsl:element name="xsl:variable">
-            <wxsl:attribute name="name">myks_types</wxsl:attribute>
-            <wxsl:attribute name="select">ewxsl:node-set($myks_types_tree)</wxsl:attribute>
-          </wxsl:element>
-          
-        </wxsl:when>
-      </wxsl:choose>
       <wxsl:apply-templates select="wxsl:import"/>
       <wxsl:apply-templates select="wxsl:template"/>
     </xsl:stylesheet>
