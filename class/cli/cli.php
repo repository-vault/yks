@@ -72,10 +72,8 @@ class cli {
     foreach(self::$paths as $path) {
       foreach($search as $bin_full_name) {
       $full_path = $path.DIRECTORY_SEPARATOR.$bin_full_name;
-      if(file_exists($full_path))
+      if(file_exists($full_path) && is_file($full_path))
         return $full_path;
-      //prepend valid exts
-      //if(
     }}
 
     return $bin_name;
