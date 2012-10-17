@@ -4,7 +4,7 @@ class cli {
 
   const OS_UNIX = 1;
   const OS_WINDOWS = 2;
-  private static $OS = null;
+  public static $OS = null;
 
   const pad = 70;
 
@@ -281,11 +281,13 @@ class cli {
     $wd = dirname($file_tick);
     files::create_dir($wd);
 
-    $cmds["ok"] = 'echo "ok">'.$file_tick;
     $dist_file = files::tmppath("bat");
-
-    $dist_contents = join(CRLF, $cmds);
-    file_put_contents($dist_file, $dist_contents);
+    $log_file  = files::tmppath("log"); touch($log_file);
+    $cmds = mask_join(CRLF,  $cmds, "%s >> \"$log_file\"");
+    $cmds .= CRLF.'echo "ok">'.$file_tick.CRLF;
+    rbx::ok("Loggin in $log_file");
+    
+    file_put_contents($dist_file, $cmds);
 
     if(file_exists($file_tick))
         unlink($file_tick);
@@ -293,7 +295,7 @@ class cli {
     $cmd = sprintf($cmd_mask, $dist_file);
     rbx::ok($cmd);
     cli::exec($cmd);
-
+    $tail = new cli_tail($log_file);
         //waiting for smartassembly
     do {
       sleep(1);
@@ -301,17 +303,13 @@ class cli {
 
       if(file_exists($file_tick))
           break;
-
-      if($survey && file_exists($wd)) {
-        $wd_cyg = cli::cygpath($wd);
-        $size = preg_reduce("#([0-9.]+[A-Z]{1,2})#",  trim(`du -hs $wd_cyg`));
-        $msg .= " : $size";
-      }
-      echo "\r".cli::pad($msg, " ", STR_PAD_RIGHT);
-
+      $line = $tail->pick_line();
+      if($line) echo $line;
     } while(true);
     echo CRLF;
     unlink($dist_file ); //drop remote file
+    $tail->close();
+    unlink($log_file ); //drop remote file
   }
   
   

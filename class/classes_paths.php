@@ -77,6 +77,7 @@ classes::register_class_paths(array(
     "ffmpeg_helper"        => CLASS_PATH."/apis/ffmpeg/helper.php",
 
     "cli"                  => CLASS_PATH."/cli/cli.php",
+    "cli_tail"             => CLASS_PATH."/cli/tail.php",
     "pclzip"               => CLASS_PATH."/exts/pclzip.php",
     "interactive_runner"   => CLASS_PATH."/exts/cli/interactive_runner.php",
     "namedpipewrapper"     => CLASS_PATH."/exts/cli/namedpipewrapper.php",
