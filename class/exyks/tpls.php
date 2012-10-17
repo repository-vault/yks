@@ -146,4 +146,278 @@ class tpls {
  static function nav($tree){
     self::$nav = array_merge(self::$nav, $tree);
  }
+ 
+ /**
+ * 
+ * @param DOMElement $old
+ * @param DOMElement $new
+ * @return mixed
+ */
+  static function copy_elem($old, $new){   
+   foreach($old->childNodes as $node_child){
+     if(gettype($node_child) == 'object' && get_class($node_child) == 'DOMElement')
+      $new->appendChild($node_child->cloneNode(true));
+   }
+  }
+ 
+ /**
+  * 
+  * @param DomDocument $doc
+  * @param DomElement $elem
+  */
+  static function inline_field($doc, $elem){
+       
+    $type = $elem->getAttribute('type');
+    $name = $elem->getAttribute('name') ? $elem->getAttribute('name') : $type;       
+     
+    //DebugBreak("1@172.19.20.35");
+    $attr_list = array('id', 'class');
+    
+    $element = self::create_element($doc, 'p', NULL, $elem, $attr_list);
+    
+    $attr_title = specialchars_encode($elem->getAttribute('title')); // read
+    
+    if($attr_title){
+      $title = self::create_element($doc, 'span', $attr_title.' : ');
+      $element->appendChild($title);
+    }
+    
+    self::copy_elem($elem, $element);
+        
+    if($type){
+      $true_type = self::fall_base_type($type, $elem->getAttribute('mode'));
+
+      //switch like
+      if(in_array($true_type, array( 'string', 'int', 'time', 'date', 'sha1', 'hidden'))) {
+          $el_type = 'text';
+          if($true_type == 'sha1')
+            $el_type = 'password';
+          
+          $new_attr = array(
+            'type'  => $el_type,
+            'name'  => $name,
+            'class' => 'input_'.$true_type,
+          );
+          
+          $tr_attr = array('value', 'style', 'name', 'id', 'disabled');        
+          $field = self::create_element($doc, 'input', $elem->nodeValue, $new_attr, $elem, $tr_attr);
+      }
+      
+      ///////file
+      if($true_type == 'file'){
+        $field = self::create_element($doc, 'input', $elem->nodeValue, array('name' => $name), $elem, array('style'));
+      }
+      
+      ///////upload
+      if($true_type == 'upload'){        
+        //span
+        $field = self::create_element($doc, 'span', $elem->nodeValue, NULL, NULL, NULL, '&#160;');
+        
+        //span > a 
+        $new_attr = array(
+          'href'   => $elem->getAttribute('href'),
+          'target' => 'upload_file', 
+        );
+        
+        $tr_attr = array(
+          'onclick',
+          'style',
+        );
+        
+        $button = self::create_element($doc, 'a', NULL, $new_attr, $elem, $tr_attr);
+        
+        //span > a(button) > img
+        $value = $elem->getAttribute('upload_title');
+        $theme = $elem->getAttribute('theme');
+        $class = $elem->getAttribute('class');
+        $effects = $elem->getAttribute('effects');
+        
+        $new_attr = array(
+          'src'   => "?/Yks/Scripts/Imgs/titles//{$theme}|{$value}",
+          'class' => "button {$class} {$effects}",
+          'alt'   => $value,
+          'title' => $value,
+        );
+        
+        $tr_attr = array(
+          'src',
+          'theme',
+          'value',
+        );
+        
+        $img = self::create_element($doc, 'img', NULL, $new_attr, $elem, $tr_attr);
+                
+        $new_attr = array(
+          'class' => 'input_'.$true_type,
+          'style' => 'display:none',
+          'id'    => $name,
+          'upload_type' => $elem->getAttribute('upload_type'),
+        );
+        
+        $span = self::create_element($doc, 'span', NULL, $new_attr);
+        
+        $button->appendChild($img);
+        $field->appendChild($button);
+        $field->appendChild($span);
+      }
+      
+      ////////html
+      //?????? comment
+      if($true_type == 'html'){
+        
+        $new_attr = array(
+          'class' => 'wyzzie',
+          'name'  => $name,
+        );
+        
+        $tr_attr = array('style', 'id');
+        
+        $field = self::create_element($doc, 'textarea', $elem->nodeValue, $new_attr, $elem, $tr_attr);
+      }
+      
+      //////textarea text
+      //?????? comment
+      if($true_type == 'textarea' || $true_type == 'text'){      
+        $tr_attr = array('style', 'id');      
+        $field = self::create_element($doc, 'textarea', $elem->nodeValue, array('name' => $name), $elem,  $tr_attr, $elem->nodeValue);      
+        $element->appendChild($field);
+      }
+      
+      if($true_type == 'bool' && $elem->getAttribute('mode') == 'checkbox'){
+        
+        $new_attr = array(
+          'type' => 'checkbox',
+          'name', $name,
+        );
+        
+        $field = self::create_element($doc, 'input', NULL, $new_attr);
+        
+        if($elem->getAttribute('checked') == 'checked'){
+          $field->setAttribute('checked', 'checked');
+        }
+      }
+      
+      ///////enum
+      if($true_type == 'enum'){
+        $value = $elem->getAttribute('value');
+        $mode  = $elem->getAttribute('mode');
+                
+        $field = self::create_element($doc, 'div', $elem->nodeValue, array('class' => 'input_'.$mode.'s'));
+        
+        if($mode == 'checkbox' || $mode == 'radio'){
+          $type_list = yks::$get->types_xml->$type;
+          
+          foreach(yks::$get->types_xml->$type->val as $val){
+            
+            $div  = self::create_element($doc, 'div');
+            $id   = $name.'_'.$val;
+            if($mode == 'checkbox')
+              $name = $name.'[]';
+                      
+            $new_attr = array(
+              'type'  => $mode,
+              'value' => $val,
+              'id'    => $id, 
+              'name'  => $name,
+            );
+            
+            $value = $elem->getAttribute('value');
+            $pos   = strpos($value, $val);
+            
+            if($pos !== false || $value == $val)
+              $new_attr['checked'] = 'checked';
+            
+            $input = self::create_element($doc, 'input', NULL, $new_attr);
+            
+            $label = self::create_element($doc, 'label', $val, array('for' => $val), NULL, NULL);
+            
+            $div->appendChild($input);
+            $div->appendChild($label);
+            
+            $field->appendChild($div);        
+          }
+        }
+        else{
+          $tr_attr  = array('disabled', 'multiple');
+          $new_attr = array('name' => $name);        
+          $mykse    = yks::$get->types_xml->$type;
+          
+          if($mykse['set']){
+            $new_attr['multiple'] = 'multiple';
+            $new_attr['name']     = $name.'[]';
+          }
+          
+          $select = self::create_element($doc,'select', NULL, $new_attr, $elem, $tr_attr);
+          
+          $attr_null = $elem->getAttribute('null');
+          if($elem->getAttribute('null')){
+            $option = self::create_element($doc, 'option', $attr_null, array('value' => ''), NULL, NULL);
+            $select->appendChild($option);
+          }
+            
+          foreach(yks::$get->types_xml->$type->val as $val){
+            $new_attr = array();
+            $pos   = strpos($value, $val);          
+            if($pos !== false || $value == $val)
+              $new_attr['selected'] = 'selected';
+            
+            $option = self::create_element($doc, 'option', $val, $new_attr, NULL, NULL);
+            
+            $select->appendChild($option);
+            
+            $field->appendChild($select);
+          }
+        }
+      }
+      if($field)
+        $element->appendChild($field);
+    }
+    $elem->parentNode->replaceChild($element, $elem);
+  }  
+  
+  /**
+  * 
+  * @param DOMDocument $doc
+  * @param DOMElement $elem
+  * @param string $type
+  * @param array $transfer_attr
+  * @param array $attr
+  */
+  private function create_element($doc,  $type, $value = NULL, $new_attr = NULL, $elem = NULL, $transfer_attr = NULL){
+    $el = $doc->createElement($type, $value);
+    
+    if($new_attr)
+      foreach($new_attr as $key => $value){
+        $el->setAttribute($key, $value);
+      }
+    
+    if($elem && $transfer_attr)
+      foreach($transfer_attr as $attr){
+        $attr_value = $elem->getAttribute($attr);
+
+        if($attr_value)
+          $el->setAttribute($attr, $attr_value);
+      }
+    
+    return $el;
+  }
+  
+  
+  private static function fall_base_type($type, $mode){
+     $base_types = array(
+      "string", "int", "time", "date",
+      "sha1", "hidden",
+      "file", "upload",
+      "html", "textarea", "text",
+      "enum", "checkbox", //?
+     ); 
+     
+     $type_parent = yks::$get->types_xml->$type;
+     
+     if(in_array($type, $base_types) || ($type == 'bool' && $mode == 'checkbox'))
+      return $type;
+      
+     else return self::fall_base_type((string) $type_parent["type"], $mode);
+      
+  }
 }

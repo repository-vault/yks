@@ -109,8 +109,11 @@ class exyks {
 
     if(yks::$get->config->site['render'] == 'inline')
       tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
-
-
+          
+       
+    tpls::register_custom_element("field", array('tpls', 'inline_field'));
+    
+    
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
 

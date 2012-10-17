@@ -37,6 +37,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  <!--
   <xsl:template match="field" name="field">
     <xsl:param name="depth" select="'0'"/>
     <xsl:param name="item_type" select="string(@type)"/>
@@ -170,4 +171,5 @@
       </xsl:choose>
     </xsl:element>
   </xsl:template>
+  -->
 </xsl:stylesheet>

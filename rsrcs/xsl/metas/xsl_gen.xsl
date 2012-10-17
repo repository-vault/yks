@@ -22,12 +22,14 @@
       </wxsl:if>
       <wxsl:apply-templates select="wxsl:output|wxsl:variable"/>
       <wxsl:choose>
-        <wxsl:when test="$external_mode='XSL_DOCUMENT'">
+        <!--
+        <wxsl:when test="$external_mode='XSL_DOCUMENT'">          
           <wxsl:element name="xsl:variable">
             <wxsl:attribute name="name">myks_types</wxsl:attribute>
             <wxsl:attribute name="select">document('<wxsl:value-of select="$mykse_file_url"/>')</wxsl:attribute>
           </wxsl:element>
         </wxsl:when>
+        -->
         <wxsl:when test="$external_mode='XSL_NODE_SET'">
           <wxsl:element name="xsl:variable">
             <wxsl:attribute name="name">myks_types_tree</wxsl:attribute>
@@ -37,6 +39,7 @@
             <wxsl:attribute name="name">myks_types</wxsl:attribute>
             <wxsl:attribute name="select">ewxsl:node-set($myks_types_tree)</wxsl:attribute>
           </wxsl:element>
+          
         </wxsl:when>
       </wxsl:choose>
       <wxsl:apply-templates select="wxsl:import"/>
