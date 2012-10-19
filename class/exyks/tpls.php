@@ -194,7 +194,7 @@ class tpls {
     if(in_array($true_type, array( 'string', 'int', 'time', 'date', 'sha1', 'hidden'))) {
 
       $new_attr = array(
-        'type'  => ($true_type == 'sha1') ? "password" :  $true_type,
+        'type'  => ($true_type == 'sha1') ? "password" :  "text",
         'name'  => $name,
         'class' => 'input_'.$true_type,
       );
