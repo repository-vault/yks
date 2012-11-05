@@ -5,7 +5,7 @@ class pgsql_auto_inc_sync {
   static function doit($tables_xml, $types_xml) {
 
     $done = 0;
-    foreach($types_xml  as $mykse_type=>$mykse_xml) {
+    foreach($types_xml  as $mykse_type=>$mykse_xml) try {
         $birth = (string) $mykse_xml['birth'];
         $base_type = (string) $mykse_xml['type'];
 
@@ -45,7 +45,8 @@ class pgsql_auto_inc_sync {
         sql::replace("zks_autoincrement", $data, $verif_key);
         rbx::ok("-- ".SQL_DRIVER." Updating {$mykse_type}($table_name) : $sql_max sequence");
 
-    }
+    } catch(Exception $e){ rbx::error("Could not update sequence $mykse_type"); }
+
     if(!$done)
         rbx::ok("-- ".SQL_DRIVER." All sequences are up-to-date");
 
