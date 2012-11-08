@@ -32,6 +32,7 @@ classes::register_class_paths(array(
     "_storage_apc"         => CLASS_PATH."/stds/storage/apc.php",
     "_storage_var"         => CLASS_PATH."/stds/storage/var.php",
     "_storage_sql"         => CLASS_PATH."/stds/storage/sql.php",
+    "_storage_redis"       => CLASS_PATH."/stds/storage/redis.php",
 
     "timeout"              => CLASS_PATH."/stds/timeout.php",
 
