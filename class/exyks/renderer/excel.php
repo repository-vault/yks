@@ -13,11 +13,11 @@ class exyks_renderer_excel {
   static function process(){ //prepare exyks rendering engine
     tpls::register_custom_element("table[contains(@class,'table')]", array(__CLASS__, 'extract_data'));
   }
-  
+
   /**
   * Creation d un xml puis generation excel grâce à un tableau html.
   * Attention die à la fin de la methode
-  * 
+  *
   * @param DOMDocument $doc
   * @param DOMDocument $table_xml
   */
@@ -35,7 +35,7 @@ class exyks_renderer_excel {
   ";
 
   public static function extract_data($doc, $table_xml){
-    
+
     $out_xml = new DOMDocument('1.0', 'utf-8');
     $root_xml = $out_xml->createElement("data");
     $root_xml->appendChild($out_xml->createElement('style'))
@@ -60,18 +60,21 @@ class exyks_renderer_excel {
 
         $xml_row->appendChild($cell);
       }
-      
+
       $worksheet->appendChild($xml_row);
     }
-    
+
     $root_xml->appendChild($worksheet);
     $out_xml->appendChild($root_xml);
     $xml_to_xlsx = new xml_to_xlsx($out_xml);
-    $xml_to_xlsx->create();
-    
+
+    $creator = pick(sess::$sess['user_name'], 'Anonymous');
+
+    $xml_to_xlsx->create($creator);
+
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
+
     $safe_name = files::safe_name(exyks::$head->title.".xlsx");
     $file_path = files::tmpdir().DIRECTORY_SEPARATOR.$safe_name;
 
