@@ -61,7 +61,13 @@ Class xml_to_xlsx {
 
   public function create($creator = 'Anonymous'){
     $this->doc_props_xml->creator = $creator;
-    $this->doc_props_xml->created = substr(date("Y-m-dTh:i:sO"),0,22).":".substr(date("O"),3);
+    Debugbreak();
+
+    $dateTime = new DateTime();
+    $dateTime = $dateTime->setTimestamp($_SERVER['REQUEST_TIME']);
+    $date = $dateTime->format(DateTime::W3C);
+
+    $this->doc_props_xml->created = $date;
 
     foreach($this->data_xml->Worksheet as $worksheet){
 
