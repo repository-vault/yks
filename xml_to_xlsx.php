@@ -61,7 +61,6 @@ Class xml_to_xlsx {
 
   public function create($creator = 'Anonymous'){
     $this->doc_props_xml->creator = $creator;
-    Debugbreak();
 
     $dateTime = new DateTime();
     $dateTime = $dateTime->setTimestamp($_SERVER['REQUEST_TIME']);
