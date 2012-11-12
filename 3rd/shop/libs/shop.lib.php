@@ -15,7 +15,7 @@ class shop {
 
   function register_checkout_hook($callback){    $this->checkout_hook = $callback;  }
   function register_precalc_hook($callback){     $this->precalc_hook = $callback;  }
-  
+
   function __construct($shop_key, $verif_products) {
     $this->shop_key = $shop_key;
     $this->load_products_list($verif_products);
@@ -43,7 +43,7 @@ class shop {
     if(method_exists($this, $getter="get_$key"))
         return $this->$getter();
   }
- 
+
   static function currency_format($value){
     return sprintf('%s', $value);
   }
@@ -72,13 +72,26 @@ class shop {
     return $order;
   }
 
-  function get_displayed_products($verif_products) {
+  function get_displayed_products($verif_products){
+    $available_products_list = $this->get_available_products($verif_products);
+
+    foreach($available_products_list as $key => $product){
+      if(isset($product->products_specifications['shop_visible'])
+          && $product->products_specifications['shop_visible']['specification_value'] == 'no'){
+      unset($available_products_list[$key]);
+      }
+    }
+
+    return $available_products_list;
+  }
+
+  function get_available_products($verif_products) {
     if(is_string($verif_products))
         $verif_products = array('products_categories'=>$verif_products);
 
-    $displayed_products_list = array_filter_criteria($this->products_list, $verif_products);
-    $displayed_products_list = array_sort_deep($displayed_products_list, "product_order");
-    return $displayed_products_list;
+    $available_products_list = array_filter_criteria($this->products_list, $verif_products);
+    $available_products_list = array_sort_deep($available_products_list, "product_order");
+    return $available_products_list;
   }
 
 
@@ -99,7 +112,7 @@ class categories {
 
    $verif_shop = array( "category_id" => $categories_list);
    sql::select("ks_shop_products_categories",$verif_shop, "product_id");
-   $products_list = sql::brute_fetch(false,"product_id"); 
+   $products_list = sql::brute_fetch(false,"product_id");
 
 
     return products::get_children($products_list);
