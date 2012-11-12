@@ -16,7 +16,7 @@
       <val>color_id</val>
       <val>profile_key</val>
       <val>unsellable</val>
-      <val>shop_visible</val>
+      <val>hidden_product</val>
     </enum>
   </mykse>
 </myks>
