@@ -59,8 +59,7 @@ Class xml_to_xlsx {
 
   }
 
-  public function create($creator = 'Anonymous'){
-    $this->doc_props_xml->creator = $creator;
+  public function create(){
 
     $dateTime = new DateTime("@{$_SERVER['REQUEST_TIME']}");
     $date = $dateTime->format(DateTime::W3C);
@@ -75,6 +74,10 @@ Class xml_to_xlsx {
       $this->add_ref_worksheet($name);
       $this->create_sheet_xml($worksheet);
     }
+  }
+
+  public function set_creator($creator = 'Anonymous'){
+    $this->doc_props_xml->creator = $creator;
   }
 
   private function add_ref_worksheet($name){
@@ -208,7 +211,6 @@ Class xml_to_xlsx {
 
     $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
   }
-
 
   private function create_col_prefix($i){
     $b = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
