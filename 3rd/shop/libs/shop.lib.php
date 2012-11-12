@@ -76,8 +76,8 @@ class shop {
     $available_products_list = $this->get_available_products($verif_products);
 
     foreach($available_products_list as $key => $product){
-      if(isset($product->products_specifications['shop_visible'])
-          && $product->products_specifications['shop_visible']['specification_value'] == 'no'){
+      if(isset($product->products_specifications['hidden_product'])
+          && $product->products_specifications['hidden_product']['specification_value'] == 'yes'){
       unset($available_products_list[$key]);
       }
     }
