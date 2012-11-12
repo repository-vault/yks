@@ -21,5 +21,7 @@ try {
     return;
 }
 
-if($export)
+if($export){
+    exyks_renderer_excel::$creator = sess::$sess['user_name'];
     exyks_renderer_excel::process();
+}

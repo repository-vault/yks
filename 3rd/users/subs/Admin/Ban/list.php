@@ -13,10 +13,10 @@ if($action == "trash") try{
 catch(rbx $e){}
 
 //suppression d'une liste de ban
-if($action == "fails_delete") try{     
-  
+if($action == "fails_delete") try{
+
   $failed_infos = $_POST['failed_list'];
-  
+
   foreach($failed_infos as $key => $fail){
     $info = explode(',', $key);
     authfailed::delete(
@@ -25,7 +25,7 @@ if($action == "fails_delete") try{
         'failed_ip'    => $info[0],
     ));
   }
-  
+
   return jsx::js_eval(jsx::RELOAD);
 }
 catch(rbx $e){}
@@ -37,46 +37,46 @@ authfailed::delete_old();
 $search_infos = sess::retrieve($search_flag);
 
 if(isset($search_infos)){
-  
+
   $fields = array(
     'count(auth_ldap_failed_id)',
     'failed_login',
     'failed_ip',
   );
-  
+
   //creation de la req
   $where    = array();
   $having   = array();
   $sort_way = $search_infos['sort_way'];
   $sort_by  = $search_infos['sort_by'];
-    
+
   if($search_infos['search_login'] != null)
     $where[] = "failed_login Like '%{$search_infos['search_login']}%'";
-  
+
   if($search_infos['search_ip'] != null)
     $where[] = "failed_ip Like '%{$search_infos['search_ip']}%'";
-  
+
   if($search_infos['search_count_start'])
       $having[] = 'count(auth_ldap_failed_id) >= '.$search_infos['search_count_start'];
 
   if($search_infos['search_count_end'])
     $having[] = 'count(auth_ldap_failed_id) <= '.$search_infos['search_count_end'];
-  
+
   $order_by = NULL;
   $group_by = 'GROUP BY failed_login, failed_ip';
-  
+
   if(count($where) == 0)
     $where = true;
- 
+
   $order_by = $sort_way&&$sort_by ? "ORDER BY $sort_by $sort_way":'';
-  
+
   //having car aggregate
   $extras[] = $group_by;
   if(count($having) > 0)
     $extras[] = 'HAVING '.implode(' && ', $having);
-    
+
   $extras[] = $order_by;
-    
+
   $list_failed_auth = authfailed::get(implode(', ', $fields), $where, implode(' ', $extras));
 }
 else{
@@ -110,6 +110,7 @@ if($export_mode) {
     unset($cols['actions']);
     unset($cols['checkbox']);
 
+    exyks_renderer_excel::$creator = sess::$sess['user_name'];
     exyks_renderer_excel::process();
 }
 

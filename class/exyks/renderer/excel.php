@@ -5,6 +5,7 @@ class exyks_renderer_excel {
   private static $XSL_SERVER_PATH;
   private static $XSL_TPL_TOP    = "Yks/Renderers/excel_top";
   private static $XSL_TPL_BOTTOM = "Yks/Renderers/excel_bottom";
+  static $creator = 'Anonymous';
 
   static function init(){
     self::$XSL_SERVER_PATH = RSRCS_PATH."/xsl/specials/excel.xsl";
@@ -68,16 +69,14 @@ class exyks_renderer_excel {
     $out_xml->appendChild($root_xml);
     $xml_to_xlsx = new xml_to_xlsx($out_xml);
 
-    $creator = pick(sess::$sess['user_name'], 'Anonymous');
-
-    $xml_to_xlsx->create($creator);
+    $xml_to_xlsx->create();
+    $xml_to_xlsx->set_creator(self::$creator);
 
     header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     $safe_name = files::safe_name(exyks::$head->title.".xlsx");
     $file_path = files::tmpdir().DIRECTORY_SEPARATOR.$safe_name;
-
 
     $xml_to_xlsx->save($file_path);
     echo file_get_contents($file_path);
