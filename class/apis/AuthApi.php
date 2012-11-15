@@ -17,15 +17,7 @@ class exyks_auth_api {
         sess::renew(); //sess::$id is now set
 
 
-    if(!auth_password::reload($user_login, $user_pswd, false)) { //no redirect
-     //on peut essayer par ldap
-       if( ! yks::$get->config->users->search('auth_ldap_soap') )
-        throw new Exception("Invalid password, no fallback");
-
-      if(!auth_ldap_soap::reload($user_login, $user_pswd, false))
-        throw new Exception("Invalid password, all tried");
-
-    }
+    auth::login($user_login, $user_pswd);
 
 
     $data = sess::$sess->computed;

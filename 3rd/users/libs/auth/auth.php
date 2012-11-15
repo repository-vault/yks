@@ -2,6 +2,21 @@
 
 
 class auth {
+
+  public static function login($user_login, $user_pswd){
+
+    if(auth_password::reload($user_login, $user_pswd))
+        return; //win
+
+     //on peut essayer par ldap
+     if( ! yks::$get->config->users->search('auth_ldap_soap') )
+        throw new Exception("Invalid password"); //no more authentification pattern available
+
+    if(!auth_ldap_soap::reload($user_login, $user_pswd))
+        throw new Exception("Invalid password, ldap");
+
+  }
+
   
   public static function get_access_zones(){
 
