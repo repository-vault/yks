@@ -147,18 +147,7 @@ class tpls {
     self::$nav = array_merge(self::$nav, $tree);
   }
 
-  /**
-  * 
-  * @param DOMElement $old
-  * @param DOMElement $new
-  * @return mixed
-  */
-  static function copy_elem($old, $new){   
-    foreach($old->childNodes as $node_child){
-      if(gettype($node_child) == 'object' && get_class($node_child) == 'DOMElement')
-        $new->appendChild($node_child->cloneNode(true));
-    }
-  }
+
 
   /**
   * 
@@ -180,9 +169,11 @@ class tpls {
       $container->appendChild($title);
     }
 
-    self::copy_elem($field, $container); //!!!
 
     if(!$type) {
+      foreach($field->childNodes as $node_child)
+          $container->appendChild($node_child->cloneNode(true));
+
       $field->parentNode->replaceChild($container, $field);
       return;
     }
