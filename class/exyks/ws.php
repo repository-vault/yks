@@ -112,6 +112,9 @@ class exyks_ws {
         $xml->registerXPathNamespace("me", $wsdl_ns);
         $xml->registerXPathNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
         $SOAP_SESSION_ID = (string) reset($xml->xpath("//env:Body/me:{$method}/*[1][name()='session_id']"));
+
+        if(!$SOAP_SESSION_ID) //! leave it to sess::renew()
+          $use_sess = false;
     }
 
     define('SOAP_SESSION_ID', $SOAP_SESSION_ID);

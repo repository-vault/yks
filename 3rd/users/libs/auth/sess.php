@@ -91,6 +91,9 @@ class sess  {
   }
 
   static function renew(){
+      //sess::renew is sufficient to open a session
+    if(!self::$id) self::connect(); 
+
     setcookie('user_id', false, 0, "/", SESS_DOMAIN);
     sess::$sess     = new _ArrayObject();
     sess::$_storage = array();
