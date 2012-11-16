@@ -16,6 +16,9 @@
   <mykse type="param_id" birth="ks_queries_params_list">
     <int/>
   </mykse>
+  <mykse type="query_visibility">
+    <string length="192"/>
+  </mykse>
   <mykse type="param_key">
     <string length="64"/>
   </mykse>

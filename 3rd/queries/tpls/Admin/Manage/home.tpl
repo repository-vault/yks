@@ -7,6 +7,7 @@
     <p><a href="/?&href_fold;/params" target="query_params">Voir la liste des parametres disponibles</a></p>
     <field type="textarea" name="query_def" title="Query contents" style="float:right;clear:both;height:300px;width:100%;padding:-3px;"><?=specialchars_encode($query['query_def'])?></field>
     <field type="html" name="query_descr" title="Query description" style="height:200px"><?=specialchars_encode($query['query_descr'])?></field>
+    <field title="Visibility (users_id comma separated)"><input name="query_visibility" type="text" value="<?=$query['query_visibility']?>"/></field>
 
 </fields>
 

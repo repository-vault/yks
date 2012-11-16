@@ -8,6 +8,8 @@
       <field type="text" name="query_def"/>
       <field type="text" name="query_descr"/>
       <field type="time" name="query_create"/>
+      <field type="user_id" name="query_creator"/>
+      <field type="query_visibility" null="null"/>
     </fields>
   </table>
   <table name="ks_queries_params_list">
