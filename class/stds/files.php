@@ -27,6 +27,12 @@ class files {
     return $file_name;
   }
 
+  public static function crlf_eol($file_path){
+    $str = file_get_contents($file_path);
+    $str = preg_replace("#(?<!\r)\n#", CRLF, $str);
+    file_put_contents($file_path, $str);
+  }
+
   public static function rp($path, $ds = "/"){
     $out=array();$last=count($from=explode($ds, $path))-1;
     foreach($from as $i=>$fold){
