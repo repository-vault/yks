@@ -1,5 +1,8 @@
 <?
 
+
+define('XML_STANDALONE', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
+
 Class xml_to_xlsx {
 
 
@@ -29,6 +32,15 @@ Class xml_to_xlsx {
 
   const pattern_sheet_xml  = 'xl/worksheets/sheet%s.xml';
   const URI_RELATIONSHIP   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const URI_SPREADSHEET    = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+  const URI_MARKUPCOMP     = 'http://schemas.openxmlformats.org/markup-compatibility/2006';
+  const URI_WORKSHEET      = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
+
+  const URI_TYPE_RELATIONSHIP = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  const URI_TYPE_THEME   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme';
+  const URI_TYPE_STRING  = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings';
+  const URI_TYPE_STYLE   = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
+  const URI_X14AC        = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac";
 
   function __construct($input){
 
@@ -48,13 +60,24 @@ Class xml_to_xlsx {
       $this->data_xml = simplexml_load_string($input);
     else throw new Exception("Invalid class type $class");
 
-    $this->workbook_xml      = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_file);
-    $this->workbook_rels_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::workbook_rels_file);
-    $this->sharedstring_xml  = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::shared_string_file);
+
+
+
+    $this->workbook_xml      = self::doc("workbook", array('r' => self::URI_RELATIONSHIP));
+      $this->workbook_xml->addChild("sheets");
+
+    $this->workbook_rels_xml = self::doc("Relationships", null, self::URI_TYPE_RELATIONSHIP);
+      $this->add_rel(self::URI_TYPE_THEME, "theme/theme1.xml");
+      $this->add_rel(self::URI_TYPE_STRING, "sharedStrings.xml");
+      $this->add_rel(self::URI_TYPE_STYLE, "styles.xml");
+
+
+    $this->sharedstring_xml  = self::doc("sst");
+
     $this->content_types_xml = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::content_types_file);
     $this->doc_props_xml     = simplexml_load_file($this->excel_dir.DIRECTORY_SEPARATOR.self::doc_props);
 
-    $this->nb_relationship = count($this->workbook_rels_xml->Relationship);
+
     $this->styles          = new xlsx_style((string)$this->data_xml->style);
 
   }
@@ -80,20 +103,23 @@ Class xml_to_xlsx {
     $this->doc_props_xml->creator = $creator;
   }
 
+  private function add_rel($type, $sheet_path){
+    $this->nb_relationship++;
+    $rid = "rId{$this->nb_relationship}";
+    $relationship = $this->workbook_rels_xml->addChild('Relationship');
+    $relationship->addAttribute("Type", $type);
+    $relationship->addAttribute('Id', $rid);
+    $relationship->addAttribute('Target', $sheet_path);
+    return $rid;
+  }
+
   private function add_ref_worksheet($name){
 
     //en premier le relationship
     $this->nb_worksheet++;
-
-    $new_rid = 'rId'.($this->nb_relationship+$this->nb_worksheet);
-
-    $relationship = $this->workbook_rels_xml->addChild('Relationship');
-
     $sheet_path = self::worksheet_rels_path.'sheet'.$this->nb_worksheet.'.xml';
 
-    $relationship->addAttribute("Type", 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet');
-    $relationship->addAttribute('Id', $new_rid);
-    $relationship->addAttribute('Target', $sheet_path);
+    $rid = $this->add_rel(self::URI_WORKSHEET, $sheet_path);
 
     //puis le workbook
     $sheet = $this->workbook_xml->sheets->addChild('sheet');
@@ -104,7 +130,7 @@ Class xml_to_xlsx {
 
     $sheet->addAttribute('name', $worksheet_name);
     $sheet->addAttribute('sheetId', $this->nb_worksheet);
-    $sheet->addAttribute('r:id', $new_rid, self::URI_RELATIONSHIP);
+    $sheet->addAttribute('r:id', $rid, self::URI_RELATIONSHIP);
 
 
     $content_sheet = $this->content_types_xml->addChild('Override');
@@ -115,15 +141,20 @@ Class xml_to_xlsx {
     return $this->nb_worksheet;
   }
 
+  private static function doc($root, $ens = array(), $ns = self::URI_SPREADSHEET) {
+    $str = XML_STANDALONE.CRLF;
+    $str .= "<$root xmlns=\"$ns\" ".mask_join(' ',  $ens, 'xmlns:%2$s="%1$s"')."/>";
+    return simplexml_load_string($str);
+  }
+
   private function create_sheet_xml($worksheet){
-    $new_sheet = simplexml_load_string(
-          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.CRLF.
-          '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
-                      xmlns:r="'.self::URI_RELATIONSHIP.'"
-                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac"
-                      mc:Ignorable="x14ac"
-          />' );
+    $new_sheet = self::doc("worksheet", array(
+          'r'     => self::URI_RELATIONSHIP, 
+          'mc'    => self::URI_MARKUPCOMP,
+          'x14ac' => self::URI_X14AC,
+    ));
+    $new_sheet->addAttribute("x:Ignorable", "x14ac", self::URI_MARKUPCOMP);
+
     $nb_row = 1;
     if(count($worksheet->Cols) > 0){
       $cols = $worksheet->Cols[0];
@@ -250,6 +281,7 @@ Class xml_to_xlsx {
 
     return $this->next_id_shared_string++;
   }
+
 
   public function save($dest_file){
 

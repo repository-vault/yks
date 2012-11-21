@@ -23,10 +23,11 @@ class xlsx_style {
   private $css_default = array(
     'font-size'        => 11,
     'font-family'      => 'Calibri',
-    'font-weight'      => null,
+    'font-weight'      => 'normal',
     'background-color' => null,
     'text-align'       => null,
     'vertical-align'   => null,
+    'text-wrap'        => 'none',
   );
 
   private $css_short = array(
@@ -79,16 +80,16 @@ class xlsx_style {
 
 
     $font = $border = $fill = $alignment = null;
-    foreach($this->_fonts as $k=>$v){ if($this->same('font', $v, $css)) $font = $k ;break;}
+    foreach($this->_fonts as $k=>$v)if($this->same('font', $v, $css)){  $font = $k ;break;}
     if(is_null($font)) $font = $this->save('font', $css);
 
-    foreach($this->_fills as $k=>$v) {if($this->same('fill', $v, $css)) $fill = $k;break;}
+    foreach($this->_fills as $k=>$v) if($this->same('fill', $v, $css)) {$fill = $k;break;}
     if(is_null($fill)) $fill = $this->save('fill', $css);
 
-    foreach($this->_borders as $k=>$v){ if($this->same('border', $v, $css)) $border = $k;break;}
+    foreach($this->_borders as $k=>$v) if($this->same('border', $v, $css)){ $border = $k;break;}
     if(is_null($border)) $border = $this->save('border', $css);
 
-    foreach($this->_alignments as $k=>$v){ if($this->same('alignment', $v, $css)) $alignment = $k;break;}
+    foreach($this->_alignments as $k=>$v) if($this->same('alignment', $v, $css)){ $alignment = $k;break;}
     if(is_null($alignment)) $alignment = $this->save('alignment', $css);
 
     $style = compact('font', 'border', 'fill', 'alignment');
@@ -144,6 +145,7 @@ class xlsx_style {
     return array(
       'text-align'     => $css['text-align'],
       'vertical-align' => $css['vertical-align'],
+      'text-wrap'      => $css['text-wrap'],
     );
   }
 
@@ -173,7 +175,7 @@ class xlsx_style {
     $borders = "<borders count='".count($this->_borders)."'>";
     foreach($this->_borders as $border){
       $border_str = "<border>";
-      foreach(array('left', 'right', 'top', 'bottom') as $side) {
+      foreach(array('left', 'right', 'top', 'bottom', 'diagonal') as $side) {
         $style = $border["border-$side-style"];
         $color = $border["border-$side-color"];
         if(is_null($style)) {$border_str.="<$side/>"; continue; }
@@ -206,22 +208,32 @@ class xlsx_style {
           $this->_alignments[$style['alignment']]
       );
 
-      $style_str = "<xf numFmtId='0' xfId='0' applyFont='1'";
-      $style_str .=" fontId='{$style['font']}'";
-      $style_str .=" fillId='{$style['fill']}'";
-      $style_str .=" borderId='{$style['border']}'";
+      $style_str = "<xf";
+      $args  = array(
+        'numFmtId' => 0,
+        'fontId'   => $style['font'],
+        'fillId'   => $style['fill'],
+        'borderId' => $style['border'],
+        'xfId'     => 0,
+      );
+      if($style['font']) $args['applyFont'] = 1;
+      if($style['border']) $args['applyBorder'] = 1;
 
-      if($css['text-align'] || $css['vertical-align']) {
-        $style_str .=" applyAlignment='1'><alignment";
-        if($css['vertical-align'])
-          $style_str .=" vertical='".pick(self::$valign_styles[$css['vertical-align']], $css['vertical-align'])."'";
-        if($css['text-align'])
-          $style_str .=" horizontal='{$css['text-align']}'";
-        $style_str .= "/>";
-        $style_str .= "</xf>";
-      } else {
-        $style_str .= "/>";
-      }
+      $aargs = array();
+      if($css['text-align'])
+        $aargs['horizontal'] = $css['text-align'];
+      if($css['vertical-align'])
+        $aargs['vertical'] =  pick(self::$valign_styles[$css['vertical-align']], $css['vertical-align']);
+      if($css['text-wrap'] == 'normal')
+        $aargs['wrapText'] = 1;
+
+      if($aargs)
+        $args['applyAlignment'] = 1;
+
+
+      $alignment = $aargs ? "<alignment ".mask_join(' ', $aargs, '%2$s="%1$s"')."/>" : false;
+      $style_str .= ' '.mask_join(' ', $args, '%2$s="%1$s"') . ($alignment ? ">$alignment</xf>" : "/>"  ) ;
+
       $styles .= $style_str;
     }
 
@@ -237,8 +249,6 @@ class xlsx_style {
       if($font['font-weight'] == 'bold') $font_str .= "<b/>";
       $font_str .= "<sz val='{$font['font-size']}'/>";
       $font_str .= "<color theme='1'/>";
-      $font_str .= "<family val='2'/>";
-      $font_str .= "<scheme val='minor'/>";
       $font_str .= "<name val='{$font['font-family']}'/>";
       $font_str .= "</font>";
       $fonts .= $font_str;
