@@ -71,7 +71,7 @@ class date {
 
 
   static function sprintfc($date=_NOW, $format=DATE_DAY, $format_rel=false){
-    return self::sprintfc_time($date, $format, $format_rel, false);
+    return self::sprintfc_time($date, $format, $format_rel);
   }
 
   static function sprintfc_time($date=_NOW, $format=DATE_DAY, $format_rel=false, $time = true){
@@ -86,6 +86,7 @@ class date {
         if(!$rs) $rs=array(
             date('z/Y',_NOW)=>'&date.today;',
             date('z/Y',_NOW-86400)=>'&date.yesterday;');
+
 
     static $USER_TZ = false;
         if($USER_TZ===false && class_exists("exyks") && $time)
