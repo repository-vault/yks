@@ -43,7 +43,6 @@ Class xml_to_xlsx {
   const URI_X14AC        = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac";
 
   function __construct($input){
-
     $this->excel_dir         = RSRCS_PATH."/xslx_zipbase";
 
     if(gettype($input) == "object") {
@@ -159,7 +158,6 @@ Class xml_to_xlsx {
     if(count($worksheet->Cols) > 0){
       $cols = $worksheet->Cols[0];
 
-
       if($cols['freeze'] == 'freeze') {
         $sheet_view = $new_sheet->addChild("sheetViews")->addChild("sheetView");
         $sheet_view->addAttribute("tabSelected", 1);
@@ -203,17 +201,23 @@ Class xml_to_xlsx {
 
         $excel_cell = $sheet_row->addChild('c');
         $excel_cell->addAttribute('r', $cell_merge_start);
-        $excel_cell->addAttribute('t','s');
         $nb_cell++;
 
-        if(  $cell['class']){
+        if($cell['class']){
           $style = $this->styles->pick($cell['class']);
           $excel_cell->addAttribute("s", $style);
         }
 
         if($cell){
-          $id_shared_string = $this->add_shared($cell, $cell['Type']);
-          $excel_cell->addChild('v', $id_shared_string);
+          if(is_numeric((string)$cell)){
+            $value = $cell;
+          }
+          else{
+            $excel_cell->addAttribute('t','s');
+            $value = $this->add_shared($cell, $cell['Type']);
+          }
+
+          $excel_cell->addChild('v', $value);
         }
 
         if($cell['Colspan']){
