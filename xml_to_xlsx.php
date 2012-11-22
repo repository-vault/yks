@@ -148,7 +148,7 @@ Class xml_to_xlsx {
 
   private function create_sheet_xml($worksheet){
     $new_sheet = self::doc("worksheet", array(
-          'r'     => self::URI_RELATIONSHIP, 
+          'r'     => self::URI_RELATIONSHIP,
           'mc'    => self::URI_MARKUPCOMP,
           'x14ac' => self::URI_X14AC,
     ));
@@ -209,7 +209,7 @@ Class xml_to_xlsx {
         }
 
         if($cell){
-          if(is_numeric((string)$cell)){
+          if(isset($cell['type']) && $cell['type'] == 'number'){
             $value = $cell;
           }
           else{
