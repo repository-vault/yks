@@ -112,21 +112,25 @@ class myks_runner {
 * Update locales
 * @alias locales
 */
-  function manage_locales(){
+  function manage_locales($verbose = true){
 
     if(PHP_SAPI == "cli")
         return yks_runner::httpd_tunnel(__CLASS__, "manage_locales");
 
-    rbx::title("Starting localization");
+    if($verbose) {
+      rbx::title("Starting localization");
+      cli::box("Paths", locales_fetcher::$locale_paths);
+    }
 
     $result = locales_fetcher::fetch_all();
-    cli::box("Paths", locales_fetcher::$locale_paths);
+
     if(!$result)
         rbx::error("Please define at least one language");
     else foreach($result as $infos)
         rbx::ok("Entities {$infos[0]} reloaded ({$infos[1]})");
 
-    rbx::line();
+    if($verbose)
+      rbx::line();
   }
 
 
