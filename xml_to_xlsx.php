@@ -88,14 +88,9 @@ Class xml_to_xlsx {
 
     $this->doc_props_xml->created = $date;
 
-    foreach($this->data_xml->Worksheet as $worksheet){
-
-      //on ajoute la feuille
-      $name = $worksheet['Name'];
-
-      $this->add_ref_worksheet($name);
+    foreach($this->data_xml->Worksheet as $worksheet)
       $this->create_sheet_xml($worksheet);
-    }
+
   }
 
   public function set_creator($creator = 'Anonymous'){
@@ -112,10 +107,48 @@ Class xml_to_xlsx {
     return $rid;
   }
 
-  private function add_ref_worksheet($name){
+
+  private function create_sheet_xml($worksheet){
+    $this->add_ref_worksheet($worksheet['Name']);
+
+    $new_sheet = $this->create_sheet_xml_head($worksheet);
+    $this->feed_sheet_xml_data($new_sheet, $worksheet);
+    $this->close_sheet_xml($new_sheet);
+
+    $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
+  }
+
+
+  function all_sheets_worksheet(){
+    $this->add_ref_worksheet("All pages");
+
+    $new_sheet = $this->create_sheet_xml_head($this->data_xml->Worksheet[0]);
+
+
+    foreach($this->data_xml->Worksheet as $worksheet) {
+      $worksheet->Row['break'] = 'break';
+      $this->feed_sheet_xml_data($new_sheet, $worksheet);
+    }
+
+    $this->close_sheet_xml($new_sheet);
+    $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
+
+  }
+
+  private function close_sheet_xml($new_sheet){
+
+    if(!count($new_sheet->mergeCells->children())) {
+     $merge_cell = $new_sheet->mergeCells->addChild('mergeCell');
+      $merge_cell->addAttribute('ref', 'A1:A1'); //dummy placeholder...
+    }
+  }
+
+  private function add_ref_worksheet($worksheet_name){
 
     //en premier le relationship
     $this->nb_worksheet++;
+    $this->worksheet_rows[$this->nb_worksheet] = 1;
+
     $sheet_path = self::worksheet_rels_path.'sheet'.$this->nb_worksheet.'.xml';
 
     $rid = $this->add_rel(self::URI_WORKSHEET, $sheet_path);
@@ -123,7 +156,6 @@ Class xml_to_xlsx {
     //puis le workbook
     $sheet = $this->workbook_xml->sheets->addChild('sheet');
 
-    $worksheet_name = $name;
     $worksheet_name = files::safe_name($worksheet_name);
     $worksheet_name = txt::truncate($worksheet_name, 31);
 
@@ -136,17 +168,11 @@ Class xml_to_xlsx {
     $content_sheet->addAttribute('PartName', '/xl/'.$sheet_path);
     $content_sheet->addAttribute('ContentType', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml');
 
-
-    return $this->nb_worksheet;
   }
 
-  private static function doc($root, $ens = array(), $ns = self::URI_SPREADSHEET) {
-    $str = XML_STANDALONE.CRLF;
-    $str .= "<$root xmlns=\"$ns\" ".mask_join(' ',  $ens, 'xmlns:%2$s="%1$s"')."/>";
-    return simplexml_load_string($str);
-  }
 
-  private function create_sheet_xml($worksheet){
+
+  private function create_sheet_xml_head($worksheet){
     $new_sheet = self::doc("worksheet", array(
           'r'     => self::URI_RELATIONSHIP,
           'mc'    => self::URI_MARKUPCOMP,
@@ -154,7 +180,7 @@ Class xml_to_xlsx {
     ));
     $new_sheet->addAttribute("x:Ignorable", "x14ac", self::URI_MARKUPCOMP);
 
-    $nb_row = 1;
+
     if(count($worksheet->Cols) > 0){
       $cols = $worksheet->Cols[0];
 
@@ -183,16 +209,50 @@ Class xml_to_xlsx {
         $xml_col->addAttribute('width', $col['Width']);
         $xml_col->addAttribute('customWidth', 1);
       }
-
     }
 
-    if(count($worksheet->Row))
-      $new_sheet->addChild('sheetData');
+
+    $new_sheet->addChild('sheetData');
+    $new_sheet->addChild('mergeCells'); //fuu ?
+
+
+    $margins = $new_sheet->addChild('pageMargins');
+    foreach(array('left', 'right', 'top', 'bottom', 'header', 'footer') as $side)
+      $margins->addAttribute($side, pick((string)$this->data_xml->printsetup->margins[$side], 0));
+    $pageSetup = $new_sheet->addChild('pageSetup');
+    foreach(array(
+      'paperSize'   => 9, //A4
+      'orientation' =>pick((string)$this->data_xml->printsetup['orientation'], "portrait"),
+      'horizontalDpi' => 0,
+      'verticalDpi'   => 0,
+    ) as $k=>$v) $pageSetup->addAttribute($k, $v);
+
+
+    $rowBreaks = $new_sheet->addChild('rowBreaks');
+
+
+    return $new_sheet;
+   }
+
+  private function feed_sheet_xml_data($new_sheet, $worksheet){
+    if(!count($worksheet->Row))
+      return; // ? throw
+
+
+    $nb_row = & $this->worksheet_rows[$this->nb_worksheet];
 
     foreach($worksheet->Row as $row){
       $sheet_row = $new_sheet->sheetData->addChild('row');
       $sheet_row->addAttribute('r', $nb_row);
       $nb_cell = 1;
+      if($row['break']) {
+        $breaks = (int) $new_sheet->rowBreaks["count"] + 1;
+        $new_sheet->rowBreaks["count"] = $breaks;
+        $new_sheet->rowBreaks["manualBreakCount"] = $breaks;
+        $bk = $new_sheet->rowBreaks->addChild('brk');
+        $bk["id"] = $nb_row - 1; $bk["max"] = 16383; $bk["man"] = 1;
+      }
+
 
       //chr(65) = A
       foreach($row->Cell as $cell){
@@ -233,9 +293,6 @@ Class xml_to_xlsx {
             $nb_cell++;
           }
 
-          if(!$new_sheet->mergeCells)
-            $new_sheet->addChild('mergeCells');
-
           $merge_cell = $new_sheet->mergeCells->addChild('mergeCell');
           $merge_cell->addAttribute('ref', $cell_merge_start.':'.$cell_merge_end);
         }
@@ -244,8 +301,8 @@ Class xml_to_xlsx {
       $nb_row++;
     }
 
-    $this->worksheet_list_xml[$this->nb_worksheet] = $new_sheet;
   }
+
 
   private function create_col_prefix($i){
     $b = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -316,6 +373,14 @@ Class xml_to_xlsx {
     $this->create_archive($dest_file, $path);
     files::delete_dir($path);
   }
+
+
+  private static function doc($root, $ens = array(), $ns = self::URI_SPREADSHEET) {
+    $str = XML_STANDALONE.CRLF;
+    $str .= "<$root xmlns=\"$ns\" ".mask_join(' ',  $ens, 'xmlns:%2$s="%1$s"')."/>";
+    return simplexml_load_string($str);
+  }
+
 
   private function create_archive($file_path, $dir){
     rbx::ok("Create archive on $file_path");
