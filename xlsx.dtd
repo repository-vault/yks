@@ -1,0 +1,14 @@
+<!ELEMENT data (style?,worksheet+)>
+<!ELEMENT style PCDATA>
+<!ELEMENT Worksheet (Row*|Cols*)>
+<!ATTLIST Worksheet Name PCDATA>
+<!ELEMENT Cols (Col)>
+<!ATTLIST Cols freeze CDATA "false">
+<!ELEMENT Col>
+<!ATTLIST Col Id ID>
+<!ATTLIST Col Width CDATA>
+<!ELEMENT Row (Cell*)>
+<!ELEMENT Cell (#PCDATA)>
+<!ATTLIST Cell Type ("string"|"number") #REQUIRED "String">
+<!ATTLIST Cell class CDATA #IMPLIED>
+<!ATTLIST Cell Colspan CDATA #IMPLIED>
