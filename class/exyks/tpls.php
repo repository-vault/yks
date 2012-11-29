@@ -339,6 +339,10 @@ class tpls {
 
 
   private static function fall_base_type($type, $mode){
+
+    if(!$type)
+      return "string"; //zero fallback
+
     $base_types = array(
       "string", "int", "time", "date",
       "sha1", "hidden",
