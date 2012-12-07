@@ -27,7 +27,8 @@ var Uploader =  {
 
     var line = $n('tr').inject(input.upload_table);
 
-    var infotd = $n('td',{text:upload.name}).inject(line);
+    var basename = (upload.name||"").specialchars_decode() ;
+    var infotd = $n('td',{text:basename}).inject(line);
     var upload_pfx = input.upload_name; // + '['+upload_flag+']';
     $n('input', {
         name:upload_pfx + '[path]',
@@ -38,7 +39,7 @@ var Uploader =  {
     $n('input', {
         name:upload_pfx + '[basename]',
         type:'hidden',
-        value:upload.name
+        value:basename
     }).inject(infotd);
 
     input.anchor.fireEvent('change');

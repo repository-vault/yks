@@ -14,8 +14,10 @@ class exyks_security {
   static function sanitize(){
     global $action;
 
-      /* Basic input escape & security check */
-    if($_POST) $_POST = specialchars_deep($_POST);
+    /* Basic input escape & security check */
+    if($_POST)  $_POST  = specialchars_deep($_POST);
+    if($_FILES) $_FILES = specialchars_deep(utf8_deep($_FILES));
+
     if($action){
       if($_POST['ks_flag'] != self::$flag_ks){
           $action="";

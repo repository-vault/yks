@@ -135,6 +135,7 @@ function input_check($v){return $v==null || $v=="\0"?null:$v;}
 function specialchars_encode($v){ return htmlspecialchars($v,ENT_QUOTES,'utf-8'); }
 function specialchars_decode($str){ return htmlspecialchars_decode($str,ENT_QUOTES); }
 function specialchars_deep($v){return is_array($v)?array_map(__FUNCTION__,$v):specialchars_encode($v);}
+function utf8_deep($v){return is_array($v)?array_map(__FUNCTION__,$v):utf8_encode($v);}
 function mailto_escape($str){ return rawurlencode(utf8_decode(specialchars_decode($str)) ); }
 function mail_valid($mail){ return (bool) filter_var($mail, FILTER_VALIDATE_EMAIL ); }
 

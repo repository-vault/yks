@@ -36,6 +36,18 @@ String.implement({
   reduce: function(regex){
      regex = ((typeof regex == 'string') ? new RegExp(regex, null) : regex);
      return this.match(regex)[0];
+  },
+
+  specialchars_decode:function(){
+    var out = this;
+    var replace = {"&amp;":"&", "&lt;":"<", "&gt;":">", "&quot;":'"' };
+    var re = new RegExp("&#([0-9]+);", "g");
+    var match;
+    while (match = re.exec(out)) {
+      out = out.replace(match[0], String.fromCharCode(match[1]));
+    }
+    return out.areplace(replace);
   }
 
 });
+
