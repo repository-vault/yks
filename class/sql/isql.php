@@ -41,6 +41,7 @@ abstract class isql {
   }
 
 
+
 /***************** Basics *******************/
 
   static function select($table, $where = sql::true, $cols="*", $extra=''){
@@ -132,7 +133,7 @@ abstract class isql {
 
   static function in_join($field,$vals,$not=''){
     if((!$vals) && (!$not)) return sql::false;
-    return "$field $not IN('".join("','",$vals)."')";
+    return sql::escape($field)." $not IN('".join("','",$vals)."')";
   }
   static function in_set($field,$vals){ return "FIND_IN_SET($field,'".join(",",$vals)."')"; }
 
@@ -140,8 +141,8 @@ abstract class isql {
   static function format_prepare($data, $set=true){ $r='';
     $keys = array_keys($data);
     $vals = array_combine($keys, array_mask($keys, ":i%s"));
-    if($set) $format = "SET ".mask_join(',',$vals, sql::$esc .'%2$s'.sql::$esc .'=%1$s');
-    else $format = "(".sql::$esc.join(sql::$esc.','.sql::$esc, array_keys($vals)).sql::$esc.") VALUES(".join(',',$vals).")";
+    if($set) $format = "SET ".mask_join(',',$vals, sql::escape( '%2$s' ).'=%1$s');
+    else $format = "(". sql::escape( join(sql::escape(','), array_keys($vals)) ) .") VALUES(".join(',',$vals).")";
 
     $vals = array_combine($vals, $data);
 
@@ -162,8 +163,8 @@ abstract class isql {
 
     //format conditions
   static function conds($k, $v, &$params = null){
-    $ke = sql::$esc.$k.sql::$esc;
-    if(is_array($v))  return sql::in_join($ke, $v);
+    $ke = sql::escape($k);
+    if(is_array($v))  return sql::in_join($k, $v);
 
     if(is_string($v) || is_int($v)) {
         $params[":w$k"] = $v;
@@ -231,6 +232,10 @@ abstract class isql {
 
   protected static function fromf($table) {
     return ' `'.str_replace('.','`.`',$table).'` ';
+  }
+
+  protected static function escape($str){
+    return sql::$esc.str_replace('.', sql::$esc.'.'.sql::$esc, $str).sql::$esc;
   }
 
 

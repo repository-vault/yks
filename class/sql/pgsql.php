@@ -154,10 +154,10 @@ class sql {
     $vals = array_map(array('sql', 'vals'), $vals);
 
     if($set) {
-      return "SET ".mask_join(',', $vals, sql::$esc.'%2$s'.sql::$esc.'=%1$s');
+      return "SET ".mask_join(',', $vals, self::escape('%2$s').'=%1$s');
     }
 
-    return "(".sql::$esc . join(sql::$esc.','.sql::$esc, array_keys($vals)) . sql::$esc.") VALUES(" . join(',', $vals) . ")";
+    return "(".self::escape( join( self::escape(','), array_keys($vals))  ) .") VALUES(" . join(',', $vals) . ")";
   }
 
   static function close($lnk = false) {
@@ -186,16 +186,17 @@ class sql {
   }
   //format conditions
   static function conds($k, $v) {
+    $kesc = sql::escape($k);
     if(is_array($v)) {
       list($type,$val) = each($v);
-      if($type === "sql") return "$k $val";
+      if($type === "sql") return "$kesc $val";
       return $v ? sql::in_join($k,$v) : "FALSE";
     }
 
-    if(is_string($v)) return "$k='".sql::clean($v)."'";
-    if(is_int($v))    return "$k=$v";
-    if(is_null($v))   return "$k IS NULL";
-    if(is_bool($v))   return $v?"$k":"not($k)";
+    if(is_string($v)) return "$kesc='".sql::clean($v)."'";
+    if(is_int($v))    return "$kesc=$v";
+    if(is_null($v))   return "$kesc IS NULL";
+    if(is_bool($v))   return $v ? $kesc : "not($kesc)";
   }
 
   static function insert($table, $vals = false, $auto_indx = false, $keys = false) {
@@ -278,6 +279,12 @@ class sql {
 
   private static function fromf($table) {
     return ' `' . str_replace('.', '`.`', $table) . '` ';
+  }
+
+
+    //escape a field using driver's escape char...
+  function escape($str){
+    return sql::$esc.str_replace('.', sql::$esc.'.'.sql::$esc, $str).sql::$esc;
   }
 
   static function from($tables){
@@ -379,7 +386,7 @@ class sql {
 
   static function in_join($field,$vals,$not='') {
     if((!$vals) && (!$not)) return sql::false;
-    return "$field $not IN('".join("','",$vals)."')";
+    return self::escape($field)." $not IN('".join("','",$vals)."')";
   }
 
   static function in_set($field,$vals) {
