@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
-  <xsl:template match="button[not(@href) and not(@ext)]" name="button">
+  <xsl:template match="button[not(@href) and not(@ext) and not(contains(@class, 'xmlraw'))]" name="button">
     <xsl:param name="value" select="."/>
     <input alt="{$value}" class="button {@class} {@effects} {name(@effects)}" type="image" title="{$value}" src="?/Yks/Scripts/Imgs/titles//{@theme}|{$value}">
       <xsl:if test="@confirm">

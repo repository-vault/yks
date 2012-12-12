@@ -7,7 +7,7 @@ Jsx.Form = new Class({
   Binds:['submit', 'cleanup'],
 
   Occlude : 'Jsx.Form',
-  action_image:false,
+  action_submit:false,
 
   initialize:function(form){
 
@@ -17,9 +17,9 @@ Jsx.Form = new Class({
 
         //behave nicely with input[type=image]
     var self = this;
-    form.getElements('input[type=image]').addEvent('click', function(event){
+    form.getElements('input[type=image],input[type=submit]').addEvent('click', function(event){
         if(!this.name)return;
-        self.action_image = {key:this.name, value:this.value||'on'};
+        self.action_submit = {key:this.name, value:this.value||'on'};
     });
   },
 
@@ -46,9 +46,9 @@ Jsx.Form = new Class({
     this.data_reset();
     this.data_stack(this.anchor);
 
-    if(this.action_image) {
-        this.data_stack(this.action_image);
-        this.action_image = false;
+    if(this.action_submit) {
+        this.data_stack(this.action_submit);
+        this.action_submit = false;
     }
 
     if(this.anchor.enctype == "multipart/form-data"){

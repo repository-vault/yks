@@ -15,7 +15,7 @@ Element.implement({
   },
 
   getInputs:function(arg, nocash){
-    return this.getElements('input[type!=image], textarea, select', nocash);
+    return this.getElements('input[type!=image][type!=submit], textarea, select', nocash);
   },
 
   effects: function(options){
