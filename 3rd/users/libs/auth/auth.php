@@ -3,9 +3,9 @@
 
 class auth {
 
-  public static function login($user_login, $user_pswd){
+  public static function login($user_login, $user_pswd, $redirect = true){
 
-    if(auth_password::reload($user_login, $user_pswd))
+    if(auth_password::reload($user_login, $user_pswd, $redirect))
         return; //win
 
      //on peut essayer par ldap
