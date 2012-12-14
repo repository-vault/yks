@@ -15,21 +15,17 @@ exyks::init();
 
 $clyks_config = yks::$get->config->clyks;
 
-$z_e_r_o_entries = array(
+
+
+$helpers = array(
   'yks'  => 'yks_runner',
   'myks' => 'myks_runner',
   'sync' => 'sync_runner',
   'sql'  => 'sql_runner',
 );
-if($bootstrap = $clyks_config->bootstrap['class']){
-  $z_e_r_o_entries = array_merge(array($bootstrap=>$bootstrap), $z_e_r_o_entries);
-}
 
-$entry = $z_e_r_o_entries[pick_in($entry, array_keys($z_e_r_o_entries))];
-
+$entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
 
 
 if(!$args) $args = null;
-
-
 interactive_runner::start($entry, $args);
