@@ -12,7 +12,7 @@ class auth {
      if( ! yks::$get->config->users->search('auth_ldap_soap') )
         throw new Exception("Invalid password"); //no more authentification pattern available
 
-    if(!auth_ldap_soap::reload($user_login, $user_pswd))
+    if(!auth_ldap_soap::reload($user_login, $user_pswd, $redirect))
         throw new Exception("Invalid password, ldap");
 
   }
