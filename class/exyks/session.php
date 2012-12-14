@@ -141,17 +141,7 @@ class exyks_session {
     if($_COOKIE['user_id'] && ($_COOKIE['user_id']!=sess::$sess['user_id'])) auth_password::reload();
 
     if($action=='login') try {
-     
-    
-      if(!auth_password::reload($_POST['user_login'], $_POST['user_pswd'])) {
-         //on peut essayer par ldap
-         if( ! yks::$get->config->users->search('auth_ldap_soap') )
-            throw new Exception("Invalid password");
-
-        if(!auth_ldap_soap::reload($_POST['user_login'], $_POST['user_pswd']))
-            throw new Exception("Invalid password, ldap");
-
-       }
+       auth::login($_POST['user_login'], $_POST['user_pswd']);
        rbx::ok("&auth_success;");
     } catch(Exception $e){ rbx::error("&auth_failed;"); }
 
