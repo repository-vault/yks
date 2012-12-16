@@ -14,9 +14,9 @@ class exyks_module {
 
   function __construct($module_xml){
     $this->config = null;
-    if(isset($module_xml->config)) {
+
+    if(is_a($module_xml, 'config') && $module_xml->search("config") )
       $this->config = $module_xml->config;
-    }
 
     $this->key = $module_xml['key'];
     $this->ns  = "module/$this->key"; //or ...
