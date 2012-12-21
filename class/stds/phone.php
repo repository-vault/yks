@@ -17,6 +17,23 @@ class phone {
   }
   
   /**
+  * Compute the international number for phone number and country code.
+  * 
+  * @param mixed $phone_number
+  * @param mixed $code_region
+  */
+  public static function international_number($phone_number, $code_region) {
+    $phoneNumber = self::parse($phone_number, $code_region);
+    $international_number = self::$phone_util->format($phoneNumber, com\google\i18n\phonenumbers\PhoneNumberFormat::INTERNATIONAL);
+    return $international_number;
+  }
+
+  public static function format_E164($phone_number, $code_region) {
+    $phoneNumber = self::parse($phone_number, $code_region);
+    return self::$phone_util->format($phoneNumber, com\google\i18n\phonenumbers\PhoneNumberFormat::E164);
+  }
+
+  /**
   * Validate user input
   * 
   * @param string $phone_number
@@ -25,17 +42,14 @@ class phone {
   * @return string for DB storage
   */
   public static function validate($phone_number, $code_region){
-    
-    $phoneNumber = self::parse($phone_number, $code_region);
-  
-    $international_number = self::$phone_util->format($phoneNumber, com\google\i18n\phonenumbers\PhoneNumberFormat::INTERNATIONAL);
-    
+
+    $international_number = self::international_number($phone_number, $code_region);
     if(0 != strcasecmp($international_number, $phone_number))
       Throw new Exception('Incorrect format shoulb be :'.$international_number);
-          
+
     return self::$phone_util->format($phoneNumber, com\google\i18n\phonenumbers\PhoneNumberFormat::E164);
   }
-  
+
   public static function format($phoneNumber, $format = com\google\i18n\phonenumbers\PhoneNumberFormat::E164){
     return self::$phone_util->format($phoneNumber, $format);
   }
@@ -49,7 +63,7 @@ class phone {
   * return Phonenumber object
   */
   public static function parse($phone_number, $code_region){
-    
+
     if(!self::$phone_util->isViablePhoneNumber($phone_number))
       Throw new Exception('Not a viable number');
     
