@@ -79,6 +79,13 @@ function attributes_to_assoc($x, $ns=null, $prefix = false){
 }
 
 
+function array_unique_multidimensional($input) {
+    $serialized = array_map('serialize', $input);
+    $unique = array_unique($serialized);
+    return array_intersect_key($input, $unique);
+}
+
+
 
 function array_sublinearize($a,$c){$ret=array();foreach($a as $k=>$val)$ret[$k]=$val[$c];return $ret;}
 
