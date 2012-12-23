@@ -81,7 +81,8 @@ class auth_ldap_soap {
       $wsdl_url = $endpoint_url."/services/?class=WSAuthLdap&wsdl";
 
       $client = new SoapClient($wsdl_url, array(
-        'cache_wsdl' => WSDL_CACHE_NONE
+        'cache_wsdl' => WSDL_CACHE_NONE,
+	'location'   => $wsdl_url,
       ));
 
             
