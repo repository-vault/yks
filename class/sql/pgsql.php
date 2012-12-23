@@ -284,6 +284,8 @@ class sql {
 
     //escape a field using driver's escape char...
   function escape($str){
+    if(!preg_match('#^[a-z0-9_.-]+$#', $str))
+      return $str;
     return sql::$esc.str_replace('.', sql::$esc.'.'.sql::$esc, $str).sql::$esc;
   }
 
