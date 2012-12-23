@@ -53,9 +53,9 @@ abstract class _sql_base  implements ArrayAccess {
     return array($this->sql_key => $this->hash_key );
   }
 
+
   public function batch(){
-    $key = $this->sql_key;
-    return array($this->$key => $this);
+    return array($this->hash_key => $this);
   }
 
   function from_id($key_id){
@@ -134,6 +134,56 @@ abstract class _sql_base  implements ArrayAccess {
     if(!$res) return false;
     if($res) foreach($data as $k=>$v) $this->_set($k, $v); //array_walk wrong arg order :/
     return true;
+  }
+
+  function sql_dump($rmap = array()){
+    return mykses::dump_key($this->sql_key, $this->hash_key, $rmap);
+  }
+
+
+  function delete($reason, $rmap = array()){
+
+    if(!$reason)
+      throw rbx::error("Please specify motivation");
+
+
+    $drop_all = mykses::find_key($this->sql_key, $this->hash_key, $rmap);
+
+    $token = sql::begin();
+    $dump  = $this->sql_dump($rmap);
+
+    $data = array(
+      "deletion_reason" => $reason,
+      "mykse_type"      => $this->sql_key,
+      "deletion_blob"   => json_encode($dump),
+      "user_id"         => sess::$sess->user_id,
+    ); sql::insert("zks_deletion_history", $data);
+
+
+
+    //order dont matter, deferred powa
+
+    if(false) {    //check for trigger (they are source of trouble)
+        $all_tables = array();
+        foreach($drop_all as $drop_infos) {
+          $table_infos = sql::resolve($drop_infos[0]);
+          $all_tables[] = $table_infos['schema'].$table_infos['name'];
+        }
+        $verif_triggers = array(
+          'trigger_enabled'    => true,
+          'event_manipulation' => array('DELETE', 'INSERT'),
+          'concat(event_object_schema,event_object_table)' => $all_tables,
+        );
+        sql::select("zks_information_schema_ttriggers", $verif_triggers);
+        $all_triggers = sql::brute_fetch();
+        if($all_triggers)
+          throw new Exception("All trigger must be turned off");
+    }
+
+    foreach($drop_all as $drop_info)
+      sql::delete($drop_info[0], array($drop_info[1] => $drop_info[2]));
+
+    sql::commit($token);
   }
 
 
