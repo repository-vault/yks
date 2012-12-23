@@ -354,7 +354,6 @@ class sql_runner {
 
   function dblink($table_name){
     $table_name = sql::resolve( $table_name );
-    //for views, we use information schema reflection, for table, xml definition
 
     $dsn = yks::$get->config->sql->links->search("db_link_dblink");
     if(!$dsn){
@@ -373,23 +372,33 @@ class sql_runner {
 
     $table_columns = array();
 
-    if($this->views_list[$table_name['raw']]) {
-      $verif_table = array(
-        'table_schema' => $table_name['schema'],
-        'table_name'   => $table_name['name']
-      ); sql::select("zks_information_schema_columns", $verif_table);
-      $table_columns = sql::brute_fetch('column_name', 'data_type');
-    } else {
-      $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
-      if(!$table_xml)
-        throw rbx::error("Cannot resolve {$table_name['raw']}");
+    $verif_table = array(
+      'table_schema' => $table_name['schema'],
+      'table_name'   => $table_name['name']
+    ); sql::select("zks_information_schema_columns", $verif_table);
+    $sql_columns = sql::brute_fetch('column_name', 'data_type');
 
-      foreach($table_xml->fields->field as $field_xml){
-        $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
-        $mykse      = new mykse($field_xml);
-        $field_type = (string) $mykse->field_def['Type'];
-        $table_columns [$field_name] = $field_type;
+      //for views, we use information schema reflection, for table, xml definition
+    if($this->views_list[$table_name['raw']]) {
+      $table_columns = $sql_columns;
+    } else {
+
+      $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
+      if(!$table_xml) {
+          //last chance for unmapped tables
+        if($sql_columns)
+          $table_columns = $sql_columns;
+        else
+          throw rbx::error("Cannot resolve {$table_name['raw']}");
+      } else {
+        foreach($table_xml->fields->field as $field_xml){
+          $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
+          $mykse      = new mykse($field_xml);
+          $field_type = (string) $mykse->field_def['Type'];
+          $table_columns [$field_name] = $field_type;
+        }
       }
+
     }
 
     $str = "SELECT ".mask_join(', ', $table_columns, '%2$s').CRLF.
@@ -402,17 +411,19 @@ class sql_runner {
     rbx::line();
   }
 
+
+  function expose($myks_type){
+    $sub_sql = mykses::build_find_query($myks_type);
+    rbx::line();
+    echo $sub_sql.CRLF;
+    rbx::line();
+  }
+
 /**
 * Find the usage of a native type for a given value
 * @alias find
 */
   function find_key($myks_type, $value){
-    $sub_sql = mykses::build_find_query($myks_type);
-    $data = array(
-      $myks_type => $value,
-    );
-    $sql = " ($sub_sql) as data";
-    sql::select($sql, $data, "concat(table_name, concat(':', mykse_column)) AS usage");
-    return array_extract(sql::brute_fetch(), 'usage');
+    return mykses::dump_key($myks_type, $value);
   }
 }

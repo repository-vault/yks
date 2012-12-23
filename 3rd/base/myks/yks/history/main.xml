@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="zks_deletion_history">
+    <fields>
+      <field type="zks_deletion_id"/>
+      <field type="user_id"/>
+      <field type="title" name="mykse_type"/>
+      <field type="now" name="deletion_time"/>
+      <field type="deletion_reason"/>
+      <field type="deletion_blob"/>
+    </fields>
+  </table>
+  <mykse type="zks_deletion_id" birth="zks_deletion_history">
+    <int/>
+  </mykse>
+  <mykse type="deletion_reason">
+    <string length="255"/>
+  </mykse>
+  <mykse type="deletion_blob">
+    <text/>
+  </mykse>
+</myks>
