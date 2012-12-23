@@ -119,7 +119,6 @@ class mykses {
 
 
   public static function dump_key($myks_type, $value, $rmap = array()){
-//echo myks::get_tables_xml();die("ok");
     $tables = self::find_key($myks_type, $value, $rmap);
 
     $data = array();
@@ -129,12 +128,15 @@ class mykses {
       $entry = sql::brute_fetch();
       $data[$table_name] = $data[$table_name] ? array_unique_multidimensional(array_merge($data[$table_name], $entry )) : $entry;
     }
-
     return $data;
   }
 
 
   public static function find_key($myks_type, $value, $rmap = array(), $hpaths = array()){
+    if(!is_array($value))
+        $value = array($value);
+    sort($value);
+
     static $births = false;
     if($births === false) {
       $births = array();
@@ -142,9 +144,7 @@ class mykses {
         if((string)$type['birth'])
           $births[$type->getName()] = (string)$type['birth'];
     } $deaths = array_flip($births); //anti-birth...
-    if(!is_array($value))
-        $value = array($value);
-    sort($value);
+
     $hhash = $myks_type.":".join(',', $value);
     if($hpaths[$hhash])
         return array();
@@ -171,8 +171,6 @@ class mykses {
       if($table_name == $birth_table) //auto-recursive declaration
         $fields = array_diff($fields, array($myks_type));
 
-
-
       $cvalues = array();
       foreach($fields as $field_name) {
         sql::select($table_name, array($field_name => $value));
@@ -184,7 +182,6 @@ class mykses {
 
       if($child_type = $deaths[$table_name]) {
         $cvalues = array_unique(array_extract($cvalues, $child_type));
-//debugbreak("1@172.19.20.31");
         $depth = self::find_key($child_type, $cvalues, $rmap, $hpaths);
         $paths   = array_merge($paths, $depth);
       } else {
@@ -196,22 +193,15 @@ class mykses {
 
             //go to reverse map
         if($parent_type = $rmap[$table_name]) {
-//print_r($hpaths);die;
           $fvalues = array_unique(array_filter(array_extract($cvalues, $parent_type)));    
           $depth = self::find_key($parent_type, $fvalues, $rmap, $hpaths);
           $paths   = array_merge($paths, $depth);
 
         }
-
-
       }
-
-
-
     }
 
     return $paths;
-
   }
 
   /*
@@ -262,6 +252,3 @@ class mykses {
   }
 
 }
-
-
-
