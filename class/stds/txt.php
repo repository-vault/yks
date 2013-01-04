@@ -39,14 +39,19 @@ function rte_clean($str){
         preg_match("#<body.*?>(.*?)</body>#is",$str,$out);
         $str=(string)$out[1];
     }
-    $doc = new DOMDocument('1.0','UTF-8');
-    @$doc->loadHTML("<html><body>$str</body></html>"); $str=$doc->saveXML();
 
-    $str=utf8_decode(html_entity_decode($str,ENT_NOQUOTES,"UTF-8"));
-    $str=mb_ereg_replace("&","&amp;",mb_ereg_replace("&amp;","&",$str));
+    if(mb_detect_encoding($str,'utf-8,iso-8859-1')!="UTF-8") $str=utf8_encode($str);
+
+    $meta_charset = "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8' /></head>";
+    $doc = new DOMDocument('1.0','UTF-8');
+    @$doc->loadHTML("<html>$meta_charset<body>$str</body></html>");
+    $str=$doc->saveXML();
+
+    $str = html_entity_decode($str,ENT_NOQUOTES,"UTF-8");
+    $str = mb_ereg_replace("&","&amp;",mb_ereg_replace("&amp;","&",$str));
     if(mb_strpos($str,"<body/>"))return "";
 
-    if(mb_detect_encoding($str,'utf-8,iso-8859-1')!="UTF-8")$str=utf8_encode($str);
+
     $len=mb_strlen($str);$start=mb_strpos($str,"<body>")+6;$end=mb_strpos($str,"</body>");
     $str=mb_substr($str,$start,$end-$start);
 
