@@ -94,7 +94,9 @@ class classes {
     if(isset(self::$inited_classes[$class_name])) 
         return;
 
-    if(method_exists($class_name, "init"))
+    if(method_exists($class_name, '__construct_static'))
+        call_user_func(array($class_name, '__construct_static'));
+    elseif(method_exists($class_name, 'init')) //deprecated
         call_user_func(array($class_name, 'init'));
   }
 
