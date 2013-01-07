@@ -2,19 +2,21 @@
 
 
 class auth {
+  //use trait_events;
+  const EVENT_LOGIN = "login";
 
   public static function login($user_login, $user_pswd, $redirect = true){
 
-    if(auth_password::reload($user_login, $user_pswd, $redirect))
-        return; //win
-
-     //on peut essayer par ldap
-     if( ! yks::$get->config->users->search('auth_ldap_soap') )
+    $auth_password = auth_password::reload($user_login, $user_pswd, $redirect);
+    if(!$auth_password) {
+      //on peut essayer par ldap
+      if( ! yks::$get->config->users->search('auth_ldap_soap') )
         throw new Exception("Invalid password"); //no more authentification pattern available
 
-    if(!auth_ldap_soap::reload($user_login, $user_pswd, $redirect))
+      if(!auth_ldap_soap::reload($user_login, $user_pswd, $redirect))
         throw new Exception("Invalid password, ldap");
-
+    }
+    self::fireEvent(self::EVENT_LOGIN);
   }
 
   
@@ -127,5 +129,17 @@ class auth {
         if(in_array($user_id, $final_tree) || $user_id == USERS_ROOT) break;
     } return $asked_tree;
   }
+
+  private static $events = array();
+  public static function addEvent($event_name, $callback){
+    self::$events[$event_name][] = $callback;
+  }
+
+  private static function fireEvent($event_name){
+    if(!self::$events[$event_name]) return;
+    foreach( self::$events[$event_name] as $callback)
+      call_user_func($callback);
+  }
+
 }
 
