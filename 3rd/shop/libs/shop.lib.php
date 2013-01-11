@@ -77,8 +77,8 @@ class shop {
 
     foreach($available_products_list as $key => $product){
       if(isset($product->products_specifications['hidden_product'])
-          && $product->products_specifications['hidden_product']['specification_value'] == 'yes'){
-      unset($available_products_list[$key]);
+         && in_array(strtolower($product->products_specifications['hidden_product']['specification_value']), array('yes','true','1'))){
+        unset($available_products_list[$key]);
       }
     }
 
