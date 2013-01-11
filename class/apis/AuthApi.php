@@ -23,7 +23,7 @@ class exyks_auth_api {
 
   public static function getUser(){
     sess::connect();
-    self::_getUser();
+     return self::_getUser();
   }
 
   private static function _getUser(){
