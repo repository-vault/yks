@@ -11,21 +11,28 @@ class exyks_auth_api {
    * @return string
    **/
   public static function login($user_login, $user_pswd){
-    
+
     sess::connect();
     if(!isset(sess::$sess['user_id']))
         sess::renew(); //sess::$id is now set
 
-
     auth::login($user_login, $user_pswd);
 
+    return self::_getUser();
+  }
 
+  public static function getUser(){
+    sess::connect();
+    self::_getUser();
+  }
+
+  private static function _getUser(){
     $data = sess::$sess->computed;
     $data['users_tree'] =  sess::$sess['users_tree'];
 
     return self::output($data);
   }
-  
+
     /**
    * @param int $user_id
    * @return string
@@ -51,7 +58,7 @@ class exyks_auth_api {
 
     return self::output($data);
   }
-  
+
 
   /**
    * @param string $access_zone
