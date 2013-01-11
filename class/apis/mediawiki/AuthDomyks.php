@@ -11,6 +11,7 @@ class Auth_Domyks extends AuthPlugin {
   private $ext_sess; //distant session
   private $ext_user; //distant user
   private $access_zone;
+  private $session_id;
 
   public function __construct($wsdl_url, $access_zone){
     $this->wsdl_url     = $wsdl_url;
@@ -32,10 +33,11 @@ class Auth_Domyks extends AuthPlugin {
 
   public function authenticate($user_login, $user_pswd){
     try {
-        $this->ext_sess = new  SoapClient($this->wsdl_url);
-        $this->ext_user = unserialize($this->ext_sess->login($user_login, $user_pswd));
-        $auth  = $this->ext_sess->verifAuth($this->access_zone, "access");
-
+	$user_login = strtolower($user_login);
+        $this->ext_sess = new  SoapClient($this->wsdl_url, array('cache_wsdl' => WSDL_CACHE_NONE));
+        $this->session_id = $this->ext_sess->login($user_login, $user_pswd);
+	$this->ext_user = unserialize($this->ext_sess->getUser($this->session_id));
+        $auth  = $this->ext_sess->verifAuth($this->session_id, $this->access_zone, "access");
         return $auth;
     } catch(Exception $e){ return false; }
 
