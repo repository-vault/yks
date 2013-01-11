@@ -25,7 +25,8 @@ $helpers = array(
 );
 
 $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
-
+if(is_file($script = "scripts/$entry.php"))
+    classes::register_class_path($entry, $script);
 
 if(!$args) $args = null;
 interactive_runner::start($entry, $args);
