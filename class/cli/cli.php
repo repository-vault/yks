@@ -8,8 +8,8 @@ class cli {
 
   const pad = 70;
 
-  private static $args = array(); //unparsed arguments
-  private static $dict = array(); //parsed arguments
+  public static $args = array(); //unparsed arguments
+  public static $dict = array(); //parsed arguments
   private static $UNATTENDED_MODE = false;
 
   static function init(){
