@@ -119,6 +119,11 @@ class files {
     self::create_dir($dir);
   }
 
+  public static function delete($path){
+    if(is_file($path)) unlink($path);
+    else self::delete_dir($path);
+  }
+
   public static function delete_dir($dir, $rm_root=true, $depth=0){
     if(!is_dir($dir)) return false;
     foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
@@ -168,7 +173,12 @@ class files {
     header(HTTP_CACHED_FILE);
   }
 
-  public static function delivers($file, $send_content_type = false){
+
+  public static function delivers_tmp($file, $send_content_type = false){
+    return self::delivers($file, $send_content_type, $delete);
+  }
+
+  public static function delivers($file, $send_content_type = false, $delete = false){
     self::highlander();
     if($send_content_type) {
         $content_type = self::content_type($file);
@@ -209,13 +219,20 @@ class files {
     self::download_forge_headers($filename, $mime_type, $metas);
     echo $contents;
     die;
-    
   }
-  public static function download($file_path, $filename = false, $mime_type = false ){
+
+
+  public static function download_tmp($file_path, $filename = false){
+    return self::download($file_path, $filename, false, true);
+  }
+
+  public static function download($file_path, $filename = false, $mime_type = false, $delete = false ){
     while(@ob_end_clean());
     $metas = array('filesize' => filesize($file_path));
     self::download_forge_headers($filename ? $filename : basename($file_path), $mime_type, $metas);
+
     readfile($file_path);
+    if($delete) unlink($file_path);
     die;
   }
 
