@@ -132,7 +132,73 @@ class date {
   }
 
 
+  /**
+  * Le jour est-il férié
+  * 
+  * @param int $timestamp
+  */
+  static function is_dayoff($timestamp) {
+    $is_holyday = false;
+
+    // Week end (Samedi/Dimanche)
+    $week_day = date("N", $timestamp);
+    if($week_day == 6  || $week_day == 7)
+      $is_holyday = true;
+
+    $day = date("d", $timestamp);
+    $month = date("m", $timestamp);
+    $year = date("Y", $timestamp);
+
+    // Dates fériées fixes
+    if($day == 1 && $month == 1)   $is_holyday = true; // 1er janvier
+    if($day == 1 && $month == 5)   $is_holyday = true; // 1er mai
+    if($day == 8 && $month == 5)   $is_holyday = true; // 8 mai
+    if($day == 14 && $month == 7)  $is_holyday = true; // 14 juillet
+    if($day == 15 && $month == 8)  $is_holyday = true; // 15 aout
+    if($day == 1 && $month == 11)  $is_holyday = true; // 1 novembre
+    if($day == 11 && $month == 11) $is_holyday = true; // 11 novembre
+    if($day == 25 && $month == 12) $is_holyday = true; // 25 décembre
+
+  // date fériées mobiles
+  // Pâques
+  /* @TODO : Pas de module pour easter_date d'installé !!!!!
+
+    $easter = @easter_date($annee);
+    $jour_paques = date('d',$easter);
+    $mois_paques = date('m',$easter);
+    if($jour_paques == $jour && $mois_paques == $mois)
+      $is_holyday = true;
+    // Ascension
+    $date_ascension = dateAddDay($easter,39);
+    if(date('d',$date_ascension) == $jour && date('m',$date_ascension) == $mois)
+      $is_holyday = true;
+    // Pentecote
+    $date_pentecote = dateAddDay($easter,50);
+    if(date('d',$date_pentecote) == $jour && date('m',$date_pentecote) == $mois)
+      $is_holyday = true;
+      */
+
+    return $is_holyday;
+  }
+
+  /**
+  * Calcule la date dans X jours ouvrés.
+  * Example : Vendredi + 2 jours ouvrés = mardi.
+  * 
+  * @param int $date
+  * @param int $open_days
+  * @return $date + $open_days * day_duration
+  */
+  static function compute_date_with_openday($date, $open_days) {
+    $cpt = 0;
+    while($cpt < $open_days) {
+      $date += 3600 * 24;// add a gap day.
+      if(self::is_dayoff($date)) continue ; // on avance d'un gap day, mais pas d'un open day !
+      $cpt++; 
+    }
+    return $date;
+  }
+
+
 }
-
-
 
