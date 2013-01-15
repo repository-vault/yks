@@ -128,7 +128,7 @@ class ExyksPathsResolver { //implements streamWrapper
 
 
     //r, r+, w, w+, a, a+, x, x+
-  private static $write_modes = array('r+', 'w', 'w+', 'a+', 'x+');
+  private static $write_modes = array('r+', 'w', 'w+', 'a', 'a+', 'x+');
 
   function stream_open($path, $mode, $options, &$opened_path) {
     $write = in_array(trim($mode, 'bt'), self::$write_modes);
