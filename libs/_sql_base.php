@@ -140,12 +140,39 @@ abstract class _sql_base  implements ArrayAccess {
     return mykses::dump_key($this->sql_key, $this->hash_key, $rmap);
   }
 
+    //please extend and dont use directly (only for generic /Admin/Users/Restore interface)
+   static function raw_restore($zks_deletion_id) {
+
+    $verif_deletion = compact('zks_deletion_id');
+    $deletion_blob = sql::value("zks_deletion_history", $verif_deletion, 'deletion_blob');
+    $restore_blob = json_decode($deletion_blob, true);
+
+    $token = sql::begin();
+    foreach($restore_blob as $table_name => $restore_data)
+        foreach($restore_data as $line)
+            sql::insert($table_name, $line);
+
+    sql::delete("zks_deletion_history", $verif_deletion);
+
+    sql::commit($token);
+  }
+  
+  static protected function restore($sql_key, $object_id){
+      //look up deletion id
+    $verif_deletion = array(
+        'mykse_type'  => $sql_key,
+        'mykse_value' => (string) $object_id,
+    );
+    $deletion_id = sql::value("zks_deletion_history", $verif_deletion, "zks_deletion_id");
+    if(!$deletion_id )
+        throw new Exception("Could not resolve deletion for object $object_id of type {$this->sql_key}");
+
+    self::raw_restore($deletion_id);
+  }
 
   function delete($reason, $rmap = array()){
-
     if(!$reason)
       throw rbx::error("Please specify motivation");
-
 
     $drop_all = mykses::find_key($this->sql_key, $this->hash_key, $rmap);
 
@@ -156,8 +183,10 @@ abstract class _sql_base  implements ArrayAccess {
       "deletion_reason" => $reason,
       "mykse_type"      => $this->sql_key,
       "deletion_blob"   => json_encode($dump),
+      "mykse_value"     => $this->hash_key,
       "user_id"         => sess::$sess->user_id,
-    ); sql::insert("zks_deletion_history", $data);
+    ); 
+    $deletion_id = sql::insert("zks_deletion_history", $data, true);
 
 
 
@@ -184,6 +213,7 @@ abstract class _sql_base  implements ArrayAccess {
       sql::delete($drop_info[0], array($drop_info[1] => $drop_info[2]));
 
     sql::commit($token);
+
   }
 
 

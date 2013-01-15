@@ -20,7 +20,7 @@ foreach($deletions_list as $deletion_id=>$deletion){
     <td>$deletion_id</td>
     <td>".dsp::date($deletion['deletion_time'], '$Y-$m-$d $H:$i')."</td>
     <td>&user.{$deletion['user_id']};</td>
-    <td>{$deletion['mykse_type']}</td>
+    <td>{$deletion['mykse_type']}  (#{$deletion['mykse_value']})</td>
     <td>{$deletion['deletion_reason']}</td>
     <td>".join('-', $actions)."</td>
   </tr>";

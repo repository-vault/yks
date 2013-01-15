@@ -6,6 +6,7 @@
       <field type="zks_deletion_id"/>
       <field type="user_id"/>
       <field type="title" name="mykse_type"/>
+      <field type="text" name="mykse_value"/>
       <field type="now" name="deletion_time"/>
       <field type="deletion_reason"/>
       <field type="deletion_blob"/>
