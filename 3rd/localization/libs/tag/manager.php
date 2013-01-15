@@ -26,6 +26,8 @@ class locale_tag_manager {
   }
 
   public static function create_item($data){
+    if(sql::value('ks_locale_items_list', $data ))
+      return;
     return sql::insert("ks_locale_items_list", $data);
   }
 
@@ -75,13 +77,18 @@ class locale_tag_manager {
     if(!$item_key) return false;
     $data['tag_id'] = $tag->tag_id;
     $tag->trash_item($item_key);
-    $res = sql::insert("ks_locale_tag_items", $data);
-    if($res || !$create) return $res;
 
     $item_data = array(
-        'item_key'=>$item_key,
-    ); self::create_item($item_data);
-    return sql::insert("ks_locale_tag_items", $data);
+      'item_key'=>$item_key,
+    );
+    if(!$create && !sql::value('ks_locale_items_list', $item_data ))
+      throw rbx::error("No item $item_key in items list");
+
+    if($create)
+      self::create_item($item_data);
+
+    $res = sql::insert("ks_locale_tag_items", $data);
+    return $res;
 
   }
 
