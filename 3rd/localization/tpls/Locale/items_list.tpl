@@ -9,12 +9,21 @@
     <th style='width:400px'>Translation</th>
     <th>Notes</th>
 </tr>
+
+<style>
+.domain {
+  font-size: 9px;
+  font-style: italic;
+}
+</style>
 <?
 
 $tab = 1;
 foreach($items_list as $item_infos){ $tab++;
     $item_key  = $item_infos['item_key'];
-    $lang_key  = $item_infos['lang_key'];
+    $lang_key  = $item_infos['lang_key']; //TODO : 
+    $lang_str = $languages[$lang_key]['lang_code'].'-'.$languages[$lang_key]['country_code'];    
+    
     $value     = $item_infos['value'];
     $value_us  = $item_infos['value_us'];
     
@@ -35,8 +44,8 @@ foreach($items_list as $item_infos){ $tab++;
 
 
 echo "<tr class='line_pair' item_pict='$item_pict' item_safe='$item_safe' item_key='$item_key' lang_key='$lang_key'>
-    <td class='item_key'>".dsp::element_truncate($item_key,16,"span")."</td>
-    <td>$lang_key</td>
+    <td class='item_key'>".dsp::element_truncate($item_key,16,"span")."<div class='domain'>{$locale_domains_list[$lang_domains[$lang_key]['locale_domain_id']]['locale_domain_name']}</div></td>
+    <td>$lang_str</td>
     <td>".specialchars_encode($value_us)."</td>
     <td><textarea tabindex='$tab' rows='$height' name='items_vals[{$item_safe}][{$lang_key}]'>".specialchars_encode($value).XML_EMPTY."</textarea></td>
     <td>$item_integration</td>
@@ -50,8 +59,8 @@ echo "<tr class='line_pair' item_pict='$item_pict' item_safe='$item_safe' item_k
 <domready>
 $$('.item_key').addEvent('click', function(){
     if(this.opened) return;
-    var d = $n('input', {type:'text',value:this.getElement('span').get('title') || this.get('text')});
-    this.empty().adopt(d);
+    var d = $n('input', {type:'text',value:this.getElement('span').get('title') || this.getElement('span').get('text') });
+    this.getElement('span').empty().adopt(d);
     this.opened  = true;
 });
 

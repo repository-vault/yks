@@ -15,7 +15,7 @@ class locale_tag_manager {
         $tag_id = sql::insert(locale_tag::sql_table, $data, true);
         $tag    = new locale_tag($tag_id);
         if($sshot_file) $tag->attach_file($sshot_file);
-    } catch( Exception $e) { 
+    } catch( Exception $e) {
       sql::rollback($transaction_token);
       throw rbx::error("Unable to create tag");
     }

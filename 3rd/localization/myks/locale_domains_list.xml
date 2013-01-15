@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_locale_domains_list">
+    <fields>
+      <field type="locale_domain_id"/>
+      <field type="title" name="locale_domain_name"/>
+    </fields>
+  </table>
+  <mykse type="locale_domain_id" birth="ks_locale_domains_list">
+    <int/>
+  </mykse>
+</myks>

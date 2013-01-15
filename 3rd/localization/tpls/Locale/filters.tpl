@@ -17,13 +17,23 @@ Select a language :
 if(!count($locale_languages))
     echo "-- No available language, please check your configuration --";
 else {
-    if(count($locale_languages)>1){?>
-        <span onclick="$('lang_keys').set('multiple','multiple').set('size',5)"> (multiples ?)</span>
+    if(count($lang_display)>1){?>
+        <span onclick="$('lang_str').set('multiple','multiple').set('size',5)"> (multiples ?)</span>
     <?}?>
     <br/>
-    <select id='lang_keys' name='lang_keys[]'>
-        <?=dsp::dd($locale_languages,array('mykse'=>'lang_key'))?>
+    <select id='lang_str' name='lang_str[]'>
+      <?=dsp::dd($lang_display)?>
     </select>
+    <br/>    
+    <? if(count($locale_domains_list) > 1) { ?>
+    Select the domain :  <span onclick="$('locale_domain_id').set('multiple','multiple').set('size',5)"> (multiples ?)</span>
+    <br/>
+    <select id='locale_domain_id' name='locale_domain_id[]'>
+      <?=dsp::dd($locale_domains_list,array('col'=>'locale_domain_name'))?>
+    </select>
+    <? } else { $domain = reset($locale_domains_list) ?>
+    Domain : <i><?=$domain['locale_domain_name']?></i>
+    <? } ?>
 <?}?>
 
 </div>

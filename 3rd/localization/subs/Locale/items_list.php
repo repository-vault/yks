@@ -9,6 +9,7 @@ extract($trad_filters = sess::retrieve('trad_filters'));
     $mask_search = $trad_filters['strict_search']?"%s ILIKE '%%%s%%'":"%s LIKE '%s'";
 
 if($action=="item_save") try {
+
         //un petite galere ici, les nom des clées sont base64_encodé
     $done=0; $items_vals = $_POST['items_vals']; if(!$items_vals) $items_vals = array();
     $items_keys = array_combine(array_map('base64_decode',  $k = array_keys($items_vals) ),$k);
@@ -21,6 +22,10 @@ if($action=="item_save") try {
         jsx::js_eval("\$N('items_vals[{$encoded_key}][{$lang_key}]').fireEvent('reset').highlight()");
       }
     }if(!$done) throw rbx::ok("Aucune modification n'a été détectée");
+
+    // Mise à jour de la table de date de generation
+    locale::lang_update(array_filter(array_keys($trads)));
+
 }catch(rbx $e){}
 
 
@@ -60,7 +65,7 @@ if($trad_filters['item_trad'])
 
 
 $query_items = "SELECT item_key, lang_key
-    FROM `ks_languages`,`ks_locale_items_list`
+    FROM `".locale::$sql_table."`,`ks_locale_items_list`
     ".sql::where($verif_items)
 ;  //sql::query($query_items);print_r(sql::brute_fetch());print_r(sql::$queries);die;
 $query="
@@ -80,10 +85,13 @@ $query="
 sql::query($query); $max=sql::rows();
 $items_list=sql::brute_fetch(false,false,$start,$by);
 
+// Infos about languages domain
 
-    //get metas info about currents item_keys
+sql::select('ks_locale_languages',array('lang_key'=>array_extract($items_list,'lang_key',true)));
+$lang_domains = sql::brute_fetch('lang_key');
+
+// Get metas info about currents item_keys
 $item_keys = array_extract($items_list, "item_key", true);
-
 
 //shop disponible ?
 sql::query("SELECT `ks_locale_items_list`.*,
@@ -101,6 +109,10 @@ sql::query("SELECT `ks_locale_items_list`.*,
 
 $items_infos=sql::brute_fetch("item_key");
 //print_r(sql::$queries);die;
+
+
+sql::select(locale::$sql_table, array('lang_key'=>array_extract($items_list, 'lang_key', true)));
+$languages = sql::brute_fetch_depth('lang_key');
 
 
 $pages_str = dsp::pages($max,$by,$page_id,"/?$href_fold/items_list//");

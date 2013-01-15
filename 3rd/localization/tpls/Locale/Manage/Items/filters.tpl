@@ -8,7 +8,7 @@ Select a project :<br/>
 <select name="project_id">
     <?=dsp::dd($projects_dsp,array('mykse'=>'project_id', 'pad'=>"|&#160;&#160;&#160;"))?>
 </select><br/>
-
+<input type="checkbox" name="free_items"/>Items without projects<br/>
 
 </div>
 

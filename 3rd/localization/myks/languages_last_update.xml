@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_languages_last_update">
+    <fields>
+      <field type="lang_key"/>
+      <field type="update_date"/>
+      <field type="generation_date"/>
+    </fields>
+  </table>
+
+  <mykse type="generation_date" null="null">
+    <int size="big"/>
+  </mykse>
+  <mykse type="update_date" null="null">
+    <int size="big"/>
+  </mykse>
+</myks>
+
+

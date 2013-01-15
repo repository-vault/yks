@@ -2,6 +2,22 @@
 
 class locale_items_manager {
 
+  function get_trad_value($locale_item, $lang_root) {
+    $where = array (
+      'item_key'  => $locale_item->item_key,
+      'lang_key'  => $lang_root
+    );
+    $res = sql::row("ks_locale_values",$where);
+    return $res['value'];
+  }
+
+  /**
+  * TODO §!!
+  * Doit récuperer le tag avec une image de l'item. 
+  * En fait il peut y avoir plusieurs images... du coup il faudra revoir cette fonction
+  * 
+  *  (Quentin le 08/02/2012)
+  */
   function get_item_tag($locale_item){
     $verif_item = array($locale_item);
     $verif_item []= "item_x IS NOT NULL ";
@@ -17,7 +33,17 @@ class locale_items_manager {
     $tag = $locale_item->item_tag;
     extract($tag->item_infos);
 
+    if(!is_file($tag->file_path)) {
+        $img = imgs::imagecreatetruealpha(1,1);
+        header(TYPE_JPEG);
+        imagejpeg($img, null, 100);
+        die;
+    }
+
+
     $img_big = imgs::imagecreatefromfile($tag->file_path);
+    if(!$img_big) return;
+
     $border  = imgs::coloralpha(255,0,0);
     for($a=0;$a<3;$a++) //triple border
       imagerectangle($img_big, $item_x-$a, $item_y-$a, $item_x+$item_w+$a, $item_y+$item_h+$a, $border );

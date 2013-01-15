@@ -2,6 +2,12 @@
 
 class locale {
 
+  const sql_table = "ks_locale_languages";
+  const sql_key = "lang_key";
+
+  public static $sql_table = locale::sql_table;
+  public static $sql_key = locale::sql_key;
+
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
     define('LOCALE_LIB_PATH', dirname(__FILE__));
@@ -12,6 +18,7 @@ class locale {
         "locale_items_manager" => LOCALE_LIB_PATH."/items/manager.php",
     ));
   }
+
 
   static function get_projects_items($project_id){
     $verif_project = compact('project_id');
@@ -24,9 +31,13 @@ class locale {
 
   }
 
+  static function get_iso_lang($lang_key) {
+    return ''; // todo
+  }
+
   static function export($lang_key, $verif_tags) {
 
-    $lang_infos = sql::row("ks_languages", compact('lang_key'));
+    $lang_infos = sql::row(self::$sql_table, compact('lang_key'));
     if(!$lang_infos)
         throw rbx::error("Unknow language");
 
@@ -61,7 +72,7 @@ class locale {
 
   public static function get_languages_list(){
 
-    sql::select("ks_languages", "true", "lang_key");
+    sql::select(self::$sql_table, "true", "lang_key");
     $languages_list = sql::fetch_all();
 
     return $languages_list;
@@ -81,6 +92,59 @@ class locale {
   }
 
 
+  static function lang_update($lang_list) {
+    $value = array('update_date' => _NOW);
+    $lang_and_fallback = self::lang_and_fallback($lang_list);
+    foreach($lang_and_fallback as $lang)
+      sql::replace('ks_languages_last_update',$value,array('lang_key'=>$lang));
+  }
 
+  // On modifie toutes les langues qui ont besoin de nous
+  // càd : toutes celles qui fallback sur nous, et leurs parents, etc
+  static function lang_and_fallback($lang_list) {
+    if(!$lang_list)
+      return array();
+
+    $langs = array();
+    foreach($lang_list as $lang) {
+      $where = array('lang_fallback'=>$lang);
+      sql::select(self::$sql_table, $where, "lang_key");
+      $langs_res = sql::fetch_all();
+      $langs = array_merge($langs,$langs_res);
+    }
+
+    $langs = array_diff($langs, $lang_list);
+    $fallback_langs = self::lang_and_fallback($langs);
+    return array_merge($lang_list, $fallback_langs);
+  }
+
+  /**
+  * Return information for a lang (iso alpha 2 and 3 of the country and the lang, name...)
+  * 
+  * @param array $locale_languages_key lang_key
+  */
+  public static function languages_infos($locale_languages_key) {
+    $where = array('lang_key' => $locale_languages_key);
+    sql::query("SELECT
+      country_name,
+      lang_code,
+      iso_639_languages.alpha_3 AS lang_alpha3,
+      iso_3166_countries.alpha_3 AS country_alpha3,
+      iso_639_languages.alpha_2 AS lang_alpha2,
+      iso_3166_countries.alpha_2 AS country_alpha2  
+      FROM ivs_locale_languages
+      JOIN iso_3166_countries USING (country_code)
+      JOIN iso_639_languages USING (lang_code)
+      ".sql::where($where)."
+      GROUP BY country_name,
+      lang_code,
+      iso_639_languages.alpha_3,
+      iso_3166_countries.alpha_3,
+      iso_639_languages.alpha_2,
+    iso_3166_countries.alpha_2;");
+
+    $lang_infos = sql::brute_fetch();
+    return $lang_infos;
+  }
 
 }

@@ -10,20 +10,21 @@ class items_import {
   }
 
   function parse($str, $lang_key){
-    
+
     $res =  self::parse_ini_string($str);
 
     foreach($res as $item_key => $item_value){
         $verif_item = compact('item_key', 'lang_key');
         $data = array('value'=> self::format_out($item_value));
-
         sql::replace("ks_locale_values", $data, $verif_item);
-
     }
+
+    // Mise à jour de la table de date de generation
+    locale::lang_update(array($lang_key));
+
     throw rbx::error($res);
 
   }
-
 
   private static function format_out($str){
 

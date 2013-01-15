@@ -1,6 +1,5 @@
 <?
 
- 
 locale::init();
 
 // Fonction outils pour les locales.
@@ -11,7 +10,7 @@ tpls::export(array("locale_fold"=>$href_fold));
 
 exyks::$head->title = "Translation Interface";
 
-$lang_root='en-us';
+$lang_root='en-us_1'; // Domaine 1 par defaut !!
 
 locales_processor::register_mykse_renderer("project_id");
 locales_processor::register_mykse_renderer("lang_key");
@@ -19,11 +18,16 @@ locales_processor::register_mykse_renderer("locale_tag", "tag_id", "tag_name");
 
 user::register("locale_languages", "ks_users_profile_locale_languages");
 user::register("locale_projects", "ks_users_profile_locale_projects");
-
+user::register("locale_domains", "ks_users_profile_locale_domains");
 
 $locale_languages = sess::$sess->locale_languages;
-$locale_projects = sess::$sess->locale_projects;
+$locale_projects  = sess::$sess->locale_projects;
+$locale_domains   = sess::$sess->locale_domains;
 
+sql::select('ks_locale_domains_list', array('locale_domain_id' => $locale_domains));
+$locale_domains_list = sql::brute_fetch('locale_domain_id');
+
+$lang_infos = locale::languages_infos($locale_languages);
 
   //add to recursive childs to enabled projects
   $locale_projects = array_merge($locale_projects, sql_func::get_children($locale_projects,"ks_projects_list","project_id"));

@@ -13,4 +13,10 @@
       <field type="lang_key" key="primary" delete="cascade"/>
     </fields>
   </table>
+  <table name="ks_users_profile_locale_domains" extend="ks_users_profile">
+    <fields>
+      <field type="user_id" key="primary"/>
+      <field type="locale_domain_id" key="primary" delete="cascade"/>
+    </fields>
+  </table>
 </myks>

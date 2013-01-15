@@ -3,7 +3,7 @@ $upload_title = $locale_tag->sshot_file?"Remplacer le fichier":"Attacher le fich
 ?>
 
 <?=$locale_tag->tag_name?>
-<box options="modal,fly,close" theme="&pref.dft;" caption="&locale_tag.&mode;;" style="width:500px;">
+<box options="modal,fly,close" theme="&pref.dft;" caption="&locale_tag_mode.&mode;;" style="width:500px;">
     <ks_form id="locale_tag_form" ks_action="tag_&mode;" submit="Save">
       <fields>
         <field title="Nom" type="title" name="tag_name" value="<?=$locale_tag->tag_name?>"/>

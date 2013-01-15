@@ -68,7 +68,7 @@ class locale_tag extends _sql_base {
   function __toString(){
     $parents = $this->paths_str;
     if($parents) $parents.=" &gt; ";
-    return $parents.$this->tag_name;
+    return "[#".$this->tag_id."]  ".$parents.$this->tag_name;
   }
 
   function get_paths(){
