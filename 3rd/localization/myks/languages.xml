@@ -11,7 +11,7 @@
       <field type="locale_domain_id"/>
     </fields>
   </table>
-  <mykse type="lang_key" birth="ks_locale_languages" default="'en-us'">
+  <mykse type="lang_key" birth="ks_locale_languages" default="'en-us_1'">
     <string length="10"/>
   </mykse>
 </myks>
