@@ -1,15 +1,25 @@
 
 ---------------------------------------
 ------- Refactoring module Lang -------
+-- cleanup
+DROP TABLE ivs_myks_titles;
 
 -- drop table ivs_locale_languages;
 ALTER TABLE public.ivs_languages  RENAME TO ivs_locale_languages;
 ALTER TABLE "public"."ivs_locale_languages"  DROP CONSTRAINT "ivs_languages_pkey" CASCADE;
 
+
+
 --$ scan_tables locale t
+--$ scan_tables lang t
+--$ scan_tables user t
+--$ scan_tables optician t
+
+UPDATE ivs_locale_languages SET lang_key = lang_key || '_1';
+
+--UPDATE ivs_languages_last_update SET lang_key = lang_key || '_1'
 
 INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUES (1, 'IVS');
-
 --- Le reste est pour Activisu
 INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUES (2, 'Visioffice');
 INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUES (3, 'Expert');
@@ -18,7 +28,10 @@ INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUE
 INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUES (6, 'Visioffice2');
 INSERT INTO ivs_locale_domains_list (locale_domain_id, locale_domain_name) VALUES (7, 'Expert4');
 
-UPDATE ivs_locale_languages SET locale_domain_id = 1, lang_key = lang_key || '_1';
+UPDATE ivs_locale_languages SET locale_domain_id = 1;
+
+--$ scan_tables locale t
+--$ v v v v v v 
 
 
 -- A faire pour les 7 domaines !
@@ -105,6 +118,7 @@ SELECT
   value
 FROM public.ivs_locale_values
 WHERE item_key like 'VISIOFFICE_%'
+AND lang_key ilike '%_1'
 
   -- EyeStation
 INSERT INTO public.ivs_locale_values
@@ -115,6 +129,7 @@ SELECT
   value
 FROM public.ivs_locale_values
 WHERE item_key like 'EYESTATION_%'
+AND lang_key ilike '%_1'
 
   -- Expert
 INSERT INTO public.ivs_locale_values
@@ -126,6 +141,7 @@ SELECT
 FROM public.ivs_locale_values
 WHERE item_key NOT LIKE 'EYESTATION_%'
 AND   item_key NOT LIKE 'VISIOFFICE_%'
+AND lang_key ilike '%_1'
 
   -- Swing
 INSERT INTO public.ivs_locale_values
@@ -137,13 +153,14 @@ SELECT
 FROM public.ivs_locale_values
 WHERE item_key NOT LIKE 'EYESTATION_%'
 AND   item_key NOT LIKE 'VISIOFFICE_%'
+AND lang_key ilike '%_1'
 
 
 
 --- On réatribue les langues / domaines aux distrib
 -- Essilor 
 UPDATE ivs_users_profile_locale_languages
-SET lang_key = replace(lang_key,'_1','_2'),
+SET lang_key = replace(lang_key,'_1','_2')
 WHERE user_id IN (
   SELECT user_id FROM ivs_users_tree(3435, 1) -- Essilor 
     AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER)
@@ -156,7 +173,7 @@ WHERE user_id IN (
 
 -- Eyestation (BBGR)
 UPDATE ivs_users_profile_locale_languages
-SET lang_key = replace(lang_key,'_1','_4'),
+SET lang_key = replace(lang_key,'_1','_4')
 WHERE user_id IN (
   SELECT user_id FROM ivs_users_tree(3074, 1) -- BBGR 
     AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER)
@@ -202,7 +219,7 @@ UPDATE ivs_users_profile SET user_lang = user_lang || '_1' WHERE user_lang NOT L
 
 -- Essilor 
 UPDATE ivs_users_profile
-SET user_lang = replace(user_lang,'_1','_2'),
+SET user_lang = replace(user_lang,'_1','_2')
 WHERE user_id IN (
   SELECT user_id FROM ivs_users_tree(3435, 1) -- Essilor 
     AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER)
@@ -215,7 +232,7 @@ WHERE user_id IN (
 
 -- Eyestation (BBGR)
 UPDATE ivs_users_profile
-SET user_lang = replace(user_lang,'_1','_4'),
+SET user_lang = replace(user_lang,'_1','_4')
 WHERE user_id IN (
   SELECT user_id FROM ivs_users_tree(3074, 1) -- BBGR 
     AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER)
@@ -320,5 +337,8 @@ AND  user_id IN (
   UNION SELECT 3898 UNION SELECT 3899 UNION SELECT 4196 UNION SELECT 4221
 )
 GROUP BY user_id
+
+
+
 
 --- --- --- END --- --- ---
