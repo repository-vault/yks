@@ -1,6 +1,6 @@
-
 ---------------------------------------
 ------- Refactoring module Lang -------
+
 -- cleanup
 DROP TABLE ivs_myks_titles;
 

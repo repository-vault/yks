@@ -8,7 +8,7 @@
       <field type="lang_code"/>
       <field type="lang_key" name="lang_fallback"/>
       <field type="title" name="lang_name"/>
-      <field type="locale_domain_id"/>
+      <field type="locale_domain_id" null="null"/>
     </fields>
   </table>
   <mykse type="lang_key" birth="ks_locale_languages" default="'en-us_1'">
