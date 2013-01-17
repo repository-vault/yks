@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <view name="ks_localize_view">
+    <def>
+<![CDATA[
+SELECT 
+combinaisons.item_key,
+combinaisons.lang_key,
+string_firstnotempty(
+    `ks_locale_values`.value,
+    locale_fallback.value,
+    locale_fallback_us.value) as value,
+combinaisons.project_id
+
+
+ FROM  ( SELECT * FROM `ks_locale_items_list`
+ 
+  INNER JOIN `ks_locale_tag_items` USING(item_key)
+ INNER JOIN `ks_locale_tags_list` USING(tag_id) , `ks_locale_languages` 
+    WHERE project_id IN (
+        SELECT project_id
+        FROM `ks_generic_tree`('`ks_projects_list`', 'project_id', 10, 0)
+        AS (project_id integer, parent_id integer, depth integer)
+    ) ) AS combinaisons
+ 
+ LEFT JOIN `ks_locale_values` USING(item_key, lang_key)
+
+LEFT JOIN 
+  `ks_locale_values`  AS locale_fallback
+  ON locale_fallback.lang_key = combinaisons.lang_fallback
+  AND locale_fallback.item_key = combinaisons.item_key
+
+LEFT JOIN 
+  `ks_locale_values`  AS locale_fallback_us
+  ON locale_fallback_us.lang_key = 'en-us'
+  AND locale_fallback_us.item_key = combinaisons.item_key
+]]>
+</def>
+  </view>
+</myks>
