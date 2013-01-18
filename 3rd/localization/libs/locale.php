@@ -19,6 +19,18 @@ class locale {
     ));
   }
 
+  public static function get_projects($project_name) {
+
+    // On cherche l'ID du projet dont on  a le nom :
+    $where = array("project_name ilike '%$project_name%'"); 
+    sql::select("ks_projects_list", $where);
+    $projects_ids = sql::brute_fetch("project_id");
+    $locale_projects = array_keys($projects_ids); 
+
+    // Enfants de notre(nos) projets
+    $locale_projects = array_merge($locale_projects, sql_func::get_children($locale_projects,"ks_projects_list","project_id"));
+    return $locale_projects;
+  }
 
   static function get_projects_items($project_id){
     $verif_project = compact('project_id');
@@ -116,6 +128,64 @@ class locale {
     $langs = array_diff($langs, $lang_list);
     $fallback_langs = self::lang_and_fallback($langs);
     return array_merge($lang_list, $fallback_langs);
+  }
+
+
+  /**
+  * Chain of fallbacking from a given lang
+  * 
+  * @param mixed $lang
+  */
+  static function fallback_list($lang_key) {
+    sql::select(self::$sql_table);
+    $languages_list = sql::brute_fetch('lang_key');
+    return self::fallback_node($languages_list, $lang_key);
+  }
+  static function fallback_node($languages_list, $lang_key, $chain_list=array()) {
+    $lang_infos = $languages_list[$lang_key];
+    $chain_list[$lang_key] = $lang_infos['lang_fallback'];
+    // fin de chaine
+    if($lang_infos['lang_fallback'] == $lang_key)
+      return $chain_list;
+    // on creuse encore...
+    return self::fallback_node($languages_list, $lang_infos['lang_fallback'], $chain_list);
+  }
+
+
+  static function fetch_locales_values($lang_key, $project_list) {
+    $fallback_chain = locale::fallback_list($lang_key);
+
+    $verif = array(
+      'lang_key' => array_keys($fallback_chain),
+      'project_id' => $projects_list
+    );
+    sql::select("ivs_localize_view", $verif);
+    $values = sql::brute_fetch();
+
+    $values_no_fallback = array();
+    // On classe
+    foreach($values as $value_infos)
+      $values_no_fallback[$value_infos['item_key']][$value_infos['lang_key']] = $value_infos['value'];
+
+    // On récupère la valeur avec gestion fallback
+    $values_list = array();
+    foreach($values_no_fallback as $item_key=>$items_trad) {
+      foreach($fallback_chain as $fb_lang) {
+        if(!isset($items_trad[$fb_lang]) || !$items_trad[$fb_lang])
+          continue; // Pas de trad, on boucle
+
+        $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle
+        break;
+      }
+    }
+
+    ksort($values_list);
+    return $values_list;
+  }
+
+  public static function get_locales_file_by_project($lang_key, $projects_list) {
+    $trd_contents = locale::fetch_locales_values($lang_key, $projects_list);
+    return self::format_init($trd_contents);
   }
 
   /**
