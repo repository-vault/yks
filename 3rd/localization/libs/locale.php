@@ -202,7 +202,7 @@ class locale {
       iso_3166_countries.alpha_3 AS country_alpha3,
       iso_639_languages.alpha_2 AS lang_alpha2,
       iso_3166_countries.alpha_2 AS country_alpha2  
-      FROM ivs_locale_languages
+      FROM `ks_locale_languages`
       JOIN iso_3166_countries USING (country_code)
       JOIN iso_639_languages USING (lang_code)
       ".sql::where($where)."
