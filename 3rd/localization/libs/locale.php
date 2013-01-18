@@ -152,14 +152,14 @@ class locale {
   }
 
 
-  static function fetch_locales_values($lang_key, $project_list) {
+  static function fetch_locales_values($lang_key, $project_list=null) {
     $fallback_chain = locale::fallback_list($lang_key);
 
-    $verif = array(
-      'lang_key' => array_keys($fallback_chain),
-      'project_id' => $projects_list
-    );
-    sql::select("ivs_localize_view", $verif);
+    $verif['lang_key'] = array_keys($fallback_chain);
+    if($project_list)
+      $verif['project_id'] = $projects_list;
+
+    sql::select("ks_localize_view", $verif);
     $values = sql::brute_fetch();
 
     $values_no_fallback = array();
@@ -170,11 +170,10 @@ class locale {
     // On récupère la valeur avec gestion fallback
     $values_list = array();
     foreach($values_no_fallback as $item_key=>$items_trad) {
-      foreach($fallback_chain as $fb_lang) {
+      foreach(array_keys($fallback_chain) as $fb_lang) {
+        $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle        
         if(!isset($items_trad[$fb_lang]) || !$items_trad[$fb_lang])
           continue; // Pas de trad, on boucle
-
-        $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle
         break;
       }
     }
