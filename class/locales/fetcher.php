@@ -60,6 +60,7 @@ class locales_fetcher {
 
     $babel = array();
     foreach($languages_order as $lang_key){
+
         $entities = self::load_entities((string)$lang_key, $entities);
         if($babelmode) foreach($entities as $k=>$v)
             $babel["&$lang_key.".substr($k,1)] = $v;
@@ -89,7 +90,19 @@ class locales_fetcher {
     foreach(self::$locale_tables as $table_name)
         $entities = array_merge($entities, self::sql_get($table_name, $lang_key));
 
+    if(class_exists('locale')) 
+        $entities = array_merge($entities, self::localization_get($lang_key));
+
     return $entities;
+  }
+
+
+  private static function localization_get($lang_key) {
+    $res = array();
+    $locales_values = locale::fetch_locales_values($lang_key);
+    foreach($locales_values as $item_key=>$value)
+      $res["&$item_key;"] = $value;
+    return $res;
   }
 
   private static function sql_get($table_name, $lang_key){
