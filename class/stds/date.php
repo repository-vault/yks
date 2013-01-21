@@ -107,8 +107,9 @@ class date {
 
 
   public static function human_diff($timestamp, $max = 2){
+
     $steps = array(
-      's' => 60,
+      's'   => 60,
       'min' => 60,
       'hour' => 24,
       'day' => 30,
@@ -116,17 +117,16 @@ class date {
       'year' => 0,
     );
 
-    $t = $timestamp;
-    $out = array();
+    $out = array('s' => '0 s');
     foreach($steps as $name => $step_time){
       if($step_time == 0){
-        $current = floor($t);
+        $current = floor($timestamp);
       }else{
-        $current = $t % $step_time;
-        $t /= $step_time;
+        $current = $timestamp % $step_time;
+        $timestamp /= $step_time;
       }
       if($current > 0)
-        $out[] = "$current $name".($name != 's' && $current > 1 ? 's' : '');
+        $out[$name] = "$current $name".($name != 's' && $current > 1 ? 's' : '');
     }
     return implode(' ', array_slice(array_reverse($out), 0, $max));
   }
