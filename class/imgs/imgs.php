@@ -184,14 +184,18 @@ class imgs {
   }
 
 /** Create a new image from a file, regarless its extension */
-  static function imagecreatefromfile($file, $force_ext = false){
-    $img_supported_ext=array('png'=>'png','jpg'=>'jpeg','gif'=>'gif','jpeg'=>'jpeg');
-    $ext = pick($force_ext, trim(strtolower(strrchr($file,'.')),'.'));
-    if(!$ext=$img_supported_ext[$ext]) return false;
-    $func="imagecreatefrom$ext";
-    if(!($img=@$func($file))) return false;
-    imagealphablending($img,false);
-    imagesavealpha($img,true);
+  static function imagecreatefromfile($file_path, $force_ext = false){
+    $img_supported_ext = array('png'=>'png','jpg'=>'jpeg','gif'=>'gif','jpeg'=>'jpeg');
+    $ext = pick($force_ext, files::ext($file_path));
+    if(!$ext = $img_supported_ext[$ext]) {
+      $data = getimagesize($file_path);
+      list($mime, $type) = explode('/', $data['mime']);
+      if(!$ext = $img_supported_ext[$type])
+        return false;
+    } $func = "imagecreatefrom$ext";
+    if(!($img = @$func($file_path))) return false;
+    imagealphablending($img, false);
+    imagesavealpha($img, true);
     return $img;
   }
 
