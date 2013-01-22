@@ -152,12 +152,13 @@ class locale {
   }
 
 
-  static function fetch_locales_values($lang_key, $project_list=null) {
+  static function fetch_locales_values($lang_key, $filters = array()) {
     $fallback_chain = locale::fallback_list($lang_key);
 
-    $verif['lang_key'] = array_keys($fallback_chain);
-    if($project_list)
-      $verif['project_id'] = $projects_list;
+    $verif = array(
+      'lang_key' => array_keys($fallback_chain)
+    );
+    $verif = array_merge($verif, $filters);
 
     sql::select("ks_localize_view", $verif);
     $values = sql::brute_fetch();
