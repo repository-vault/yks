@@ -82,9 +82,12 @@ class locale {
 
 
 
-  public static function get_languages_list(){
+  public static function get_languages_list($domain_id=null){
 
-    sql::select(self::$sql_table, "true", "lang_key");
+    $where[] = sql::true;
+    if($domain_id) $where['locale_domain_id'] = $domain_id;
+
+    sql::select(self::$sql_table, $where, "lang_key");
     $languages_list = sql::fetch_all();
 
     return $languages_list;
@@ -97,9 +100,8 @@ class locale {
   }
 
   static function format_init($hash){
-        //escape according to ini specs
+    // Escape according to ini specs
     $hash = array_map(array('self', 'ini_escape'), $hash);
-
     return mask_join(CRLF, $hash, '%2$s=%1$s');
   }
 
@@ -183,8 +185,8 @@ class locale {
     return $values_list;
   }
 
-  public static function get_locales_file_by_project($lang_key, $projects_list) {
-    $trd_contents = locale::fetch_locales_values($lang_key, $projects_list);
+  public static function get_locales_file($lang_key, $filters=array()) {
+    $trd_contents = locale::fetch_locales_values($lang_key, $filters);
     return self::format_init($trd_contents);
   }
 
