@@ -53,13 +53,21 @@ class locale_tag_manager {
         'sshot_height' => imagesy($big),
     ); $tag->update($data);
 
+    if(!is_writable(dirname($tag->file_path)))
+      throw rbx::error("Le dossier \"big\" n'existe pas ou n'est pas accessible en écriture");
+    if(!is_writable(dirname($tag->tn_path)))
+      throw rbx::error("Le dossier \"tn\" n'existe pas ou n'est pas accessible en écriture");
+
     imagejpeg($big,  $tag->file_path, 90); imagedestroy($big);
     imagejpeg($small, $tag->tn_path, 90); imagedestroy($small);
   }
 
   public static function trash_files($tag){
-    unlink($tag->file_path);
-    unlink($tag->tn_path);
+    //Les tags ne sont pas systématiquement dotés de screenshots
+    if(is_writable($tag->file_path))
+      unlink($tag->file_path);
+    if(is_writable($tag->file_path))
+      unlink($tag->file_path);
   }
 
   public static function get_file_path($tag, $big=true){
