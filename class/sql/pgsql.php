@@ -154,7 +154,7 @@ class sql {
     $vals = array_map(array('sql', 'vals'), $vals);
 
     if($set) {
-      return "SET ".mask_join(',', $vals, self::escape('%2$s').'=%1$s');
+      return "SET ".mask_join(',', array_key_map(array('sql', 'escape'), $vals), '%2$s = %1$s');
     }
 
     return "(".self::escape( join( self::escape(','), array_keys($vals))  ) .") VALUES(" . join(',', $vals) . ")";
