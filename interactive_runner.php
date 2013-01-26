@@ -39,7 +39,9 @@ class interactive_runner {
 
     $this->reflection_scan(__CLASS__, self::ns, $this); //register runners own commands
 
-    $this->help();
+    if(cli::$dict['ir://fs'])
+      $this->fullsize();
+    else  $this->help();
 
     if(is_null($this->obj))
         $this->obj = is_null($args)
@@ -49,13 +51,21 @@ class interactive_runner {
 
 
 /**
+* show available commands
 * @alias ?
 */
-  function help(){
+  function help( $command = null){
+      $command_resolve = array();
+      foreach($this->commands_list as $command_hash=>$command_infos)
+        if($command_infos['command_key'] == $command) {
+          cli::box($command, join(LF, $command_infos['usage']['doc']));
+          return;
+      }
+
     $msgs = array();
 
     foreach($this->commands_list as $command_hash=>$command) {
-
+      if($command['usage']['hide']) continue;
       $str = "{$command['command_key']} ";
       $parametred_aliases = array_filter($command['aliases']);
 
@@ -72,13 +82,16 @@ class interactive_runner {
         $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
       }
 
+      if($doc = $command['usage']['doc'])
+        $str = $str . str_repeat(" ", max(1, cli::$cols - strlen($str) - strlen($doc[0]) - 2)).$doc[0];
+
       $msgs[$command['command_ns']][] = $str;
 
       foreach($parametred_aliases as $alias_name=>$args)
         $msgs[$command['command_ns']][] = "$alias_name (={$command['command_key']} ".join(" ", $args).")";
 
+
     }
-    $msgs[self::ns][] = "r replay last command";
 
     $rbx_msgs = array();
     foreach($msgs as $command_ns=>$msgs) {
@@ -88,6 +101,14 @@ class interactive_runner {
     }
 
     call_user_func_array(array('rbx', 'box'), $rbx_msgs);
+  }
+
+/**
+* replay last command
+* @alias r
+*/
+  function replay(){
+    //this is only a placeholder
   }
 
   private function command_aliases($command_ns, $command_key){
@@ -172,6 +193,7 @@ class interactive_runner {
   }
 
 /**
+* ends interactive session
 * @alias q
 * @alias exit
 */
@@ -282,13 +304,15 @@ class interactive_runner {
       }
 
       $command_key = $method_name;
-      $usage = array('params'=>array());
       $params = $method->getParameters();
       $doc = doc_parser::parse($method->getDocComment());
 
       $tmp = $doc['args']['interactive_runner']['computed'];
-      if(is_array($tmp) && in_array("hide", $tmp)) 
+      if(!$tmp) $tmp = array();
+      if(in_array("disable", $tmp)) 
         continue;
+
+      $usage = array('params'=>array(), 'doc' => $doc['doc'], 'hide' => in_array("hide", $tmp));
         
       foreach($params as $param) {
         $param_infos = array();
@@ -312,12 +336,33 @@ class interactive_runner {
   }
 
 /**
+* toggle fullsize mode
 * @interactive_runner hide
+* @alias fs
 */
-  static public function start(){//$obj, $args
-    $args = func_get_args();
-    $obj = array_shift($args);
-    $runner = new self($obj, count($args) !=0 && $args != array(null) ? $args : null);
+  function fullsize(){
+    cli::$cols = trim(`tput cols`);
+    $this->help();
+  }
+
+/**
+* @interactive_runner disable
+*/
+  static public function start($obj, $args = null){
+
+    if(!is_array($args) && !is_null($args)) $args = array($args);
+    $runner = new self($obj, is_null($args) ? null : $args);
+
+
+    if($run = cli::$dict['ir://run']){
+      $runner->obj->$run();
+      die;
+    }
+
+
+    if($start = cli::$dict['ir://start'])
+      $runner->obj->$start();
+
     $runner->main_loop(); //private internal
   }
 }
