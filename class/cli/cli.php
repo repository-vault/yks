@@ -6,7 +6,8 @@ class cli {
   const OS_WINDOWS = 2;
   public static $OS = null;
 
-  const pad = 70;
+  const pad   = 70;
+  public static $cols = self::pad;
 
   public static $args = array(); //unparsed arguments
   public static $dict = array(); //parsed arguments
@@ -24,15 +25,20 @@ class cli {
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
 
-    foreach($_SERVER['argv'] as $raw ) {
+    self::load_args($_SERVER['argv']);
+    self::$UNATTENDED_MODE = (bool) self::$dict['cli://unattended'];
+
+  }
+  public static function load_args($args){
+    self::$dict = self::$args = array();
+
+    foreach($args as $raw ) {
         if (starts_with($raw, "-")) {
-            if(!preg_match("#^--?([a-z_0-9-]+)(?:=(.*))?#i", $raw, $out))
+            if(!preg_match("#^--?([a-z_0-9/:-]+)(?:=(.*))?#i", $raw, $out))
                 continue;
             self::$dict[$out[1]] = $out[2] == "" ? true : $out[2];
         } else self::$args[] = $raw;
     }
-
-    self::$UNATTENDED_MODE = (bool) self::$dict['unattended'];
 
   }
 
@@ -96,7 +102,8 @@ class cli {
     return txt::cp950_to_utf8($str);
   }
 
-  public static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = self::pad){
+  public static function pad($title='', $pad = '─', $MODE = STR_PAD_BOTH, $mask = '%s', $pad_len = null){
+    if(is_null($pad_len)) $pad_len = self::$cols;
     $pad_len -= mb_strlen(sprintf($mask, $title));
     $left = ($MODE==STR_PAD_BOTH) ? floor($pad_len/2) : 0;
     return sprintf($mask, 
@@ -109,7 +116,7 @@ class cli {
     self::text_prompt();
   }
   public static function box($title, $msg){
-    $args = func_get_args(); $pad_len = self::pad;
+    $args = func_get_args(); $pad_len = self::$cols;
     $options = count($args)%2==1?array_pop($args) : array();
 
     $dotrim = in_array('trim', $options);
@@ -123,7 +130,7 @@ class cli {
 
       if($dotrim)
         foreach($msg as &$tmp_line)
-            $tmp_line = preg_replace('#&[^;]*?$#m','…',mb_strimwidth($tmp_line,0,self::pad-2,'…'));
+            $tmp_line = preg_replace('#&[^;]*?$#m','…',mb_strimwidth($tmp_line,0,self::$cols - 2,'…'));
 
       $pad_len = max($pad_len, max(array_map('mb_strlen', $msg))+2); //2 chars enclosure
     }
