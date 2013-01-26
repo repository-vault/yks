@@ -11,17 +11,17 @@ class doc_parser {
       //unix style LF
     $str = preg_replace("#\r?\n#", "\n", $str);
 
-    $args = array();
+    $args = array(); $doc = array();
     if(preg_match_all("#^\s*\*\s+(.*?)$#m", $str, $out)) {
       foreach($out[1] as $line){
         if($arg = self::arg($line)) {
           $args[$arg[0]]['computed'] = $arg[1];
           $args[$arg[0]]['values'][] = $arg[1];
-        }
+        } else $doc[] = $line;
       }
     }
 
-    return array('args'=>$args);
+    return compact('args', 'doc');
 
   }
 
