@@ -114,6 +114,15 @@ abstract class _user extends _sql_base {
     return $user; 
   }
 
+
+  protected function get_user_access(){
+    return $this->user_access = auth::get_access($this->users_tree);    
+  }
+
+  function verif($access_zone, $lvl = "access"){
+    return auth::verif($access_zone, $lvl, false, $this);
+  }
+
   protected function __construct($from){
     parent::__construct($from);
     $user_id = (int)$from[self::sql_key];

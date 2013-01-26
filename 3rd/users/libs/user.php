@@ -38,9 +38,6 @@ class user extends _user {
     return in_array($flag, $this->user_flags);
   }
 
-  function verif($access_zone, $lvl){
-    return auth::verif($access_zone, $lvl, false, $this);
-  }
 
   function upgrade_rights($rights) {
     foreach($rights as $zone_name=>$zone)
