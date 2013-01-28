@@ -2,6 +2,7 @@
 <ks_form ks_action='browse' submit="Browse">
     <field type="string" title="Type" name="myks_type" value="<?=$myks_type?>"/>
     <field type="string" title="Value" name="myks_value" value="<?=$myks_value?>"/>
+    <field type="bool" null="&option.choose;" title="Recurse" name="recurse" value="<?=$recurse?>"/>
 </ks_form>
 
 <div style="font-family:monospace;white-space: pre-wrap;width:800px;overflow:auto"><?

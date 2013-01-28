@@ -118,8 +118,8 @@ class mykses {
   }
 
 
-  public static function dump_key($myks_type, $value, $rmap = array()){
-    $tables = self::find_key($myks_type, $value, $rmap);
+  public static function dump_key($myks_type, $value, $rmap = array(), $recurse = true){
+    $tables = self::find_key($myks_type, $value, $rmap, $recurse);
 
     $data = array();
     foreach($tables as $table_data){
@@ -132,7 +132,7 @@ class mykses {
   }
 
 
-  public static function find_key($myks_type, $value, $rmap = array(), $hpaths = array()){
+  public static function find_key($myks_type, $value, $rmap = array(), $recurse = true, $hpaths = array()){
     if(!is_array($value))
         $value = array($value);
     sort($value);
@@ -180,9 +180,9 @@ class mykses {
       if(!$cvalues)
         continue;
 
-      if($child_type = $deaths[$table_name]) {
+      if(($child_type = $deaths[$table_name]) && $recurse) {
         $cvalues = array_unique(array_extract($cvalues, $child_type));
-        $depth = self::find_key($child_type, $cvalues, $rmap, $hpaths);
+        $depth = self::find_key($child_type, $cvalues, $rmap, $recurse, $hpaths);
         $paths   = array_merge($paths, $depth);
       } else {
         foreach($fields as $field_name) {
@@ -194,7 +194,7 @@ class mykses {
             //go to reverse map
         if($parent_type = $rmap[$table_name]) {
           $fvalues = array_unique(array_filter(array_extract($cvalues, $parent_type)));    
-          $depth = self::find_key($parent_type, $fvalues, $rmap, $hpaths);
+          $depth = self::find_key($parent_type, $fvalues, $rmap, $recurse, $hpaths);
           $paths   = array_merge($paths, $depth);
 
         }
