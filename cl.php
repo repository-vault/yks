@@ -28,5 +28,8 @@ $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'
 if(is_file($script = "scripts/$entry.php") || is_file($script = "crons/$entry.php"))
     classes::register_class_path($entry, $script);
 
+classes::extend_include_path("scripts");
+classes::extend_include_path("crons");
+
 cli::load_args($args);
 interactive_runner::start($entry, cli::$args);
