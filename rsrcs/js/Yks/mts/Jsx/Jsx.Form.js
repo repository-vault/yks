@@ -14,18 +14,13 @@ Jsx.Form = new Class({
     if(this.occlude(form)) return;
 
     this.anchor = form.store('jsx',this).addEvent('submit',this.submit);
+
         //behave nicely with input[type=image]
     var self = this;
     form.getElements('input[type=image],input[type=submit]').addEvent('click', function(event){
         if(!this.name)return;
         self.action_submit = {key:this.name, value:this.value||'on'};
     });
-
-    if( this.anchor.encoding.startsWith('multipart'))
-      this.options.encoding = 'multipart';
-
-    this.options.method = this.anchor.getAttribute('method') || 'POST';
-
   },
 
 
@@ -56,9 +51,9 @@ Jsx.Form = new Class({
         this.action_submit = false;
     }
 
-//    if(this.anchor.enctype == "multipart/form-data"){
-//        return;
-//    }
+    if(this.anchor.enctype == "multipart/form-data"){
+        return;
+    }
 
     stop(event);
     this.fire();

@@ -56,7 +56,7 @@
         <dep key="path://yks.root/libs/Xhr.Upload.js"/>
         <description>Deal with uploaded stuffs</description>
       </module>
-      <module key="path://yks/Jsx/Jsx.Form.File.js" expose="Jsx.Form.File" matches=".input_upload">
+      <module key="path://yks/Jsx/Jsx.Form.File.js" expose="Jsx.Form.File" head="true" matches=".input_upload">
         <dep key="path://yks/Jsx/Uploader.js"/>
         <dep key="path://yks/Jsx/Jsx.Form.js"/>
         <description>Deal with uploaded files input</description>
