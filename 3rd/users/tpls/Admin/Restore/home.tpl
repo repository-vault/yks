@@ -15,6 +15,8 @@ foreach($deletions_list as $deletion_id=>$deletion){
   $actions = array();
   $actions[] = "<span onclick=\"Jsx.action({ks_action:'deletion_restore', deletion_id:$deletion_id}, this, this.innerHTML)\">Restore</span>";
 
+  $actions[] = "<a target='::modal' href='/?&href_fold;/details//$deletion_id'>Details</a>";
+
 
   echo "<tr class='line_pair'>
     <td>$deletion_id</td>
@@ -22,7 +24,7 @@ foreach($deletions_list as $deletion_id=>$deletion){
     <td>&user.{$deletion['user_id']};</td>
     <td>{$deletion['mykse_type']}  (#{$deletion['mykse_value']})</td>
     <td>{$deletion['deletion_reason']}</td>
-    <td>".join('-', $actions)."</td>
+    <td>".join(' - ', $actions)."</td>
   </tr>";
 }if(!$deletions_list)
     echo "<tfail>No deletion</tfail>";

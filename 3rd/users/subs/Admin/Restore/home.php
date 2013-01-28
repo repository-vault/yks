@@ -19,5 +19,5 @@ if($action == 'deletion_restore') try {
     rbx::ok("Successfully restored deletion : #$deletion_id");
 
     jsx::js_eval(jsx::RELOAD);
-} catch(rbx $e){}
+} catch(Exception $e){ rbx::error("Could not restore deletion $deletion_id"); }
 
