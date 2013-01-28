@@ -16,7 +16,7 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  private function __construct($from, $args = null){
+  private function __construct($from, $args = array()){
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
     $this->obj  = null;
 
@@ -44,9 +44,7 @@ class interactive_runner {
     else  $this->help();
 
     if(is_null($this->obj))
-        $this->obj = is_null($args)
-                     ? $reflector->newInstance()
-                     : $reflector->newInstanceArgs($args);
+        $this->obj = $args ? $reflector->newInstanceArgs($args) : $reflector->newInstance();
   }
 
 
@@ -348,10 +346,10 @@ class interactive_runner {
 /**
 * @interactive_runner disable
 */
-  static public function start($obj, $args = null){
+  static public function start($obj, $args = array()){
 
-    if(!is_array($args) && !is_null($args)) $args = array($args);
-    $runner = new self($obj, is_null($args) ? null : $args);
+    if(!is_array($args)) $args = array($args);
+    $runner = new self($obj, $args);
 
 
     if($run = cli::$dict['ir://run']){
