@@ -295,6 +295,7 @@ class interactive_runner {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
+          && !$is_magic
           && $method_name != "init"){
         $callback = array($className, $method_name);
       } else {
@@ -353,6 +354,7 @@ class interactive_runner {
 
 
     if($run = cli::$dict['ir://run']){
+      if($run === true) $run = "run";
       $runner->obj->$run();
       die;
     }
