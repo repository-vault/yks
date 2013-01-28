@@ -33,7 +33,9 @@ Element.implement({
     var queryList = [];
     this.getInputs(false, true).each(function(el){
       if (!el.name || el.disabled) return;
-      var tmp, value = (el.tagName.toLowerCase() == 'select')
+      var tmp, value;
+      if(el.files) value = el.files[0]; 
+      else value = (el.tagName.toLowerCase() == 'select')
         ? ( (tmp = Element.getSelected(el).map( function(opt){ return opt.value;} ))
              && tmp.length ? tmp : [''] )
         : ((el.type == 'radio' || el.type == 'checkbox') && !el.checked) ? null : el.value;

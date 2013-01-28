@@ -26,14 +26,29 @@ class files {
     $file_name = trim($file_name);
     return $file_name;
   }
+  
+  public static function rp($path, $ds = DIRECTORY_SEPARATOR){
+    $start = '';
+    if($ds == '\\') {
+      if(preg_match('#^([a-z]:)[\\\/](.*)$#i', $path, $out)) {
+        $start = $out[1].$ds;
+        $path  = "/".$out[2];
+      }
+    } elseif($path{0} == $ds) 
+       $start = $ds;
+    $paths = preg_split('#[\\\/]#', $path);
+    $out  = array();
+    $last = count($paths )-1;
 
-  public static function crlf_eol($file_path){
-    $str = file_get_contents($file_path);
-    $str = preg_replace("#(?<!\r)\n#", CRLF, $str);
-    file_put_contents($file_path, $str);
+    foreach($paths as $i=>$fold){
+        if ($fold==''&& $i!=$last || $fold=='.') continue;
+        if ($fold=='..' && $i>0 && end($out)!='..') array_pop($out);
+        else $out[]= $fold;
+    } return ($start).join($ds, $out);
   }
 
-  public static function rp($path, $ds = "/"){
+
+  public static function rp2($path, $ds = "/"){
     $out=array();$last=count($from=explode($ds, $path))-1;
     foreach($from as $i=>$fold){
         if ($fold==''&& $i!=$last || $fold=='.') continue;

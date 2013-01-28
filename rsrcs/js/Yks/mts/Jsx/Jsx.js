@@ -10,7 +10,7 @@ var Jsx = new Class({
   options: {
     url: '',
     rbx:false,
-
+    encoding:"urlencode", //multipart
     headers: {},
     async: true,
     method: 'POST'
@@ -65,7 +65,7 @@ var Jsx = new Class({
     if(!!($type(ret)=="document" || ret.xml)) {
         this.xml_body = ret;
         var tmp = ret.getElementsByTagName("rbx")[0];
-        if(tmp)
+      if(tmp)
           tmp.parentNode.removeChild(tmp);
         tmp = tmp?Urls.jsx_eval(tmp.firstChild.nodeValue):(this.options.box||{});
         this.transform(tmp, headers['yks-render-side'] );
