@@ -125,7 +125,7 @@ class cli {
     for($a=1;$a<count($args);$a+=2) {
       $msg= &$args[$a];
       if(!is_string($msg)) $msg = print_r($msg, 1);
-      $msg = explode("\n", trim($msg));
+      $msg = preg_split("#\r?\n#", trim($msg));
       $msg = str_replace("	", "    ", $msg);
 
       if($dotrim)
