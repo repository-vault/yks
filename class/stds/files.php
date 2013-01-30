@@ -63,7 +63,7 @@ class files {
 
   public static function find($dir, $pattern = '#.#', $opts = self::FIND_DEFAULT){
     $files=array(); if(!is_dir($dir)) return array();
-    foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
+    foreach(self::glob($dir) as $item){
         $base_file = substr(strrchr($item,'/'), 1);
         if(is_dir($item)
           && !($opts&self::FIND_SURFACE)
@@ -113,10 +113,35 @@ class files {
     if($recursive)
         self::delete_dir($dir, false, $depth);
     else 
-        foreach(glob("$dir/*") as $file_path)
+        foreach(self::glob($dir) as $file_path)
             if(!is_dir($file_path)) unlink($file_path);
 
     self::create_dir($dir);
+  }
+
+    //return all files in a dir, including dotfiles
+  private static function glob($dir){
+    return array_slice(glob("$dir/{.?,}*", GLOB_BRACE),1);
+  }
+
+//remove old files and empty dir
+  public static function clean_dir($dir, $max_age = 0, $recursive = true){
+    if(!is_dir($dir)) return;
+
+    foreach(self::glob($dir) as $file_path) {
+      if(is_dir($file_path) &&  $recursive)
+          self::clean_dir($file_path, $max_age);
+      elseif(is_file($file_path) && (filemtime($file_path) - $max_age ) < 0){
+          unlink($file_path);
+          rbx::ok("Remove $file_path");
+      }
+    }
+
+    if(!self::glob($dir)) {
+      rbx::ok("Dir $dir is empty, cleaning");
+      rmdir($dir);
+    }
+
   }
 
   public static function delete($path){
@@ -126,7 +151,7 @@ class files {
 
   public static function delete_dir($dir, $rm_root=true, $depth=0){
     if(!is_dir($dir)) return false;
-    foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
+    foreach(self::glob($dir) as $item){
         if(is_link($item) || is_file($item)) unlink($item);
         else if(is_dir($item)) self::delete_dir($item, true, $depth++);
     } if(is_dir($dir) && $rm_root) rmdir($dir);
@@ -134,7 +159,7 @@ class files {
 
   public static function copy_dir($dir,$dest){
     self::create_dir($dest);
-    foreach(array_slice(glob("$dir/{.?,}*", GLOB_BRACE), 1) as $item){
+    foreach(self::glob($dir) as $item){
         $file = strrchr($item, '/');
         if(is_file($item)) copy($item, $dest.$file);
         else if(is_dir($item)) self::copy_dir($item, $dest.$file);
