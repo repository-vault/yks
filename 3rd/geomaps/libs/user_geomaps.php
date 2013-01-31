@@ -22,7 +22,6 @@ class user_geomaps extends geomaps {
     $this->users_colors = $users_colors;
   }
 
-
   public static function filter_zipcode($areas_list, $addr_zipcode){
     $success = array();
 
@@ -36,7 +35,7 @@ class user_geomaps extends geomaps {
         $success ["fra-75"]= $area_id;
     }
 
-        //prefer paris district 
+        //prefer paris district
     return array_sort($success, array('fra-75', 'fra-dep'));
   }
 
@@ -60,19 +59,26 @@ class user_geomaps extends geomaps {
     return $this->data['user_id'];
   }
 
+  function get_area_user(){
+    return $this->area_user;
+  }
+
   function toggle_user_at($x,$y, $user_id){
     $area_id = $this->png_map->hash_key_at($x, $y);
     if(!$area_id)
         return;
 
-    if(in_array(SITE_DOMAIN, array('admin.qmansuy.ac.ivsdev.net', 'admin.activisu.com')) && class_exists('crm_api'))
-      crm_api::register_departement_visibility($area_id, array($user_id), 'ac');
-    else if(in_array(SITE_DOMAIN, array('admin.activscreen.com')) && class_exists('crm_api'))
-      crm_api::register_departement_visibility($area_id, array($user_id), 'as');
-
     $map_id = $this->data['map_id'];
 
     $verif_area = compact('area_id', 'map_id');
+
+    $previous_user = sql::value('ks_users_geomaps_area', $verif_area, 'user_id');
+
+    if(in_array(SITE_DOMAIN, array('admin.sviande.ac.ivsdev.net', 'admin.activisu.com')) && class_exists('crm_api'))
+      crm_api::register_departement_visibility($area_id, array($user_id), array($previous_user), 'ac');
+    else if(in_array(SITE_DOMAIN, array('admin.activscreen.com')) && class_exists('crm_api'))
+      crm_api::register_departement_visibility($area_id, array($user_id), array($previous_user), 'as');
+
     if(isset($this->area_user[$area_id]))
         sql::delete("ks_users_geomaps_area", $verif_area);
 
