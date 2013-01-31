@@ -72,10 +72,6 @@ class exyks {
     foreach(yks::$get->config->modules->iterate("module") as $module)
       self::$modules_list[] = new exyks_module($module);
 
-      //linux & windows comp
-    putenv("TMP=".TMP_PATH);
-    putenv("TEMP=".TMP_PATH);
-    putenv("TMPDIR=".TMP_PATH);
 
     self::extends_include_path();
   }
