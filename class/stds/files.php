@@ -131,16 +131,12 @@ class files {
     foreach(self::glob($dir) as $file_path) {
       if(is_dir($file_path) &&  $recursive)
           self::clean_dir($file_path, $max_age);
-      elseif(is_file($file_path) && (filemtime($file_path) - $max_age ) < 0){
+      elseif(is_file($file_path) && (filemtime($file_path) - $max_age ) < 0)
           unlink($file_path);
-          rbx::ok("Remove $file_path");
-      }
     }
 
-    if(!self::glob($dir)) {
-      rbx::ok("Dir $dir is empty, cleaning");
+    if(!self::glob($dir))
       rmdir($dir);
-    }
 
   }
 
