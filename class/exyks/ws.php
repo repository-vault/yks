@@ -99,7 +99,8 @@ class exyks_ws {
 
     //autodetect if current argument is session_id, init session if so
     $SOAP_SESSION_ID = null;
-    if($use_sess == "auto") {
+
+    if($use_sess === "auto") {
         $url_infos = parse_url(trim($_SERVER['HTTP_SOAPACTION'],'"'));
         parse_str($url_infos['query'], $soap_action);
 
