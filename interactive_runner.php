@@ -340,7 +340,15 @@ class interactive_runner {
 * @alias fs
 */
   function fullsize(){
-    cli::$cols = trim(`tput cols`);
+    if(cli::$OS == cli::OS_WINDOWS) {
+      $cmd = "mode CON";
+      exec($cmd, $out);
+      if( preg_match_all("#(lines|columns):\s+([0-9]+)$#mi", join("\n", $out), $out)) 
+        $size = array_combine(array_map('strtolower', $out[1]), $out[2]);
+      cli::$cols = $size['columns'] ? $size['columns'] - 1 : cli::$cols;
+    } else 
+      cli::$cols = trim(`tput cols`);
+
     $this->help();
   }
 
