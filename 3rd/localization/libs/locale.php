@@ -19,10 +19,11 @@ class locale {
     ));
   }
 
-  public static function get_projects($project_name) {
+  public static function get_projects($project_name, $strict=false) {
 
     // On cherche l'ID du projet dont on  a le nom :
     $where = array("project_name ilike '%$project_name%'"); 
+    if($strict) $where = array("project_name ilike '$project_name'");
     sql::select("ks_projects_list", $where);
     $projects_ids = sql::brute_fetch("project_id");
     $locale_projects = array_keys($projects_ids); 
