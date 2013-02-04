@@ -26,6 +26,9 @@ if($action=="upload_tmp")try {
     $file       = $_FILES['user_file'];
     $file_ext   = files::ext($file['name']);
 
+    if($file['error'])
+      throw rbx::error("Erreur interne du serveur durant le chargement du fichier (#{$file['error']})");
+
     if( !is_file($file['tmp_name']) )
         throw rbx::error("Le fichier est invalide");
     if( ($file['size']/1024) > $upload_def['size'] )
