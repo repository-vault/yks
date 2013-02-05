@@ -3,7 +3,6 @@
 class date {
 
   static function validate($date, $format=DATE_MASK, $zero_time = false){
-
     $format=preg_replace("#[a-z]#i","%$0",strtr($format,array('i'=>'M','s'=>'S')));
 
     if(!($tm=self::strptime($date,$format)))
@@ -13,7 +12,7 @@ class date {
     $date = gmmktime($tm['tm_hour'],$tm['tm_min'],$tm['tm_sec'],
         $tm['tm_mon'], pick($tm['tm_mday'],1), 1900+pick($tm['tm_year'], 70));
 
-    if(!$zero_time && $format =! DATE_MASK)
+    if(!$zero_time && $format != DATE_MASK)
         $date -= exyks::retrieve("USER_TZ");
 
     return $date;
@@ -134,7 +133,7 @@ class date {
 
   /**
   * Le jour est-il férié
-  * 
+  *
   * @param int $timestamp
   */
   static function is_dayoff($timestamp) {
@@ -184,7 +183,7 @@ class date {
   /**
   * Calcule la date dans X jours ouvrés.
   * Example : Vendredi + 2 jours ouvrés = mardi.
-  * 
+  *
   * @param int $date
   * @param int $open_days
   * @return $date + $open_days * day_duration
@@ -194,7 +193,7 @@ class date {
     while($cpt < $open_days) {
       $date += 3600 * 24;// add a gap day.
       if(self::is_dayoff($date)) continue ; // on avance d'un gap day, mais pas d'un open day !
-      $cpt++; 
+      $cpt++;
     }
     return $date;
   }
