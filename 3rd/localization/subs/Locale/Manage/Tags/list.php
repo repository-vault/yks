@@ -22,3 +22,4 @@ if($action=="tag_delete")try{
 
 
 $locale_tags_list = locale_tag::from_where($verif_projects);
+if($locale_tags_list) ksort($locale_tags_list);
