@@ -275,7 +275,7 @@ class crypt {
     $data .= pack("N", strlen($e['data'])).$e['data'];
     $data .= pack("N", strlen($n['data'])).$n['data'];
 
-    return base64_encode($data);
+    return $alg." ".base64_encode($data);
   }
 
 
