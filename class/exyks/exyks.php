@@ -20,7 +20,7 @@ class exyks {
   public static $vars = array();
 
   static function get_modules_list(){    return self::$modules_list;  }
-  
+
 
   static function init() {
 
@@ -47,23 +47,21 @@ class exyks {
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
     define('SESSION_NAME',  crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10)."_yks");
-    self::store('LANGUAGES',
-        preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
 
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
-    
+
     if(yks::$get->config->site['hostname']) {
         $hostname = trim(`hostname`);
         if(yks::$get->config->site['hostname'] != $hostname)
           yks::fatality(yks::FATALITY_CONFIG, "Invalid local host name {$hostname}");
     }
-        
+
     self::$get = new self();
 
     self::$modules_list = array();
-    if(!SITE_STANDALONE) 
+    if(!SITE_STANDALONE)
       self::$modules_list[] = new exyks_module(array(
         'key'      => "base",
         'manifest' => "path://yks/3rd/base",
@@ -72,6 +70,10 @@ class exyks {
     foreach(yks::$get->config->modules->iterate("module") as $module)
       self::$modules_list[] = new exyks_module($module);
 
+      //linux & windows comp
+    //putenv("TMP=".TMP_PATH);
+    //putenv("TEMP=".TMP_PATH);
+    //putenv("TMPDIR=".TMP_PATH);
 
     self::extends_include_path();
   }
@@ -110,11 +112,11 @@ class exyks {
 
     if(yks::$get->config->site['render'] == 'inline')
       tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
-          
-       
+
+
     tpls::register_custom_element("field", array('tpls', 'inline_field'));
-    
-    
+
+
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
 
@@ -179,12 +181,17 @@ class exyks {
     if(!self::$head->styles)  self::$head->addChild("styles");
     if(!self::$head->scripts) self::$head->addChild("scripts");
 
+    
+    
     exyks_session::connect();
     exyks_security::sanitize();
-    locales_manager::init();
+    locales_manager::init(); // TODO : locale manager pourrait avoir besoin  de la session !??
+    
+
 
     if(! bool($config->users['custom_session_manager']))
         exyks_session::load();
+
 
 
     if(bool((string)yks::$get->config->site['closed']))
@@ -219,7 +226,7 @@ class exyks {
     extract($vars);
     tpls::export($vars); //!
 
-    exyks::bench('display_start'); 
+    exyks::bench('display_start');
     ob_start();
 
     jsx::set(array(

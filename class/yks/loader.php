@@ -30,7 +30,7 @@ define('Ex/yks', 'A cloudy tool');
 
   define('WWW_PATH',    PUBLIC_PATH);
   define('ROOT_PATH',   dirname(WWW_PATH));
-  define('CONFIG_PATH', realpath(ROOT_PATH.DIRECTORY_SEPARATOR."config")); 
+  define('CONFIG_PATH', realpath(ROOT_PATH.DIRECTORY_SEPARATOR."config"));
   define('CLASS_PATH',  $class_path);
   define('YKS_PATH',    realpath("$class_path/.."));
 

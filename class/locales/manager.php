@@ -6,25 +6,46 @@
 
 class locales_manager {
   const CONST_LOCALES_MASK = '#^(?!FLAG_).*(?<!_PATH|_MASK)$#';
-
+  const sql_table_users_domains = 'as_users_profile_locale_domains';
+  public static $module_locale_exists;
+  
   public static function init(){
-    if(!classes::init_need(__CLASS__)) return;
 
+    if(!classes::init_need(__CLASS__)) return;
+    
+    self::$module_locale_exists = class_exists('locale');
 
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $current_hash = md5($base);
 
-    if($_SESSION['langs']['current_hash'] != $current_hash) {
+    if($_SESSION['langs']['current_hash'] != $current_hash || true) {
         $_SESSION['langs']['current_hash'] = $current_hash;
-        $user_lang =  self::find_best_lang($base, exyks::retrieve('LANGUAGES'));
+        $user_lang =  self::find_best_lang($base, array_keys(self::get_languages_list()));
         $_SESSION['langs']['current'] = $user_lang;
     }
-
     $user_lang = $_SESSION['langs']['current'];
     exyks::store("USER_LANG", $user_lang);
-
   }
 
+  // retrieve languages list , from static file config or from locale module, if available
+  
+  public static function get_languages_list(){
+    $locales    = yks::$get->config->locales;
+
+    if(!self::$module_locale_exists) {
+      $languages_order  = array_filter(preg_split(VAL_SPLITTER, $locales['order']));
+      $languages  = preg_split(VAL_SPLITTER, $locales['keys'], -1, PREG_SPLIT_NO_EMPTY);
+      $languages_order  = array_intersect($languages_order, $languages);
+      //HERE MELON
+    } else {
+      $languages_list = array();
+      foreach(locale::get_languages_list() as $lang_key)
+          $languages_list[$lang_key] = locale::fallback_list($lang_key);
+    }
+    
+    return $languages_list;
+  }
+  
   public static function translate($str, $lang_key = false){
     if(!$lang_key) $lang_key = exyks::retrieve("USER_LANG");
 

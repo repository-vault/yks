@@ -8,6 +8,7 @@ if(!defined('Ex/yks')) die("Ex/yks is not loaded");
 
   $vars = array();
   list($context, $href, $href_ks, $depths, $argv0) = exyks::context_prepare($_SERVER['QUERY_STRING']);
+
     foreach($context as $depth=>$infos){
         list($subs_path, $subs_fold, $page, $subs_args, $href_fold, $href_base) = $infos;
         if($depth==$depths) exyks::$href = $href = "$href_base/$page";
