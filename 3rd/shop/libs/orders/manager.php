@@ -11,12 +11,21 @@ class orders_manager extends _sql_base {
 
         $profile_key = $product_infos['products_specifications']['profile_key']['specification_value'];
         if(!$profile_key) continue; 
-        list($table_name, $field_name, $profile_key)
-            = preg_list('#^(.*?)\[(.*?)\]\[(.*?)\]$#', $profile_key);
+        list($table_name, $field_name, $profile_key, $additive_options)
+            = preg_list('#^(.*?)\[(.*?)\]\[(.*?)\](?:\[(.*?)\])?$#', $profile_key);
         $key_name = reset(fields(yks::$get->tables_xml->$table_name,"primary"));
         $verif_criteria  = array($key_name =>$order->$field_name);
+
+        if($additive_options) {
+          $options = explode(',',$additive_options);
+          foreach($options as $option) {
+            list($key,$val) = explode('=',$option);
+            $verif_criteria[$key] = $val;
+          }
+        }
+
         $data = array($profile_key=>array('sql'=>"`$profile_key` + {$product_infos['product_qty']}"));
-        sql::update($table_name, $data, $verif_criteria);
+        $res = sql::replace($table_name, $data, $verif_criteria);
     }
   }
 

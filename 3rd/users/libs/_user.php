@@ -7,6 +7,7 @@ abstract class _user extends _sql_base {
   protected $sql_table = self::sql_table;
   protected $sql_key = self::sql_key;
   private $storage = array();
+  public $computed = array();
 
   static function from_where($class, $where){
     return parent::from_where($class, self::sql_table, self::sql_key, $where);

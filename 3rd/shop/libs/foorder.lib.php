@@ -87,8 +87,10 @@ class foorder extends order {
         'order_status'   => 'paying',
     ); extract($data);
 
-    if(!($order_value && $addr_billing && $addr_delivery ))
+    if(!($order_value && $addr_billing && $addr_delivery )) {
+        error_log("Error during shop order. Order value : '$order_value' ; Addr billing '$addr_billing' ; Add delivery : '$addr_delivery'");
         return false;
+    }
 
 
     $verif_order = array('order_id' => $this->order_id);
