@@ -189,7 +189,6 @@ abstract class _sql_base  implements ArrayAccess {
     $deletion_id = sql::insert("zks_deletion_history", $data, true);
 
 
-
     //order dont matter, deferred powa
 
     if(false) {    //check for trigger (they are source of trouble)
@@ -216,6 +215,18 @@ abstract class _sql_base  implements ArrayAccess {
 
   }
 
+  /**
+  * Return the diff between current and new. Data from current.
+  * 
+  * @param mixed $data
+  * @param mixed $revert
+  */
+  public function data_diff($data, $revert=false) {
+    if(!$revert) // Data qui vont être changées dans le current
+      return array_diff_assoc($this->data, $data);
+    else        // Data qu'on veut inserer et qui sont différentes
+      return array_diff_assoc($data, $this->data);
+  }
 
   function sql_delete(){ return sql::delete($this->sql_table, $this); }
 
@@ -231,3 +242,4 @@ abstract class _sql_base  implements ArrayAccess {
   function offsetUnset($key){unset($this->data[$key]); }
 
 }
+ 
