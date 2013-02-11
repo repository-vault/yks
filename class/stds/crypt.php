@@ -1,7 +1,7 @@
 <?
 
 class crypt {
-  
+  const ASN_LONG_LEN  = 0x80;
   
   public static function getppkpair($rsa_options = array()){
     $options = array(
@@ -180,6 +180,8 @@ class crypt {
     return $key;
   }
 
+
+
   public static function BuildPemKey($key_str, $type=crypt::PEM_PUBLIC) {
     $lines = str_split($key_str, 64);
 
@@ -192,6 +194,88 @@ class crypt {
     }
 
     return join("\n", $lines);
+  }
+
+
+
+  private static function ASN_len($s) {
+    $len = strlen($s);
+    if ($len < self::ASN_LONG_LEN)
+        return chr($len);
+
+    $data = dechex($len);
+    $data = pack('H*', (strlen($data) & 1 ? '0' : '') . $data);
+    return chr(strlen($data) | self::ASN_LONG_LEN) . $data;
+  }
+
+  public static function openssh2pem($openssh_data) {
+    $data = base64_decode($openssh_data);
+
+    list(,$alg_len)  = unpack('N', substr($data, 0, 4));
+    $alg = substr($data, 4, $alg_len);
+
+    if ($alg !== 'ssh-rsa')
+        return FALSE;
+
+    list(, $e_len) = unpack('N', substr($data, 4 + strlen($alg), 4));
+    $e = substr($data, 4 + strlen($alg) + 4, $e_len);
+    list(,$n_len) = unpack('N', substr($data, 4 + strlen($alg) + 4 + strlen($e), 4));
+    $n = substr($data, 4 + strlen($alg) + 4 + strlen($e) + 4, $n_len);
+
+    $algid = pack('H*', '06092a864886f70d0101010500');                // algorithm identifier (id, null)
+    $algid = pack('Ca*a*', 0x30, self::ASN_len($algid), $algid);                // wrap it into sequence
+
+
+    $data  = pack('Ca*a*', 0x02, self::ASN_len($n), $n); // numbers
+    $data .= pack('Ca*a*', 0x02, self::ASN_len($e), $e);
+
+    $data = pack('Ca*a*', 0x30, self::ASN_len($data), $data);                   // wrap it into sequence
+    $data = "\x00" . $data;                                           // don't know why, but needed
+    $data = pack('Ca*a*', 0x03, self::ASN_len($data), $data);                   // wrap it into bitstring
+    $data = $algid . $data;                                           // prepend algid
+    $data = pack('Ca*a*', 0x30, self::ASN_len($data), $data);                   // wrap it into sequence
+
+   return base64_encode($data);
+}
+
+  private static function parseASN($string){
+    $parsed = array();
+    $endLength = strlen($string);
+    $bigLength = $length = $type = $dtype = $p = 0;
+    while ($p < $endLength) {
+        $type = ord($string[$p++]);
+        $dtype = ($type & 192) >> 6;
+        if ($type==0) continue;
+        $length = ord($string[$p++]);
+        if (($length & self::ASN_LONG_LEN) == self::ASN_LONG_LEN){
+            $tempLength = 0;
+            for ($x=0; $x<($length & ( self::ASN_LONG_LEN - 1)); $x++){
+                $tempLength = ord($string[$p++]) + ($tempLength * 256);
+            }
+            $length = $tempLength;
+        }
+        $data = substr($string, $p, $length);
+        $parsed[] = compact('type', 'data');
+        $p = $p + $length;
+    }
+    return $parsed;
+  }
+
+
+
+  public static function pem2openssh($pem_data){
+    $data = base64_decode($pem_data);
+    list($base_seq )     = self::parseASN($data);
+    list($alg, $numbers) = self::parseASN($base_seq['data']);
+    list($number_seq)    = self::parseASN($numbers['data']);
+    list($n, $e)         = self::parseASN($number_seq['data']);
+
+    $alg = "ssh-rsa";
+    $data = pack("N", strlen($alg)).$alg;
+    $data .= pack("N", strlen($e['data'])).$e['data'];
+    $data .= pack("N", strlen($n['data'])).$n['data'];
+
+    return base64_encode($data);
   }
 
 
