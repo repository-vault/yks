@@ -2,25 +2,21 @@
 
 class locale {
 
-  const sql_table          = "ks_locale_languages";
-  const sql_table_localize = "ks_localize_view";
-  const sql_key            = "lang_key";
+  const sql_table = "ks_locale_languages";
+  const sql_key = "lang_key";
 
   public static $sql_table = locale::sql_table;
   public static $sql_key = locale::sql_key;
 
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
-    
     define('LOCALE_LIB_PATH', dirname(__FILE__));
-    
     classes::register_class_paths(array(
         "locale_tag"           => LOCALE_LIB_PATH."/tag/tag.php",
         "locale_tag_manager"   => LOCALE_LIB_PATH."/tag/manager.php",
         "locale_item"          => LOCALE_LIB_PATH."/items.php",
         "locale_items_manager" => LOCALE_LIB_PATH."/items/manager.php",
     ));
-
   }
 
   public static function get_projects($project_name, $strict=false) {
@@ -49,8 +45,7 @@ class locale {
   }
 
   static function get_iso_lang($lang_key) {
-    $infos = self::languages_infos($lang_key);
-    return $infos[$lang_key]['lang_key_raw'];
+    return ''; // todo
   }
 
   static function export($lang_key, $verif_tags) {
@@ -88,9 +83,9 @@ class locale {
 
 
 
-  public static function get_languages_list($domain_id = null){
+  public static function get_languages_list($domain_id=null){
 
-    $where = array(sql::true);
+    $where[] = sql::true;
     if($domain_id) $where['locale_domain_id'] = $domain_id;
 
     sql::select(self::$sql_table, $where, "lang_key");
@@ -147,17 +142,11 @@ class locale {
   static function fallback_list($lang_key) {
     sql::select(self::$sql_table);
     $languages_list = sql::brute_fetch('lang_key');
-    $languages_metadata = self::languages_infos( array_keys($languages_list ));
-
-    $ret = self::fallback_node($languages_list, $lang_key);
-
-    $ret[] = $languages_metadata[$lang_key]['lang_key_raw'];
-    return $ret;
+    return self::fallback_node($languages_list, $lang_key);
   }
-
-  private static function fallback_node($languages_list, $lang_key, $chain_list=array()) {
+  static function fallback_node($languages_list, $lang_key, $chain_list=array()) {
     $lang_infos = $languages_list[$lang_key];
-    $chain_list[] = $lang_key;
+    $chain_list[$lang_key] = $lang_infos['lang_fallback'];
     // fin de chaine
     if($lang_infos['lang_fallback'] == $lang_key)
       return $chain_list;
@@ -165,31 +154,16 @@ class locale {
     return self::fallback_node($languages_list, $lang_infos['lang_fallback'], $chain_list);
   }
 
-  /**
-  * Get the direct fallback language for a given language
-  * @param string $lang_key The language you want to fallback
-  * @returns string The language $lang_key fallbacks to
-  */
-  static function fetch_first_fallback($lang_key) {
-    $where = array('lang_key' => $lang_key);
-    sql::select(self::$sql_table, $where, "lang_fallback");
-    return sql::fetch();
-  }
-
-  static function fetch_locales_values_raw($lang_key){
-    sql::select(self::sql_table_localize, compact('lang_key'));
-    return sql::brute_fetch('item_key', 'value');
-  }
 
   static function fetch_locales_values($lang_key, $filters = array()) {
     $fallback_chain = locale::fallback_list($lang_key);
 
     $verif = array(
-      'lang_key' => $fallback_chain
+      'lang_key' => array_keys($fallback_chain)
     );
     $verif = array_merge($verif, $filters);
 
-    sql::select(self::sql_table_localize, $verif);
+    sql::select("ks_localize_view", $verif);
     $values = sql::brute_fetch();
 
     $values_no_fallback = array();
@@ -230,9 +204,7 @@ class locale {
       iso_639_languages.alpha_3 AS lang_alpha3,
       iso_3166_countries.alpha_3 AS country_alpha3,
       iso_639_languages.alpha_2 AS lang_alpha2,
-      iso_3166_countries.alpha_2 AS country_alpha2,
-      concat(iso_639_languages.alpha_2 , '-' ,iso_3166_countries.alpha_2) AS lang_key_raw,
-      lang_key
+      iso_3166_countries.alpha_2 AS country_alpha2  
       FROM `ks_locale_languages`
       JOIN iso_3166_countries USING (country_code)
       JOIN iso_639_languages USING (lang_code)
@@ -242,10 +214,9 @@ class locale {
       iso_639_languages.alpha_3,
       iso_3166_countries.alpha_3,
       iso_639_languages.alpha_2,
-      iso_3166_countries.alpha_2,
-      lang_key;");
+    iso_3166_countries.alpha_2;");
 
-    $lang_infos = sql::brute_fetch("lang_key");
+    $lang_infos = sql::brute_fetch();
     return $lang_infos;
   }
 

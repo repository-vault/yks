@@ -54,7 +54,7 @@ var Xhr = new Class({
         case 'string' : ret.push(data);break;
         case 'element': ret.extend(document.id(data).toQueryList()); break;
         case 'hash': ret.extend(Hash.toQueryList(data));break;
-        case 'object':if(data.value != null) ret.push(data);break; //default
+        case 'object':ret.push(data);break; //default
       }
     });
     return ret;
