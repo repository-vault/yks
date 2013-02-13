@@ -43,8 +43,10 @@ class interactive_runner {
       $this->fullsize();
     else  $this->help();
 
-    if(is_null($this->obj))
-        $this->obj = $args ? $reflector->newInstanceArgs($args) : $reflector->newInstance();
+    if(is_null($this->obj)) {
+      $can_construct = $reflector->IsInstantiable() && $reflector->hasMethod('__construct');
+      $this->obj = $args && $can_construct ? $reflector->newInstanceArgs($args) : $reflector->newInstance();
+    }
   }
 
 
