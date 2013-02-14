@@ -162,16 +162,8 @@ class locale {
     return self::fallback_node($languages_list, $lang_infos['lang_fallback'], $chain_list);
   }
 
-  /**
-  * Get the direct fallback language for a given language
-  * @param string $lang_key The language you want to fallback
-  * @returns string The language $lang_key fallbacks to
-  */
-  static function fetch_first_fallback($lang_key) {
-    $where = array('lang_key' => $lang_key);
-    sql::select(self::$sql_table, $where, "lang_fallback");
-    return sql::fetch();
-  }
+
+
 
   static function fetch_locales_values_raw($lang_key){
     sql::select(self::sql_table_localize, compact('lang_key'));

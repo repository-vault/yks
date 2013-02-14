@@ -63,8 +63,7 @@ class locales_fetcher {
 
     foreach(array_reverse(array_keys($languages_list)) as $lang_key){
       $full[$lang_key] = self::load_entities($lang_key);
-      $fback = locale::fetch_first_fallback($lang_key);;
-      self::$fallbacks[$lang_key] = $fback['lang_fallback'];
+      self::$fallbacks[$lang_key] = pick($languages_list[$lang_key][1], $languages_list[$lang_key][0]);
     }
 
     foreach($full as $lang_key=>$values_no_fallback ) {
