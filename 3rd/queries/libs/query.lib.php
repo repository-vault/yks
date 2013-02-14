@@ -40,22 +40,26 @@ class query {
     echo exyks_renderer_excel::build_table($this->data_results, false, $multiline);
   }
 
-
-  public static function fast_export($sql_query, $multiline = false){
+  
+   public static function fast_export($sql_query, $multiline = false){
     $query = new self($sql_query);
     $query->execute();
 
-    if(!$multiline)
-        $styles = "tr {mso-height-source:userset;height:12.0pt }";
     $table_xml = exyks_renderer_excel::build_table($query->data_results, false, $multiline);
-    $str = "<body xmlns:xls='excel'>
-        <xls:style xmlns:xls='excel'>$styles</xls:style>
-        $table_xml
-    </body>";
+
+    $html_data = '<html>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>';
+    $html_data .= $table_xml;
+    $html_data .='</body></html>';
 
 
+    $html = new DOMDocument('1.0', 'UTF-8');
+    $html->loadHTML($html_data);
 
-    exyks_renderer_excel::render($str);
+    exyks_renderer_excel::extract_data('', $html);
   }
 
   public function __toString(){

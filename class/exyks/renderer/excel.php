@@ -43,7 +43,7 @@ class exyks_renderer_excel {
       ->appendChild($out_xml->createTextNode(self::styles));
 
     $worksheet = $out_xml->createElement('Worksheet');
-    $worksheet->setAttribute('Name', exyks::$head->title);
+    $worksheet->setAttribute('Name', pick(exyks::$head->title, 'Page 1'));
 
     //Pour les datas
     foreach($table_xml->getElementsByTagName("tr") as $row){
