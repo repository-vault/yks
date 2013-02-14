@@ -166,9 +166,12 @@ class locale {
 
 
   static function fetch_locales_values_raw($lang_key){
-    sql::select(self::sql_table_localize, compact('lang_key'));
+      //poor man's inner join
+    sql::select(self::sql_table_localize, array('lang_key' => $lang_key, 'value IS NOT NULL'));
     return sql::brute_fetch('item_key', 'value');
   }
+  
+  
   static function fetch_locales_values($lang_key, $filters = array()) {
     $fallback_chain = locale::fallback_list($lang_key);
 
