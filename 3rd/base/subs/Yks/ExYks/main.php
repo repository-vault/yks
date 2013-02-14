@@ -6,7 +6,7 @@ $action = pick($action, $sub0);
 
 if($action == "set_lang") try {
     $base = pick($_POST['lang_key'], $sub1);
-    $user_lang =  locales_manager::find_best_lang($base, exyks::retrieve('LANGUAGES'));
+    $user_lang =  locales_manager::find_best_lang($base);
     $_SESSION['langs']['current'] = $user_lang;
 
     //if(JSX) do something special

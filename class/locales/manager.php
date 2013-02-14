@@ -6,28 +6,77 @@
 
 class locales_manager {
   const CONST_LOCALES_MASK = '#^(?!FLAG_).*(?<!_PATH|_MASK)$#';
-
+  const sql_table_users_domains = 'as_users_profile_locale_domains';
+  public static $module_locale_exists;
+  const FINAL_FALLBACK = 'en-us';
+  
   public static function init(){
     if(!classes::init_need(__CLASS__)) return;
-
+    
+    self::$module_locale_exists = class_exists('locale');
 
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $current_hash = md5($base);
 
     if($_SESSION['langs']['current_hash'] != $current_hash) {
         $_SESSION['langs']['current_hash'] = $current_hash;
-        $user_lang =  self::find_best_lang($base, exyks::retrieve('LANGUAGES'));
+        $user_lang =  self::find_best_lang($base);
         $_SESSION['langs']['current'] = $user_lang;
     }
-
     $user_lang = $_SESSION['langs']['current'];
     exyks::store("USER_LANG", $user_lang);
-
   }
 
+  /**
+  * Retrieve languages list , whether from locale module if available or from static file config
+  * @return array A list of every available language and their fallbacks
+  */
+  public static function get_languages_list(){
+    $locales    = yks::$get->config->locales;
+    $languages_list = array();
+
+    //Whether the locale module exists and is loaded or not, must get a valid list of languages
+    if(!self::$module_locale_exists ) {
+      //Using locale conf file to forge languages list
+      $languages  = preg_split(VAL_SPLITTER, $locales['keys'], -1, PREG_SPLIT_NO_EMPTY);
+      //If the "keys" conf is not provided, forge a mock language list containing ultimate fallback
+      if(!$languages)
+        $languages = array(self::FINAL_FALLBACK);
+        
+      $languages_order  = array_filter(preg_split(VAL_SPLITTER, $locales['order']));
+      $languages_order  = array_intersect($languages_order, $languages);
+
+      foreach($languages as $lang_key) {
+        $tmp_languages_order = $languages_order;
+
+        do {
+          $tmp_fback = array_shift($tmp_languages_order);
+        }while($tmp_fback && $tmp_fback != $lang_key);
+
+        if($tmp_fback == $lang_key) {
+          //Fallbacks => suite du tableau d'ordre
+          //!\ On a la langue "en cours" en tete du tableau et le fallback "de secours" à la fin
+          array_unshift($tmp_languages_order, $tmp_fback);
+          array_push($tmp_languages_order, self::FINAL_FALLBACK);
+          $languages_list[$lang_key] = $tmp_languages_order;
+        } else {
+          //Fallbacks par défaut
+          $languages_list[$lang_key] = array(
+            $lang_key,
+            self::FINAL_FALLBACK,
+          );
+        }
+      }
+    } else {
+      //Using locale module
+      foreach(locale::get_languages_list() as $lang_key)
+        $languages_list[$lang_key] = locale::fallback_list($lang_key);
+    }
+    return $languages_list;
+  }
+  
   public static function translate($str, $lang_key = false){
     if(!$lang_key) $lang_key = exyks::retrieve("USER_LANG");
-
 
     $entities = data::load("entities", $lang_key);
     if(!$entities) $entities = array();
@@ -85,12 +134,11 @@ class locales_manager {
     //retro-ponderation for no-country-specifics languages (e.g it,en;q=0.9,en-us;q=0.8,fr; => it-it)
   const COUNTRYLESS_WEIGHT = 0.98;
 
-  public static function find_best_lang($accept_language, $lang_list){
-
+  public static function find_best_lang($accept_language){
         //dummy fallbacks
-    if(!$lang_list) return 'en-us';
-    $langs_nb = count($lang_list)-1;
-    if(!$langs_nb) return $lang_list[0];
+    $lang_list = array_keys(self::get_languages_list());
+    if(count($lang_list) == 1)
+      return $lang_list[0];
 
     $lang_filtered = array();
     $lang_order    = array();

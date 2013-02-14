@@ -47,8 +47,6 @@ class exyks {
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
     define('SESSION_NAME',  crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10)."_yks");
-    self::store('LANGUAGES',
-        preg_split(VAL_SPLITTER, yks::$get->config->locales['keys'], -1, PREG_SPLIT_NO_EMPTY));
 
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
