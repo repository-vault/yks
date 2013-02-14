@@ -377,7 +377,12 @@ Class xml_to_xlsx {
 
   private static function doc($root, $ens = array(), $ns = self::URI_SPREADSHEET) {
     $str = XML_STANDALONE.CRLF;
-    $str .= "<$root xmlns=\"$ns\" ".mask_join(' ',  $ens, 'xmlns:%2$s="%1$s"')."/>";
+
+    $mask = '';
+    if(!empty($ens))
+      $mask = mask_join(' ',  $ens, 'xmlns:%2$s="%1$s"');
+
+    $str .= "<$root xmlns=\"$ns\" ".$mask."/>";
     return simplexml_load_string($str);
   }
 
