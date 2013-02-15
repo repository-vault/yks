@@ -191,7 +191,7 @@ class locale {
     // On récupère la valeur avec gestion fallback
     $values_list = array();
     foreach($values_no_fallback as $item_key=>$items_trad) {
-      foreach(array_keys($fallback_chain) as $fb_lang) {
+      foreach($fallback_chain as $fb_lang) {
         $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle        
         if(!isset($items_trad[$fb_lang]) || !$items_trad[$fb_lang])
           continue; // Pas de trad, on boucle
