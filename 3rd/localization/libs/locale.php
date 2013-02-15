@@ -85,12 +85,9 @@ class locale {
 
 
 
-  public static function get_languages_list($domain_id=null){
+  public static function get_languages_list($verif_languages = sql::true){
 
-    $where = array(sql::true);
-    if($domain_id) $where['locale_domain_id'] = $domain_id;
-
-    sql::select(self::$sql_table, $where, "lang_key");
+    sql::select(self::$sql_table, $verif_languages, "lang_key");
     $languages_list = sql::fetch_all();
 
     return $languages_list;
@@ -142,9 +139,14 @@ class locale {
   * @param mixed $lang
   */
   static function fallback_list($lang_key) {
-    sql::select(self::$sql_table);
-    $languages_list = sql::brute_fetch('lang_key');
-    $languages_metadata = self::languages_infos( array_keys($languages_list ));
+
+    static $languages_list  = false, $languages_metadata = false;
+
+    if($languages_list === false) {
+      sql::select(self::$sql_table);
+      $languages_list = sql::brute_fetch('lang_key');
+      $languages_metadata = self::languages_infos( array_keys($languages_list ));
+    }
 
     $ret = self::fallback_node($languages_list, $lang_key);
 

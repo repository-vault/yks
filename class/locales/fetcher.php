@@ -55,7 +55,8 @@ class locales_fetcher {
     data::store("entities_en-us", $done); //fallback no lang (en-us)
     if(!$languages_list) return $done;
 
-    $full = array(); $values_list = array();
+    $full = array();
+    $values_list = array();
 
         //register site-specifics errors messages
     foreach(yks::$get->config->site->errors->iterate("err") as $err)
@@ -66,13 +67,25 @@ class locales_fetcher {
       self::$fallbacks[$lang_key] = pick($languages_list[$lang_key][1], $languages_list[$lang_key][0]);
     }
 
+    //Complete dictionnaries to have exhaustive item lists
+    //- Build said exhaustive item list
+    $dico_vide = array();
     foreach($full as $lang_key=>$values_no_fallback ) {
-      foreach($languages_list[$lang_key] as $fb_lang)
-        //Merge $lang_key items list with $fb_lang items list
-        $values_no_fallback = array_merge($full[$fb_lang], $values_no_fallback);
-      foreach($values_no_fallback as $item_key=>$item_value)
-        $values_list[$lang_key][$item_key] = self::get_item_value($full, $item_key, $lang_key);
+      $dico_vide = array_merge($dico_vide, array_keys($full[$lang_key]));
     }
+    $dico_vide = array_fill_keys(array_unique($dico_vide),"");
+    //- Fill every "lang" dictionnary with empty rows from item list
+    foreach($full as $lang_key=>$values_no_fallback) {
+      $full[$lang_key] = array_merge($dico_vide,$full[$lang_key]);
+    }
+    //Traduire
+    foreach($full as $lang_key=>$values_no_fallback ) {
+      foreach($values_no_fallback as $key => $value){
+        if(!$value)
+          $full[$lang_key][$key] = self::get_item_value($full, $key, $lang_key);
+      }
+    }
+    $values_list = $full;
 
     $babel = array();
     foreach($values_list as $lang_key => $entities){
@@ -86,7 +99,6 @@ class locales_fetcher {
       data::store("entities_babel", $babel);
       $done[] = array("babel", count($babel));
     }
-
     return $done;
   }
 
@@ -114,15 +126,15 @@ class locales_fetcher {
   * @param string $lang_key The language you want the item translated to
   * @returns string The translation
   */
-  private function get_item_value($full, $item_key, $lang_key) {
-    if ($full[$lang_key][$item_key])
+  private function get_item_value($full, $item_key, $lang_key, $hist = array()) {
+     if(in_array($lang_key, $hist) || !$lang_key)
+	return "";
+    array_push($hist, $lang_key);
+    
+    if ($full[$lang_key][$item_key]) 
       return $full[$lang_key][$item_key];
 
-    $fback = self::$fallbacks[$lang_key];
-    if($fback == $lang_key || !$fback)
-      return "";
-
-    return self::get_item_value($full, $item_key, $fback);
+    return self::get_item_value($full, $item_key, self::$fallbacks[$lang_key] , $hist);
   }
 
 

@@ -18,7 +18,7 @@ class locales_manager {
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $current_hash = md5($base);
 
-    if($_SESSION['langs']['current_hash'] != $current_hash) {
+    if($_SESSION['langs']['current_hash'] != $current_hash ) {
         $_SESSION['langs']['current_hash'] = $current_hash;
         $user_lang =  self::find_best_lang($base);
         $_SESSION['langs']['current'] = $user_lang;
@@ -32,6 +32,11 @@ class locales_manager {
   * @return array A list of every available language and their fallbacks
   */
   public static function get_languages_list(){
+
+    static $languages_list = false;
+    if($languages_list !== false)
+      return $languages_list;
+
     $locales    = yks::$get->config->locales;
     $languages_list = array();
 
@@ -69,7 +74,7 @@ class locales_manager {
       }
     } else {
       //Using locale module
-      foreach(locale::get_languages_list() as $lang_key)
+      foreach(locale::get_languages_list(array('used_for_website' => sql::true)) as $lang_key)
         $languages_list[$lang_key] = locale::fallback_list($lang_key);
     }
     return $languages_list;
@@ -136,7 +141,7 @@ class locales_manager {
 
   public static function find_best_lang($accept_language){
         //dummy fallbacks
-    $lang_list = array_keys(self::get_languages_list());
+    $lang_list = array_keys(self::get_languages_list(array('used_for_website' => sql::true)));
     if(count($lang_list) == 1)
       return $lang_list[0];
 
