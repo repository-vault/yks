@@ -158,7 +158,7 @@ class locale {
     $lang_infos = $languages_list[$lang_key];
     $chain_list[] = $lang_key;
     // fin de chaine
-    if($lang_infos['lang_fallback'] == $lang_key)
+    if(in_array($lang_infos['lang_fallback'],$chain_list))
       return $chain_list;
     // on creuse encore...
     return self::fallback_node($languages_list, $lang_infos['lang_fallback'], $chain_list);
