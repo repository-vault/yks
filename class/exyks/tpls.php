@@ -182,10 +182,10 @@ class tpls {
     $output_element = null;
 
     //switch like
-    if(in_array($true_type, array( 'string', 'int', 'time', 'date', 'sha1', 'hidden'))) {
+    if(in_array($true_type, array( 'string', 'int', 'time', 'date', 'sha1', 'hidden', 'password'))) {
 
       $new_attr = array(
-        'type'  => ($true_type == 'sha1') ? "password" :  "text",
+        'type'  => in_array($true_type, array('sha1', 'password') ) ? "password" :  "text",
         'name'  => $name,
         'class' => 'input_'.$true_type,
       );
@@ -235,7 +235,7 @@ class tpls {
       if($true_type == "html")
         $new_attr[ 'class' ]  = 'wyzzie';
 
-      $output_element = self::create_element($doc, 'textarea', $field->nodeValue, $new_attr);
+      $output_element = self::create_element($doc, 'textarea', pick($field->nodeValue, $field->getAttribute('value')), $new_attr);
       self::clone_args($output_element,  $field, array('style', 'id'));
     }
 
@@ -345,7 +345,7 @@ class tpls {
 
     $base_types = array(
       "string", "int", "time", "date",
-      "sha1", "hidden",
+      "sha1", "hidden", "password", 
       "file", "upload",
       "html", "textarea", "text",
       "enum", "checkbox", //?
