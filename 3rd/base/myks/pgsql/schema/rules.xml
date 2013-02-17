@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <view name="zks_information_schema_rules">
+    <def><![CDATA[
+SELECT
+  n.nspname                   AS element_schema,
+  c.relname                   AS element_name,
+  r.rulename                  AS rule_name,
+  pg_get_ruledef(r.oid, true) AS compiled_definition,
+  d.description               AS full_description,
+
+  CASE ev_type::integer
+      WHEN 2 THEN 'update'
+      WHEN 3 THEN 'insert'
+      WHEN 4 THEN 'delete'
+  END AS rule_event
+
+FROM
+  pg_rewrite AS r
+  LEFT JOIN pg_class AS c ON c.oid = r.ev_class
+  LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
+  LEFT JOIN pg_description AS d ON r.oid = d.objoid
+WHERE TRUE
+AND n.nspname != 'pg_catalog'
+AND r.rulename <> '_RETURN'
+ORDER BY r.rulename
+      
+]]></def>
+  </view>
+</myks>

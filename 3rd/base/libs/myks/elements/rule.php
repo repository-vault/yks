@@ -84,32 +84,11 @@ abstract class rule_base extends myks_base {
 
     $where = array();
     if($rule_name)
-        $where []= "r.rulename = '$rule_name'";
-    $where []= "c.relname = '{$parent_name['name']}'";
-    $where []= "r.rulename <> '_RETURN'";
-    $where []= "(CASE relkind WHEN 'v' THEN 'view' WHEN 'r' THEN 'table' END) = '$parent_type'";
+        $where ["rule_name"] = $rule_name;
+    $where ["element_name"]   = $parent_name['name'];
+    $where ["element_schema"] = $parent_name['schema'];
 
-     sql::query($query = "SELECT
-        n.nspname                   AS schema_name,
-        c.relname                   AS view_name,
-        r.rulename                  AS rule_name,
-        pg_get_ruledef(r.oid, true) AS compiled_definition,
-        d.description               AS full_description,
-        CASE ev_type::integer
-            WHEN 2 THEN 'update'
-            WHEN 3 THEN 'insert'
-            WHEN 4 THEN 'delete'
-        END AS rule_event
-
-      FROM 
-        pg_rewrite AS r
-        LEFT JOIN pg_class AS c ON c.oid = r.ev_class
-        LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
-        LEFT JOIN pg_description AS d ON r.oid = d.objoid
-      WHERE ".join(' AND ', $where)."        
-      ORDER BY r.rulename
-     ");
-
+    sql::select("zks_information_schema_rules", $where);
     return sql::brute_fetch('rule_name');
   }
 
