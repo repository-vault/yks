@@ -51,7 +51,7 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
-    //$this->dblink("crm_chains_list");die;
+    //$this->dblink("ivs_items_assoc");die;
     //$this->scan_tables("sessions_results_heap");
     //$this->scan_procedures("spli", true);
     //$this->scan_views("ttriggers", true);
@@ -406,8 +406,17 @@ class sql_runner {
           "'SELECT ".mask_join(', ', $table_columns, '%2$s')." FROM {$table_name['safe']} '".CRLF.
           ") AS {$table_name['name']} (".mask_join(', ', $table_columns, '%2$s %1$s').")". ";";
 
+    $insert_str = "E'INSERT INTO {$table_name['safe']} "
+            . "(" . mask_join(', ', $table_columns, '%2$s').")"
+            . " VALUES "
+            . "(\\''" . mask_join("E'\' , \\''", $table_columns, ' || NEW.%2$s || ')."E'\\');'";
+    
+    $view  = "<view name=\"{$table_name['name']}\">".CRLF;
+    $view .= "<def>$str</def>".CRLF;
+    $view .= "<rule on='insert'>" . "SELECT dblink('$dsn_str', $insert_str)". "</rule>".CRLF;
+    $view .= "</view>".CRLF;
     rbx::line();
-    echo $str.CRLF;
+    echo $view;
     rbx::line();
   }
 
