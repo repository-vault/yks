@@ -81,15 +81,19 @@ abstract class rule_base extends myks_base {
 
 //STATIC
   private static function raw_sql_search($parent_name, $parent_type, $rule_name = false){
-
     $where = array();
     if($rule_name)
         $where ["rule_name"] = $rule_name;
     $where ["element_name"]   = $parent_name['name'];
     $where ["element_schema"] = $parent_name['schema'];
 
-    sql::select("zks_information_schema_rules", $where);
-    return sql::brute_fetch('rule_name');
+    try {
+        sql::select("zks_information_schema_rules", $where);
+        return sql::brute_fetch('rule_name');
+    }catch(Exception $e){
+        rbx::error("-- unable to lookup rules");
+        return array();
+    }
   }
 
   function sql_infos(){
