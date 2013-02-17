@@ -410,10 +410,19 @@ class sql_runner {
             . "(" . mask_join(', ', $table_columns, '%2$s').")"
             . " VALUES "
             . "(\\''" . mask_join("E'\' , \\''", $table_columns, ' || NEW.%2$s || ')."E'\\');'";
-    
+
+    $old_vmask = "%2\$s = \\'' || OLD.%2\$s || E'\\'";
+    $new_vmask = "%2\$s = \\'' || NEW.%2\$s || E'\\'";
+
+    $delete_str = "E'DELETE FROM {$table_name['safe']} WHERE ".mask_join(" AND ", $table_columns, $old_vmask)." ;'";
+    $update_str = "E'UPDATE {$table_name['safe']} SET ".mask_join(',', $table_columns, $new_vmask)
+        . " WHERE ".mask_join(" AND ", $table_columns, $old_vmask)." ;'";
+
     $view  = "<view name=\"{$table_name['name']}\">".CRLF;
     $view .= "<def>$str</def>".CRLF;
-    $view .= "<rule on='insert'>" . "SELECT dblink('$dsn_str', $insert_str)". "</rule>".CRLF;
+    $view .= "<rule on='insert'>" . "SELECT dblink_exec('$dsn_str', $insert_str)". "</rule>".CRLF;
+    $view .= "<rule on='delete'>" . "SELECT dblink_exec('$dsn_str', $delete_str)". "</rule>".CRLF;
+    $view .= "<rule on='update'>" . "SELECT dblink_exec('$dsn_str', $update_str)". "</rule>".CRLF;
     $view .= "</view>".CRLF;
     rbx::line();
     echo $view;
