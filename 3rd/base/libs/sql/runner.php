@@ -51,7 +51,7 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
-    //$this->dblink("ivs_items_assoc");die;
+    $this->dblink("ivs_items_assoc");die;
     //$this->scan_tables("sessions_results_heap");
     //$this->scan_procedures("spli", true);
     //$this->scan_views("ttriggers", true);
@@ -406,13 +406,20 @@ class sql_runner {
           "'SELECT ".mask_join(', ', $table_columns, '%2$s')." FROM {$table_name['safe']} '".CRLF.
           ") AS {$table_name['name']} (".mask_join(', ', $table_columns, '%2$s %1$s').")". ";";
 
+
+    $new_v = " || IF(NEW.%2\$s IS NULL, 'NULL', E'\\'' || NEW.%2\$s || E'\\'' ) || ";
+    $new_vmask = "%2\$s = '$new_v'";
+
+
+    $old_v = " || IF(OLD.%2\$s IS NULL, 'IS NULL', E' = \\'' || OLD.%2\$s || E'\\'' ) || ";
+    $old_vmask = "%2\$s '$old_v'";
+
+
     $insert_str = "E'INSERT INTO {$table_name['safe']} "
             . "(" . mask_join(', ', $table_columns, '%2$s').")"
             . " VALUES "
-            . "(\\''" . mask_join("E'\' , \\''", $table_columns, ' || NEW.%2$s || ')."E'\\');'";
+            . "('" . mask_join("', '", $table_columns, $new_v)."');'";
 
-    $old_vmask = "%2\$s = \\'' || OLD.%2\$s || E'\\'";
-    $new_vmask = "%2\$s = \\'' || NEW.%2\$s || E'\\'";
 
     $delete_str = "E'DELETE FROM {$table_name['safe']} WHERE ".mask_join(" AND ", $table_columns, $old_vmask)." ;'";
     $update_str = "E'UPDATE {$table_name['safe']} SET ".mask_join(',', $table_columns, $new_vmask)
