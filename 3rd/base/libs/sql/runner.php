@@ -51,7 +51,7 @@ class sql_runner {
 
   function __construct(){
     $this->init_engine();
-    $this->dblink("ivs_items_assoc");die;
+    //$this->dblink("ivs_distributor_items_assoc", "distributor_id", "product_serial");die;
     //$this->scan_tables("sessions_results_heap");
     //$this->scan_procedures("spli", true);
     //$this->scan_views("ttriggers", true);
@@ -353,6 +353,10 @@ class sql_runner {
   }
 
   function dblink($table_name){
+
+    $args = func_get_args();
+    $args = array_slice($args,1);
+
     $table_name = sql::resolve( $table_name );
 
     $dsn = yks::$get->config->sql->links->search("db_link_dblink");
@@ -398,35 +402,38 @@ class sql_runner {
           $table_columns [$field_name] = $field_type;
         }
       }
-
     }
+    $table_rcolumns = array(); $i=0;
+    foreach($table_columns as $field_name=>$field_type)
+        $table_rcolumns[pick($args[$i++], $field_name)] = $field_type;
 
-    $str = "SELECT ".mask_join(', ', $table_columns, '%2$s').CRLF.
-           "FROM dblink('$dsn_str',".CRLF.
-          "'SELECT ".mask_join(', ', $table_columns, '%2$s')." FROM {$table_name['safe']} '".CRLF.
-          ") AS {$table_name['name']} (".mask_join(', ', $table_columns, '%2$s %1$s').")". ";";
+    $table_fields = array_combine(array_keys($table_columns), array_keys($table_rcolumns));
 
+    $query = "E'SELECT ".mask_join(', ', $table_fields, '%2$s')." FROM {$table_name['safe']}'";
+    $select_str = "SELECT " . mask_join(', ', $table_fields, '%s')
+            . " FROM dblink('$dsn_str', $query)"
+            . " AS {$table_name['name']} (".mask_join(', ', $table_rcolumns, '%2$s %1$s').")". ";";
 
-    $new_v = " || IF(NEW.%2\$s IS NULL, 'NULL', E'\\'' || NEW.%2\$s || E'\\'' ) || ";
+    $new_v = " || IF(NEW.%1\$s IS NULL, 'NULL', E'\\'' || NEW.%1\$s || E'\\'' ) || ";
     $new_vmask = "%2\$s = '$new_v'";
 
 
-    $old_v = " || IF(OLD.%2\$s IS NULL, 'IS NULL', E' = \\'' || OLD.%2\$s || E'\\'' ) || ";
+    $old_v = " || IF(OLD.%1\$s IS NULL, 'IS NULL', E' = \\'' || OLD.%1\$s || E'\\'' ) || ";
     $old_vmask = "%2\$s '$old_v'";
 
 
     $insert_str = "E'INSERT INTO {$table_name['safe']} "
-            . "(" . mask_join(', ', $table_columns, '%2$s').")"
+            . "(" . mask_join(', ', $table_fields, '%2$s').")"
             . " VALUES "
-            . "('" . mask_join("', '", $table_columns, $new_v)."');'";
+            . "('" . mask_join("', '", $table_fields, $new_v)."');'";
 
 
-    $delete_str = "E'DELETE FROM {$table_name['safe']} WHERE ".mask_join(" AND ", $table_columns, $old_vmask)." ;'";
-    $update_str = "E'UPDATE {$table_name['safe']} SET ".mask_join(',', $table_columns, $new_vmask)
-        . " WHERE ".mask_join(" AND ", $table_columns, $old_vmask)." ;'";
+    $delete_str = "E'DELETE FROM {$table_name['safe']} WHERE ".mask_join(" AND ", $table_fields, $old_vmask)." ;'";
+    $update_str = "E'UPDATE {$table_name['safe']} SET ".mask_join(',', $table_fields, $new_vmask)
+        . " WHERE ".mask_join(" AND ", $table_fields, $old_vmask)." ;'";
 
     $view  = "<view name=\"{$table_name['name']}\">".CRLF;
-    $view .= "<def>$str</def>".CRLF;
+    $view .= "<def>$select_str</def>".CRLF;
     $view .= "<rule on='insert'>" . "SELECT dblink_exec('$dsn_str', $insert_str)". "</rule>".CRLF;
     $view .= "<rule on='delete'>" . "SELECT dblink_exec('$dsn_str', $delete_str)". "</rule>".CRLF;
     $view .= "<rule on='update'>" . "SELECT dblink_exec('$dsn_str', $update_str)". "</rule>".CRLF;
