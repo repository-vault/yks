@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="dblink_dsn" type="string" volatility="IMMUTABLE">
+    <param name="in_dsn_ns" type="string"/>
+    <def>
+<![CDATA[
+DECLARE 
+tmp VARCHAR;
+BEGIN
+SELECT dsn_str FROM zks_dblink_dsn
+WHERE TRUE
+AND dsn_ns = in_dsn_ns
+AND db_name = current_database()
+INTO tmp;
+IF tmp IS NULL THEN
+  RAISE EXCEPTION 'Cannot resolve dsn_ns %', in_dsn_ns;
+END IF;
+
+RETURN tmp;
+END;
+]]>
+</def>
+  </procedure>
+  <table name="zks_dblink_dsn">
+    <fields>
+      <field type="title" name="dsn_ns"/>
+      <field type="title" name="db_name"/>
+      <field type="text" name="dsn_str"/>
+    </fields>
+    <indices>
+    <index type="unique">
+      <member column="dsn_ns"/>
+    </index>
+    </indices>
+  </table>
+</myks>

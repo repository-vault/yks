@@ -352,27 +352,43 @@ class sql_runner {
     }
   }
 
+
+
+
+  function dblink_bind(){
+    $current_db = yks::$get->config->sql->links->db_link;
+
+    foreach(yks::$get->config->sql->dblink->iterate("remote_dsn") as $dsn) {
+      $dsn_str = array();
+      $dsn_str["dbname"] = $dsn['db'];
+      if($dsn['host']) $dsn_str["host"] = $dsn['host'];
+      if($dsn['user']) $dsn_str["user"] = $dsn['user'];
+      if($dsn['pass']) $dsn_str["password"] = $dsn['pass'];
+      if($dsn['port']) $dsn_str["port"] = $dsn['port'];
+      $dsn_str = mask_join(' ', $dsn_str, '%2$s=%1$s');
+      $dsn_ns  = $dsn['ns'];
+      $data = array(
+        'db_name'  => $current_db['db'],
+        'dsn_str'  => $dsn_str,
+      );
+      sql::replace("zks_dblink_dsn", $data , compact('dsn_ns')  );
+      rbx::ok("Registered link : $dsn_ns to {$data['dsn_str']}");
+    }
+  }
+  
+
+
   function dblink($table_name){
+
+    $site_code = yks::$get->config->sql->dblink['local_ns'];
+
+    if(!$site_code)
+      throw new Exception("Please specify a config/sql/dblink/local_ns directive");
 
     $args = func_get_args();
     $args = array_slice($args,1);
 
     $table_name = sql::resolve( $table_name );
-
-    $dsn = yks::$get->config->sql->links->search("db_link_dblink");
-    if(!$dsn){
-      rbx::error("db_link_dblink not found, fallback to main db_link");
-      cli::pause();
-      $dsn = yks::$get->config->sql->links->search("db_link");
-    }
-    $dsn_str = array();
-    $dsn_str["dbname"] = $dsn['db'];
-    if($dsn['host']) $dsn_str["host"] = $dsn['host'];
-    if($dsn['user']) $dsn_str["user"] = $dsn['user'];
-    if($dsn['pass']) $dsn_str["password"] = $dsn['pass'];
-    if($dsn['port']) $dsn_str["port"] = $dsn['port'];
-    $dsn_str = mask_join(' ', $dsn_str, '%2$s=%1$s');
-
 
     $table_columns = array();
 
@@ -411,7 +427,7 @@ class sql_runner {
 
     $query = "E'SELECT ".mask_join(', ', $table_fields, '%2$s')." FROM {$table_name['safe']}'";
     $select_str = "SELECT " . mask_join(', ', $table_fields, '%s')
-            . " FROM dblink('$dsn_str', $query)"
+            . " FROM dblink(dblink_dsn('$site_code'), $query)"
             . " AS {$table_name['name']} (".mask_join(', ', $table_rcolumns, '%2$s %1$s').")". ";";
 
     $new_v = " || IF(NEW.%1\$s IS NULL, 'NULL', E'\\'' || NEW.%1\$s || E'\\'' ) || ";
@@ -434,9 +450,9 @@ class sql_runner {
 
     $view  = "<view name=\"{$table_name['name']}\">".CRLF;
     $view .= "<def>$select_str</def>".CRLF;
-    $view .= "<rule on='insert'>" . "SELECT dblink_exec('$dsn_str', $insert_str)". "</rule>".CRLF;
-    $view .= "<rule on='delete'>" . "SELECT dblink_exec('$dsn_str', $delete_str)". "</rule>".CRLF;
-    $view .= "<rule on='update'>" . "SELECT dblink_exec('$dsn_str', $update_str)". "</rule>".CRLF;
+    $view .= "<rule on='insert'>" . "SELECT dblink_exec(dblink_dsn('$site_code'), $insert_str)". "</rule>".CRLF;
+    $view .= "<rule on='delete'>" . "SELECT dblink_exec(dblink_dsn('$site_code'), $delete_str)". "</rule>".CRLF;
+    $view .= "<rule on='update'>" . "SELECT dblink_exec(dblink_dsn('$site_code'), $update_str)". "</rule>".CRLF;
     $view .= "</view>".CRLF;
     rbx::line();
     echo $view;
