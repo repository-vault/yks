@@ -138,7 +138,8 @@ class yks
       classes::register_class_path($class_name, $class_path);
     }
 
-    $exts = (string) $config->classes['exts'];
+    $exts = pick($config->classes['exts'], $config->paths['exts']);
+
     $call_init = ((string)$config->classes['call_init']) != 'false';
 
     classes::extend_include_path($paths);
