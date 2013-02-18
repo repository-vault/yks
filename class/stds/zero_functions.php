@@ -35,6 +35,12 @@ function pick(){
   return $val ? $val : end($args);
 }
 
+//exclude an element from an array
+function array_remove($array, $val){
+  $vals = func_get_args();  $vals = array_shift($vals);
+  return array_diff($array, array($val));
+}
+
     //return the first non empty valid value (last arg is a list of possibles values)
 function pick_in(){
     $args = func_get_args();
