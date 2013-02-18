@@ -1,8 +1,6 @@
 <?php
 
-/*
 
-*/
 
 class locales_manager {
   const CONST_LOCALES_MASK = '#^(?!FLAG_).*(?<!_PATH|_MASK)$#';
@@ -18,7 +16,7 @@ class locales_manager {
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $current_hash = md5($base);
 
-    if($_SESSION['langs']['current_hash'] != $current_hash ) {
+    if($_SESSION['langs']['current_hash'] != $current_hash) {
         $_SESSION['langs']['current_hash'] = $current_hash;
         $user_lang =  self::find_best_lang($base);
         $_SESSION['langs']['current'] = $user_lang;
@@ -90,7 +88,7 @@ class locales_manager {
       $entities = array_merge($entities, data::load("entities", "babel"));
 
     $entities = array_merge(
-        array('&USER_LANG;' => $lang_key),
+        array('&USER_LANG;' => substr($lang_key,0,5) ), //send iso 639 compatible locale 
         $entities,
         retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
     ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
@@ -148,8 +146,10 @@ class locales_manager {
     $lang_filtered = array();
     $lang_order    = array();
 
-    $accept_language_mask='#([a-z]{2}(?:-[a-z]{2})?)(?:\s*;q=([0-9.]+))?\s*,#';
-    if(preg_match_all($accept_language_mask,strtolower("$accept_language,"),$out)) {
+    $accept_language_mask = '#([a-z]{2}(?:-[a-z]{2})?)(?:\s*;q=([0-9.]+))?\s*,#';
+    $valid_lang_mask      = '#^[a-z]{2}(?:-[a-z]{2})?$#';
+
+    if(preg_match_all($accept_language_mask, strtolower("$accept_language,"), $out)) {
         if(!$out[2][0]) $out[2][0]=1;     //defaut q=1
         $lang_order = array_combine($out[1], $out[2]);
         $lang_order = self::correct_lang_weights($lang_order);
@@ -160,10 +160,13 @@ class locales_manager {
     foreach($lang_order as $lang_want=>$lang_weight){
         $lang_want_root = substr($lang_want,0,2);
         foreach($lang_list as $lang_key){
+            if(! preg_match($valid_lang_mask, $lang_key))
+                continue;
+
             $lang_key_root = substr($lang_key, 0, 2);
 
             if($lang_want == $lang_key) $lang_filtered[$lang_key][] = $lang_weight;
-            elseif($lang_key_root == $lang_want_root)
+            elseif($lang_key_root == $lang_want_root )
                 $lang_filtered[$lang_key][] = $lang_weight * self::COUNTRYLESS_WEIGHT;
             else $lang_filtered[$lang_key][]=0; 
         }
