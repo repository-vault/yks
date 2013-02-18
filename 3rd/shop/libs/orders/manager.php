@@ -10,7 +10,7 @@ class orders_manager extends _sql_base {
     foreach($order->products_ordered_list as $product_id=>$product_infos){
 
         $profile_key = $product_infos['products_specifications']['profile_key']['specification_value'];
-        if(!$profile_key) continue; 
+        if(!$profile_key) continue;
         list($table_name, $field_name, $profile_key, $additive_options)
             = preg_list('#^(.*?)\[(.*?)\]\[(.*?)\](?:\[(.*?)\])?$#', $profile_key);
         $key_name = reset(fields(yks::$get->tables_xml->$table_name,"primary"));
@@ -24,12 +24,20 @@ class orders_manager extends _sql_base {
           }
         }
 
-        $data = array($profile_key=>array('sql'=>"`$profile_key` + {$product_infos['product_qty']}"));
-        $res = sql::replace($table_name, $data, $verif_criteria);
+        // On ne peut pas utiliser sql::replace à cause du '$profile_key + x' (ça chie dans l'insert)
+        $line_exists = sql::row($table_name, $verif_criteria);
+        if(!$line_exists) { // insert
+          $data_insert = array($profile_key => array('sql' => $product_infos['product_qty']));
+          $res = sql::insert($table_name, array_merge($data_insert, $verif_criteria));
+        }
+        else { // update
+          $data_update = array($profile_key => array('sql'=>"`$profile_key` + {$product_infos['product_qty']}"));
+          $res = sql::update($table_name, $data_update, $verif_criteria);
+        }
     }
   }
 
-  
+
   function get_products_available_list(order $order) {
     if($order->shop)
       return $order->shop->products_list;
@@ -47,14 +55,14 @@ class orders_manager extends _sql_base {
 
     foreach($products_infos as $prod_info_key=>$prod_info)
       if($products_list_ordered[$prod_info_key])
-        foreach($products_list_ordered[$prod_info_key] as $product_ordered_key => $product_ordered) 
+        foreach($products_list_ordered[$prod_info_key] as $product_ordered_key => $product_ordered)
           $products_infos[$prod_info_key]->$product_ordered_key = $product_ordered;
 
     $products_infos = array_intersect_key($products_infos, $products_list_ordered ); //!
 
     return $order->products_list = $products_infos;
   }
-  
+
 
   public static function calc(order $order){
 
@@ -105,7 +113,7 @@ class orders_manager extends _sql_base {
 
     $order_infos['total_taxes'] = $order_infos['total_ci'] - $order_infos['total_ce'];
 
-    
+
     return compact('order_infos', 'products_list');
   }
 
