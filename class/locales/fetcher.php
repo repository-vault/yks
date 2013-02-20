@@ -58,12 +58,15 @@ class locales_fetcher {
     $full = array();
     $values_list = array();
 
-        //register site-specifics errors messages
-    foreach(yks::$get->config->site->errors->iterate("err") as $err)
-      $entities["&err_{$err['code']};"] = $err['sys'];
+    $errors = array();
+
+
+    foreach(yks::$get->config->errors->iterate("error") as $error)
+      $errors["&err_{$error['code']};"] = $error['message'];
+
 
     foreach(array_reverse(array_keys($languages_list)) as $lang_key){
-      $full[$lang_key] = self::load_entities($lang_key);
+      $full[$lang_key] = array_merge($errors, self::load_entities($lang_key));
       self::$fallbacks[$lang_key] = pick($languages_list[$lang_key][1], $languages_list[$lang_key][0]);
     }
 
