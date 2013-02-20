@@ -30,8 +30,27 @@ function pict_clean($str){ return strtr($str, '/', ' '); }
 
 
 
+//5.4
+if(!function_exists('hex2bin')) {
+ function hex2bin($str) {
+  $r='';
+  if(is_array($str))
+    foreach($str as $h) $r.=chr(hexdec($h));
+  else  //   $str = str_split($str, 2); //is not a so good idea
+    for ($a=0, $max = strlen($str); $a<$max; $a+=2)  $r.=chr(hexdec($str{$a}.$str{($a+1)}));
+  return $r;
+ }
+}
 
 function rte_clean($str){
+  error_log("Deprecated direct call to rte_clean, please use txt::rte_clean");
+  return txt::rte_clean($str);
+}
+
+class txt {
+
+  function rte_clean($str){
+
     $str = htmlspecialchars_decode(trim($str), ENT_QUOTES); //!! <a href='#flow'>
     $str = preg_replace("#<!--.*?-->#s","", $str);
     $str=html_entity_decode($str,ENT_NOQUOTES,"UTF-8");
@@ -69,23 +88,8 @@ function rte_clean($str){
         $str = preg_replace('#(<[^>]+)\s+[a-z0-9-]+:[a-z]*=".*?"#', "$1", $str);
 
     return $str;
-}
+  }
 
-
-//5.4
-if(!function_exists('hex2bin')) {
- function hex2bin($str) {
-  $r='';
-  if(is_array($str))
-    foreach($str as $h) $r.=chr(hexdec($h));
-  else  //   $str = str_split($str, 2); //is not a so good idea
-    for ($a=0, $max = strlen($str); $a<$max; $a+=2)  $r.=chr(hexdec($str{$a}.$str{($a+1)}));
-  return $r;
- }
-}
-
-
-class txt {
 
   static function truncate($str, $len=10){
     return preg_replace('#&[^;]*?$#m', '…', mb_strimwidth($str,0,$len,'…') );
