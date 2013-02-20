@@ -3,6 +3,11 @@
 class crypt {
   const ASN_LONG_LEN  = 0x80;
   
+
+  public static function pwgen($length){
+    return substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', $length)), 0, $length);
+  }
+
   public static function getppkpair($rsa_options = array()){
     $options = array(
       'digest_alg'       => 'sha1',
