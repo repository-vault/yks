@@ -22,6 +22,9 @@ class locales_manager {
         $_SESSION['langs']['current'] = $user_lang;
     }
     $user_lang = $_SESSION['langs']['current'];
+
+    if($forced_domain = yks::$get->config->locales['prefered_locale_domain_id'])
+        $user_lang .= "_{$forced_domain}";
     exyks::store("USER_LANG", $user_lang);
   }
 
