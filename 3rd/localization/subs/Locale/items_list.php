@@ -1,12 +1,35 @@
 <?
 $by=20;
-
 $page_id=(int)$sub0; $start=$page_id*$by;
 
-extract($trad_filters = sess::retrieve('trad_filters'));
+$trad_filters = sess::retrieve('trad_filters');
+if($item_key = $argv0) { 
+    //all languages
+  sql::select("ks_locale_languages", array("locale_domain_id IS NOT NULL"), 'lang_key');
+  $languages = sql::fetch_all();
+
+  $project_id = 1;
+
+  $project_id = array_merge(array($project_id),
+      sql_func::get_children($project_id,"ks_projects_list","project_id"));
+  $trad_filters = array(
+    'project_id'            => $project_id,
+    'lang_keys'             => $languages,
+    'untranslated_item'     => true,
+    'translated_item'       => true,
+    'item_key'              => $item_key,
+    'absolute_search'       => true,
+  );
+}
+
+extract($trad_filters);
+
 
     $items_list = locale::get_projects_items($trad_filters['project_id']);
+
     $mask_search = $trad_filters['strict_search']?"%s ILIKE '%%%s%%'":"%s LIKE '%s'";
+    if($trad_filters['absolute_search'])
+        $mask_search = "%s = '%s'";
 
 if($action=="item_save") try {
 
