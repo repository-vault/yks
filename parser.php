@@ -8,11 +8,14 @@ class css_parser {
   const STRING = "(?:\"([^\"]*)\"|'([^']*)')";
   const URI    = "url\(\s*(?:\"(?P<dq>[^\"]*)\"|'(?P<sq>[^']*)\'|(?P<nq>[^)]*))\s*\)";
   const COMMENTS = "/\*.*?\*/";
-  const FUNC    = '[a-z-]+\(\s*[^(\r\n]*\s*\)'; // alpha(Opacity=50), rgb(42,42)
-  const KEYWORD = "([!]?[a-z0-9-]+)";
+  const FUNC    = '(?P<func>[a-z:.-]+)\(';
+  const KEYWORD = "(?P<keyword>[!]?[\#a-z0-9-]+)";
   const css_fpi = "-//YKS//CSS";
 
   private static $entities = array();
+
+    //raw keywords, direct direct declaration, no block
+  private static $raw_at_keywords = array("font-face", "page");
 
   public static function init(){
 
@@ -44,8 +47,9 @@ class css_parser {
       $str = self::strip_comments($str);
       return self::parse_block($str, $i, $file_path);
     } catch(Exception $e){
+      $msg = __METHOD__. " parsing failure (#$i) on $file_path";
       syslog(LOG_INFO, $e->getMessage());
-      throw new Exception(__METHOD__. " parsing failure on $file_path");
+      throw new Exception($msg);
     }
   }
 
@@ -116,8 +120,8 @@ class css_parser {
     return $declaration;
   }
 
-  public static function split_values($str){
-    $i=0; $values = array();
+  public static function split_values($str, &$i){
+    $values = array();
     while(!is_null($tmp = self::parse_value($str, $i)))
         $values []= $tmp;
     return $values;
@@ -130,17 +134,54 @@ class css_parser {
         self::URI,                    //URI, check first
         self::FUNC,                   //other function call
         self::STRING,                 //string
-        "(\#[0-9A-F]+)",              //hexacolor
-        "(-?[0-9.]+)(%|[a-z]{2,3})",  //unit value
-        "(-?[0-9.]+)",                //simple number
+        "(?P<color>\#[0-9A-F]+)",              //hexacolor
+        "(?P<unit_val>-?[0-9.]+)(%|[a-z]{1,3})",  //unit value
+        "(?P<number>-?[0-9.]+)",                //simple number
         self::KEYWORD,                //keyword
     ); $mask = "#^(?:".join('|', $all).")#i";
 
     if(!preg_match($mask, $str, $out))
           return null; //throw new Exception("Invalid property value=".substr($str, $i));
 
+    if($out['func'])
+        $out[0] = self::split_func($str);
+
+
     $uri = pick($out['nq'], $out['dq'], $out['sq']); //double, simple, no quote
     return array('full' => $out[0], 'uri' => $uri );
+  }
+
+
+  public static function split_func($str){
+
+    preg_match("#".self::FUNC."#i", $str, $out);
+
+    $func_name = $out['func'];
+    $i = strlen($out[0]);
+    $args = array();
+    do {
+        $values = self::split_values($str, $i);
+
+        $token = $str{$i++};
+        if(!in_array($token, array(',', '=', ')')))
+          throw new Exception("Invalid function end '$token'");
+
+        if($token == '=') { //matching Ms filers (e.g. endColorstr='#ff0077b3')
+          if(count($values) != 1)
+            throw new Exception("Func hash arg name " .print_r($values,1));
+          $arg_key = $values[1];
+          continue;
+        }
+
+        $args [pick($arg_key, count($args))] = $value;
+        $arg_key = null;
+
+    } while($token != ')');
+
+    if($arg_key)
+      throw new Exception("Invalid hash definition $arg_key");
+
+    return substr($str, 0, $i);
   }
 
 
@@ -256,8 +297,7 @@ class css_parser {
         return $rule;
     }
 
-
-    if($rule_keyword == "font-face") {
+    if(in_array($rule_keyword,  self::$raw_at_keywords) ) {
       $declarations = self::parse_declarations($str, $i);
       $rule->set_declarations($declarations);
     } else {
@@ -305,7 +345,7 @@ class css_parser {
 
   private static function parse_at_XML($xml){
     $tmp = new at_rule((string)$xml['keyword']);
-    foreach(self::split_values((string)$xml->expression) as $value)
+    foreach(self::split_values((string)$xml->expression, 0) as $value)
         $tmp->stack_expression($value);
 
     if($xml->style)
