@@ -2,6 +2,28 @@
 
 class locale_items_manager {
 
+  public static function create($item_key, $value_us, $tags_list = array()){
+
+    $lang_root = 'en-us_1'; // use configuration here !!
+
+    $data=array(
+      'item_key'      => $item_key,
+    ); sql::insert("ks_locale_items_list", $data);
+
+      // Liste des tags
+    foreach($tags_list as $tag_id)
+      sql::insert("ks_locale_tag_items",compact('tag_id', 'item_key'));
+
+      // Traduction par défaut (en-us)
+    $data = array(
+      'item_key'  => $item_key,
+      'value'     => $value_us,
+      'lang_key'  => $lang_root,
+    ); sql::insert("ks_locale_values", $data);
+
+    return locale_item::instanciate($item_key);
+  }
+
   function get_trad_value($locale_item, $lang_root) {
     $where = array (
       'item_key'  => $locale_item->item_key,

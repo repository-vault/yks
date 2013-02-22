@@ -23,11 +23,12 @@ if($action=="item_manage") try {
     throw rbx::warn("Veuillez choisir un identifiant","item_key");
 
 
+    //todo : use items_manager::create !!
   if(!$item) {
     // -- Insertion --
     if(sql::row("ks_locale_items_list",$verif_item))
       throw rbx::error("L'item $item_key est deja utilisé");
-    sql::insert("ks_locale_items_list",$data);
+    sql::insert("ks_locale_items_list", $data);
     $mode_str = "inséré";
 
   } else {
