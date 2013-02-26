@@ -3,7 +3,16 @@ var URIescaped =['&ks'+'pc;','%25','%26','%2B'].associate( ['%','&ks'+'pc;',"&",
 
 String.prototype.old_split = String.prototype.split;
 
+try {
+delete String.prototype.contains;
+} catch(e){}
+
 String.implement({
+
+  contains: function(string, separator){
+    return (separator) ? (separator + this + separator).indexOf(separator + string + separator) > -1 : this.indexOf(string) > -1;
+  },
+
   split: function(separator,limit){
     var tmp = this.old_split(separator);
     if(limit == undefined) return tmp;
