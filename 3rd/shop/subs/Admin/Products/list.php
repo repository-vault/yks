@@ -1,5 +1,11 @@
 <?
 
+exyks::$head->title = "Liste des produits";
+if($sub0 == "export") {
+    exyks_renderer_excel::$creator = sess::$sess['user_name'];
+    exyks_renderer_excel::process();
+}
+
 if(!$user_id) $user_id = null;
 
 if($action == "product_delete") try {

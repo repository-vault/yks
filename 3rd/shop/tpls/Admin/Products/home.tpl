@@ -10,6 +10,8 @@
     <hr/>
 
     <button href="/?&href_base;/Manage" target="product_manage">Ajouter</button>
+
+    <button ext="/?&href_base;/list//export">Export</button>
   </div>
 
   <box src="/?&href_base;/list" id="products_list"/>
