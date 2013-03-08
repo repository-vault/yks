@@ -12,6 +12,7 @@ class Auth_Domyks extends AuthPlugin {
   private $ext_user; //distant user
   private $access_zone;
   private $session_id;
+  private $groups = array();
 
   public function __construct($wsdl_url, $access_zone){
     $this->wsdl_url     = $wsdl_url;
@@ -25,22 +26,47 @@ class Auth_Domyks extends AuthPlugin {
   public function strict() { return true;}
 
   public function updateUser(&$user){
+    //Save names
     $user->mRealName = $this->ext_user['user_name'];
     $user->mEmail    = $this->ext_user['user_mail'];
+    
+    //Apply groups
+    foreach($this->groups as $group_name => $active){
+      if($active){
+        $user->addGroup($group_name);
+      }else{
+        $user->removeGroup($group_name);        
+      }
+    }
+    
     $user->saveSettings();
     return true;
   }
 
   public function authenticate($user_login, $user_pswd){
-    try {
-	$user_login = strtolower($user_login);
-        $this->ext_sess = new  SoapClient($this->wsdl_url, array('cache_wsdl' => WSDL_CACHE_NONE));
-        $this->session_id = $this->ext_sess->login($user_login, $user_pswd);
-	$this->ext_user = unserialize($this->ext_sess->getUser($this->session_id));
-        $auth  = $this->ext_sess->verifAuth($this->session_id, $this->access_zone, "access");
-        return $auth;
-    } catch(Exception $e){ return false; }
+    global $wgExtraNamespaces;
 
+    try {
+      $user_login = strtolower($user_login);
+      $this->ext_sess = new  SoapClient($this->wsdl_url, array('cache_wsdl' => WSDL_CACHE_NONE));
+      $this->session_id = $this->ext_sess->login($user_login, $user_pswd);
+      $this->ext_user = unserialize($this->ext_sess->getUser($this->session_id));
+
+      //Basic access right
+      $auth = $this->ext_sess->verifAuth($this->session_id, $this->access_zone, "access");
+
+      //Save groups status, based on namespaces
+      $access = unserialize($this->ext_sess->getAccesses($this->session_id));
+      foreach($wgExtraNamespaces as $ns_id => $ns_name){
+        if($ns_id % 2 != 0) continue; // skip talk
+        $access_right = "office:wiki_".strtolower($ns_name);
+        $this->groups[$ns_name] = isset($access[$access_right]);
+      }
+
+      return $auth;
+    } catch(Exception $e) {
+      return false;
+    }
   }
 
   public function initUser( &$user, $autocreate=false ) {
@@ -48,7 +74,4 @@ class Auth_Domyks extends AuthPlugin {
     $user->mRealName = $this->ext_user['user_name'];
     $user->mEmail    = $this->ext_user['user_mail'];
   }
-
 }
-
-
