@@ -74,4 +74,28 @@ class Auth_Domyks extends AuthPlugin {
     $user->mRealName = $this->ext_user['user_name'];
     $user->mEmail    = $this->ext_user['user_mail'];
   }
+  
+  public function addNamespace($name, $base_id){
+    global $wgExtraNamespaces;
+    global $wgNamespacePermissionLockdown;
+    global $wgNamespaceProtection;
+    global $wgContentNamespaces;
+
+    //Create namespace & talk
+    $wgExtraNamespaces[$base_id] = $name;
+    $wgExtraNamespaces[$base_id+1] = "{$name}_talk";
+
+    //Base protection
+    $wgNamespaceProtection[$base_id] = array($name);
+    $wgNamespaceProtection[$base_id+1] = array($name);
+
+    //Lockdown protection
+    $wgNamespacePermissionLockdown[$base_id]['read'] = array($name);
+    $wgNamespacePermissionLockdown[$base_id]['edit'] = array($name);
+    $wgNamespacePermissionLockdown[$base_id+1]['read'] = array($name);
+    $wgNamespacePermissionLockdown[$base_id+1]['edit'] = array($name);
+    
+    //Add namepace to content
+    $wgContentNamespaces[] = $base_id;
+  }
 }
