@@ -14,7 +14,7 @@ function create_closure($args, $body){
 function paths_merge($path_root, $path, $default="."){
     if(!$path) $path = $default;
     if( $path{0}==DIRECTORY_SEPARATOR
-        || preg_match('#^[A-Z]:\\\#', $path)
+        || preg_match('#^[a-zA-Z]:\\\#', $path)
         || starts_with($path, "path://")) return $path;
     return realpath($path_root.DIRECTORY_SEPARATOR.$path);
 }
