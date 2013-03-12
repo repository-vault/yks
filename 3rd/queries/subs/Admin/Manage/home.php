@@ -5,7 +5,7 @@ if($action == "query_add") try {
     $data = array(
         'query_name'        => $_POST['query_name'],
         'query_def'         => specialchars_decode($_POST['query_def']),
-        'query_descr'       => rte_clean($_POST['query_descr']),
+        'query_descr'       => txt::rte_clean($_POST['query_descr']),
         'query_visibility'  => $_POST['query_visibility'],
         'query_creator'     => sess::$sess->user_id,
     );
@@ -22,7 +22,7 @@ if($action == "query_manage") try {
     $data = array(
         'query_name'  => $_POST['query_name'],
         'query_def'   => specialchars_decode($_POST['query_def']),
-        'query_descr' => rte_clean($_POST['query_descr']),
+        'query_descr' => txt::rte_clean($_POST['query_descr']),
         'query_visibility' => $_POST['query_visibility'],
     );
     $query->update($data);

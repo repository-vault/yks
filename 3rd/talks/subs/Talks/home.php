@@ -4,7 +4,7 @@
 if($action=="talk_manage") try {
     $data=array(
         'talk_title'=>$_POST['talk_title'],
-        'talk_contents' => rte_clean($_POST['talk_text']),
+        'talk_contents' => txt::rte_clean($_POST['talk_text']),
         'talk_lang'=>'fr-fr',
         'talk_author'=>$user_id,
     );

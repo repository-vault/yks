@@ -8,13 +8,13 @@ if($action=="item_manage") try {
   $item_key=($item?$item['item_key']:$_POST['item_key']);
   $data=array(
     'item_key'      => $item_key,
-    'item_comment'  => rte_clean($_POST['item_comment'])
+    'item_comment'  => txt::rte_clean($_POST['item_comment'])
   );
   $tags_list  = array_filter((array)$_POST['tag_id']);
   if(!$tags_list)
     throw rbx::warn("Veuillez choisir au moins un tag","tag_id");
 
-  $value_us   = rte_clean($_POST['value_us']);
+  $value_us   = txt::rte_clean($_POST['value_us']);
   $verif_item = compact('item_key');
 
   if(!$value_us)

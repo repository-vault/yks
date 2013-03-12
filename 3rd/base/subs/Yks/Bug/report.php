@@ -12,7 +12,7 @@ if(!sess::$connected) return;
 
 if($action=="bug_report") try {
 
-    $report_contents = rte_clean($_POST['report_contents']).CRLF;
+    $report_contents = txt::rte_clean($_POST['report_contents']).CRLF;
     $report_contents.= CRLF.print_r(sess::$sess,1);
     $report_contents.= CRLF.print_r($_SERVER,1);
     $constants=get_defined_constants(true);$constants=$constants['user'];

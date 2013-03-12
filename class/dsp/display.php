@@ -232,9 +232,14 @@ class dsp{
   public static function indent_xml($simplexml) {
     $doc = new DOMDocument('1.0', 'UTF-8');
     $doc->formatOutput = true;
-    $domnode = dom_import_simplexml($simplexml);
-    $domnode = $doc->importNode($domnode, true);
-    $domnode = $doc->appendChild($domnode);
+    if(is_string($simplexml))
+        $doc->loadXML($simplexml);
+    else {
+      $domnode = dom_import_simplexml($simplexml);
+      $domnode = $doc->importNode($domnode, true);
+      $domnode = $doc->appendChild($domnode);
+    }
+    
     return $doc->saveXML();
   }
 

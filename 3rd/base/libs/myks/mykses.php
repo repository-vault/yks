@@ -72,7 +72,7 @@ class mykses {
         if($null && $nullable){ $out[$mykse_key]=null; break;}
 
         if(in_array("html", array($mykse_type, $mykse_start_type))){
-            $out[$mykse_key] = rte_clean($val);
+            $out[$mykse_key] = txt::rte_clean($val);
         }elseif($mykse_type=='bool'){
             $out[$mykse_key] = bool($val,true);
         }elseif($mykse_type=='mail'){
