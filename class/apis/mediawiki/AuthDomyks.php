@@ -32,11 +32,11 @@ class Auth_Domyks extends AuthPlugin {
     
     //Apply groups
     foreach($this->groups as $group_name => $active){
-      if($active){
+      $in_db = in_array($group_name, $user->mGroups);
+      if($active && !$in_db)
         $user->addGroup($group_name);
-      }else{
+      if(!$active && $in_db)
         $user->removeGroup($group_name);        
-      }
     }
     
     $user->saveSettings();
