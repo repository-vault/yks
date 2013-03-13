@@ -95,6 +95,13 @@ class txt {
     return preg_replace('#&[^;]*?$#m', '…', mb_strimwidth($str,0,$len,'…') );
   }
 
+  static function truncate_words($str, $len=100){
+    if(strlen($str) <= $len)
+      return $str;
+    $break = "-[]-";
+    return substr($str, 0, strpos(wordwrap($str, $len, $break), $break)).'…';
+  }
+
 
   static function cp_to_utf8($cp){
     if(!is_array($cp)) $cp = array($cp);
