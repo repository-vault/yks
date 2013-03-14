@@ -56,7 +56,7 @@ class rbx extends Exception {
     if(self::$flag) return data::store(self::$flag, $current, 600);
 
     if(!self::$output_mode) return;
-    echo "\r".cli::pad(str_repeat("─", floor($current*(cli::pad-2))), ' ', STR_PAD_RIGHT, "[%s]"); flush();
+    echo "\r".cli::pad(str_repeat("─", floor($current*(cli::$cols - 2))), ' ', STR_PAD_RIGHT, "[%s]"); flush();
     if($current == 1) echo LF;
   }
   function __toString(){ return $this->message; }
