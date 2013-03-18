@@ -18,6 +18,7 @@
 <!ELEMENT fields (field+)>
 <!ATTLIST fields
   check  (alternative)  #IMPLIED
+  index  (unique)  #IMPLIED
 >
 
 <!ELEMENT indices (index+)>
