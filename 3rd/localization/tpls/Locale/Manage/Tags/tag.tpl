@@ -23,7 +23,8 @@ foreach($items_list as $item_key=>$item_infos){
 <ks_form ks_action="item_save">
   <input type='hidden' name='item_coords' id='item_coords'/>
   Placer un nouvel item : <input type="text" name="item_key"/> <input type="text" disabled="disabled" id="ghost_coords"/> - 
-  <input type="checkbox" name="item_create"/> Création automatique 
+  <input type="checkbox" name="item_create"/> Création automatique <br/>
+  Traduction par défaut (Nouvel item uniquement): <input type="text" name="value_us"/>
 
   <p class="align_right">
         <button name="ks_action[item_trash]">Supprimer</button>
