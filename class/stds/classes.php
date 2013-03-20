@@ -45,7 +45,8 @@ class classes {
   }
 
   static function register_class_paths($paths, $load = false){
-    self::$classes_paths = array_merge(self::$classes_paths, $paths);
+    foreach($paths as $class => $path)
+        self::$classes_paths[strtolower($class)] = $path;
     if($load) array_walk(array_keys($paths), array(__CLASS__, 'autoload'));
   }
 
@@ -57,6 +58,7 @@ class classes {
   }
 
   static function autoload($class_name){
+
     if(!$class_name) return false;
 
     $class_name = strtolower($class_name);
