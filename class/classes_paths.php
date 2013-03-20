@@ -62,7 +62,7 @@ classes::register_class_paths(array(
     "highlight_xml"        => CLASS_PATH."/dsp/code_format/highlight_xml.php",
     "json_parser"          => CLASS_PATH."/apis/json_parser.php",
     "exyks_auth_api"       => CLASS_PATH."/apis/auth/api.php",
-    "WSAuthApi"            => CLASS_PATH."/apis/auth/WSAuthApi.php",
+    "WSAuthBasic"          => CLASS_PATH."/apis/auth/WSAuthBasic.php",
     "stdflow_filter"       => CLASS_PATH."/apis/stdflow_filter.php",
     "php_legacy"           => CLASS_PATH."/apis/legacy.php",
     "unix"                 => CLASS_PATH."/apis/unix.php",

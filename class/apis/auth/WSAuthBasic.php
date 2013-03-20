@@ -1,6 +1,6 @@
 <?php
 
-class WSAuthApi {
+class WSAuthBasic {
 
   const TRUE_CLASS = 'exyks_auth_api';
 
