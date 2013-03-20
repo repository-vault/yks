@@ -4,12 +4,21 @@
 $user = trim(fgets(STDIN));
 $pswd = trim(fgets(STDIN));
 
+function pick(){
+  $args = func_get_args();
+  $val  = reset(array_filter($args));
+  return $val ? $val : end($args);
+}
+
+
 $context = explode(' ',  $_SERVER['CONTEXT']);
-$wsdl   = $context[0];
-$auth   = $context[1];
-$expire = $context[2];
+$wsdl   = pick($context[0], $argv[1]);
+$auth   = pick($context[1], $argv[2]);
+$expire = pick($context[2], $argv[3], 2200);
 $now    = time();
-if(!$expire) $expire = 2200;
+
+
+
 
 $range = floor($now/$expire);
 
@@ -24,19 +33,21 @@ $hash = md5("$range-{$_SERVER['IP']}-{$_SERVER['HTTP_HOST']}-$user-$pswd");
 
 
 $storage = @unserialize(file_get_contents($cache_path));
-if(isset($storage[$hash])) 
+if(isset($storage[$hash]) ) 
     die($storage[$hash][0]);
 
 
-
 try {
-    $client = new SoapClient($wsdl);
-    $client->login($user, $pswd);
-    if(!$client->verifAuth($auth, "access"))
+
+    $client = new SoapClient($wsdl, array('cache_wsdl' => WSDL_CACHE_NONE ) );
+    $session_id = $client->login($user, $pswd);
+
+    if(!$client->verifAuth($session_id, $auth, "access"))
         throw new Exception("Failure");
 
     $storage[$hash] = array(0, $now);
 } catch(Exception $e){
+
     $storage[$hash] = array(1, $now);
 }
 
