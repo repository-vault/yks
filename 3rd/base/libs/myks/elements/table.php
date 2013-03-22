@@ -69,8 +69,8 @@ abstract class table_base  extends myks_installer {
 
   function alter_def(){
 
-    if(in_array($this->table_name['name'], myks_gen::$tables_ghosts_views)) {
-        rbx::ok("-- Double sync from view {$this->table_name['name']}, skipping");
+    if(in_array($this->table_name['hash'], myks_gen::$tables_ghosts_views)) {
+        rbx::ok("-- Double sync from view {$this->table_name['hash']}, skipping");
         return array();
     }
 

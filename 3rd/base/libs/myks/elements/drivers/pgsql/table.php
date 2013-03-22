@@ -55,7 +55,8 @@ class table extends table_base {
     $this->checks->xml_infos();
 
     foreach($this->keys_xml_def as $k=>$key){
-        if($key['type']!='FOREIGN' || !in_array($key['table'], myks_gen::$tables_ghosts_views))
+        $table_hash = $key['refs']['table_schema'].".".$key['refs']['table_name'];
+        if($key['type']!='FOREIGN' || !in_array($table_hash, myks_gen::$tables_ghosts_views))
             continue;
         //the key reference to a ghost table
 

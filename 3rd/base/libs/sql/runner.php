@@ -95,10 +95,12 @@ class sql_runner {
 
     $this->views_list = $this->dependencies_scanner();
 
-    //there is no need for tables_ghosts_views to be in myks_gen..
+
+    //there is no need for tables_ghosts_views to be in myks_gen...
+
     myks_gen::$tables_ghosts_views = array_extract(
         array_map(array('sql', 'resolve'),
-        array_keys($this->views_list)),'name'); //for table ghost exclusion
+        array_keys($this->views_list)),'hash'); //for table ghost exclusion
 
     $this->queries = array();
   }
@@ -375,7 +377,7 @@ class sql_runner {
       rbx::ok("Registered link : $dsn_ns to {$data['dsn_str']}");
     }
   }
-  
+
 
 
   function dblink($table_name){
