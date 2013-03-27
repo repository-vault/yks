@@ -9,7 +9,8 @@ class files {
   const CACHE_DELAY     = 3600;
   const FIND_SURFACE    = 1; //non recursive
   const FIND_FOLLOWLINK = 2; //follow sym links
-  const FIND_DEFAULT    = 0; //non recursive && no follow sym links
+  const FIND_ONLYFILES  = 4; //only return files
+  const FIND_DEFAULT    = 0; //recursive && no follow sym links
 
   public static function get_cached($url, $use_include=true, $context=null, $force=false){
     $cached_file = sys_get_temp_dir()."/".md5("cache $url");
@@ -61,15 +62,20 @@ class files {
   }
 
 
-  public static function find($dir, $pattern = '#.#', $opts = self::FIND_DEFAULT){
+  public static function find($dir, $include = '#.#', $opts = self::FIND_DEFAULT, $exclude = false){
+
     $files=array(); if(!is_dir($dir)) return array();
     foreach(self::glob($dir) as $item){
         $base_file = substr(strrchr($item,'/'), 1);
         if(is_dir($item)
-          && !($opts&self::FIND_SURFACE)
-          && (is_link($item)?($opts&self::FIND_FOLLOWLINK):true) )
-            $files = array_merge($files, self::find($item, $pattern, $opts));
-        if(preg_match($pattern, $base_file)) $files[] = $item;
+          && !($opts & self::FIND_SURFACE)
+          && ( $exclude ? !preg_match($exclude, $item) : true)
+          && (is_link($item) ? ($opts&self::FIND_FOLLOWLINK):true) )
+            $files = array_merge($files, self::find($item, $include, $opts, $exclude));
+        if( (($opts & self::FIND_ONLYFILES) ? is_file($item) : true )
+            && preg_match($include, $base_file)
+            && ( $exclude ? !preg_match($exclude, $base_file) : true)
+          ) $files[] = $item;
     } return $files;
   }
 
