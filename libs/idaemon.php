@@ -23,13 +23,14 @@ abstract class idaemon {
     }
 
     $this->pid_file = $pid_file;
+    var_dump($this->pid_file);
     $this->parent_path = $parent_path;
     $this->pid      = getmypid();
     $this->trace("Current pid #{$this->pid}");
-
+    
     //Are we in a raw daemon execution ?
     if(cli::$dict['daemon']){
-      file_put_contents($this->pid_file, $this->pid);
+      $this->write_pid($this->pid);
       $this->run();
       exit(0); // poor man's version
     }
@@ -39,7 +40,7 @@ abstract class idaemon {
   // is running
   protected function is_running(){
     $running = is_file($this->pid_file);
-    $current_pid = (int)file_get_contents($this->pid_file);
+    $current_pid = $running ? (int)file_get_contents($this->pid_file) : 0;
     $running &= $current_pid > 0;
     if($current_pid)
       $running &= self::pslist($current_pid);
@@ -122,7 +123,7 @@ abstract class idaemon {
     if ($child_pid) {
       //Father dumps pid & die
       $this->trace("Child pid #$child_pid");
-      file_put_contents($this->pid_file, $child_pid);
+      $this->write_pid($child_pid);
       $this->trace("Father dying...");
       exit(0);
 
@@ -130,6 +131,14 @@ abstract class idaemon {
       //Child runs
       $this->run();
     }
+  }
+  
+  private function write_pid($pid){
+    if(!is_writable(dirname($this->pid_file))){
+      $this->trace("Failed to write pid in {$this->pid_file}");
+      exit(1);
+    }
+    file_put_contents($this->pid_file, $pid);
   }
   
   private function fork_windows(){
