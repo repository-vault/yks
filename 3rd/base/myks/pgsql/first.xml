@@ -11,9 +11,18 @@ BEGIN
 END;
 </def>
   </procedure>
+  <procedure name="coalesce_first" type="string" volatility="IMMUTABLE">
+    <param type="string"/>
+    <param type="string"/>
+    <def>
+BEGIN
+    return COALESCE($1, $2);
+END;
+</def>
+  </procedure>
   <procedure name="coalesce_first" type="text" volatility="IMMUTABLE">
-    <param type="string"/>
-    <param type="string"/>
+    <param type="text"/>
+    <param type="text"/>
     <def>
 BEGIN
     return COALESCE($1, $2);
