@@ -146,8 +146,8 @@ class interactive_runner {
     eval($args);
   }
  
-  private function command_parse($command_args) {
-      $command_prompt  = array_shift($command_args);
+  private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
+      
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
         if(isset($command_infos['aliases'][$command_prompt]))
@@ -167,6 +167,8 @@ class interactive_runner {
 
       $command_hash      = $command_resolve[0];
       $command_infos     = $this->commands_list[$command_hash];
+
+
       $alias_args        = $command_infos['aliases'][$command_prompt];
 
       if(is_array($alias_args))
@@ -174,22 +176,18 @@ class interactive_runner {
 
       $command_args_mask = $command_infos['usage']['params'];
 
-      $param_id = 0; $missing = array();
+      $param_id = 0; $args = array();
       foreach($command_args_mask as $param_name=>$param_infos){
-        $param_in = $command_args[$param_id++];
-        if(!$param_in && !$param_infos['optional'])
-            $missing[] = $param_name;
+        $param_in = pick($command_args[$param_id++],
+                        $command_dict[$param_name],
+                        $param_infos['default'] );
+        if(!isset($param_in))
+          $param_in = trim(cli::text_prompt("\${$this->className}[{$param_name}]"));
+
+        $args[] = $param_in;
       }
 
-      if($missing) {
-
-        foreach($missing as $param_name) {
-            $param_value = cli::text_prompt("\${$this->className}[{$param_name}]");
-            $command_args[] = trim($param_value);
-        }
-      }
-
-      return array($command_infos['callback'], $command_args);
+      return array($command_infos['callback'], $args);
   }
 
 /**
@@ -232,8 +230,9 @@ class interactive_runner {
             $command_split = $this->last_command;
         else 
             $this->last_command = $command_split;
-        
-        list($command_callback, $command_args) = $this->command_parse($command_split);
+      
+        $command_prompt  = array_shift($command_split);  
+        list($command_callback, $command_args) = $this->command_parse($command_prompt, $command_split);
       } catch(Exception $e){ continue; }
 
 
@@ -317,8 +316,10 @@ class interactive_runner {
         
       foreach($params as $param) {
         $param_infos = array();
-        if($param->isOptional()) $param_infos['optional'] = true;
-
+        if($param->isOptional()){
+          $param_infos['optional'] = true;
+          $param_infos['default']  = $param->getDefaultValue();
+        }
         $usage['params'][$param->getName()] = $param_infos;
 
       }
@@ -365,13 +366,16 @@ class interactive_runner {
 
     if($run = cli::$dict['ir://run']){
       if($run === true) $run = "run";
-      $runner->obj->$run();
+      list($command_callback, $command_args) = $runner->command_parse($run, array(), cli::$dict);
+      call_user_func_array($command_callback, $command_args);
       die;
     }
 
 
-    if($start = cli::$dict['ir://start'])
-      $runner->obj->$start();
+    if($start = cli::$dict['ir://start']){
+      list($command_callback, $command_args) = $runner->command_parse($start, array(), cli::$dict);
+      call_user_func_array($command_callback, $command_args);
+    }
 
     $runner->main_loop(); //private internal
   }
