@@ -7,8 +7,11 @@ Jsx.action = function(data, bind, confirm, chain){
     var box = $(bind).getBox(), txt= ($type(confirm)=='boolean'?$(bind).get('text'):confirm)+' ?';
     if(confirm && !window.confirm(txt)) return false;
     var url = data.url || box.url; delete data.url;
-    new Jsx({url:url, target:data.target || box.box_name}, $(bind))
-        .hash_stack(data.data || data).fire(chain);
+
+    var jsx = new Jsx({url:url, target:data.target || box.box_name}, $(bind));
+    jsx.hash_stack(data.data || data);
+    (jsx.rbx = jsx.rbx || box.getRbx() ).loader();
+    jsx.fire(chain);
 };
 
 Jsx.open = function(url, target, bind, chain){
