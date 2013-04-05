@@ -182,7 +182,9 @@ class interactive_runner {
                         $command_dict[$param_name],
                         $param_infos['default'] );
         if(!isset($param_in))
-          $param_in = trim(cli::text_prompt("\${$this->className}[{$param_name}]"));
+          $param_in = array_key_exists('default', $param_infos) //might be null
+                    ? $param_infos['default']
+                    : trim(cli::text_prompt("\${$this->className}[{$param_name}]"));
 
         $args[] = $param_in;
       }
