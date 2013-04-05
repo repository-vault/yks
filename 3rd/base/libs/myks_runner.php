@@ -49,11 +49,12 @@ class myks_runner {
 
 /**
 * parse&update mykse XML
-* @alias types
+* @alias types 127.0.0.1
 */
-  function manage_types(){
+  function manage_types($loopback_ip = null){ 
+
     if(PHP_SAPI == "cli")
-        return yks_runner::httpd_tunnel(__CLASS__, "manage_types");
+        return yks_runner::httpd_tunnel(__CLASS__, "manage_types", $loopback_ip);
 
     rbx::title("Parsing myks definitions");
 

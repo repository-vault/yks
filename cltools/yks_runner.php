@@ -167,12 +167,12 @@ class yks_runner {
 /**
 * cli tunneling for APC related features
 */
-  public static function httpd_tunnel($runner, $command){
+  public static function httpd_tunnel($runner, $command, $loopback_ip = null){
     self::http_auto_check(); //check self http lookup
 
     $myks_http_url = SITE_URL."/?/Yks/Scripts//$runner;$command|cli";
-    $http_contents = self::wget_dnsless($myks_http_url);
-    rbx::ok("Running $myks_http_url");
+    $http_contents = self::wget_dnsless($myks_http_url, $loopback_ip);
+    rbx::ok("Running $myks_http_url on $loopback_ip");
     echo $http_contents.CRLF;
   }
 
@@ -202,8 +202,7 @@ class yks_runner {
   }
 
 
-  private static function wget_dnsless($url){
-    $local_ip      = (string) yks::$get->config->site->local['ip'];
+  private static function wget_dnsless($url, $local_ip = null){
 
     $url_infos = parse_url($url);
     if($local_ip)
