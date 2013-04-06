@@ -23,8 +23,8 @@ abstract class isql {
     self::set_link('db_link');
 
 
-    if(self::$config->search('prefixs'))
-    foreach(self::$config->prefixs->attributes() as $prefix=>$trans)
+    if(yks::$get->config->myks->search('prefixs'))
+    foreach(yks::$get->config->myks->prefixs->attributes() as $prefix=>$trans)
         self::$pfx["#(?<!\.)`{$prefix}_([a-z0-9_-]+)`#"] = '`'.str_replace('.', '`.`', $trans).'$1`';
 
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));

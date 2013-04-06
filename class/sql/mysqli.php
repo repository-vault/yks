@@ -20,8 +20,8 @@ class sql {
     if(!self::$servs) self::$servs = &yks::$get->config->sql;
     if(!self::$servs) throw rbx::error("Unable to load sql configuration.");
 
-    if(self::$servs->prefixs)
-      foreach(self::$servs->prefixs->attributes() as $prefix=>$trans)
+    if(yks::$get->config->myks->search('prefixs'))
+    foreach(yks::$get->config->myks->prefixs->attributes() as $prefix=>$trans)
         self::$pfx["#`{$prefix}_([a-z0-9_-]+)`#"] = "`".str_replace(".", "`.`", $trans)."$1`";
 
     self::$pfx = array('search'=> array_keys(self::$pfx), 'replace'=>array_values(self::$pfx));
