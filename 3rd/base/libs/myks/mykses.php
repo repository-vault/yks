@@ -130,14 +130,27 @@ class mykses {
   public static function dump_key($myks_type, $value, $rmap = array(), $recurse = true){
     $tables = self::find_key($myks_type, $value, $rmap, $recurse);
 
-    $data = array();
+    $delete = array(); $update = array();
     foreach($tables as $table_data){
       $table_name = $table_data[0];
-      sql::select($table_name, array($table_data[1] => $table_data[2] ));
-      $entry = sql::brute_fetch();
-      $data[$table_name] = $data[$table_name] ? array_unique_multidimensional(array_merge($data[$table_name], $entry )) : $entry;
+      sql::select($table_name, array($field = $table_data[1] => $table_data[2] ));
+      $entries = sql::brute_fetch();
+
+      $mode = $table_data['3'];
+      if($mode == 'set_null') {
+        foreach($entries as $entry)
+          $update[$table_name][] = array('where' => array_merge($entry, array($field => null)), 'data' => array($field => $entry[$field]));
+      } else {
+        if($delete[$table_name])
+            $delete[$table_name] = array_unique_multidimensional(array_merge($delete[$table_name], $entries ));
+        else
+            $delete[$table_name] = $entries;
+      }
+
     }
-    return $data;
+
+    $out = compact('delete', 'update');
+    return $out;
   }
 
 
@@ -173,7 +186,7 @@ class mykses {
 
       //Find typed fields
       $fields = array_keys(fields($table_xml), $myks_type);
-      if($only_null || !$fields  )
+      if(!$fields)
         continue;
 
 
@@ -186,9 +199,17 @@ class mykses {
         $cvalues = array_merge($cvalues, sql::brute_fetch());
       }
 
-
       if(!$cvalues)
         continue;
+
+      if($only_null){
+        foreach($fields as $field_name) {
+          $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
+          if($fvalues)
+            $paths[] = array($table_name, $field_name, $fvalues, 'set_null');
+        }
+        continue;
+      }
 
       if(($child_type = $deaths[$table_name]) && $recurse) {
         $cvalues = array_unique(array_extract($cvalues, $child_type));

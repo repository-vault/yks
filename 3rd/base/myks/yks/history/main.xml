@@ -9,7 +9,8 @@
       <field type="text" name="mykse_value"/>
       <field type="now" name="deletion_time"/>
       <field type="deletion_reason"/>
-      <field type="deletion_blob"/>
+      <field type="context_blob" name="deletion_blob"/>
+      <field type="context_blob"/>
     </fields>
   </table>
   <mykse type="zks_deletion_id" birth="zks_deletion_history">
@@ -18,7 +19,7 @@
   <mykse type="deletion_reason">
     <string length="255"/>
   </mykse>
-  <mykse type="deletion_blob">
+  <mykse type="context_blob">
     <text/>
   </mykse>
 </myks>

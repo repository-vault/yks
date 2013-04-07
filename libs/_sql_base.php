@@ -141,16 +141,23 @@ abstract class _sql_base  implements ArrayAccess {
   }
 
     //please extend and dont use directly (only for generic /Admin/Users/Restore interface)
-   static function raw_restore($zks_deletion_id) {
+  static function raw_restore($zks_deletion_id) {
 
     $verif_deletion = compact('zks_deletion_id');
-    $deletion_blob = sql::value("zks_deletion_history", $verif_deletion, 'deletion_blob');
-    $restore_blob = json_decode($deletion_blob, true);
+    $deletion = sql::row("zks_deletion_history", $verif_deletion);
+    $restore_blob = json_decode($deletion['deletion_blob'], true);
+    $context_blob = json_decode($deletion['context_blob'], true);
 
     $token = sql::begin();
+
     foreach($restore_blob as $table_name => $restore_data)
         foreach($restore_data as $line)
             sql::insert($table_name, $line);
+
+    foreach($context_blob as $table_name => $restore_data)
+        foreach($restore_data as $line)
+            sql::update($table_name, $line['data'], $line['where']);
+
 
     sql::delete("zks_deletion_history", $verif_deletion);
 
@@ -182,7 +189,8 @@ abstract class _sql_base  implements ArrayAccess {
     $data = array(
       "deletion_reason" => $reason,
       "mykse_type"      => $this->sql_key,
-      "deletion_blob"   => json_encode($dump),
+      "deletion_blob"   => json_encode($dump['delete']),
+      "context_blob"    => json_encode($dump['update']),
       "mykse_value"     => $this->hash_key,
       "user_id"         => sess::$sess->user_id,
     ); 
@@ -208,8 +216,10 @@ abstract class _sql_base  implements ArrayAccess {
           throw new Exception("All trigger must be turned off");
     }
 
-    foreach($drop_all as $drop_info)
-      sql::delete($drop_info[0], array($drop_info[1] => $drop_info[2]));
+    foreach($drop_all as $drop_info) {
+      if($drop_info[3] != 'set_null')
+          sql::delete($drop_info[0], array($drop_info[1] => $drop_info[2]));
+    }
 
     sql::commit($token);
 
