@@ -4,6 +4,15 @@
 
 class mykses {
 
+  private static $births = false;
+
+  function __construct_static(){
+    self::$births = array();
+    foreach(yks::$get->types_xml as $type)
+      if((string)$type['birth'])
+        self::$births[$type->getName()] = (string)$type['birth'];
+  }
+
   static function vals($type){
     return vals(yks::$get->types_xml->$type);
   }
@@ -133,17 +142,11 @@ class mykses {
 
 
   public static function find_key($myks_type, $value, $rmap = array(), $recurse = true, $hpaths = array()){
+
     if(!is_array($value))
         $value = array($value);
     sort($value);
-
-    static $births = false;
-    if($births === false) {
-      $births = array();
-      foreach(yks::$get->types_xml as $type)
-        if((string)$type['birth'])
-          $births[$type->getName()] = (string)$type['birth'];
-    } $deaths = array_flip($births); //anti-birth...
+    $deaths = array_flip(self::$births); //anti-birth...
 
     $hhash = $myks_type.":".join(',', $value);
     if($hpaths[$hhash])
@@ -153,7 +156,7 @@ class mykses {
     $paths = array();
 
     //Setup env
-    $birth_table  = $births[$myks_type];
+    $birth_table  = self::$births[$myks_type];
     if(!$birth_table)
       return array();
 
@@ -161,12 +164,18 @@ class mykses {
     $paths[] = $line;
 
     $joins = array();
-    foreach(data::load("tables_xml") as $table_name => $table_fields){
+    foreach(data::load("tables_xml") as $table_name => $table_xml){
+
+      $only_null    = true;
+      foreach($table_xml as $field)
+        if($field['type'] == $myks_type)
+          $only_null &= $field['delete'] == "set_null";
 
       //Find typed fields
-      $fields = array_keys(fields($table_fields), $myks_type);
-      if(!$fields)
+      $fields = array_keys(fields($table_xml), $myks_type);
+      if($only_null || !$fields  )
         continue;
+
 
       if($table_name == $birth_table) //auto-recursive declaration
         $fields = array_diff($fields, array($myks_type));
@@ -176,6 +185,7 @@ class mykses {
         sql::select($table_name, array($field_name => $value));
         $cvalues = array_merge($cvalues, sql::brute_fetch());
       }
+
 
       if(!$cvalues)
         continue;
@@ -211,7 +221,7 @@ class mykses {
   public static function build_find_query($myks_type, $ignored_tables = array()){
 
     //Setup env
-    $birth_table  = self::get_birth_table($myks_type);
+    $birth_table  = self::$births[$myks_type];
     if(!$birth_table)
       throw new Exception("Type $myks_type is not a native myks type.");
     $ignored_tables = array_merge(array($birth_table), $ignored_tables);
@@ -239,16 +249,6 @@ class mykses {
     
     return $sql;
   }
-  
-  //Get the birth table of a type
-  private static function get_birth_table($myks_type){
-    $type = yks::$get->types_xml->$myks_type;
-    if(!$type)
-      return false;
-    $birth = (string)$type['birth'];
-    if(!$birth)
-      return false;
-    return $birth;
-  }
+
 
 }

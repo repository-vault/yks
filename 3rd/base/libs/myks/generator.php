@@ -49,22 +49,7 @@ class myks_gen {
   }
 }
 
-class field extends SimpleXMLElement {
-  function get_name(){ return (string)($this['name']?$this['name']:$this['type']);}
-}
 
-/** Go into all 'dir' subdirectories and create a new link to 'dest' */
-
-function directory_recursive_sublink($dir,$dest){
-    $folds=array($dir); $base=basename($dest);
-    while($path=array_shift($folds)){
-        $folds=array_merge($folds,glob("$path/*",GLOB_ONLYDIR));
-        $current=array_keys($folds,$tmp="$path/$base");
-        if(is_file($tmp) || is_link($tmp) && !is_dir($tmp)) unlink($tmp);
-        if($current) unset($folds[$current[0]]);
-        else { symlink($dest,$tmp); }
-    }
-}
 
 function array_show_diff($a1, $a2, $a1n="obj 1", $a2n="obj 2"){
     $diff = array();

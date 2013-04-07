@@ -21,7 +21,7 @@ abstract class mykse_base  {
     $this->table = $table;
     $this->type  = $field_xml['type'];
     $this->field_def = array(
-        'Field'   => (string) $field_xml->get_name(),
+        'Field'   => (string) $field_xml['name'],
         'Extra'   => '',
         'Null'    => isset($field_xml['null'])?$field_xml['null']=='null':null,
         'Default' => isset($field_xml['default'])?(string)$field_xml['default']:null,

@@ -76,7 +76,8 @@ class sql_runner {
 
     $this->tables_xml_tdy = simplexml_import_dom(myks::tables_reflection($tables_xml));
     $this->types_xml      = simplexml_import_dom($types_xml);
-    $this->tables_xml     = simplexml_import_dom($tables_xml, "field");
+    $this->tables_xml     = simplexml_import_dom($tables_xml);
+
     $this->procedures_xml = simplexml_import_dom($myks_parser->out("procedure"));
     $this->views_xml      = simplexml_import_dom($myks_parser->out("view"));
 
