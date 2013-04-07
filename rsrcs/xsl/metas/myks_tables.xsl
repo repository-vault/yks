@@ -15,37 +15,30 @@
         <xsl:with-param name="birth" select="@birth"/>
       </xsl:apply-templates>
       <xsl:if test="//table[@extend=$name]">
-          <xsl:for-each select="//table[@extend=$name]">
-            <xsl:element name="child"><xsl:value-of select="@name"/></xsl:element>
-          </xsl:for-each>
+        <xsl:for-each select="//table[@extend=$name]">
+          <xsl:element name="child">
+            <xsl:value-of select="@name"/>
+          </xsl:element>
+        </xsl:for-each>
       </xsl:if>
     </xsl:element>
   </xsl:template>
   <xsl:template match="field">
     <xsl:param name="birth"/>
-    <xsl:variable name="name">
-      <xsl:if test="@name">
-        <xsl:value-of select="@name"/>
-      </xsl:if>
-      <xsl:if test="not(@name)">
-        <xsl:value-of select="@type"/>
-      </xsl:if>
+    <xsl:variable name="type">
+      <xsl:value-of select="@type"/>
     </xsl:variable>
-    <field>
+    <field name="{@name}">
       <!--  or @type=$birth -->
-      <xsl:copy-of select="@key|@null"/>
-      <xsl:if test="$name=$birth">
+      <xsl:copy-of select="@type|@key|@null"/>
+      <xsl:if test="string(@name)=$birth">
         <xsl:attribute name="key">primary</xsl:attribute>
       </xsl:if>
-      <xsl:choose>
-        <xsl:when test="@name">
-          <xsl:copy-of select="@type"/>
-          <xsl:value-of select="@name"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@type"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:if test="//*[name()=$type]/@birth">
+        <xsl:copy-of select="@delete"/>
+      </xsl:if>
+      <!-- please remove this when possible .. -->
+      <xsl:value-of select="string(@name)"/>
     </field>
   </xsl:template>
   <xsl:template match="*"/>

@@ -60,7 +60,7 @@
           <xsl:copy-of select="abstract"/>
         </xsl:if>
         <fields>
-          <xsl:copy-of select="//table[@name=$name]/fields/*"/>
+          <xsl:apply-templates select="//table[@name=$name]/fields/*"/>
         </fields>
         <rules>
           <xsl:copy-of select="//table[@name=$name]/rule"/>
@@ -81,6 +81,16 @@
         </checks>
       </table>
     </xsl:if>
+  </xsl:template>
+  <xsl:template name="field" match="fields/field">
+    <field>
+      <xsl:if test="not(@name)">
+        <xsl:attribute name="name">
+          <xsl:value-of select="string(@type)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:copy-of select="@*"/>
+    </field>
   </xsl:template>
   <xsl:template name="fields_index" match="fields[@index]">
     <index type="{@index}">
