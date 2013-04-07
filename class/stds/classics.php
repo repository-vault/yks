@@ -40,7 +40,7 @@ function fields($table, $key=false){
     $res=array();
     if($table->field) foreach($table->field as $field)
         if(!$key || $field['key']==$key)
-        $res["$field"]=(string)($field['type']?$field['type']:$field);
+        $res[(string) $field['name']] = (string) $field['type'];
     return $res;
 }
  
