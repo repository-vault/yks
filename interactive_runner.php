@@ -366,17 +366,14 @@ class interactive_runner {
     $runner = new self($obj, $args);
 
 
-    if($run = cli::$dict['ir://run']){
+    if( ($run = cli::$dict['ir://run']) || ($start = cli::$dict['ir://start']) ){
       if($run === true) $run = "run";
-      list($command_callback, $command_args) = $runner->command_parse($run, array(), cli::$dict);
-      call_user_func_array($command_callback, $command_args);
-      die;
-    }
+      list($command_callback, $command_args) = $runner->command_parse(pick($run, $start), array(), cli::$dict);
+      $res = call_user_func_array($command_callback, $command_args);
+      if($res !== null)
+          cli::box("Response", $res);
 
-
-    if($start = cli::$dict['ir://start']){
-      list($command_callback, $command_args) = $runner->command_parse($start, array(), cli::$dict);
-      call_user_func_array($command_callback, $command_args);
+      if($run) die;
     }
 
     $runner->main_loop(); //private internal
