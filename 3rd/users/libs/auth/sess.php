@@ -124,7 +124,8 @@ class sess  {
 
     self::log(sess::$sess, "log");
 
-    $_SESSION['client_addr'] = $_SERVER['REMOTE_ADDR'];
+    $_SESSION['client_addr'] = exyks::$REMOTE_ADDR;
+    $_SESSION['remote_addr'] = $_SERVER['REMOTE_ADDR'];
     self::status_check();
   }
 

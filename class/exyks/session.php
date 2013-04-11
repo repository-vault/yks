@@ -137,8 +137,11 @@ class exyks_session {
     if($action == "logout" || $action=="deco") //yeah
         sess::logout();
         
-    if(sess::$sess['session_ip']!=$_SERVER['REMOTE_ADDR']) auth_restricted_ip::reload();
-    if($_COOKIE['user_id'] && ($_COOKIE['user_id']!=sess::$sess['user_id'])) auth_password::reload();
+    if(sess::$sess['session_ip'] != $_SERVER['REMOTE_ADDR'])
+        auth_restricted_ip::reload();
+
+    if($_COOKIE['user_id'] && ($_COOKIE['user_id']!=sess::$sess['user_id']))
+        auth_password::reload();
 
     if($action=='login') try {
        auth::login($_POST['user_login'], $_POST['user_pswd']);

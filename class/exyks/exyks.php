@@ -16,6 +16,7 @@ class exyks {
   private static $is_script = false;
   private static $modules_list;
   public static $get;
+  public static $REMOTE_ADDR;
 
   public static $vars = array();
 
@@ -40,13 +41,19 @@ class exyks {
         yks::fatality(yks::FATALITY_CONFIG, "Exyks configuration not found");
 
 
+    $trusted_proxies = array();
+    foreach(yks::$get->config->security->iterate('trusted_proxy') as $proxy)
+      $trusted_proxies[] = $proxy['addr'];
+
+    self::$REMOTE_ADDR = http::client_addr($trusted_proxies);
+
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
 
     data::register('types_xml',   array('myks', 'get_types_xml'));
     data::register('tables_xml',  array('myks', 'get_tables_xml'));
     data::register('entities',    array('locales_fetcher', 'retrieve'));
 
-    define('SESSION_NAME',  crpt($_SERVER['REMOTE_ADDR'],FLAG_SESS,10)."_yks");
+    define('SESSION_NAME',  crpt(self::$REMOTE_ADDR, FLAG_SESS, 10)."_yks");
 
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
