@@ -22,6 +22,20 @@ class http {
     self::$WIN = stripos($_SERVER['OS'], 'windows')!==false || isset($_SERVER['WINDIR']);
   }
 
+  static function client_addr($trusted_proxies = array(), $jumps = null, $remote_addr = null){
+    if(is_null($remote_addr)) $remote_addr = $_SERVER['REMOTE_ADDR'];
+    if(is_null($jumps))   $jumps = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    if(!is_array($jumps)) $jumps = preg_split(VAL_SPLITTER, $jumps);
+
+    if(!in_array($remote_addr, $trusted_proxies) || !$jumps)
+      return $remote_addr;
+
+    $remote_addr = array_pop($jumps);
+
+    return self::client_addr($trusted_proxies, $jumps, $remote_addr);
+  }
+
+
   static function parse_headers($headers_str){
     $headers_str = preg_replace('#'.CRLF.self::LWSP.'+#',' ',$headers_str);
     $headers = array();
