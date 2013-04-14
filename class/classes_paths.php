@@ -40,6 +40,7 @@ classes::register_class_paths(array(
     "yks_list"             => CLASS_PATH."/list/yks_list.php",
     "dtd"                  => CLASS_PATH."/dom/dtds.php",
 
+    "telnet"               => CLASS_PATH."/exts/net/telnet.php",
     "http"                 => CLASS_PATH."/exts/http/http.php",
     "url"                  => CLASS_PATH."/exts/http/url.php",
     "tlds"                 => CLASS_PATH."/exts/http/tlds.php",
