@@ -42,6 +42,12 @@ class win32_cli {
     echo md5_file($file_path);
   }
 
+  public static function telnet($ip, $port){
+    cli::$dict = compact('ip', 'port');
+    cli::$dict ["ir://run"] = true;
+    interactive_runner::start("telnet");
+  }
+
   public static function which($file_path){
     echo cli::which($file_path);
   }
