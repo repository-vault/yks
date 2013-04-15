@@ -111,12 +111,12 @@ class myks_runner {
 
 /**
 * Update locales
-* @alias locales
+* @alias locales 127.0.0.1
 */
-  function manage_locales($verbose = true){
+  function manage_locales($loopback_ip = null){
 
     if(PHP_SAPI == "cli")
-        return yks_runner::httpd_tunnel(__CLASS__, "manage_locales");
+        return yks_runner::httpd_tunnel(__CLASS__, "manage_locales", $loopback_ip);
 
     if($verbose) {
       rbx::title("Starting localization");
