@@ -256,10 +256,11 @@ class tpls {
       $values = explode(',', $field->getAttribute('value'));
       $mode  = $field->getAttribute('mode');
 
-      $output_element = self::create_element($doc, 'div', null, array('class' => "input_{$mode}s"));
       $mykse    = yks::$get->types_xml->$type;
 
       if($mode == 'checkbox' || $mode == 'radio'){
+
+        $output_element = self::create_element($doc, 'div', null, array('class' => "input_{$mode}s"));
 
         foreach($mykse->val as $val){
 
@@ -311,7 +312,7 @@ class tpls {
           $select->appendChild($option);
         }
 
-        $output_element->appendChild($select);
+        $output_element = $select;
       }
     }
 
