@@ -91,6 +91,7 @@ class shop {
 
     $available_products_list = array_filter_criteria($this->products_list, $verif_products);
     $available_products_list = array_sort_deep($available_products_list, "product_order");
+    $available_products_list = array_reverse($available_products_list, true);
     return $available_products_list;
   }
 
