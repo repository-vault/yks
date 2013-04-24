@@ -52,9 +52,9 @@ class sql_func {
     return sql::row("information_schema.tables",$where);
  }
 
-  static function make_search_blob($search_field, $qs, $LIKE = "ILIKE"){
+  static function make_search_blob($search_field, $qs, $main_field = null, $LIKE = "ILIKE"){
     $qs = specialchars_decode(trim($qs));
-    $mask = "#(-)?(?:\"([^\"]+)\"|'([^']+)'|([^\s,]+))|(\s*,\s*)#";
+    $mask = "#(-)?(\\#)?(?:\"([^\"]+)\"|'([^']+)'|([^\s,]+))|(\s*,\s*)#";
 
     if(!preg_match_all($mask, $qs, $out, PREG_SET_ORDER))
         return false;
@@ -62,13 +62,20 @@ class sql_func {
     $part = 0;
     $ret = array();
     foreach($out as $arg){
-        if($arg[5]) {  $part ++; continue; }
+
+        if($arg[6]) {  $part ++; continue; }
         $mode  = $arg[1];
-        $value = specialchars_encode(pick($arg[2], $arg[3], $arg[4]));
-        if($mode == "-")
-            $ret [$part][] = "$search_field NOT $LIKE '%$value%'";
-        else 
-            $ret [$part][] = "$search_field $LIKE '%$value%'";
+        $numeric = $arg[2] == '#';
+
+        $value = specialchars_encode(pick($arg[3], $arg[4], $arg[5]));
+        if($numeric && $main_field) {
+          $ret[$part][] = sql::conds($main_field, $value);
+        } else {
+          if($mode == "-")
+              $ret [$part][] = "$search_field NOT $LIKE '%$value%'";
+          else 
+              $ret [$part][] = "$search_field $LIKE '%$value%'";
+        }
     }
 
     $search = "";
