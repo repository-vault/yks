@@ -16,7 +16,9 @@ class exyks {
   private static $is_script = false;
   private static $modules_list;
   public static $get;
+
   public static $REMOTE_ADDR;
+  public static $CLIENT_ADDR;
 
   public static $vars = array();
 
@@ -45,7 +47,9 @@ class exyks {
     foreach(yks::$get->config->security->iterate('trusted_proxy') as $proxy)
       $trusted_proxies[] = $proxy['addr'];
 
-    self::$REMOTE_ADDR = http::client_addr($trusted_proxies);
+    self::$CLIENT_ADDR = http::client_addr($trusted_proxies);
+    self::$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+
 
     chdir(ROOT_PATH); //we are now in root path (not in www_path any more)
 
