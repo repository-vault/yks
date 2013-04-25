@@ -67,13 +67,13 @@ function array_merge_numeric($a,$b, $depth="array_merge"){
         $res[$k] = (is_array($v) && isset($res[$k]) && is_array($res[$k]) )? $depth($res[$k], $v) : $v;
       }
     }
-    
+
     return $res;
 }
 
 function attributes_to_assoc($x, $ns=null, $prefix = false){
     $r = array(); //php 5.3 grrrr
-    if( gettype($x) != "object" || get_class($x) != "SimpleXMLElement") return $r;
+    if(!$x || gettype($x) != "object" || get_class($x) != "SimpleXMLElement") return $r;
     foreach($x->attributes($ns, $prefix) as $k=>$v)$r[$k]=(string)$v;
     return $r;
 }
@@ -90,7 +90,7 @@ function array_unique_multidimensional($input) {
 function array_sublinearize($a,$c){$ret=array();foreach($a as $k=>$val)$ret[$k]=$val[$c];return $ret;}
 
 
-//thx cagret 
+//thx cagret
 //$mirrors_paths = array_msort($mirrors_paths, array("path_root"=>SORT_ASC) );
 
 function array_msort($array, $cols) {
@@ -130,7 +130,7 @@ function linearize_tree($tree,$depth=0){
 }
 
 //you might want to look at array_msort ^^
-function array_sort_deep($array,$sort_by,$order='asort'){ 
+function array_sort_deep($array,$sort_by,$order='asort'){
     $keys=array(); foreach($array as $k=>$v)$keys[$k]=$v[$sort_by]; $order($keys);
     return array_merge_numeric($keys,$array);
 }
@@ -154,7 +154,7 @@ function array_merge_deep($array0, $array1){
 function array_reindex($src, $cols=array(), $body = null){
     $res = array();
     if(!is_array($cols)) $cols = array($cols);
-    
+
     foreach($src as $item){
       $tmp = &$res;
       foreach($cols as $col)
@@ -164,7 +164,7 @@ function array_reindex($src, $cols=array(), $body = null){
 }
 
 function array_filter_criteria($list, $criteria){
-    $result = array(); 
+    $result = array();
     if(!$criteria) return $result;
     foreach($list as $k=>$v) {
         $match = true;
@@ -190,7 +190,7 @@ function xml_to_dict($xml, $pfx){
         $ret[$name] = (string)$xml;
     foreach($xml->attributes() as $k=>$v)
         $ret["{$name}_".strtoupper($k)] = (string)$v;
-        
+
     foreach($xml->children() as $child)
         $ret = array_merge($ret, xml_to_dict($child, $name.'_'));
     return $ret;
