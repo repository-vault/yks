@@ -27,7 +27,7 @@ class http {
     if(is_null($jumps))   $jumps = $_SERVER['HTTP_X_FORWARDED_FOR'];
     if(!is_array($jumps)) $jumps = preg_split(VAL_SPLITTER, $jumps);
 
-    if(!in_array($remote_addr, $trusted_proxies) || !$jumps)
+    if(!self::ip_allow($trusted_proxies, $remote_addr) || !$jumps)
       return $remote_addr;
 
     $remote_addr = array_pop($jumps);
