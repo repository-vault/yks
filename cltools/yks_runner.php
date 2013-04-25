@@ -168,7 +168,7 @@ class yks_runner {
 * cli tunneling for APC related features
 */
   public static function httpd_tunnel($runner, $command, $loopback_ip = null){
-    self::http_auto_check(); //check self http lookup
+    self::http_auto_check($loopback_ip); //check self http lookup
 
     $myks_http_url = SITE_URL."/?/Yks/Scripts//$runner;$command|cli";
     $http_contents = self::wget_dnsless($myks_http_url, $loopback_ip, 20); //extend timeout
@@ -181,7 +181,7 @@ class yks_runner {
 *  Open a http lnk on itself, and search for a ping file
 *  Check whenever cli is able to talk to httpd
 */
-  private static function http_auto_check() {
+  private static function http_auto_check($loopback_ip = null) {
     self::cache_dir_check();
 
     $ping_file = CACHE_PATH."/ping";
@@ -191,11 +191,11 @@ class yks_runner {
     if(!$res)
         throw new Exception("Make sure cache directory '".CACHE_PATH."' is world writable");
  
-    $http_contents = self::wget_dnsless($ping_url);
+    $http_contents = self::wget_dnsless($ping_url, $loopback_ip);
 
     if($http_contents != $rnd) {
         rbx::box("http_contents ($ping_url)", $http_contents, "rnd ($ping_file)", $rnd);
-        throw new Exception("Http self check failed, please make sure <site><local @ip/> is configured");
+        throw new Exception("Http self check failed (loopback $loopback_ip)");
     }
     unlink($ping_file);
     return true;
