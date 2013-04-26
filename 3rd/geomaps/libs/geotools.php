@@ -70,20 +70,19 @@ class geotools {
     $url = 'http://maps.googleapis.com/maps/api/geocode/json?';
 
     $param = array(
-      'address' => join('+', $data),
+      'address' => "{$addr['street']} {$addr['city']} {$addr['zip']} {$addr['state']}",
       'sensor' => 'false',
     );
 
     $url = $url.http_build_query($param);
-    $reponse = file_get_contents($url);
-    
-    $json = json_decode($response, TRUE);
-    
-    if($json['status'] != 'OK'){
-	throw new Exception("Invalid response"); 
-    }    
-    $quality = 0;
 
+    $response = file_get_contents($url);
+    $json = json_decode($response, TRUE);
+     
+    if($json['status'] != 'OK')
+      throw new Exception("Invalid response"); 
+
+    $quality = 0;
     $lat = (float)$json['results']['geometry']['location']['lat'];
     $lon = (float)$json['results']['geometry']['location']['lng'];
 
