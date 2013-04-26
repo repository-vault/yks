@@ -51,33 +51,33 @@
     <xsl:if test="not(preceding-sibling::table[@name=$name])">
       <table>
         <xsl:copy-of select="@*"/>
-        <xsl:if test="//mykse[@birth=$name]">
+        <xsl:if test="/mykse[@birth=$name]">
           <xsl:attribute name="birth">
-            <xsl:value-of select="//mykse[@birth=$name]/@type"/>
+            <xsl:value-of select="/mykse[@birth=$name]/@type"/>
           </xsl:attribute>
         </xsl:if>
         <xsl:if test="abstract">
           <xsl:copy-of select="abstract"/>
         </xsl:if>
         <fields>
-          <xsl:apply-templates select="//table[@name=$name]/fields/*"/>
+          <xsl:apply-templates select="/table[@name=$name]/fields/*"/>
         </fields>
         <rules>
-          <xsl:copy-of select="//table[@name=$name]/rule"/>
+          <xsl:copy-of select="/table[@name=$name]/rule"/>
         </rules>
         <triggers>
-          <xsl:copy-of select="//table[@name=$name]/trigger"/>
+          <xsl:copy-of select="/table[@name=$name]/trigger"/>
         </triggers>
         <grants>
-          <xsl:copy-of select="//table[@name=$name]/grant"/>
+          <xsl:copy-of select="/table[@name=$name]/grant"/>
         </grants>
         <indices>
-          <xsl:apply-templates select="//table[@name=$name]/fields[@index]"/>
-          <xsl:copy-of select="//table[@name=$name]/indices/*"/>
+          <xsl:apply-templates select="/table[@name=$name]/fields[@index]"/>
+          <xsl:copy-of select="/table[@name=$name]/indices/*"/>
         </indices>
         <checks>
-          <xsl:apply-templates select="//table[@name=$name]/fields[@check]"/>
-          <xsl:copy-of select="//table[@name=$name]/checks/*"/>
+          <xsl:apply-templates select="/table[@name=$name]/fields[@check]"/>
+          <xsl:copy-of select="/table[@name=$name]/checks/*"/>
         </checks>
       </table>
     </xsl:if>
