@@ -43,7 +43,7 @@ class geotools {
     try {
         $geodetic = self::geodecode_request($addr);
     } catch(Exception $e){
-        throw new Exception("Failure");
+	throw new Exception("Failure");
     }
 
         //update cache
@@ -64,33 +64,29 @@ class geotools {
       'street'  => $addr['street'],
       'city'    => $addr['city'],
       'postal'  => $addr['zip'],
-      'country' => $addr['country'],
       'state'   => $addr['state'],
     ); array_filter($data);
 
-    $data['appid'] = 'YD-9G7bey8_JXxQP6rxl.fBFGgCdNjoDMACQA--';
-    $data['appid'] = yks::$get->config->apis->geodecode['key'];
+    $url = 'http://maps.googleapis.com/maps/api/geocode/json?';
 
+    $param = array(
+      'address' => join('+', $data),
+      'sensor' => 'false',
+    );
 
-    $data['flags'] = 'C';
+    $url = $url.http_build_query($param);
+    $reponse = file_get_contents($url);
+    
+    $json = json_decode($response, TRUE);
+    
+    if($json['status'] != 'OK'){
+	throw new Exception("Invalid response"); 
+    }    
+    $quality = 0;
 
-    $data = http_build_query($data);
+    $lat = (float)$json['results']['geometry']['location']['lat'];
+    $lon = (float)$json['results']['geometry']['location']['lng'];
 
-    $url_base =  "http://where.yahooapis.com/geocode";
-    $query_url = "$url_base?$data";
-
-    $response_str = strtolower(file_get_contents($query_url));
-    //echo $query_url.CRLF.$response_str;die;
-
-    $xml = simplexml_load_string($response_str);
-
-    if(!$xml->result)
-    throw new Exception("Invalid response");
-
-    $quality = (int)$xml->result->quality;
-
-    $lat = (float)$xml->result->latitude;
-    $lon = (float)$xml->result->longitude;
     return compact('lat', 'lon', 'quality');
   }
 
