@@ -2,6 +2,7 @@
 
 class privileges {
   private static $root_privileges = array();
+  private static $root_ignores     = array();
   private  $grants_xml;
 
   private $parent_type;
@@ -22,6 +23,11 @@ class privileges {
         $type = (string)$grant['on'];
         $privileges[$type] = self::merge($privileges[$type] , self::parse($grant));
     }self::$root_privileges = $privileges;
+
+    self::$root_ignores = array();
+    foreach($config->ignore  as $ignore)
+        self::$root_ignores[] = (string) $ignore['to'];
+
   }
 
   function modified(){
@@ -57,7 +63,8 @@ class privileges {
   function sql_infos(){
     $verif_table = array(
         'table_name'   => $this->parent->name['name'],
-        'table_schema' => $this->parent->name['schema']
+        'table_schema' => $this->parent->name['schema'],
+        sql::in_join('grantee', self::$root_ignores, ' NOT '),
     ); sql::select("information_schema.table_privileges", $verif_table);
     $this->sql_def = sql::brute_fetch_depth('grantee', 'privilege_type', false);
   }
