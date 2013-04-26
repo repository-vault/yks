@@ -31,6 +31,11 @@ abstract class _sql_base  implements ArrayAccess {
     $this->data = $data;
   }
 
+
+  function data_dump(){
+    return $this->data;
+  }
+
   function __get($key){
     if(isset($this->data[$key]))
         return $this->data[$key];
