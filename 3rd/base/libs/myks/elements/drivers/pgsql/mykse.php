@@ -61,11 +61,6 @@ class mykse extends mykse_base {
 
   }
 
-  function bool_node(){
-    $this->field_def["Type"] = "boolean";
-
-  }
-
 
   function linearize(){
     $str="`{$this->field_def['Field']}` {$this->field_def['Type']}";

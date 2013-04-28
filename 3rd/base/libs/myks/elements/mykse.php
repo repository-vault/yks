@@ -111,7 +111,7 @@ abstract class mykse_base  {
 
     $this->default_value($type);
 
-    $this->type=$type;
+    $this->type = $type;
     $this->types_tree[]=$type;
     return $this;
   }
@@ -127,8 +127,10 @@ abstract class mykse_base  {
     return $this->field_def;
   }
 
-    //leave it to myks, might be overloaded by driver like $this->field_def["Type"]="boolean";
-  function bool_node(){  $this->resolve($this->base_type)->get_def();  }
+
+  function bool_node(){ 
+    $this->field_def["Type"]="boolean";
+  }
 
   function text_node(){
     $this->field_def["Type"]="text";
