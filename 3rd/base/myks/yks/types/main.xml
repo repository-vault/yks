@@ -37,16 +37,10 @@
   <mykse type="count" null="null">
     <int/>
   </mykse>
-  <mykse type="bool">
-    <enum>
-      <val>true</val>
-      <val>false</val>
-    </enum>
-  </mykse>
   <mykse type="boolean">
     <mykse type="bool"/>
   </mykse>
-  <mykse type="boolean">
+  <mykse type="bool">
     <mykse type="bool"/>
   </mykse>
   <mykse type="uri" null="null">
