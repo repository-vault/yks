@@ -27,12 +27,8 @@ $helpers = array(
 $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
 
 if(is_file($entry)) {
-  $classes0 = get_declared_classes();
-  include $entry;
-  $classes1 = get_declared_classes();
-  $first_class = reset(array_diff($classes1, $classes0));
-  if(!$first_class)
-    exit("Entry is no valid class");
+  $first_class = reset(php::file_get_php_classes($entry));
+  classes::register_class_path($first_class, $entry);
   $entry = $first_class;
 }
 

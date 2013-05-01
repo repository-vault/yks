@@ -8,6 +8,7 @@ classes::register_class_paths(array(
     "exyks"               => CLASS_PATH."/exyks/exyks.php",
 
 
+    "php"                 => CLASS_PATH."/stds/php.php",
     "xsl"                 => CLASS_PATH."/stds/xsl.php",
     "xml"                 => CLASS_PATH."/stds/xml.php",
     "files"               => CLASS_PATH."/stds/files.php",
