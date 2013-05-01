@@ -25,8 +25,16 @@ $helpers = array(
 );
 
 $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
-if(is_file($script = "scripts/$entry.php") || is_file($script = "crons/$entry.php"))
-    classes::register_class_path($entry, $script);
+
+if(is_file($entry)) {
+  $classes0 = get_declared_classes();
+  include $entry;
+  $classes1 = get_declared_classes();
+  $first_class = reset(array_diff($classes1, $classes0));
+  if(!$first_class)
+    exit("Entry is no valid class");
+  $entry = $first_class;
+}
 
 classes::extend_include_path("scripts");
 classes::extend_include_path("crons");
