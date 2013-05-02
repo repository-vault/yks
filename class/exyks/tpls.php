@@ -247,7 +247,10 @@ class tpls {
       );
       $output_element = self::create_element($doc, 'input', NULL, $new_attr);
 
-      if($field->getAttribute('checked') == 'checked')
+      $checked = $field->getAttribute('checked') == 'checked'
+                 || bool($field->getAttribute('value'));
+
+      if($checked)
         $output_element->setAttribute('checked', 'checked');
     }
 
