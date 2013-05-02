@@ -20,6 +20,7 @@ var Xhr = new Class({
 
     this.lnk.open( method||'GET' , url, this.async);
     this.lnk.onreadystatechange = this.state_change;
+    try { this.lnk.responseType = "msxml-document"; } catch(err){}
 
     data = this.data_cleanup(data||[]); //data is a list
 
