@@ -348,6 +348,7 @@ class tpls {
       "string", "int", "time", "date",
       "sha1", "hidden", "password", 
       "file", "upload",
+      "bool",
       "html", "textarea", "text",
       "enum", "checkbox", //?
     ); 
