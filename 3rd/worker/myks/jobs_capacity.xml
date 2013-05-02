@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_jobs_worker_capacity">
+    <fields>
+      <field type="worker_id" />
+      <field type="job_type" />
+    </fields>
+  </table>
+</myks>

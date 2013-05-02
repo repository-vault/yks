@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module PUBLIC "-//YKS//MODULE" "">
+<module>
+   <myks>
+    <path path="path://here/myks"/>
+  </myks>
+  <classes>
+    <class name="wsworker" path="path://here/libs/ws/wsworker.php"/>
+    <!-- Server side -->
+    <class name="job_server_manager" path="path://here/libs/job/server/manager.php"/>
+    <class name="job_server" path="path://here/libs/job/server.php"/>
+    <class name="job_type" path="path://here/libs/job/type.php"/>
+    <class name="worker_server" path="path://here/libs/worker/server.php"/>
+    <!-- Client side -->
+    <class name="worker_client" path="path://here/libs/worker/client.php"/>
+    <class name="worker_watcher" path="path://here/libs/worker/watcher.php"/>
+    <class name="job_client" path="path://here/libs/job/client.php"/>
+  </classes>
+</module>

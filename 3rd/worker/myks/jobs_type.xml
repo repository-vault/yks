@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_jobs_type">
+    <fields>
+      <field type="job_type"/>
+      <field type="text" name="type_desc"/>
+      <field type="type_class"/>
+      <field type="type_table"/>
+    </fields>
+  </table>
+  <mykse type="job_type" birth="ks_jobs_type">
+    <string length="32"/>
+  </mykse>
+  <mykse type="type_class">
+    <string length="32" />
+  </mykse>
+  <mykse type="type_table">
+    <string length="32" />
+  </mykse>
+</myks>

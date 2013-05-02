@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_jobs_worker">
+    <fields>
+      <field type="worker_id"/>
+      <field type="title" name="worker_name"/>
+      <field type="ipstr" name="worker_ip"/>
+      <field type="date" name="worker_last_tick"/>
+      <field type="job_id" null="null" delete="set_null"/>
+    </fields>
+  </table>
+  <mykse type="worker_id" birth="ks_jobs_worker">
+    <int/>
+  </mykse>
+  <table name="ks_jobs_worker_command">
+    <fields>
+      <field type="worker_id"/>
+      <field type="worker_command"/>
+      <field type="job_id" null="null"/>
+      <field type="date" name="command_date"/>
+    </fields>
+  </table>
+  <mykse type="worker_command">
+    <enum>
+      <val>Run</val>
+      <val>Pause</val>
+      <val>StartJob</val>
+      <val>AbortJob</val>
+      <val>Shutdown</val>
+    </enum>
+  </mykse>
+</myks>

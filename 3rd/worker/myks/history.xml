@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_jobs_history">
+    <fields>
+      <field type="job_id" delete="cascade"/>
+      <field type="job_state"/>
+      <field type="job_time"/>
+      <field type="worker_id" null="null"/>
+    </fields>
+  </table>
+  <mykse type="job_time">
+    <int size="float"/>
+  </mykse>
+</myks>

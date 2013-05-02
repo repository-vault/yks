@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_jobs">
+    <fields>
+      <field type="job_id"/>
+      <field type="job_type"/>
+      <field type="job_state" default="'created'"/>
+      <field type="job_progress" default="0"/>
+      <field type="job_priority" default="1"/>
+      <field type="now" name="job_creation"/>
+    </fields>
+  </table>
+  <mykse type="job_state">
+    <enum>
+      <val>created</val>
+      <val>published</val>
+      <val>generating</val>
+      <val>done</val>
+      <val>erroneous</val>
+    </enum>
+  </mykse>
+  <mykse type="job_id" birth="ks_jobs">
+    <int/>
+  </mykse>
+  <mykse type="job_progress">
+    <int/>
+  </mykse>
+  <mykse type="job_priority">
+    <int/>
+  </mykse>
+</myks>
