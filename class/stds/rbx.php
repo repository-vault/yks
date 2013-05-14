@@ -44,6 +44,7 @@ class rbx extends Exception {
     return self::$pos=0;
   }
   static function box($title, $msg){
+    if(self::$output_mode != 1) return;
     $args = func_get_args();
     call_user_func_array(array('cli', 'box'), $args);
   }
