@@ -362,6 +362,10 @@ class interactive_runner {
 */
   static public function start($obj, $args = array()){
 
+    if(isset(cli::$dict['ir://output']))
+      rbx::$output_mode = cli::$dict['ir://output'];
+
+    
     if(!is_array($args)) $args = array($args);
     $runner = new self($obj, $args);
 
