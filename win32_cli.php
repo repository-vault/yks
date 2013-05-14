@@ -1,32 +1,32 @@
 <?
 /** 
-<? // this is D:\bin\md5file.phpx
-include 'yks/cli.php';
-win32_cli::dispatch();
+** this is D:\bin\md5file.bat
+@php -r "include 'yks/cli.php';win32_cli::dispatch();" -- %0 %*
 **/
 
 class win32_cli {
-
+  private static  $argv;
   public static function dispatch(){
-    
-    $script = strip_end(basename(array_shift($_SERVER['argv'])), ".phpx");
+    self::$argv = $_SERVER['argv']; array_shift(self::$argv);
+    $script  = array_shift(self::$argv);
+
     $cb = array(__CLASS__, $script);
 
     if(is_callable($cb)) 
-      return call_user_func_array($cb, $_SERVER['argv']);
+      return call_user_func_array($cb, self::$argv);
 
     rbx::error("No defined callback");
 
   }
-  private static function getopt($params){
-    return cli::getopt($params, $_SERVER['argv']);
+  private static function getopt($params, $argv){
+    return cli::getopt($params, $argv);
   }
 
-  public static function wget($url){
+  public static function wget(){
     list($options, $args) = self::getopt(array(
           "O:"  => "output-document:",
           "q"   => "quiet",
-    ));
+    ), self::$argv);
     $url   = $args[0]; $infos = parse_url($url);
     $output = pick($options['O'], $options['output-document'], basename($infos['path']), "index.htm");
 
@@ -34,7 +34,7 @@ class win32_cli {
       echo file_get_contents($url);
     else {
       copy($url, $output);
-      rbx::ok("Wrote in $output");
+      rbx::ok("Wrote $url in $output");
     }
   }
 
