@@ -6,6 +6,8 @@ class user_geomaps extends geomaps {
   private $area_user   = array();
   private $users_colors = array();
 
+  static $toggle_user_callback;
+
   function __construct($map_id, $users_colors = false){
     parent::__construct($map_id);
     $verif_map = compact('map_id');
@@ -64,6 +66,7 @@ class user_geomaps extends geomaps {
   }
 
   function toggle_user_at($x,$y, $user_id){
+
     $area_id = $this->png_map->hash_key_at($x, $y);
     if(!$area_id)
         return;
@@ -74,10 +77,8 @@ class user_geomaps extends geomaps {
 
     $previous_user = sql::value('ks_users_geomaps_area', $verif_area, 'user_id');
 
-    if(in_array(SITE_DOMAIN, array('admin.sviande.ac.ivsdev.net', 'admin.activisu.com')) && class_exists('crm_api'))
-      crm_api::register_departement_visibility($area_id, array($user_id), array($previous_user), 'ac');
-    else if(in_array(SITE_DOMAIN, array('admin.activscreen.com')) && class_exists('crm_api'))
-      crm_api::register_departement_visibility($area_id, array($user_id), array($previous_user), 'as');
+    if(self::$toggle_user_callback)
+      call_user_func(self::$toggle_user_callback, $map_id, $area_id, $user_id, $previous_user);
 
     if(isset($this->area_user[$area_id]))
         sql::delete("ks_users_geomaps_area", $verif_area);
