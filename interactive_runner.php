@@ -16,7 +16,7 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  private function __construct($from, $args = array()){
+  function __construct($from, $args = array()){
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
     $this->obj  = null;
 
@@ -38,10 +38,6 @@ class interactive_runner {
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
     $this->reflection_scan(__CLASS__, self::ns, $this); //register runners own commands
-
-    if(cli::$dict['ir://fs'])
-      $this->fullsize();
-    else  $this->help();
 
     if(is_null($this->obj)) {
       $can_construct = $reflector->IsInstantiable() && $reflector->hasMethod('__construct');
@@ -111,6 +107,12 @@ class interactive_runner {
     //this is only a placeholder
   }
 
+
+  //public
+  function register_alias($command_key, $alias_name, $args = array()){
+    $this->command_aliases($this->className, $command_key, array($alias_name=>$args) );
+  }
+
   private function command_aliases($command_ns, $command_key){
     $command_hash = "$command_ns::$command_key";
     if(!isset($this->commands_list[$command_hash]))
@@ -126,7 +128,6 @@ class interactive_runner {
 
     return true;
   }
-
   private function command_register($command_ns, $command_key, $callback, $usage){
     $command_hash = "$command_ns::$command_key";
     $this->commands_list[$command_hash] = array(
@@ -202,8 +203,23 @@ class interactive_runner {
     rbx::ok("Quit");
   }
 
-    //runner's internal looop, signal management
-  private function main_loop(){
+    
+/**
+* @interactive_runner disable
+* runner's internal looop, signal management
+*/
+  function run(){
+
+    if( ($run = cli::$dict['ir://run']) || ($start = cli::$dict['ir://start']) ){
+      if($run === true) $run = "run";
+      list($command_callback, $command_args) = $this->command_parse(pick($run, $start), array(), cli::$dict);
+      $res = call_user_func_array($command_callback, $command_args);
+      if($res !== null)
+          cli::box("Response", $res);
+
+      if($run) die;
+    }
+
 
     while(true){ 
 
@@ -369,18 +385,11 @@ class interactive_runner {
     if(!is_array($args)) $args = array($args);
     $runner = new self($obj, $args);
 
+    if(cli::$dict['ir://fs'])
+      $runner->fullsize();
+    else  $runner->help();
 
-    if( ($run = cli::$dict['ir://run']) || ($start = cli::$dict['ir://start']) ){
-      if($run === true) $run = "run";
-      list($command_callback, $command_args) = $runner->command_parse(pick($run, $start), array(), cli::$dict);
-      $res = call_user_func_array($command_callback, $command_args);
-      if($res !== null)
-          cli::box("Response", $res);
-
-      if($run) die;
-    }
-
-    $runner->main_loop(); //private internal
+    $runner->run(); //private internal
   }
 }
 
