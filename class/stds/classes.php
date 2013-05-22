@@ -87,6 +87,10 @@ class classes {
   private static function init($class_name){
     if(!$class_name) return false;
 
+
+    if(function_exists('trait_exists') && trait_exists($class_name, false))
+      return;
+
     if(!class_exists($class_name))
         throw new Exception("Unable to load $class_name");
 
