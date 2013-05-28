@@ -4,7 +4,7 @@ Script: TextboxList.Autocomplete.js
 
 	Authors:
 		Guillermo Rauch
-	
+
 	Note:
 		TextboxList is not priceless for commercial use. See <http://devthought.com/projects/mootools/textboxlist/>
 		Purchase to remove this message.
@@ -13,9 +13,9 @@ Script: TextboxList.Autocomplete.js
 (function(){
 
 TextboxList.Autocomplete = new Class({
-	
+
 	Implements: Options,
-	
+
 	options: {
 		minLength: 1,
 		maxResults: 10,
@@ -25,6 +25,7 @@ TextboxList.Autocomplete = new Class({
 		mouseInteraction: true,
 		onlyFromValues: false,
 		queryRemote: false,
+		useCache:true,
 		remote: {
 			url: '',
 			param: 'search',
@@ -34,7 +35,7 @@ TextboxList.Autocomplete = new Class({
 		method: 'standard',
 		placeholder: 'Type to receive suggestions'
 	},
-	
+
 	initialize: function(textboxlist, options){
 		this.setOptions(options);
 		this.textboxlist = textboxlist;
@@ -52,22 +53,22 @@ TextboxList.Autocomplete = new Class({
 		this.prefix = this.textboxlist.options.prefix + '-autocomplete';
 		this.method = TextboxList.Autocomplete.Methods[this.options.method];
 		this.container = new Element('div', {'class': this.prefix}).setStyle('width', this.textboxlist.container.getStyle('width')).inject(this.textboxlist.container);
-		if ($chk(this.options.placeholder) || this.options.queryServer) 
-			this.placeholder = new Element('div', {'class': this.prefix+'-placeholder'}).inject(this.container);		
+		if ($chk(this.options.placeholder) || this.options.queryServer)
+			this.placeholder = new Element('div', {'class': this.prefix+'-placeholder'}).inject(this.container);
 		this.list = new Element('ul', {'class': this.prefix + '-results'}).inject(this.container);
 		this.list.addEvent('click', function(ev){ ev.stop(); });
 		this.values = this.results = this.searchValues = [];
 		this.navigate = this.navigate.bind(this);
 	},
-	
+
 	setValues: function(values){
 		this.values = values;
 	},
-	
+
 	setupBit: function(bit){
 		bit.element.addEvent('keydown', this.navigate, true).addEvent('keyup', function(){ this.search(); }.bind(this), true);
 	},
-		
+
 	search: function(bit){
 		if (bit) this.currentInput = bit;
 		if (!this.options.queryRemote && !this.values.length) return;
@@ -78,7 +79,7 @@ TextboxList.Autocomplete = new Class({
 		this.list.setStyle('display', 'none');
 		if (search.length < this.options.minLength) return;
 		if (this.options.queryRemote){
-			if (this.searchValues[search]){
+			if (this.searchValues[search] && this.options.useCache){
 				this.values = this.searchValues[search];
 			} else {
 				var data = this.options.remote.extraParams, that = this;
@@ -93,11 +94,11 @@ TextboxList.Autocomplete = new Class({
 					that.showResults(search);
 				}}).send();
 			}
-		} 
+		}
 		if (this.values.length) this.showResults(search);
 	},
-	
-	showResults: function(search){		
+
+	showResults: function(search){
 		var results = this.method.filter(this.values, search, this.options.insensitive, this.options.maxResults);
 		if (this.index) results = results.filter(function(v){ return !this.index.contains(v); }, this);
 		this.hidePlaceholder();
@@ -107,8 +108,8 @@ TextboxList.Autocomplete = new Class({
 		results.each(function(r){ this.addResult(r, search); }, this);
 		if (this.options.onlyFromValues) this.focusFirst();
 		this.results = results;
-	},	
-	
+	},
+
 	addResult: function(r, search){
 		var element = new Element('li', {'class': this.prefix + '-result', 'html': $pick(r[3], r[1])}).store('textboxlist:auto:value', r);
 		this.list.adopt(element);
@@ -119,7 +120,7 @@ TextboxList.Autocomplete = new Class({
 			element.setStyle('cursor', 'pointer').addEvents({
 				mouseenter: function(){ this.focus(element); }.bind(this),
 				mousedown: function(ev){
-					ev.stop(); 
+					ev.stop();
 					$clear(this.hidetimer);
 					this.doAdd = true;
 				}.bind(this),
@@ -132,10 +133,10 @@ TextboxList.Autocomplete = new Class({
 					}
 				}.bind(this)
 			});
-			if (!this.options.onlyFromValues) element.addEvent('mouseleave', function(){ if (this.current == element) this.blur(); }.bind(this));	
+			if (!this.options.onlyFromValues) element.addEvent('mouseleave', function(){ if (this.current == element) this.blur(); }.bind(this));
 		}
 	},
-	
+
 	hide: function(ev){
 		this.hidetimer = (function(){
 			this.hidePlaceholder();
@@ -143,40 +144,40 @@ TextboxList.Autocomplete = new Class({
 			this.currentSearch = null;
 		}).delay(Browser.Engine.trident ? 150 : 0, this);
 	},
-	
+
 	showPlaceholder: function(customHTML){
 		if (this.placeholder){
-			this.placeholder.setStyle('display', 'block');	
+			this.placeholder.setStyle('display', 'block');
 			if (customHTML) this.placeholder.set('html', customHTML);
-		}		
+		}
 	},
-	
+
 	hidePlaceholder: function(){
 		if (this.placeholder) this.placeholder.setStyle('display', 'none');
 	},
-	
+
 	focus: function(element){
 		if (!element) return this;
 		this.blur();
 		this.current = element.addClass(this.prefix + '-result-focus');
 	},
-	
+
 	blur: function(){
 		if (this.current){
 			this.current.removeClass(this.prefix + '-result-focus');
 			this.current = null;
 		}
 	},
-	
+
 	focusFirst: function(){
 		return this.focus(this.list.getFirst());
 	},
-	
+
 	focusRelative: function(dir){
 		if (!this.current) return this;
 		return this.focus(this.current['get' + dir.capitalize()]());
 	},
-	
+
 	addCurrent: function(){
 		var value = this.current.retrieve('textboxlist:auto:value');
 		var b = this.textboxlist.create('box', value.slice(0, 3));
@@ -189,14 +190,14 @@ TextboxList.Autocomplete = new Class({
 		this.blur();
 		return this;
 	},
-	
+
 	navigate: function(ev){
 		switch (ev.code){
-			case Event.Keys.up:			
+			case Event.Keys.up:
 				ev.stop();
 				(!this.options.onlyFromValues && this.current && this.current == this.list.getFirst()) ? this.blur() : this.focusRelative('previous');
 				break;
-			case Event.Keys.down:			
+			case Event.Keys.down:
 				ev.stop();
 				this.current ? this.focusRelative('next') : this.focusFirst();
 				break;
@@ -204,7 +205,7 @@ TextboxList.Autocomplete = new Class({
 				ev.stop();
 				if (this.current) this.addCurrent();
 				else if (!this.options.onlyFromValues){
-					var value = this.currentInput.getValue();				
+					var value = this.currentInput.getValue();
 					var b = this.textboxlist.create('box', value);
 					if (b){
 						b.inject($(this.currentInput), 'before');
@@ -213,11 +214,11 @@ TextboxList.Autocomplete = new Class({
 				}
 		}
 	}
-	
+
 });
 
 TextboxList.Autocomplete.Methods = {
-	
+
 	standard: {
 		filter: function(values, search, insensitive, max){
 			var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : '');
@@ -227,15 +228,15 @@ TextboxList.Autocomplete.Methods = {
 			}
 			return newvals;
 		},
-		
+
 		highlight: function(element, search, insensitive, klass){
 			var regex = new RegExp('(<[^>]*>)|('+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
 			return element.set('html', element.get('html').replace(regex, function(a, b, c){
-				return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>'; 
+				return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>';
 			}));
 		}
 	}
-	
+
 };
 
 })();
