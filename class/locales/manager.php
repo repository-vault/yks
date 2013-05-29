@@ -4,13 +4,13 @@
 
 class locales_manager {
   const CONST_LOCALES_MASK = '#^(?!FLAG_).*(?<!_PATH|_MASK)$#';
-  const sql_table_users_domains = 'as_users_profile_locale_domains';
+  //const sql_table_users_domains = 'ks_users_profile_locale_domains';
   public static $module_locale_exists;
   const FINAL_FALLBACK = 'en-us';
-  
+
   public static function init(){
     if(!classes::init_need(__CLASS__)) return;
-    
+
     self::$module_locale_exists = class_exists('locale');
 
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
@@ -48,7 +48,7 @@ class locales_manager {
       //If the "keys" conf is not provided, forge a mock language list containing ultimate fallback
       if(!$languages)
         $languages = array(self::FINAL_FALLBACK);
-        
+
       $languages_order  = array_filter(preg_split(VAL_SPLITTER, $locales['order']));
       $languages_order  = array_intersect($languages_order, $languages);
 
@@ -80,7 +80,7 @@ class locales_manager {
     }
     return $languages_list;
   }
-  
+
   public static function translate($str, $lang_key = false){
     if(!$lang_key) $lang_key = exyks::retrieve("USER_LANG");
 
@@ -91,7 +91,7 @@ class locales_manager {
       $entities = array_merge($entities, data::load("entities", "babel"));
 
     $entities = array_merge(
-        array('&USER_LANG;' => substr($lang_key,0,5) ), //send iso 639 compatible locale 
+        array('&USER_LANG;' => substr($lang_key,0,5) ), //send iso 639 compatible locale
         $entities,
         retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
     ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
@@ -171,7 +171,7 @@ class locales_manager {
             if($lang_want == $lang_key) $lang_filtered[$lang_key][] = $lang_weight;
             elseif($lang_key_root == $lang_want_root )
                 $lang_filtered[$lang_key][] = $lang_weight * self::COUNTRYLESS_WEIGHT;
-            else $lang_filtered[$lang_key][]=0; 
+            else $lang_filtered[$lang_key][]=0;
         }
     }
 

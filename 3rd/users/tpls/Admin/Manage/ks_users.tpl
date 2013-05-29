@@ -2,6 +2,8 @@
 
 Vous êtes ici : <?=$parent_path?><br/>
 
+
+
 <ks_form ks_action="user_edit" class="nullable">
 
 <?
@@ -9,13 +11,18 @@ Vous êtes ici : <?=$parent_path?><br/>
 foreach($dsp_profile as $field_name=>$field_type){
     $disabled = is_null($user_infos[$field_name])?"disabled='disabled'":'';
     //!!
-    if($field_type == "text") 
+    if($field_type == "text")
         echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name'>".specialchars_encode($user_infos[$field_name])."</field>\n";
     else  echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
 }
 ?>
-
+<?
+  if($module_locale){
+   echo '<a href="?'.$locale_path.'/User//'.$user_infos['user_id'].'" target="user_translation">Manage Translation</a>';
+  }
+?>
 <hr class="clear"/>
+
 
 
 <toggler caption="Authentification" class="closed">

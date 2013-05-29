@@ -41,11 +41,11 @@ class exyks_module {
     if(isset($module_xml['start'])) {
       $this->module_rq_start = $module_xml['start'];
     }
-    
+
     if(isset($this->manifest_xml['start'])) {
       $this->module_rq_start = pick($this->module_rq_start, $this->manifest_xml['start']);
     }
-    
+
     $this->module_root   = dirname($this->manifest_file); //or ...
 
         //two way
@@ -59,7 +59,7 @@ class exyks_module {
     }
 
     $this->process_classes();
- 
+
   }
 
   private function get_virtual_paths(){
@@ -85,6 +85,10 @@ class exyks_module {
 
   public function __toString(){
     return "<module #{$this->key}/> ";
+  }
+
+  private function get_key(){
+    return $this->key;
   }
 
   private function get_manifest_xml(){

@@ -1,4 +1,12 @@
 <?
+$module_locale = false;
+foreach(exyks::get_modules_list() as $modules){
+  if($modules->key == 'localization'){
+    $module_locale = $modules;
+    $locale_path = reset(array_keys($module_locale->virtual_paths));
+    break;
+  }
+}
 
 if($action=="user_edit")try {
 
@@ -22,7 +30,7 @@ if($action=="user_edit")try {
         $data = mykses::validate($_POST,$std_profile_def);
         if($data) $res = sql::replace($std_profile_table, $data, $verif_user);
         if(!$res) throw rbx::error("Impossible de proceder à l'enregistrement");
-        
+
         $data = mykses::validate($_POST,array('auth_type'));
 
 
@@ -36,19 +44,19 @@ if($action=="user_edit")try {
         if( $data['auth_type'] == 'auth_password' ){
             try {
                 $data = mykses::validate($_POST, array('user_login','user_pswd'));
-                if($data['user_pswd']) 
+                if($data['user_pswd'])
                     users::update_password($verif_user, $data['user_login'], $data['user_pswd']);
             } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
         } else  if($data['auth_type']=='auth_ldap_soap'){
             try {
                 $data = mykses::validate($_POST, array('auth_ldap_soap_endpoint_name'));
-                
-                if($data['auth_ldap_soap_endpoint_name']) 
+
+                if($data['auth_ldap_soap_endpoint_name'])
                     sql::replace("ks_auth_ldap_soap", $data, $verif_user);
             } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
 
-        } 
-        
+        }
+
         rbx::ok("Vos modification ont bien été sauvegardées");
 
 }catch(rbx $e){  }

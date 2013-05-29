@@ -23,11 +23,11 @@ class locale {
   public static function get_projects($project_name, $strict=false) {
 
     // On cherche l'ID du projet dont on  a le nom :
-    $where = array("project_name ilike '%$project_name%'"); 
+    $where = array("project_name ilike '%$project_name%'");
     if($strict) $where = array("project_name ilike '$project_name'");
     sql::select("ks_projects_list", $where);
     $projects_ids = sql::brute_fetch("project_id");
-    $locale_projects = array_keys($projects_ids); 
+    $locale_projects = array_keys($projects_ids);
 
     // Enfants de notre(nos) projets
     $locale_projects = array_merge($locale_projects, sql_func::get_children($locale_projects,"ks_projects_list","project_id"));
@@ -64,7 +64,7 @@ class locale {
     $tags_list = sql::fetch_all();
 
         //search for child tags
-    $tags_list = array_unique(array_merge($tags_list, 
+    $tags_list = array_unique(array_merge($tags_list,
         sql_func::get_tree($tags_list , "ks_locale_tags_list", "tag_id", -1, "parent_tag")));
 
     $verif_tags = array('tag_id' => $tags_list);
@@ -135,7 +135,7 @@ class locale {
 
   /**
   * Chain of fallbacking from a given lang
-  * 
+  *
   * @param mixed $lang
   */
   static function fallback_list($lang_key) {
@@ -172,8 +172,8 @@ class locale {
     sql::select(self::sql_table_localize, array('lang_key' => $lang_key, 'value IS NOT NULL'));
     return sql::brute_fetch('item_key', 'value');
   }
-  
-  
+
+
   static function fetch_locales_values($lang_key, $filters = array()) {
     $fallback_chain = locale::fallback_list($lang_key);
 
@@ -194,7 +194,7 @@ class locale {
     $values_list = array();
     foreach($values_no_fallback as $item_key=>$items_trad) {
       foreach($fallback_chain as $fb_lang) {
-        $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle        
+        $values_list[$item_key] = $items_trad[$fb_lang]; // Une trad, on est content, on quitte la boucle
         if(!isset($items_trad[$fb_lang]) || !$items_trad[$fb_lang])
           continue; // Pas de trad, on boucle
         break;
@@ -212,7 +212,7 @@ class locale {
 
   /**
   * Return information for a lang (iso alpha 2 and 3 of the country and the lang, name...)
-  * 
+  *
   * @param array $locale_languages_key lang_key
   */
   public static function languages_infos($locale_languages_key) {
@@ -225,7 +225,8 @@ class locale {
       iso_639_languages.alpha_2 AS lang_alpha2,
       iso_3166_countries.alpha_2 AS country_alpha2,
       concat(iso_639_languages.alpha_2 , '-' ,iso_3166_countries.alpha_2) AS lang_key_raw,
-      lang_key
+      lang_key,
+      locale_domain_id
       FROM `ks_locale_languages`
       JOIN iso_3166_countries USING (country_code)
       JOIN iso_639_languages USING (lang_code)
@@ -236,7 +237,8 @@ class locale {
       iso_3166_countries.alpha_3,
       iso_639_languages.alpha_2,
       iso_3166_countries.alpha_2,
-      lang_key;");
+      lang_key,
+      locale_domain_id;");
 
     $lang_infos = sql::brute_fetch("lang_key");
     return $lang_infos;

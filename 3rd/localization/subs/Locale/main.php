@@ -18,14 +18,19 @@ locales_processor::register_mykse_renderer("locale_tag", "tag_id", "tag_name");
 
 user::register("locale_languages", "ks_users_profile_locale_languages");
 user::register("locale_projects", "ks_users_profile_locale_projects");
-user::register("locale_domains", "ks_users_profile_locale_domains");
 
 $locale_languages = sess::$sess->locale_languages;
 $locale_projects  = sess::$sess->locale_projects;
-$locale_domains   = sess::$sess->locale_domains;
 
-sql::select('ks_locale_domains_list', array('locale_domain_id' => $locale_domains));
-$locale_domains_list = sql::brute_fetch('locale_domain_id');
+$locale_domain_id = 'locale_domain_id';
+
+sql::select(locale::sql_table, array(locale::sql_key => $locale_languages), $locale_domain_id, 'GROUP BY '.$locale_domain_id);
+$locale_domains = sql::brute_fetch($locale_domain_id, $locale_domain_id);
+sess::$sess->locale_domains = $locale_domains;
+
+
+sql::select('ks_locale_domains_list', array($locale_domain_id => $locale_domains));
+$locale_domains_list = sql::brute_fetch($locale_domain_id);
 
 $lang_infos = locale::languages_infos($locale_languages);
 
@@ -43,10 +48,12 @@ $lang_infos = locale::languages_infos($locale_languages);
   $projects_tmp_tree = sql_func::make_tree_query($query );
   $projects_tree = $projects_tmp_tree;
   $projects_tmp_tree = array(PROJECT_ROOT => $projects_tmp_tree[PROJECT_ROOT]);
-  
+
   $projects_dsp = array_intersect_key(linearize_tree($projects_tmp_tree), array_flip($traversable));
   foreach($projects_dsp as $project_id=>&$project_infos)
   if(!in_array($project_id,$locale_projects))
     $project_infos['disabled']='disabled';
 
- 
+
+
+
