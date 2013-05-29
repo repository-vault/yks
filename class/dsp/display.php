@@ -129,11 +129,14 @@ class dsp{
     $title = !$empty && $truncated!=$str?" title=\"$str\"":'';
     return "<{$element}{$title}>$truncated</$element_name>";
   }
+
   static function dd($data, $opts = false){
+
     if(!is_array($opts)) $opts = array('selected'=>array($opts));
     $selected = $opts['selected']; if(!is_array($selected)) $selected = array($selected);
     $mykse=$opts['mykse'];
     $col = pick ($opts['col'], "value");
+    if(in_array($data,array("bool","boolean"))) $data = array('true'=>'&bool.true;','false'=>'&bool.false;');
     if(!$data) $data = array();
     if(!is_array($data)){
         $tmp = myks::resolve_base($data);
@@ -239,7 +242,7 @@ class dsp{
       $domnode = $doc->importNode($domnode, true);
       $domnode = $doc->appendChild($domnode);
     }
-    
+
     return $doc->saveXML();
   }
 

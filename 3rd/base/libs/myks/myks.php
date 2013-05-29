@@ -35,7 +35,7 @@ class myks {
 
 
   public static function resolve_base($type){
-    return self::resolve_to($type, array('enum','int','string','text','time'));
+    return self::resolve_to($type, array('enum','int','string','text','time','bool'));
   }
 
   public static function resolve_to($type, $final_types){
