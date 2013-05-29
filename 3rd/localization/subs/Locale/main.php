@@ -29,7 +29,7 @@ $locale_domains = sql::brute_fetch($locale_domain_id, $locale_domain_id);
 sess::$sess->locale_domains = $locale_domains;
 
 
-sql::select('ks_locale_domains_list', array($locale_domain_id => $locale_domains));
+sql::select('ks_locale_domains_list', array($locale_domain_id => array_filter($locale_domains)));
 $locale_domains_list = sql::brute_fetch($locale_domain_id);
 
 $lang_infos = locale::languages_infos($locale_languages);
