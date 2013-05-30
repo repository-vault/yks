@@ -1,4 +1,4 @@
-<box style="width:600px" theme="&pref.dft;" id="user_translation" options="fly,close,reload,modal" Caption="Translation">
+<box style="width:600px" theme="&pref.dft;" id="user_translation" options="fly,close,reload,modal" caption="Translation">
   User : <?=$user['user_name']?>
   <ks_form ks_action="add_language">
     <field title="Domain">

@@ -1,5 +1,5 @@
 <box id="user_tanslation_language">
-<table id="results_list" class="table">
+  <table id="results_list" class="table" width="100%">
   <tr class="line_head"><?=$headers?></tr>
   <?
     foreach($lang_infos as $lang){
