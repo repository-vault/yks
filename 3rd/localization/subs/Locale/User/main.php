@@ -2,6 +2,8 @@
 
 $user_id = (int)$sub0;
 
+auth::verif("yks", "admin", 403);
+
 $module_users = false;
 foreach(exyks::get_modules_list() as $modules){
   if($modules->key == 'users'){
