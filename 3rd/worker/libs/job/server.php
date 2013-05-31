@@ -3,6 +3,7 @@
 abstract class job_server extends _sql_base {
   const sql_table = 'ks_jobs';
   const sql_history_table = 'ks_jobs_history';
+  const sql_constraint_table = 'ks_jobs_type_constraint';
   const sql_key = 'job_id';
 
   protected $sql_table = self::sql_table;
@@ -37,7 +38,7 @@ abstract class job_server extends _sql_base {
     return array(
         'job_id'    => $this->job_id,
         'job_type'  => $this->job_type,
-        'job_class' => job_type::$db_types[$this->job_type]['type_class'],
+        'job_class' => 'job_client_'.job_type::$db_types[$this->job_type]['type_class'],
     );
   }
 
@@ -76,7 +77,8 @@ abstract class job_server extends _sql_base {
         self::sql_table,
         self::sql_key => $conf['type_table'],
       );
-      $tmp  = parent::from_where($conf['type_class'], $from, self::sql_key, $verif_jobs); //very smart
+
+      $tmp  = parent::from_where('job_server_'.$conf['type_class'], $from, self::sql_key, $verif_jobs); //very smart
       $jobs = array_merge_numeric($jobs, $tmp);
     }
 
@@ -176,5 +178,13 @@ abstract class job_server extends _sql_base {
 
   public function is_editable(){
     return in_array($this->job_state, array(self::state_created, self::state_done));
+  }
+
+  protected function add_constraint($constraint_type, $data, $replace = false){
+    if(!$replace && job_type_constraint::search($this->job_type,  $constraint_type)){
+      return;
+    }
+
+    job_type_constraint::replace($this->job_type,  $constraint_type, $data);
   }
 }

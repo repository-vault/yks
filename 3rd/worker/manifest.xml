@@ -10,6 +10,7 @@
     <class name="job_server_manager" path="path://here/libs/job/server/manager.php"/>
     <class name="job_server" path="path://here/libs/job/server.php"/>
     <class name="job_type" path="path://here/libs/job/type.php"/>
+    <class name="job_type_constraint" path="path://here/libs/job/type_constraint.php"/>
     <class name="worker_server" path="path://here/libs/worker/server.php"/>
     <!-- Client side -->
     <class name="worker_client" path="path://here/libs/worker/client.php"/>

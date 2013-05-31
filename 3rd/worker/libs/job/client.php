@@ -15,7 +15,7 @@ abstract class job_client {
   const state_erroneous = 'erroneous';
 
   protected $status_file;
-  protected $state = self::state_generating;
+  protected $job_state = self::state_generating;
 
   public static $service = '';
 
@@ -30,7 +30,7 @@ abstract class job_client {
 
     //Init file for status
     $this->status_file = self::status_path($this->job_id);
-    $this->set_state($this->state, 0, 'Init');
+    $this->set_state($this->job_state, 0, 'Init');
   }
 
 

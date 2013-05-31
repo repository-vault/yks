@@ -21,12 +21,30 @@
     </enum>
   </mykse>
   <mykse type="job_id" birth="ks_jobs">
-    <int/>
+    <int size="big"/>
   </mykse>
   <mykse type="job_progress">
     <int/>
   </mykse>
   <mykse type="job_priority">
     <int/>
+  </mykse>
+  <table name="ks_jobs_type_constraint">
+    <fields>
+      <field type="job_type"/>
+      <field type="job_constraint"/>
+      <field type="text" name="data" null="null"/>
+    </fields>
+    <indices>
+      <index type="unique">
+        <member column="job_type"/>
+        <member column="job_constraint"/>
+      </index>
+    </indices>
+  </table>
+  <mykse type="job_constraint">
+    <enum>
+      <val>wait</val>
+    </enum>
   </mykse>
 </myks>

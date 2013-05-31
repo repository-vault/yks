@@ -54,15 +54,58 @@ class worker_server extends _sql_base {
     sql::update(self::sql_table, array('worker_last_tick' => time()), $this);
   }
 
+
+  /**
+  * Return all avalaible job_type without constraint
+  *
+  * @return job_type[]
+  */
+  private function get_types_constraint(){
+
+    sql::select(job_server::sql_constraint_table, array(job_type::sql_key => array_keys($this->rights)));
+    $constraint_list = sql::brute_fetch();
+
+    $rights = $this->rights;
+
+    foreach($constraint_list as $constraint){
+      switch ($constraint['job_constraint']) {
+         case 'wait':
+            if($_SERVER['REQUEST_TIME'] > $constraint['data']){
+              $where = array(
+                job_type::sql_key => $constraint[job_type::sql_key],
+                'job_constraint'  => $constraint['job_constraint'],
+              );
+              sql::delete(job_server::sql_constraint_table, $where);
+            }
+            else{
+              if(isset($this->rights[$constraint[job_type::sql_key]])){
+                unset($rights[$constraint[job_type::sql_key]]);
+              }
+            }
+           break;
+         default:
+          Throw New Exception('Job constraint doesn t exist');
+          break;
+      }
+    }
+
+    return $rights;
+  }
+
   //Search next job that this worker can do
   // according to its right
   public function get_next_job(){
+    $avalaible_rights = $this->get_types_constraint();
+
+    if(empty($avalaible_rights)){
+      return false;
+    }
 
     $where = array(
       //Both state set to published
       sql::fromf(job_server::sql_table.'.job_state') => job_server::state_published,
       sql::fromf(job_server::sql_history_table.'.job_state') => job_server::state_published,
-      job_type::sql_key => array_keys($this->rights),
+      job_type::sql_key => array_keys($avalaible_rights),
     );
     $from = array(
       job_server::sql_table,
@@ -72,6 +115,7 @@ class worker_server extends _sql_base {
     if(!$job_id)
       return false;
     return job_server::instanciate($job_id);
+
   }
 
 
