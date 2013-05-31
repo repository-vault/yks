@@ -25,10 +25,19 @@ class mime_types {
     }
   }
 
+  static function get_ext($content_type){
+    if(is_null(self::$mime_types))
+      self::build_cache();
+
+    $tmp = array_flip(self::$mime_types);
+
+    return $tmp[$content_type];
+  }
+
   static function get_content_type($ext){
     if(!is_null(self::$mime_types))
         return self::$mime_types[$ext];
-    
+
     self::build_cache();
     return self::$mime_types[$ext];
   }
