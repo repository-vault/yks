@@ -79,12 +79,14 @@ class Auth_Domyks extends AuthPlugin {
     global $wgExtraNamespaces;
     global $wgNamespacePermissionLockdown;
     global $wgContentNamespaces;
+    global $wgGroupPermissions;
 
     //Create namespace & talk
     $wgExtraNamespaces[$base_id] = $name;
     $wgExtraNamespaces[$base_id+1] = "{$name}_talk";
 
     //Lockdown protection
+    $wgGroupPermissions[$name] = array(); // No rights for ns group
     $wgNamespacePermissionLockdown[$base_id]['*'] = array($name);
     $wgNamespacePermissionLockdown[$base_id+1]['*'] = array($name);
 
