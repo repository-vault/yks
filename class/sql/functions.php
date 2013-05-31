@@ -52,12 +52,25 @@ class sql_func {
     return sql::row("information_schema.tables",$where);
  }
 
-  static function make_search_blob($search_field, $qs, $main_field = null, $LIKE = "ILIKE"){
+  /**
+  * Explode in array a search string
+  *
+  * @param String $string
+  * @return arrray|bool
+  */
+  static function explode_search_blob($qs){
     $qs = specialchars_decode(trim($qs));
     $mask = "#(-)?(\\#)?(?:\"([^\"]+)\"|'([^']+)'|([^\s,]+))|(\s*,\s*)#";
 
     if(!preg_match_all($mask, $qs, $out, PREG_SET_ORDER))
         return false;
+
+    return $out;
+  }
+
+  static function make_search_blob($search_field, $qs, $main_field = null, $LIKE = "ILIKE"){
+
+    $out = self::explode_search_blob($qs);
 
     $part = 0;
     $ret = array();
@@ -73,7 +86,7 @@ class sql_func {
         } else {
           if($mode == "-")
               $ret [$part][] = "$search_field NOT $LIKE '%$value%'";
-          else 
+          else
               $ret [$part][] = "$search_field $LIKE '%$value%'";
         }
     }

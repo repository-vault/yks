@@ -37,6 +37,7 @@ class sql {
   }
 
   static function &connect($lnk = false) {
+
     $lnk  = $lnk?self::set_link($lnk):self::$link;
     $serv = self::$servs->links->$lnk;
 
@@ -185,6 +186,7 @@ class sql {
   //format conditions
   static function conds($k, $v) {
     $kesc = sql::escape($k);
+
     if(is_array($v)) {
       list($type,$val) = each($v);
       if($type === "sql") return "$kesc $val";
@@ -275,7 +277,7 @@ class sql {
     return $conds?"$keyword ".join(" $mode ",$conds):'';
   }
 
-  private static function fromf($table) {
+  public static function fromf($table) {
     return ' `' . str_replace('.', '`.`', $table) . '` ';
   }
 
