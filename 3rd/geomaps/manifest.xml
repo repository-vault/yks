@@ -7,5 +7,8 @@
   <classes>
     <include_path path="path://here/libs"/>
     <class name="user_geomaps" path="path://here/libs/user_geomaps.php"/>
+    <class name="geotools" path="path://here/libs/geotools.php"/>
+    <class name="job_client_geochecker" path="path://here/libs/job/client/geochecker.php"/>
+    <class name="job_server_geochecker" path="path://here/libs/job/server/geochecker.php"/>
   </classes>
 </module>

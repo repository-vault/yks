@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "">
+<myks>
+  <table name="ks_geochecker">
+    <fields>
+      <field type="geochecker_id"/>
+      <field type="text" name="origin_table"/>
+      <field type="text" name="origin_field_id"/>
+      <!-- Origin field name -->
+      <field type="text" name="addr_field1" null="null"/>
+      <field type="text" name="addr_field2" null="null"/>
+      <field type="text" name="city" null="null"/>
+      <field type="text" name="state" null="null"/>
+      <field type="text" name="zipcode" null="null"/>
+      <field type="text" name="country" null="null"/>
+
+      <!-- Target field name -->
+      <field type="text" name="target_table" null="null"/>
+      <field type="text" name="target_long_field" null="null"/>
+      <field type="text" name="target_lat_field" null="null"/>
+      <field type="text" name="target_field_id"/>
+    </fields>
+  </table>
+  <mykse type="geochecker_id" birth="ks_geochecker">
+    <int/>
+  </mykse>
+
+  <table name="ks_job_geochecker">
+    <fields>
+      <field type="job_id" delete="cascade"/>
+      <field type="geochecker_id" delete="cascade"/>
+      <field type="text" name="origin_id"/>
+      <field type="text" name="target_id"/>
+    </fields>
+  </table>
+</myks>
+

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="polar_distance" type="float">
+    <param type="float"/>
+    <param type="float"/>
+    <param type="float"/>
+    <param type="float"/>
+    <def>
+      DECLARE
+      BEGIN
+         return (
+         acos(
+          cos( radians($1) )
+          * cos( radians( $3 ) )
+          * cos( radians( $2 ) - radians($4) )
+          + sin( radians($1) ) * sin( radians($3) )
+          )
+        );
+      END
+    </def>
+  </procedure>
+</myks>

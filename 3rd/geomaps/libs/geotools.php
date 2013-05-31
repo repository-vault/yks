@@ -3,6 +3,8 @@
 class geotools {
 
   const cache_table = 'ks_geodecode_cache';
+  const OVER_QUERY_LIMIT = 'OVER_QUERY_LIMIT';
+  const NO_RESULT = 'NO_RESULT';
 
   static function init(){
     $dir = dirname(__FILE__);
@@ -52,13 +54,28 @@ class geotools {
         'geodetic_addr' => $data_str,
         'geodetic_lat'  => $geodetic['lat'],
         'geodetic_lon'  => $geodetic['lon'],
-        'resolution_score' => $geodetic['quality'],
     ); sql::insert("ks_geodecode_cache", $data);
 
     return $geodetic;
   }
 
-  private static function geodecode_request($addr){
+  /**
+  * Get latittude, longitude from address
+  *
+  * @param mixed $addr
+  *
+  * <code>
+  *   array(
+  *     street => value,
+  *     city   => value,
+  *     postal => value,
+  *     state  => value
+  *   )
+  * </code>
+  * @return array
+  * @throws Exception if over query limit or Invalide Response
+  */
+  public static function geodecode_request($addr){
 
     $data = array(
       'street'  => $addr['street'],
@@ -78,15 +95,19 @@ class geotools {
 
     $response = file_get_contents($url);
     $json = json_decode($response, TRUE);
-     
+
+    if($json['status'] == 'OVER_QUERY_LIMIT')
+      throw new Exception(self::OVER_QUERY_LIMIT);
+
     if($json['status'] != 'OK')
-      throw new Exception("Invalid response"); 
+      throw new Exception(self::NO_RESULT);
 
-    $quality = 0;
-    $lat = (float)$json['results']['geometry']['location']['lat'];
-    $lon = (float)$json['results']['geometry']['location']['lng'];
+    $results = reset($json['results']);
 
-    return compact('lat', 'lon', 'quality');
+    $lat = (float)$results['geometry']['location']['lat'];
+    $lon = (float)$results['geometry']['location']['lng'];
+
+    return compact('lat', 'lon');
   }
 
 }
