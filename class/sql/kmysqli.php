@@ -37,7 +37,7 @@ class _sql_mysqli extends isql {
 
 
   public static function query($query, $params=null, $arows=false){
-    
+
     if(!$lnk = sql::get_lnk()) return false;
     $query = sql::unfix($query);
     $query = sql::format_raw_query($query, $params, $lnk);
@@ -52,7 +52,7 @@ class _sql_mysqli extends isql {
 
     if($arows) {
         $arows = mysqli_affected_rows(sql::$result);
-        return $arows; 
+        return $arows;
     }
     return sql::$result;
   }
@@ -61,7 +61,7 @@ class _sql_mysqli extends isql {
     $tmp = mysqli_fetch_assoc( pick($r, sql::$result));
     return $tmp?$tmp:array();
   }
-  
+
 
   static function fetch_all(){
     $res = array();
@@ -85,8 +85,8 @@ class _sql_mysqli extends isql {
 
   static function rows($r=false){ return  mysqli_num_rows(pick($r, sql::$result)); }
   static function auto_indx($table){
-    $name = sql::resolve($table);
-    return (int)sql::qvalue("SELECT auto_increment_retrieve('{$name['name']}')");
+    if(!$lnk = sql::get_lnk()) return false;
+    return mysqli_insert_id($lnk);
   }
 
   static function query_raw($query){
