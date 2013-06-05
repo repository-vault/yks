@@ -1,4 +1,8 @@
 /*
+
+PIMP my Script : Thank you IVS !
+ -- version modifiée pour IVS --
+
 Script: TextboxList.Autocomplete.js
 	TextboxList Autocomplete plugin
 
@@ -25,6 +29,7 @@ TextboxList.Autocomplete = new Class({
 		mouseInteraction: true,
 		onlyFromValues: false,
 		queryRemote: false,
+    overflowResults: false,
 		useCache:true,
 		remote: {
 			url: '',
@@ -53,6 +58,8 @@ TextboxList.Autocomplete = new Class({
 		this.prefix = this.textboxlist.options.prefix + '-autocomplete';
 		this.method = TextboxList.Autocomplete.Methods[this.options.method];
 		this.container = new Element('div', {'class': this.prefix}).setStyle('width', this.textboxlist.container.getStyle('width')).inject(this.textboxlist.container);
+    if(this.options.overflowResults) // box avec overflow pour les grosses listes de resultat.
+        this.container.addClass(this.prefix + '-overflow');
 		if ($chk(this.options.placeholder) || this.options.queryServer)
 			this.placeholder = new Element('div', {'class': this.prefix+'-placeholder'}).inject(this.container);
 		this.list = new Element('ul', {'class': this.prefix + '-results'}).inject(this.container);
@@ -99,14 +106,19 @@ TextboxList.Autocomplete = new Class({
 	},
 
 	showResults: function(search){
-		var results = this.method.filter(this.values, search, this.options.insensitive, this.options.maxResults);
+		var filteredResults = this.method.filter(this.values, search, this.options.insensitive, this.options.maxResults);
+    var results = filteredResults.values;
 		if (this.index) results = results.filter(function(v){ return !this.index.contains(v); }, this);
 		this.hidePlaceholder();
 		if (!results.length) return;
 		this.blur();
 		this.list.empty().setStyle('display', 'block');
+
 		results.each(function(r){ this.addResult(r, search); }, this);
-		if (this.options.onlyFromValues) this.focusFirst();
+    if(filteredResults.trunc)
+      this.list.adopt(new Element('li', {'class': this.prefix + '-result', 'html': '...', 'title' : 'More results for this selection, precise your query.'}));
+
+    if (this.options.onlyFromValues) this.focusFirst();
 		this.results = results;
 	},
 
@@ -221,12 +233,12 @@ TextboxList.Autocomplete.Methods = {
 
 	standard: {
 		filter: function(values, search, insensitive, max){
-			var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : '');
+			var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : ''), isTrunc = false;
 			for (var i = 0; i < values.length; i++){
-				if (newvals.length === max) break;
+				if (max != 0 && newvals.length === max) {isTrunc = true; break;}
 				if (values[i][1].test(regexp)) newvals.push(values[i]);
 			}
-			return newvals;
+			return {'values' : newvals, 'trunc' : isTrunc};
 		},
 
 		highlight: function(element, search, insensitive, klass){
