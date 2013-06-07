@@ -19,7 +19,7 @@ class auth {
     self::fireEvent(self::EVENT_LOGIN);
   }
 
-  
+
   public static function get_access_zones(){
 
     static $access_zones = false; if($access_zones) return $access_zones;
@@ -68,7 +68,10 @@ class auth {
     $asked_tree = users::get_parents($user_id);
     $diff = array_intersect((array) sess::$sess['users_tree'], $asked_tree);
     $users_tree = $skip_auth ? $asked_tree : self::get_tree($diff, $asked_tree);
-    if(!$users_tree) return false;
+
+    if(reset($users_tree) != exyks::retrieve('USERS_ROOT'))
+       return false;
+
     return compact('user_id', 'users_tree');
   }
 
@@ -76,7 +79,7 @@ class auth {
     if(($reloc=$_POST['redirect_url']) || ($reloc=$_SESSION[SESS_TRACK_ERR] )){
             unset($_SESSION[SESS_TRACK_ERR]);
             reloc($reloc);
-    } return true; 
+    } return true;
   }
 
   static function is_valid($user_id, $auth_types){
@@ -118,12 +121,12 @@ class auth {
 
   }
 
-  static function get_tree($final_tree, $asked_tree){    
+  static function get_tree($final_tree, $asked_tree){
     //merge current tree with (indirectly) requested tree, stop at join point - meng point
     sql::select("ks_users_list", array('user_id'=>$asked_tree), 'user_id, auth_type');
     $users_auths = sql::brute_fetch('user_id', 'auth_type');
     $auths_types = array_sort($users_auths, array_reverse($asked_tree));
-        
+
     foreach($auths_types as $user_id=>$auth_types) {
         if(!auth::is_valid($user_id, $auth_types)) return false;
         if(in_array($user_id, $final_tree) || $user_id == USERS_ROOT) break;

@@ -49,13 +49,10 @@
           $avalaible_domain[] = (String)$domain;
         }
 
-        $exploded = explode('@', $infos['email']);
-        $user = $exploded[0];
-        $domain = $exploded[1];
+        list($user , $domain) = explode('@', $infos['email'], 2);
 
-        if(!in_array($domain, $avalaible_domain)){
+        if(!in_array($domain, $avalaible_domain))
           Throw new SoapFault('MailError', $infos['email'].' '.$domain_error);
-        }
 
         //IVS mail OK && active
         $user_id = sql::value('ks_users_profile', array('user_mail' => $infos['email']), 'user_id');
@@ -65,10 +62,9 @@
           sess::renew(); //sess::$id is now set
 
         $auth_success = sess::update($user_id, true); //skip authentification
-        if(sess::$sess['users_tree'][0] != exyks::retrieve('USERS_ROOT'))
-          Throw new SoapFault("BadUser", $infos['email']." not valid user");
+
         if(!$auth_success)
-        throw new Exception("Invalid user ( $user_id) ");
+         throw new SoapFault("BadUser", $infos['email']." is not valid user");
 
 
       return session_id();
