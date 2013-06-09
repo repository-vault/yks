@@ -4,6 +4,8 @@
 @php -r "include 'yks/cli.php';win32_cli::dispatch();" -- %0 %*
 **/
 
+
+
 class win32_cli {
   private static  $argv;
   public static function dispatch(){
@@ -40,6 +42,10 @@ class win32_cli {
 
   public static function md5file($file_path){
     echo md5_file($file_path);
+  }
+
+  public static function md5($str){
+    echo md5($str);
   }
 
   public static function telnet($ip, $port){
