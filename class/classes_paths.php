@@ -65,6 +65,7 @@ classes::register_class_paths(array(
     "json_parser"          => CLASS_PATH."/apis/json_parser.php",
     "exyks_auth_api"       => CLASS_PATH."/apis/auth/api.php",
     "WSAuthBasic"          => CLASS_PATH."/apis/auth/WSAuthBasic.php",
+    "WSAuthExternal"       => CLASS_PATH."/apis/auth/WSAuthExternal.php",
     "stdflow_filter"       => CLASS_PATH."/apis/stdflow_filter.php",
     "php_legacy"           => CLASS_PATH."/apis/legacy.php",
     "unix"                 => CLASS_PATH."/apis/unix.php",
