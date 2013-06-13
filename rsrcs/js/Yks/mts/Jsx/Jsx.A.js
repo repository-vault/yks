@@ -39,8 +39,16 @@ Jsx.A = new Class({
   click:function(event){ event.stop();
     if(!$defined(this.xtd)) this.xtd = this.extended();
     var href = this.anchor.get('href',true);
+
     if(href != this.options.href)
         this.options.url = href;
+
+    if (typeof history.pushState != 'undefined') {
+      history.pushState(
+        null,
+        null,
+        href);
+    }
 
     if(this.base_options) {
         this.setOptions(this.base_options);
@@ -52,9 +60,9 @@ Jsx.A = new Class({
         this.base_options = this.options;
         var target = this.options.target+'_modal';
         this.setOptions({box:{modal:true,fly:true},target:target});
-    } 
+    }
 
-    if(this.xtd) this.fire(); 
+    if(this.xtd) this.fire();
   }
 });
 
