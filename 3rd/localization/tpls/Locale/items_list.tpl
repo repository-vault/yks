@@ -19,7 +19,12 @@
 <?
 
 $tab = 1;
+
+$items = locale_item::from_ids(array_extract($items_list, 'item_key', true));
+
 foreach($items_list as $item_infos){ $tab++;
+
+
     $item_key  = $item_infos['item_key'];
     $lang_key  = $item_infos['lang_key']; //TODO : 
     $lang_str = $languages[$lang_key]['lang_code'].'-'.$languages[$lang_key]['country_code'];    
@@ -31,6 +36,7 @@ foreach($items_list as $item_infos){ $tab++;
 
     $item_safe = trim(base64_encode($item_key),"=");
     $height    = max(strlen($value_us)/70,min(strlen(value)/60,15),3);
+    $tags = "<br/>". mask_join(' - ', array_extract($items[$item_key]->tags, "tag_name"), '<a target="sshot_item" href="/?/Admin/Locale/Manage/Tags//%2$s/tag">%1$s</a>');
     
     $item_integration = "";
     if(bool($item_infos['item_sshot']))
@@ -41,10 +47,11 @@ foreach($items_list as $item_infos){ $tab++;
                              .specialchars_encode(strip_replace($item_infos['item_comment']));
     if(!$item_integration)
         $item_integration= "-";
-
+    if(!auth::verif("yks", "admin"))
+        $tags = "";
 
 echo "<tr class='line_pair' item_pict='$item_pict' item_safe='$item_safe' item_key='$item_key' lang_key='$lang_key'>
-    <td class='item_key'>".dsp::element_truncate($item_key,16,"span")."<div class='domain'>{$locale_domains_list[$lang_domains[$lang_key]['locale_domain_id']]['locale_domain_name']}</div></td>
+    <td class='item_key'>".dsp::element_truncate($item_key,16,"span")."<div class='domain'>{$locale_domains_list[$lang_domains[$lang_key]['locale_domain_id']]['locale_domain_name']}</div>$tags</td>
     <td>$lang_str</td>
     <td>".specialchars_encode($value_us)."</td>
     <td><textarea tabindex='$tab' rows='$height' name='items_vals[{$item_safe}][{$lang_key}]'>".specialchars_encode($value).XML_EMPTY."</textarea></td>

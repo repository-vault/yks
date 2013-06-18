@@ -9,13 +9,16 @@ class locale_item extends _sql_base {
   protected $sql_key = "item_key";
  
   static function instanciate($item_key) {
-    $locale_items = self::from_where(array(self::sql_key=>$item_key));
-    return $locale_items[$item_key];
+    return reset(self::from_ids($item_key));
+  }
+
+  static function from_ids($ids){
+    return self::from_where(array(self::sql_key=>$ids));
   }
 
   static function from_where($where){
     $res = parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
-    $res = self::get_items_tags($res);
+    self::load_tags($res);
     return $res;
   }
 
@@ -24,23 +27,25 @@ class locale_item extends _sql_base {
     return $this->sql_delete();
   }
 
-  static function get_items_tags($locale_items_list) {
-    $verif_item = array('item_key' => array_extract($locale_items_list, 'item_key'));
+  static protected function load_tags($items_list) {
+    $verif_item = array('item_key' => array_extract($items_list, 'item_key', true));
     //$verif_item []= "item_x IS NOT NULL "; //? (uniquement ceux avec des images)
 
     sql::select("ks_locale_tag_items", $verif_item);
     $tags_items_list = sql::brute_fetch();
-    $tags_list = locale_tag::from_where(array('tag_id' =>array_extract($tags_items_list, 'tag_id')));
+
+    $tags_list = array_extract($tags_items_list, 'tag_id', true);
+    $tags_list = locale_tag::from_where(array('tag_id' => $tags_list ));
+
+    foreach($items_list as $item)
+        $item->tags = array();
 
     foreach($tags_items_list as $tag_item) {
       $item_key = $tag_item['item_key'];
       $tag_id = $tag_item['tag_id'];
-      if(!$locale_items_list[$item_key]->tags)
-        $locale_items_list[$item_key]->tags = array();
-      $locale_items_list[$item_key]->tags[$tag_id] = $tags_list[$tag_id];
+      $items_list[$item_key]->tags[$tag_id] = $tags_list[$tag_id];
     }
 
-    return $locale_items_list;
   }
 
 }
