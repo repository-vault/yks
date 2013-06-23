@@ -31,13 +31,13 @@ class interactive_runner {
 
         $reflector = $this->reflection_scan_wsdl($this->obj, $this->className);
     } else {
-        $reflector = $this->reflection_scan($this->className, $this->className, $this->obj);
+        $reflector = $this->reflection_scan($this->obj, $this->className, $this->className);
     }
 
     $mode_str = is_null($this->obj) ? "auto-instanciation" : "existing object";
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
-    $this->reflection_scan(__CLASS__, self::ns, $this); //register runners own commands
+    $this->reflection_scan($this, self::ns); //register runners own commands
 
     if(is_null($this->obj)) {
       $can_construct = $reflector->IsInstantiable() && $reflector->hasMethod('__construct');
@@ -294,10 +294,16 @@ class interactive_runner {
 
   }
 
+
 /**
 *  Return ReflectionClass
 */
-  private function reflection_scan($className, $command_ns, &$instance){
+  function reflection_scan($instance, $command_ns = null, $className = null){
+    if(is_null($instance) && !$className)
+      throw new Exception("Cannot scan unknown static class");
+      
+    $className = pick($className, get_class($instance));
+    if(!$command_ns) $command_ns = $className;
     $reflect   = new ReflectionClass($className);
     $methods   = $reflect->getMethods();
 
@@ -311,7 +317,7 @@ class interactive_runner {
           && !$method->isStatic()
           && !$is_magic
           && !$method->isConstructor()) {
-        $callback = array(&$instance, $method_name);
+        $callback = array($instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
           && !$is_magic
