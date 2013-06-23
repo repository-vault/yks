@@ -115,6 +115,64 @@ class cli {
     echo "[PAUSE $prompt Press Any key]";
     self::text_prompt();
   }
+
+
+  //headers is ['col0', 'col1'] OR ['col0'= > 'colname', .'col1'= > 'colname'..]
+  public static function table($headers, $data){
+    if(is_numeric(key($headers)))
+      $headers = array_combine($headers, $headers);
+    $cols = array_keys($headers);
+    $table = array_values($data); array_unshift($table, $headers);
+
+    $w = count($cols) - 1; $h = count($data) + 1 ; //headers
+
+    $cols_len = array_combine($headers, array_map('strlen', $headers));
+    foreach($data as $line)
+     $cols_len = array_merge_recursive($cols_len, array_map('strlen', $line));
+    $cols_len = array_map('floor',  array_map('array_median', $cols_len));
+
+    $map = array(
+      'lu' => '╔', 'mu' => '╦', 'ru' => '╗', 
+      'lm' => '╠', 'mm' => '╬', 'rm' => '╣', 
+      'ld' => '╚', 'md' => '╩', 'rd' => '╝', 
+      'y'  => '║', 'x' => '═',
+    );
+    $map = array(
+      'lu' => '┌', 'mu' => '┬', 'ru' => '┐', 
+      'lm' => '├', 'mm' => '┼', 'rm' => '┤', 
+      'ld' => '└', 'md' => '┴', 'rd' => '┘', 
+      'y'  => '│', 'x' => '─',
+    );
+
+    
+    $out = "";
+    $line = array();
+    foreach($cols_len as $col=>$len)
+      $line[] = str_repeat($map['x'], $len);
+
+    foreach($table as $y=>$data) {
+      $dy = ($y == 0 ? "u" : ($y != $h ? "m" : "d"));
+
+      $row = array();
+      foreach($cols_len as $col=>$len) 
+        $row[]  = self::str_pad($data[$col], $len, $y == 0 ? STR_PAD_BOTH : STR_PAD_RIGHT);
+
+      $out .= self::table_line($line, $map["l{$dy}"], $map["m{$dy}"], $map["r{$dy}"]).CRLF;
+      $out .= self::table_line($row, $map["y"], $map["y"], $map["y"]).CRLF;
+    }
+    $out .= self::table_line($line, $map["ld"], $map["md"], $map["rd"]).CRLF;
+    echo $out;
+  }
+
+  function table_line($line, $ml, $mm, $mr) { return $ml . join($mm, $line) . $mr; }
+
+
+  function str_pad($str, $size, $mode){
+    if(mb_strlen($str)>$size) $str = txt::truncate($str, $size);
+    return self::pad($str, ' ',  $mode, "%s", $size);
+  }
+
+
   public static function box($title, $msg){
     $args = func_get_args(); $pad_len = self::$cols;
     $options = count($args)%2==1?array_pop($args) : array();
