@@ -124,7 +124,7 @@ class cli {
     $cols = array_keys($headers);
     $table = array_values($data); array_unshift($table, $headers);
 
-    $w = count($cols) - 1; $h = count($data) + 1 ; //headers
+    $w = count($cols) - 1; $h = count($table) ;
 
     $cols_len = array_combine($headers, array_map('strlen', $headers));
     foreach($data as $line)
@@ -155,10 +155,10 @@ class cli {
 
       $row = array();
       foreach($cols_len as $col=>$len) 
-        $row[]  = self::str_pad($data[$col], $len, $y == 0 ? STR_PAD_BOTH : STR_PAD_RIGHT);
+        $row[]  = self::str_pad($data[$col], $len, $y == 0 ? STR_PAD_BOTH : STR_PAD_RIGHT, $y == 0 ? $map['x'] : " ");
 
-      $out .= self::table_line($line, $map["l{$dy}"], $map["m{$dy}"], $map["r{$dy}"]).CRLF;
-      $out .= self::table_line($row, $map["y"], $map["y"], $map["y"]).CRLF;
+      $out .= self::table_line($y == 0 ? $row : $line, $map["l{$dy}"], $map["m{$dy}"], $map["r{$dy}"]).CRLF;
+      if($y) $out .= self::table_line($row, $map["y"], $map["y"], $map["y"]).CRLF;
     }
     $out .= self::table_line($line, $map["ld"], $map["md"], $map["rd"]).CRLF;
     echo $out;
@@ -167,9 +167,9 @@ class cli {
   function table_line($line, $ml, $mm, $mr) { return $ml . join($mm, $line) . $mr; }
 
 
-  function str_pad($str, $size, $mode){
+  function str_pad($str, $size, $mode, $pad = ' '){
     if(mb_strlen($str)>$size) $str = txt::truncate($str, $size);
-    return self::pad($str, ' ',  $mode, "%s", $size);
+    return self::pad($str, $pad ,  $mode, "%s", $size);
   }
 
 
