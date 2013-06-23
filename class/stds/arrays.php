@@ -12,6 +12,41 @@ function make_tree($splat, $root=false, $inverted = false){
 }
 
 
+function trimmed_mean($X, $k = 0.1) {
+  $n = count($X);
+  sort($X, SORT_NUMERIC); 
+  for($i=$k; $i < $n-$k; $i++) 
+    $sum += $X[$i];
+  $mean = $sum / ($n - 2 * $k);
+  return $mean;
+}
+
+
+function array_avg($data){
+  return array_sum($data) / count($data);
+}
+
+function array_avg_trimmed($data, $pad = 0.1) {
+  $avg = array_avg($data);
+  foreach($data as $k=>$v)
+      if(abs(1 - ($v / $avg)) > $pad) unset($data[$k]);
+  return $avg = array_avg($data);
+}
+
+function array_median($data) {
+    sort($data);
+    $count = count($data);
+    $middleval = floor(($count-1)/2);
+    if($count % 2) {
+        $median = $data[$middleval];
+    } else { 
+        $low = $data[$middleval];
+        $high = $data[$middleval+1];
+        $median = (($low+$high)/2);
+    }
+    return $median;
+}
+
 function pick_between($i, $min, $max) { return  min(max($min, (int) $i), $max); }
 
 function array_next_val($array,$val){ return array_step($array, $val, 1, false); }
