@@ -9,7 +9,7 @@ class interactive_runner {
   private $file;
   private $magic_call; //does current object support __call ?
   const ns = "runner";
-  
+
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
 
@@ -146,9 +146,9 @@ class interactive_runner {
     rbx::ok("Exec $args");
     eval($args);
   }
- 
+
   private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
-      
+
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
         if(isset($command_infos['aliases'][$command_prompt]))
@@ -203,7 +203,7 @@ class interactive_runner {
     rbx::ok("Quit");
   }
 
-    
+
 /**
 * @interactive_runner disable
 * runner's internal looop, signal management
@@ -221,7 +221,7 @@ class interactive_runner {
     }
 
 
-    while(true){ 
+    while(true){
 
       $this->command_loop();
 
@@ -231,7 +231,7 @@ class interactive_runner {
     }
 
   }
-  
+
   private $last_command;
   private static $REPLAY_COMMAND = array('r');
 
@@ -239,17 +239,17 @@ class interactive_runner {
   private function command_loop(){
    ///system("stty -icanon");
 
-    while(is_null($this->command_pipe)){ 
+    while(is_null($this->command_pipe)){
 
       try {
         $command_split = array();
         cli::text_prompt('$'.$this->className, null, $command_split);
         if($command_split == self::$REPLAY_COMMAND)
             $command_split = $this->last_command;
-        else 
+        else
             $this->last_command = $command_split;
-      
-        $command_prompt  = array_shift($command_split);  
+
+        $command_prompt  = array_shift($command_split);
         list($command_callback, $command_args) = $this->command_parse($command_prompt, $command_split);
       } catch(Exception $e){ continue; }
 
@@ -298,10 +298,10 @@ class interactive_runner {
 /**
 *  Return ReflectionClass
 */
-  function reflection_scan($instance, $command_ns = null, $className = null){
+  function reflection_scan(&$instance, $command_ns = null, $className = null){
     if(is_null($instance) && !$className)
       throw new Exception("Cannot scan unknown static class");
-      
+
     $className = pick($className, get_class($instance));
     if(!$command_ns) $command_ns = $className;
     $reflect   = new ReflectionClass($className);
@@ -317,7 +317,7 @@ class interactive_runner {
           && !$method->isStatic()
           && !$is_magic
           && !$method->isConstructor()) {
-        $callback = array($instance, $method_name);
+        $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
           && !$is_magic
@@ -333,11 +333,11 @@ class interactive_runner {
 
       $tmp = $doc['args']['interactive_runner']['computed'];
       if(!$tmp) $tmp = array();
-      if(in_array("disable", $tmp)) 
+      if(in_array("disable", $tmp))
         continue;
 
       $usage = array('params'=>array(), 'doc' => $doc['doc'], 'hide' => in_array("hide", $tmp));
-        
+
       foreach($params as $param) {
         $param_infos = array();
         if($param->isOptional()){
@@ -370,10 +370,10 @@ class interactive_runner {
     if(cli::$OS == cli::OS_WINDOWS) {
       $cmd = "mode CON";
       exec($cmd, $out);
-      if( preg_match_all("#(lines|columns):\s+([0-9]+)$#mi", join("\n", $out), $out)) 
+      if( preg_match_all("#(lines|columns):\s+([0-9]+)$#mi", join("\n", $out), $out))
         $size = array_combine(array_map('strtolower', $out[1]), $out[2]);
       cli::$cols = $size['columns'] ? $size['columns'] - 1 : cli::$cols;
-    } else 
+    } else
       cli::$cols = trim(`tput cols`);
 
     $this->help();
@@ -387,7 +387,7 @@ class interactive_runner {
     if(isset(cli::$dict['ir://output']))
       rbx::$output_mode = cli::$dict['ir://output'];
 
-    
+
     if(!is_array($args)) $args = array($args);
     $runner = new self($obj, $args);
 
