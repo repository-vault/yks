@@ -4,6 +4,7 @@
   <table name="ks_geochecker">
     <fields>
       <field type="geochecker_id"/>
+      <field type="text" name="geochecker_name"/>
       <field type="text" name="origin_table"/>
       <field type="text" name="origin_field_id"/>
       <!-- Origin field name -->
@@ -20,6 +21,11 @@
       <field type="text" name="target_lat_field" null="null"/>
       <field type="text" name="target_field_id"/>
     </fields>
+    <indices>
+      <index type="unique">
+        <member column="geochecker_name"/>
+      </index>
+    </indices>
   </table>
   <mykse type="geochecker_id" birth="ks_geochecker">
     <int/>

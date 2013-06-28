@@ -18,6 +18,15 @@
       self::$geochecker_types = sql::brute_fetch('geochecker_id');
     }
 
+    protected function load_geochecker(){
+      return $this->geochecker = self::$geochecker_types[$this->geochecker_id];
+    }
+
+    public static function getgeochecker($name){//not yks magic method
+      $array = array_extract(self::$geochecker_types, 'geochecker_name');
+      return self::$geochecker_types[array_search($name, $array)];
+    }
+
     /**
     * Create && initialize job_geochecker
     *
@@ -36,10 +45,6 @@
         throw new Exception("No job created");
 
       return $job;
-    }
-
-    protected function get_geochecker(){
-      return self::$geochecker_types[$this->geochecker_id];
     }
 
     public function get_addr_infos(){
