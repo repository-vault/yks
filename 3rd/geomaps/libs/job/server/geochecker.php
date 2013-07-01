@@ -58,7 +58,7 @@
       );
 
       foreach($cols as $col){
-        if(isset($this->geochecker[$col])){
+        if($this->geochecker[$col]){
           $new_cols[] = $this->geochecker[$col].' as '.$col;
         }
       }
