@@ -1,3 +1,0 @@
-#!/bin/bash
-`which php` -r "include 'yks/cltools/irunner.php';" $*
-
