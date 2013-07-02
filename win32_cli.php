@@ -43,6 +43,7 @@ class win32_cli {
   public static function md5file($file_path){ echo md5_file($file_path); }
   public static function md5($str){ echo md5($str); }
   public static function sha1($str){ echo sha1($str); }
+  public static function sleep($delay){  sleep($delay); }
 
   public static function telnet($ip, $port){
     cli::$dict = compact('ip', 'port');
