@@ -8,6 +8,8 @@ class interactive_runner {
   private $command_pipe;
   private $file;
   private $magic_call; //does current object support __call ?
+  private $static; //static mode
+
   const ns = "runner";
 
   static function init(){
@@ -19,9 +21,12 @@ class interactive_runner {
   function __construct($from, $args = array()){
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
     $this->obj  = null;
+    $this->static = cli::$dict['ir://static'];
 
     if(is_string($from)) {
         $this->className = $from;
+        if($this->static)
+          $this->obj = $from; //static mode
     } else {
         $this->obj       = $from;
         $this->className = get_class($this->obj);
@@ -252,7 +257,7 @@ class interactive_runner {
         $command_prompt  = array_shift($command_split);
         list($command_callback, $command_args) = $this->command_parse($command_prompt, $command_split);
       } catch(Exception $e){ continue; }
-
+var_dump($command_callback);
 
       try {
         $res =  call_user_func_array($command_callback, $command_args);
@@ -312,11 +317,16 @@ class interactive_runner {
       $is_command = false;
       $callback   = null;
       $is_magic   = starts_with($method_name, "__");
-      if($method_name == "__call") $this->magic_call = true;
+
+      if($method_name == "__call" && !$this->static)
+        $this->magic_call = true;
+
       if($method->isPublic()
           && !$method->isStatic()
           && !$is_magic
-          && !$method->isConstructor()) {
+          && !$method->isConstructor()
+          && !$this->static
+	) {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
