@@ -11,9 +11,14 @@
     * @return string
     **/
     public static function login($user_login, $user_pswd){
-      $args = func_get_args();
-      call_user_func_array(array(self::TRUE_CLASS, __FUNCTION__), $args);
-      return session_id();
+      try{
+        $args = func_get_args();
+        call_user_func_array(array(self::TRUE_CLASS, __FUNCTION__), $args);
+        return session_id();
+      }
+      catch(Exception $e){
+        Throw new SoapFault( $e->getMessage(), $e->getMessage());
+      }
     }
 
     /**

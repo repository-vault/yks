@@ -13,7 +13,7 @@ class auth {
       if( ! yks::$get->config->users->search('auth_ldap_soap') )
         throw new Exception("Invalid password"); //no more authentification pattern available
 
-      if(!auth_ldap_soap::reload($user_login, $user_pswd, $redirect))
+      if(!auth_ldap_soap::reload($user_login, html_entity_decode($user_pswd), $redirect))
         throw new Exception("Invalid password, ldap");
     }
     self::fireEvent(self::EVENT_LOGIN);
@@ -69,7 +69,7 @@ class auth {
     $diff = array_intersect((array) sess::$sess['users_tree'], $asked_tree);
     $users_tree = $skip_auth ? $asked_tree : self::get_tree($diff, $asked_tree);
 
-    if(reset($users_tree) != exyks::retrieve('USERS_ROOT'))
+    if($users_tree === false || reset($users_tree) != exyks::retrieve('USERS_ROOT'))
        return false;
 
     return compact('user_id', 'users_tree');
