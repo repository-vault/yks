@@ -20,6 +20,11 @@ class interactive_runner {
 
   function __construct($from, $args = array()){
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
+
+
+    $this->reflection_scan($this, self::ns); //register runners own commands
+
+
     $this->obj  = null;
     $this->static = cli::$dict['ir://static'];
 
@@ -41,8 +46,6 @@ class interactive_runner {
 
     $mode_str = is_null($this->obj) ? "auto-instanciation" : "existing object";
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
-
-    $this->reflection_scan($this, self::ns); //register runners own commands
 
     if(is_null($this->obj)) {
       $can_construct = $reflector->IsInstantiable() && $reflector->hasMethod('__construct');
@@ -113,7 +116,9 @@ class interactive_runner {
   }
 
 
-  //public
+/**
+* @interactive_runner hide
+*/
   function register_alias($command_key, $alias_name, $args = array()){
     $this->command_aliases($this->className, $command_key, array($alias_name=>$args) );
   }
@@ -146,6 +151,9 @@ class interactive_runner {
     $this->command_aliases($command_ns, $command_key, $command_key, $command_hash);
   }
 
+/**
+* @interactive_runner hide
+*/
   function php($cmd){
     $args = func_get_args(); $args = join(' ', $args);
     rbx::ok("Exec $args");
@@ -257,7 +265,6 @@ class interactive_runner {
         $command_prompt  = array_shift($command_split);
         list($command_callback, $command_args) = $this->command_parse($command_prompt, $command_split);
       } catch(Exception $e){ continue; }
-var_dump($command_callback);
 
       try {
         $res =  call_user_func_array($command_callback, $command_args);
@@ -301,7 +308,8 @@ var_dump($command_callback);
 
 
 /**
-*  Return ReflectionClass
+* Return ReflectionClass
+* @interactive_runner hide
 */
   function reflection_scan(&$instance, $command_ns = null, $className = null){
     if(is_null($instance) && !$className)
