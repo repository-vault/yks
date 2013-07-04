@@ -48,8 +48,12 @@ class interactive_runner {
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
     if(is_null($this->obj)) {
-      $can_construct = $reflector->IsInstantiable() && $reflector->hasMethod('__construct');
-      $this->obj = $args && $can_construct ? $reflector->newInstanceArgs($args) : $reflector->newInstance();
+      $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']);
+
+      if($instanciate)
+        $this->obj = call_user_func_array(array($this->className, 'instanciate'), $args);
+      else 
+        $this->obj = $reflector->IsInstantiable() ? ($args ? $reflector->newInstanceArgs($args) : $reflector->newInstance() ) : $this->className;
     }
   }
 
