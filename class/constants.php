@@ -8,8 +8,8 @@ if(!defined('CLASS_PATH')) define('CLASS_PATH', dirname(__FILE__));
 
     //Usefull constants
 define('LF',"\n");define('CRLF',"\r\n");
-define('_NOW',$_SERVER['REQUEST_TIME']);
-define('_UDAY',floor(_NOW/86400));
+define('_NOW',  $_SERVER['REQUEST_TIME']);
+define('_UDAY', floor(gmmktime(0,0,0)/86400));
 
 
 define('UTF8_BOM', pack('C*',239,187,191));
