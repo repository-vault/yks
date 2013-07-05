@@ -1,8 +1,12 @@
+/** auto complete box **/
+@import "path://skin.js/3rd/Devthought/TextboxList/TextboxList.css";
+@import "path://skin.js/3rd/Devthought/TextboxList/TextboxList.Autocomplete.css";
+
 .shop_icon {
   width:24px;
   height:24px;
   display:inline-block;
-  
+
 }
 .shop_icon_edit { background-image:url(path://skin/icons/edit_24.png); }
 .shop_icon_trash { background-image:url(path://skin/icons/trash_24.png); }
