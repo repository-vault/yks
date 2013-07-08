@@ -103,6 +103,20 @@ if(!function_exists("header_remove")) {
   }
 }
 
+if(!function_exists('stream_resolve_include_path')) { //5.3
+  function stream_resolve_include_path($file_path){
+    if(file_exists($file_path))
+      return realpath($file_path);
+
+    $paths = explode(PATH_SEPARATOR, get_include_path());
+    foreach($paths as $path) 
+      if(file_exists($path.DIRECTORY_SEPARATOR.$file_path))
+          return realpath($path.DIRECTORY_SEPARATOR.$file_path);
+    return false;
+  }
+}
+
+
 function ip2int($ip){return sprintf("%u",ip2long($ip));}
 function vals($enum,$chld="val"){
     $tmp=array(); if($enum->$chld) foreach($enum->$chld as $v)$tmp[]="$v"; return $tmp;
