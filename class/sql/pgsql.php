@@ -197,6 +197,7 @@ class sql {
     if(is_int($v))    return "$kesc=$v";
     if(is_null($v))   return "$kesc IS NULL";
     if(is_bool($v))   return $v ? $kesc : "not($kesc)";
+    if(is_float($v))  return "$kesc=$v";
   }
 
   static function insert($table, $vals = false, $auto_indx = false, $keys = false) {
@@ -480,6 +481,7 @@ class sql {
   const TUNE_SORT      = 4;
   const TUNE_HASHJOIN  = 8;
   const TUNE_HASHAGG   = 16;
+  const TUNE_NESTLOOP  = 32;
 
   protected static $plans = array(
     self::TUNE_INDEXSCAN => 'indexscan',
@@ -487,6 +489,7 @@ class sql {
     self::TUNE_SORT      => 'sort',
     self::TUNE_HASHJOIN  => 'hashjoin',
     self::TUNE_HASHAGG   => 'hashagg',
+    self::TUNE_NESTLOOP  => 'nestloop',
   );
   protected static $_last_tune = null;
   protected static function tune($mode, $enable){
