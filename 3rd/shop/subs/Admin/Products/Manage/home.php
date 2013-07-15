@@ -5,14 +5,16 @@
 
 if($action=="product_manage") try {
 
+
+    $product_name = str_replace('&amp;','&',$_POST['product_name']);
     $data = array(
         'product_price'       => (int)$_POST['product_price'],
-        'product_name'        => $_POST['product_name'],
+        'product_name'        => $product_name,
         'product_ref'         => $_POST['product_ref'],
         'product_descr'       => txt::rte_clean($_POST['product_descr']),
         'product_descr_long'  => txt::rte_clean($_POST['product_descr_long']),
         'parent_id'           => (int)$_POST['parent_id'],
-     ); 
+     );
 
     if($product_id) {
         foreach($data as &$val) if(!$val)$val = null;

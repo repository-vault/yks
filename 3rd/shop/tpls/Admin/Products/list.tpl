@@ -22,13 +22,13 @@
       $categs = $product_infos['product_categs'] ? join(',', $product_infos['product_categs']) : '';
       echo "<tr class='line_pair'>
             <td>[$product_id] {$product_infos['product_ref']}</td>
-            <td>".dsp::element_truncate($product_infos['product_name'],20,"span")."</td>
+            <td>".str_replace('&','&amp;',dsp::element_truncate($product_infos['product_name'],20,"span"))."</td>
             <td>{$product_infos['product_price']}</td>
             <td>$categs</td>
             <td>$actions</td>
             </tr>";
 
-      if($product_infos->product_declinaisons) 
+      if($product_infos->product_declinaisons)
         foreach ($product_infos->product_declinaisons as $variation) {
           $actions = "";
           $actions .="<div class='shop_icon shop_icon_trash'  onclick=\"Jsx.action({ks_action:'product_delete',product_id:{$variation['product_id']},this,this.title)\" title='Supprimer ce produit'>&#160;</div>";

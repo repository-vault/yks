@@ -4,9 +4,9 @@
 
     <fields caption="Informations générales">
       <em>Les champs vides seront enregistrés NULL</em>
-      <field type="product_name" title="Nom du produit" value="<?=$product['product_name']?>"/>
+      <field type="product_name" title="Nom du produit" value="<?=str_replace('&','&amp;',$product['product_name'])?>"/>
       <field type="product_ref" title="Ref du produit" value="<?=$product['product_ref']?>"/>
-      <field type="product_price" title="Prix" value="<?=$product['product_price']?>"/>      
+      <field type="product_price" title="Prix" value="<?=$product['product_price']?>"/>
       <field title="Produit parent">
         <select name="parent_id"><option value=''>-- Produit racine--</option>
           <?=dsp::dd($products_roots_tree, array('col'=>'product_name','selected'=>$product['parent_id'] ))?>
@@ -28,7 +28,7 @@
     </fields>
     <fields caption="Owners">
       <box src='?&href_base;/owners' />
-    </fields>  
+    </fields>
   <?}?>
 
   <hr class="clear"/>

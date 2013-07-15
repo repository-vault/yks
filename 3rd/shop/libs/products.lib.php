@@ -12,8 +12,8 @@ class products extends _sql_base {
   static function instanciate($product_id) {
     $products = self::from_ids(array($product_id), false);
     return reset($products);
-  } 
-  
+  }
+
   static function from_ids($ids, $related_products=true) {
     $where = array (self::sql_key => $ids);
     $products =  self::from_where($where, $related_products);
@@ -21,7 +21,7 @@ class products extends _sql_base {
   }
 
   static function from_where($where, $related_products=true){
-    
+
     $products  =  parent::from_where(__CLASS__, self::sql_table, self::sql_key, $where);
     if(!$products)
         return array();
@@ -51,7 +51,7 @@ class products extends _sql_base {
         $product->meta_products_list = array();
       $product->meta_products_list[$meta_product['meta_product_id']] = $meta_product;
     }
- 
+
     sql::select("ks_shop_products_specifications", $verif);
     $products_specifications = sql::brute_fetch();
     foreach($products_specifications as $product_spec) {
@@ -60,7 +60,7 @@ class products extends _sql_base {
         $product->products_specifications = array();
       $product->products_specifications[$product_spec['specification_key']] = $product_spec;
     }
-      
+
     sql::select("ks_shop_products_categories", $verif);
     $products_categories = sql::brute_fetch();
     foreach($products_categories as $product_categ) {
@@ -71,22 +71,22 @@ class products extends _sql_base {
       if($product['product_id']) {
 
       }
-    }    
- 
+    }
+
    // Vignettes
     foreach($products as $product)
      $product->product_img = "/imgs/".SITE_BASE."/products/{$product['product_id']}";
-    
+
     // Heritage
     self::product_variations($products);
 
     if(!$related_products)
       $products = array_intersect_key($products, array_flip($head_products_list));
-    
+
     return $products;
   }
 
-  
+
   private static function product_variations($products) {
 
     foreach($products as $product_id=>$product) {
@@ -96,7 +96,7 @@ class products extends _sql_base {
         if(!$parent->product_declinaisons)
           $parent->product_declinaisons = array();
         $parent->product_declinaisons[$product_id] = $product;
-      
+
       // On complète les données des enfants avec celle de son papa au besoin
       if(!glob(ROOT_PATH.$product->product_img))
         $product->product_img = $parent->product_img;
@@ -110,10 +110,10 @@ class products extends _sql_base {
 
     $variations_products_id = self::get_children($this->product_id);
     $variations_products = self::from_where(array('product_id' => $variations_products_id), false);
-    
+
     $parent_clone = $this->clone_product();
     if(!$parent_clone) throw rbx::error("Erreur durant le clonage d'un produit et ses variations");
-    
+
     $overdata = array (
       'parent_id'     => $parent_clone->product_id,
     );
@@ -123,31 +123,31 @@ class products extends _sql_base {
 
     return $parent_clone;
   }
-  
+
   public function clone_product($overide_data=false) {
     $data = (array)$this->data;
 
-    if($overide_data) 
+    if($overide_data)
       foreach($overide_data as $data_key=>$overdata)
         if(isset($data[$data_key]))
           $data[$data_key] = $overdata;
 
     unset($data[self::sql_key]);
-    
+
     $product_id = sql::insert(self::sql_table, $data, true);
     if(!$product_id) throw rbx::error("erreur durant le clonage du produit");
 
-    $res = true;    
+    $res = true;
     $meta_products = array_extract($this->meta_products_list, 'meta_product_id');
-    foreach($meta_products as $meta_product) 
+    foreach($meta_products as $meta_product)
       $res &= sql::insert('ivs_shop_meta_products_products',array('meta_product_id'=>$meta_product, 'product_id'=>$product_id));
-    
+
     $owners = array_extract($this->owners_list,'user_id');
-    foreach($owners as $owner) 
+    foreach($owners as $owner)
       $res &= sql::insert('ivs_shop_products_owners',array('user_id'=>$owner, 'product_id'=>$product_id));
 
-    foreach($this->products_categories  as $categorie) 
-      $res &= sql::insert('ivs_shop_products_categories',array('category_id'=>$categorie, 'product_id'=>$product_id));      
+    foreach($this->products_categories  as $categorie)
+      $res &= sql::insert('ivs_shop_products_categories',array('category_id'=>$categorie, 'product_id'=>$product_id));
 
     $products_specifications = $this->products_specifications;
     foreach($products_specifications as $product_spec_key=>$product_spec) {
@@ -160,12 +160,12 @@ class products extends _sql_base {
     }
 
     if(!$res) throw rbx::error("Erreur durant le clonage des propriétés du produit $product_id.");
-    
+
     return self::instanciate($product_id);
   }
-  
+
   /**
-  *   retourne les informations sur une liste de produit	
+  *   retourne les informations sur une liste de produit
   *   get_infos ($product_id || $products_id || $product_infos || $products_infos )
   */
   static function get_infos($product_infos){
@@ -230,7 +230,7 @@ class products extends _sql_base {
 
 
   /*
-  retourne les information d'un produit, ou d'une liste d'id de produits 
+  retourne les information d'un produit, ou d'une liste d'id de produits
   */
   /*static function get_infos_splat($product_id){
     $products_list=(array)$product_id;
@@ -247,10 +247,10 @@ class products extends _sql_base {
 
 //recurse 1 level up, 1 level down
   private static function get_product_tree($products_ids){
-    
+
     sql::$queries = array();
     $verif_products = sql::where( array('product_id'=>$products_ids, 'parent_id' => $products_ids), false, " OR ");
-    sql::select("ks_shop_products_list", $verif_products, "*", "ORDER BY IF( product_id = parent_id  OR parent_id IS NULL , 1 ,0) DESC"); 
+    sql::select("ks_shop_products_list", $verif_products, "*", "ORDER BY IF( product_id = parent_id  OR parent_id IS NULL , 1 ,0) DESC");
     $product_ids_extended = sql::brute_fetch("product_id");
     $product_ids_extended  = array_unique(
         array_merge(array_keys($product_ids_extended),
@@ -260,7 +260,7 @@ class products extends _sql_base {
     return $product_ids_extended;
   }
 
-  
+
   static function get_children($product_id,$depth=-1){
     return sql_func::get_children($product_id,'ks_shop_products_list','product_id',$depth);
   }
