@@ -75,7 +75,11 @@
     */
     public function get_description(){
       $desc = parent::get_description();
-      return is_array($this->addr_infos) ? array_merge($desc, $this->addr_infos) : $desc;
+      if(is_array($this->addr_infos) && is_array($desc)){
+         return array_merge($desc, $this->addr_infos);
+      }
+
+      return $desc;
     }
 
     /**
