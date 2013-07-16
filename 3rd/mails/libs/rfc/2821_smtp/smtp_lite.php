@@ -6,7 +6,7 @@ class smtp_lite {
   public static $trace = false;
 
   private static function server_sync($sock,$response){
-    while(!preg_match("#^[0-9]{3}(?=\s)#",$tmp=fgets($sock,256),$out) );
+    while($sock && !preg_match("#^[0-9]{3}(?=\s)#",$tmp=fgets($sock,256),$out) );
     if($out[0]!=$response)
         throw new Exception("Sync {$out[0]}!={$response} : $tmp");
   }
