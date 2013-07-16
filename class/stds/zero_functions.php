@@ -99,22 +99,22 @@ function bool($val,$str=false){
 
 if(!function_exists("header_remove")) {
   function header_remove($header_name) { //5.3
-    header("$header_name:", true);
+    return php_legacy::header_remove($header_name);
   }
 }
 
 if(!function_exists('stream_resolve_include_path')) { //5.3
-  function stream_resolve_include_path($file_path){
-    if(file_exists($file_path))
-      return realpath($file_path);
-
-    $paths = explode(PATH_SEPARATOR, get_include_path());
-    foreach($paths as $path) 
-      if(file_exists($path.DIRECTORY_SEPARATOR.$file_path))
-          return realpath($path.DIRECTORY_SEPARATOR.$file_path);
-    return false;
+  function stream_resolve_include_path($file_path) {
+    return php_legacy::stream_resolve_include_path($file_path);
   }
 }
+
+if(!function_exists('quoted_printable_encode')) {
+  function quoted_printable_encode($str) {
+    return php_legacy::quoted_printable_encode_filter($str);
+  }
+}
+
 
 
 function ip2int($ip){return sprintf("%u",ip2long($ip));}

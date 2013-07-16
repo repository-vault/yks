@@ -9,9 +9,9 @@ class stdflow_filter extends php_user_filter {
    stream_filter_register(self::$FILTER_NAME.".*", __CLASS__);
  }
  
- public static function transform($str, $filter_name, $callback = false){
+ public static function transform($str, $filter_name, $callback = false, $filter_opts = array()){
   $fp = fopen("php://memory", 'r+');
-  $res = @stream_filter_append($fp, $filter_name, STREAM_FILTER_READ);
+  $res = @stream_filter_append($fp, $filter_name, STREAM_FILTER_WRITE, $filter_opts);
   if(!$res && $callback) {
       $filter_name = self::make_filter($callback);
       $res = stream_filter_append($fp, $filter_name, STREAM_FILTER_READ);

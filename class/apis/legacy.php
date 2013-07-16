@@ -1,8 +1,37 @@
 <?
 /* Legacy are php (now) native function */
 class php_legacy {
- 
+
+  static function  header_remove($header_name) { 
+    header("$header_name:", true);
+  }
+
+  static function stream_resolve_include_path($file_path){
+    if(file_exists($file_path))
+      return realpath($file_path);
+
+    $paths = explode(PATH_SEPARATOR, get_include_path());
+    foreach($paths as $path) 
+      if(file_exists($path.DIRECTORY_SEPARATOR.$file_path))
+          return realpath($path.DIRECTORY_SEPARATOR.$file_path);
+    return false;
+  }
+
+
+    //try with filter first, then with the callback
+  static function quoted_printable_encode_filter($str){
+    $filter_name     = 'convert.quoted-printable-encode';
+    $filter_options = array( 'line-break-chars' => "\n", 'line-length' => 76 );
+    $filter_fallback = array('php_legacy', 'quoted_printable_encode');
+
+    $str =  stdflow_filter::transform($str, $filter_name, $filter_fallback, $filter_options);
+    return $str;
+  }
+
+
   static function quoted_printable_encode($input, $line_max = 75){
+
+
     $bEmulate_imap_8bit = true;
 
     $aLines = preg_split("/(?:\r\n|\r|\n)/", $input);
