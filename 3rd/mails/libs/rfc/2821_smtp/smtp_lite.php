@@ -3,6 +3,8 @@
 
 
 class smtp_lite {
+  public static $trace = false;
+
   private static function server_sync($sock,$response){
     while(!preg_match("#^[0-9]{3}(?=\s)#",$tmp=fgets($sock,256),$out) );
     if($out[0]!=$response)
@@ -30,7 +32,11 @@ class smtp_lite {
 */
   public static function smtpsend($contents, $dests){
 
-    //throw rbx::error(print_r($dests,1).nl2br(specialchars_encode($contents)));
+    if(self::$trace) {
+      rbx::error(print_r($dests,1));
+      rbx::error(specialchars_encode($contents));
+      return;
+    }
 
     foreach(yks::$get->config->apis->iterate("smtp") as $smtp_config ) {
         try {
