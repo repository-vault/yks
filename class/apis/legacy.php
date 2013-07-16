@@ -19,9 +19,9 @@ class php_legacy {
 
 
     //try with filter first, then with the callback
-  static function quoted_printable_encode_filter($str){
+  static function quoted_printable_encode_filter($str, $len = 76){
     $filter_name     = 'convert.quoted-printable-encode';
-    $filter_options = array( 'line-break-chars' => "\n", 'line-length' => 76 );
+    $filter_options = array( 'line-break-chars' => "\n", 'line-length' => $len);
     $filter_fallback = array('php_legacy', 'quoted_printable_encode');
 
     $str =  stdflow_filter::transform($str, $filter_name, $filter_fallback, $filter_options);

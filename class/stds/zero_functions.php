@@ -110,8 +110,8 @@ if(!function_exists('stream_resolve_include_path')) { //5.3
 }
 
 if(!function_exists('quoted_printable_encode')) {
-  function quoted_printable_encode($str) {
-    return php_legacy::quoted_printable_encode_filter($str);
+  function quoted_printable_encode($str, $len = 76) {
+    return php_legacy::quoted_printable_encode_filter($str, $len);
   }
 }
 
