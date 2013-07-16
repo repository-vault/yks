@@ -51,8 +51,10 @@ class _storage_redis {
   }
 
   static function delete($k){
-    if(!self::$redis)
-     return unset(self::$local_cache[$k]);
+    if(!self::$redis) {
+     unset(self::$local_cache[$k]);
+     return;
+    }
 
     return self::$redis->del($k);
   }
