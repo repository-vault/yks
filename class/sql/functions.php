@@ -71,6 +71,8 @@ class sql_func {
   static function make_search_blob($search_field, $qs, $main_field = null, $LIKE = "ILIKE"){
 
     $out = self::explode_search_blob($qs);
+    if(!$out)
+      return false;
 
     $part = 0;
     $ret = array();
