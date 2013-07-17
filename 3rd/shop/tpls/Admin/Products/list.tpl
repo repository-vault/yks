@@ -14,7 +14,8 @@
       if($product_infos->parent_id != null) continue;
 
       $actions = "";
-      $actions .="<div class='shop_icon shop_icon_trash'  onclick=\"Jsx.action({ks_action:'product_delete',product_id:$product_id},this,this.title)\" title='Supprimer ce produit'>&#160;</div>";
+      $actions .="<div class='shop_icon shop_icon_trash'  
+onclick=\"Jsx.action({ks_action:'product_delete',product_id:$product_id},this,this.title)\" title='Supprimer ce produit'>&#160;</div>";
 
       $actions .="<a class='shop_icon shop_icon_edit' href='/?&href_base;/Manage//$product_id' target='product_manage' title='Editer le produit'>&#160;</a>";
       $actions .="<a class='shop_icon shop_icon_clone' onclick='if(confirm(\"Cloner le produit ?\")) Jsx.open(\"/?&href_base;/Manage//$product_id;clone\",\"product_manage\",this)' target='product_manage' title='Cloner le produit'>&#160;</a>";
@@ -31,7 +32,8 @@
       if($product_infos->product_declinaisons)
         foreach ($product_infos->product_declinaisons as $variation) {
           $actions = "";
-          $actions .="<div class='shop_icon shop_icon_trash'  onclick=\"Jsx.action({ks_action:'product_delete',product_id:{$variation['product_id']},this,this.title)\" title='Supprimer ce produit'>&#160;</div>";
+          $actions .="<div class='shop_icon shop_icon_trash'  
+onclick=\"Jsx.action({ks_action:'product_delete',product_id:{$variation['product_id']}},this,this.title)\" title='Supprimer ce produit'>&#160;</div>";
           $actions .="<a class='shop_icon shop_icon_edit' href='/?&href_base;/Manage//{$variation['product_id']}' target='product_manage'>&#160;</a>";
           $categs = $variation['product_categs'] ? join(',', $variation['product_categs']) : '';
           echo "<tr class='line_pair' style='color:#9c9c9c;'>
