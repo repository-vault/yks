@@ -72,7 +72,7 @@ class sql_func {
 
     $out = self::explode_search_blob($qs);
     if(!$out)
-      return false;
+      return sql::false;
 
     $part = 0;
     $ret = array();
