@@ -12,7 +12,7 @@ class exyks_ws {
 
     $wsdls = yks::$get->config->wsdls;
 
-    $default_use_sess = bool($wsdls['use_sess']);
+    $default_use_sess = (string) $wsdls['use_sess'];
 
     foreach($wsdls->iterate("class") as $class) {
         $class_name = $class['name']; $aliases = array();
@@ -96,6 +96,7 @@ class exyks_ws {
         readfile($wsdl_file);
         die;
     }
+
 
     //autodetect if current argument is session_id, init session if so
     $SOAP_SESSION_ID = null;
