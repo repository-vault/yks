@@ -17,7 +17,8 @@ class WSAuthBasic {
       return session_id();
     }
     catch(Exception $e){
-      Throw new SoapFault( $e->getMessage(), $e->getMessage());
+      error_log($e->getMessage());
+      throw new SoapFault("LoginException", "Invalid login/passwd");
     }
   }
 
