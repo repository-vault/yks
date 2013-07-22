@@ -73,9 +73,10 @@ class products extends _sql_base {
       }
     }
 
-   // Vignettes
+    // Vignettes
+    $imgs_path = yks::$get->config->shop['imgs_url_mask']?yks::$get->config->shop['imgs_url_mask']:"/imgs/".SITE_BASE."/products/%s";
     foreach($products as $product)
-     $product->product_img = "/imgs/".SITE_BASE."/products/{$product['product_id']}";
+      $product->product_img = sprintf($imgs_path, $product['product_id']);
 
     // Heritage
     self::product_variations($products);
