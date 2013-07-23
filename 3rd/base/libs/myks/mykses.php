@@ -21,7 +21,7 @@ class mykses {
   static function value($mykse_type, $val){
     static $types_xml = false; if(!$types_xml) $types_xml = yks::$get->types_xml;
     $mykse = $types_xml->$mykse_type;
-    if(!$mykse) return $val; 
+    if(!$mykse) return $val;
     $mykse_type = $mykse['type'];
     if($mykse_type=='bool') return bool($val,true);
     elseif($mykse_type=='time') return date('d/m/Y',$val);
@@ -173,25 +173,19 @@ class mykses {
     if(!$birth_table)
       return array();
 
-    $line = array($birth_table, $myks_type, $value);
-    $paths[] = $line;
 
     $joins = array();
-    foreach(data::load("tables_xml") as $table_name => $table_xml){
-
+    foreach(data::load("tables_xml") as $table_name => $table_xml){ //main loop
+      $table_fields = fields($table_xml);
       $only_null    = true;
       foreach($table_xml as $field)
         if($field['type'] == $myks_type)
           $only_null &= $field['delete'] == "set_null";
 
       //Find typed fields
-      $fields = array_keys(fields($table_xml), $myks_type);
+      $fields = array_keys($table_fields, $myks_type);
       if(!$fields)
         continue;
-
-
-      if($table_name == $birth_table) //auto-recursive declaration
-        $fields = array_diff($fields, array($myks_type));
 
       $cvalues = array();
       foreach($fields as $field_name) {
@@ -212,23 +206,28 @@ class mykses {
       }
 
       if(($child_type = $deaths[$table_name]) && $recurse) {
-        $cvalues = array_unique(array_extract($cvalues, $child_type));
-        $depth = self::find_key($child_type, $cvalues, $rmap, $recurse, $hpaths);
+        $values = array_unique(array_extract($cvalues, $child_type));
+        $depth = self::find_key($child_type, $values, $rmap, $recurse, $hpaths);
         $paths   = array_merge($paths, $depth);
-      } else {
-        foreach($fields as $field_name) {
-          $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
-          if($fvalues)
-            $paths[] = array($table_name, $field_name, $fvalues);
-        }
+      }
+
+      foreach($fields as $field_name) {
+        $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
+        if($fvalues)
+          $paths[] = array($table_name, $field_name, $fvalues);
+      }
 
             //go to reverse map
-        if($parent_type = $rmap[$table_name]) {
-          $fvalues = array_unique(array_filter(array_extract($cvalues, $parent_type)));    
-          $depth = self::find_key($parent_type, $fvalues, $rmap, $recurse, $hpaths);
-          $paths   = array_merge($paths, $depth);
+      if($parent_columns = $rmap[$table_name]) {
+        if(!is_array($parent_columns))
+          $parent_columns = array($parent_columns);
 
-        }
+          foreach($parent_columns as $parent_column) {
+            $parent_type = $table_fields[$parent_column];
+            $fvalues = array_unique(array_filter(array_extract($cvalues, $parent_column)));
+            $depth = self::find_key($parent_type, $fvalues, $rmap, $recurse, $hpaths);
+            $paths   = array_merge($paths, $depth);
+          }
       }
     }
 
@@ -236,7 +235,7 @@ class mykses {
   }
 
   /*
-  * Build a huge query listing all the usage 
+  * Build a huge query listing all the usage
   * of a native myks type
   */
   public static function build_find_query($myks_type, $ignored_tables = array()){
@@ -257,7 +256,7 @@ class mykses {
       if(!$fields)
         continue;
 
-      //Save joins  
+      //Save joins
       foreach($fields as $join_key){
         $from = sql::from($table_name);
         $sql_used = "SELECT DISTINCT $join_key as $myks_type, '$table_name' as table_name, '$join_key' AS mykse_column $from WHERE $join_key IS NOT NULL";
@@ -267,7 +266,7 @@ class mykses {
 
     //Link joins
     $sql = implode("\n UNION \n", $joins);
-    
+
     return $sql;
   }
 
