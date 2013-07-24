@@ -9,10 +9,10 @@
 class win32_cli {
   private static  $argv;
   public static function dispatch(){
-    self::$argv = $_SERVER['argv']; array_shift(self::$argv);
-    $script  = array_shift(self::$argv);
+    self::$argv = cli::$args;
+    $cmd  = array_shift(self::$argv);
 
-    $cb = array(__CLASS__, $script);
+    $cb = array(__CLASS__, $cmd);
 
     if(is_callable($cb)) 
       return call_user_func_array($cb, self::$argv);
@@ -60,11 +60,11 @@ class win32_cli {
   }
 
   public static function crypt($str, $salt = null){
+    $algo   = pick(cli::$dict['algo'], "blowfish");
+    $rounds = pick(cli::$dict['rounds'], 7);
 
     if($salt);
     elseif($algo == "blowfish") {
-      $rounds = pick(cli::$dict['rounds'], 7);
-      $algo   = pick(cli::$dict['algo'], "blowfish");
       $rounds = min(31,max(4, $rounds));
       $salt = sprintf("$2a$%02d$%s$", $rounds, self::dummysalt(22));
     }
