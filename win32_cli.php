@@ -59,7 +59,19 @@ class win32_cli {
     touch($file_path, time());
   }
 
-  public static function crypt($string, $key){
+  public static function crypt($str, $salt = null){
+
+    if($salt);
+    elseif($algo == "blowfish") {
+      $rounds = pick(cli::$dict['rounds'], 7);
+      $algo   = pick(cli::$dict['algo'], "blowfish");
+      $rounds = min(31,max(4, $rounds));
+      $salt = sprintf("$2a$%02d$%s$", $rounds, self::dummysalt(22));
+    }
+    echo crypt($str, $salt);
+  }
+
+  public static function encrypt($string, $key){
     echo crypt::encrypt($string, $key, true);
   }
 
@@ -67,6 +79,14 @@ class win32_cli {
     echo crypt::decrypt($string, $key, true);
   }
 
+
+  private function dummysalt($length){
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";  
+    $size = strlen( $chars );
+    for( $i = 0; $i < $length; $i++ )
+        $str .= $chars[ mt_rand( 0, $size - 1 ) ];
+    return $str;
+  }
 
 
 
