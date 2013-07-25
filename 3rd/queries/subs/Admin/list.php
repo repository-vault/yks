@@ -1,7 +1,7 @@
 <?
 if($action == "query_trash") try {
     $query_id = (int)$_POST['query_id'];
-    $query = new query_db($query_id);
+    $query = query::instanciate($query_id);
     $query->trash();
     jsx::$rbx = false;
 } catch(rbx $e){}
@@ -12,7 +12,7 @@ $queries_list = sql::brute_fetch('query_id');
 
 // TODO : Remplacer ça par un filtre SQL quand la visibilité sera une table à part (Quentin)
 if(!auth::verif("yks_query","admin")) // yks_query admin n'a pas de restriction
-  foreach($queries_list as $query_id=>$query_infos){  
+  foreach($queries_list as $query_id=>$query_infos){
     $visibility = array_filter(explode(',',$query_infos['query_visibility']));
     $visibility = array_map('trim',$visibility);
     $can_view = array_intersect($visibility ,sess::$sess->users_tree);

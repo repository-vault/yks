@@ -13,14 +13,14 @@ if($param_type) {
 
 if($action == "param_trash") try {
     $param_id = (int)$_POST['param_id'];
-    $param = new query_param($param_id);
+    $param = new queries_param($param_id);
     $param->trash();
     jsx::$rbx = false;
 
 } catch(rbx $e){}
 
 if($action == "params_add") try {
-    $data = array(    
+    $data = array(
         'param_key'      => $_POST['param_key'],
         'param_type'     => $_POST['param_type'],
         'param_descr'    => $_POST['param_descr'],
@@ -28,7 +28,7 @@ if($action == "params_add") try {
         'param_multiple' => bool($_POST['param_multiple']),
     );
 
-    $query_param = query_param::create($data, $_POST);
+    $query_param = queries_param::create($data, $_POST);
 
     jsx::$rbx = false;
 
@@ -37,7 +37,7 @@ if($action == "params_add") try {
 
 
 
-$params_list = query_param::from_where(array("true"));
+$params_list = queries_param::from_where(array("true"));
 
 
 

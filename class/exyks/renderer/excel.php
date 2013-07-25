@@ -35,7 +35,43 @@ class exyks_renderer_excel {
     }
   ";
 
+
+  /**
+  * Extract data from table and export to xlsx
+  *
+  * @param DOMDocument $doc
+  * @param DomElement $table_xml
+  */
   public static function extract_data($doc, $table_xml){
+    $data_headers = array();
+    $data_results = array();
+
+    foreach($table_xml->getElementsByTagName("tr") as $row){
+      $is_header  = (bool) $row->getElementsByTagName('th')->length;
+
+      if($is_header && empty($data_headers)){
+        foreach ($row->childNodes as $cell) {
+          $data_headers[$cell->nodeValue] = $cell->nodeValue;
+        }
+      }
+      else{
+        $row_cell = array();
+        foreach ($row->childNodes as $cell) {
+          $row_cell[] = $cell->nodeValue;
+        }
+        $data_results[] = $row_cell;
+      }
+    }
+
+    return exyks_renderer_excel::export($data_headers, $data_results, array(
+      'title' => pick((String)exyks::$head->title, "No name"),
+    ));
+
+  }
+
+  //meta creator, title
+  public static function export($data_headers, $data_results, $metas){
+    $title = pick($metas['title'], "No name");
 
     $out_xml = new DOMDocument('1.0', 'utf-8');
     $root_xml = $out_xml->createElement("data");
@@ -43,26 +79,34 @@ class exyks_renderer_excel {
       ->appendChild($out_xml->createTextNode(self::styles));
 
     $worksheet = $out_xml->createElement('Worksheet');
-    $worksheet->setAttribute('Name', pick(exyks::$head->title, 'Page 1'));
+    $worksheet->setAttribute('Name', pick($metas['title'], 'Page 1'));
 
     //Pour les datas
-    foreach($table_xml->getElementsByTagName("tr") as $row){
-      $is_header  = (bool) $row->getElementsByTagName('th')->length ;
+    $xml_row = $out_xml->createElement('Row');
+    foreach ($data_headers as $name => $value) {
+      $cell = $out_xml->createElement('Cell');
+      $cell->setAttribute('class', 'header cell');
+      $cell->appendChild($out_xml->createTextNode($name));
+      $cell->setAttribute('Type', 'String');
+
+      $xml_row->appendChild($cell);
+    }
+
+    $worksheet->appendChild($xml_row);
+
+    foreach ($data_results as $row) {
       $xml_row = $out_xml->createElement('Row');
-      foreach($row->childNodes   as $td){
 
+      foreach ($row as $header => $cell_value) {
         $cell = $out_xml->createElement('Cell');
-        $cell->setAttribute('class', $is_header ? 'header cell' : 'cell');
-
-        if(strlen($td->nodeValue)){
-          $cell->appendChild($out_xml->createTextNode($td->nodeValue));
-          $cell->setAttribute('Type', 'String');
-        }
+        $cell->setAttribute('class', 'cell');
+        $cell->appendChild($out_xml->createTextNode($cell_value));
+        $cell->setAttribute('Type', 'String');
 
         $xml_row->appendChild($cell);
       }
 
-      $worksheet->appendChild($xml_row);
+       $worksheet->appendChild($xml_row);
     }
 
     $root_xml->appendChild($worksheet);
@@ -70,18 +114,20 @@ class exyks_renderer_excel {
     $xml_to_xlsx = new xml_to_xlsx($out_xml);
 
     $xml_to_xlsx->create();
-    $xml_to_xlsx->set_creator(self::$creator);
+    if($meta['creator'])
+      $xml_to_xlsx->set_creator($meta['creator']);
 
-    header(sprintf(HEADER_FILENAME_MASK, exyks::$head->title.".xlsx")); //filename
+    header(sprintf(HEADER_FILENAME_MASK, $title.'.xlsx')); //filename
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-    $safe_name = files::safe_name(exyks::$head->title.".xlsx");
+    $safe_name = files::safe_name("{$title}.xlsx");
     $file_path = files::tmpdir().DIRECTORY_SEPARATOR.$safe_name;
 
     $xml_to_xlsx->save($file_path);
     echo file_get_contents($file_path);
     unlink($file_path);
     die;
+
   }
 
   public static function render($str){
@@ -92,67 +138,7 @@ class exyks_renderer_excel {
     exyks::render($str);
     die;
   }
-  public static function build_table($table_contents, $headers = array(), $multiline_style = true){
 
-    $table_xml = "<table class='table'>";
-    if(!$headers) $headers = array_combine($headers = array_keys(current($table_contents)), $headers);
-
-    $med_size = array();
-
-    foreach($table_contents as $line){
-        $k=0;
-        foreach($line as $val) {
-            $len = strlen($val);
-            if($len) $med_size["col_".$k][] = $len;
-            $k++;
-        }
-    }
-
-    $table_xml .= "<tr class='line_head'>"; $col_count=0;
-    foreach($headers as $col_key => $col_name) {
-        $col_key = preg_replace("#[^a-z0-9_-]#","", strtolower($col_key));
-        $col_id = "col_".($col_count++);
-
-        $strlen = $med_size[$col_id] ?array_sum($med_size[$col_id])/count($med_size[$col_id]) : 10;
-        $width  = max(15, $strlen * 7); //pt
-        $width = $multiline_style?"":"width='{$width}'";
-
-        $table_xml .= "<th $width class='col_$col_key $col_id' id='$col_id'>$col_name</th>";
-    } $table_xml .="</tr>";
-
-    foreach($table_contents as $line) {
-        $str = "<tr class='line_pair'>";
-        foreach($headers as $col_key=>$v)
-            $str .="<td>{$line[$col_key]}</td>";
-        $str .= "</tr>";
-        $table_xml .= $str;
-    } if(!$table_contents)
-        $table_xml.="<tfail>no results</tfail>";
-    $table_xml .="</table>";
-
-    return $table_xml;
-
-  }
-
-
-    //deprecated, use render instead
-  public static function build_xls($table_contents, $headers = array(), $styles=""){
-    $table_xml = self::build_table($table_contetns, $headers);
-
-    $xml_contents = "<body xmlns:xls='excel'>
-        <xls:style xmlns:xls='excel'>$styles</xls:style>
-        $table_xml
-    </body>";
-
-    $doc = new DOMDocument('1.0','UTF-8');
-    $tmp = $doc->loadXML($xml_contents, LIBXML_YKS);
-    $doc   = xsl::resolve($doc, self::$XSL_SERVER_PATH);
-    $contents = $doc->saveXML();
-
-
-    $contents = strstr($contents, '<html');
-    return $contents;
-  }
 
 
 }

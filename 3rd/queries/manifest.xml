@@ -5,9 +5,6 @@
     <path path="path://here/myks"/>
   </myks>
   <classes>
-    <class name="query" path="path://here/libs/query.lib.php"/>
-    <class name="query_db" path="path://here/libs/query_db.lib.php"/>
-    <class name="query_param" path="path://here/libs/query_param.lib.php"/>
     <include_path path="path://here/libs"/>
   </classes>
   <locales>

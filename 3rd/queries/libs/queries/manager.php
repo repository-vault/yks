@@ -2,34 +2,34 @@
 
 class queries_manager {
 
-  function get_params_list(query_db $query) {
+  function get_params_list(query $query) {
 
     $params_usage = self::get_params_usage($query->query_def);
 
-    
+
     $verif_params = array(
         'param_key'=> array_extract($params_usage, "param_key", true),
     );
 
 
-    $params_list = query_param::from_where($verif_params);
+    $params_list = queries_param::from_where($verif_params);
     $params_list = array_reindex($params_list, 'param_key');
 
     $query->params_list = array();
     foreach($params_usage as $param_usage){
-        
+
         $param = clone  $params_list[$param_usage['param_key']];
         $param->query_usage = $param_usage;
 
         $param->param_title = pick($param->query_usage['param_context'], $param->param_key);
-        
+
         $query->params_list[ $param->query_usage['param_uid'] ] = $param;
     }
 
     return $query->params_list;
   }
 
-  
+
 
   function get_params_usage($query_string){ //private
 
@@ -53,7 +53,7 @@ class queries_manager {
     try {
         self::query_verify($data);
         $query_id = sql::insert("ks_queries_list", $data, true);
-        return new query_db($query_id);
+        return query::instanciate($query_id);
     } catch(Exception $e){ throw rbx::error("Creation error"); }
 
   }
@@ -64,8 +64,8 @@ class queries_manager {
         throw rbx::warn("You must specify a query name", "query_name");
 
     $params_usage  = self::get_params_usage($data['query_def']);
-    $params_list   = array_reindex(query_param::from_where(array("true")), "param_key");
-    
+    $params_list   = array_reindex(queries_param::from_where(array("true")), "param_key");
+
     foreach($params_usage as $param_usage)
         if(! isset($params_list[$param_usage['param_key'] ]))
             throw rbx::error("Unknow parameter definition");

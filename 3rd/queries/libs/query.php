@@ -1,8 +1,13 @@
 <?php
 
-class query_db  extends _sql_base {
 
-  
+class query  extends _sql_base {
+
+  public $sql_query;
+  public $data_results;
+  public $data_headers;
+
+
   const sql_table = 'ks_queries_list';
   protected $sql_table = 'ks_queries_list';
   protected $sql_key = "query_id";
@@ -11,11 +16,14 @@ class query_db  extends _sql_base {
 
   public $ready = false;
 
-  private $query;
 
-
-  public function __construct($from){
+  protected function __construct($from, $headers ) {
     parent::__construct($from);
+    $this->data_headers = $headers;
+  }
+
+  function instanciate($from, $headers = array()) {
+    return new self($from, $headers);
   }
 
   public function prepare($params_values){
@@ -37,41 +45,64 @@ class query_db  extends _sql_base {
     }
 
     $this->ready = $ready;
-    $this->query = new query($sql_query);
+    $this->sql_query = $sql_query;
     return true;
 
   }
-  public function get_sql_query(){
-    return (string) $this->query;
-  }
+
 
   public function execute(){
 
-    if(!$this->ready) 
+    if(!$this->ready)
         throw rbx::error("Query is not ready");
-    $this->query->execute();
 
+
+    $res = sql::query($this->sql_query);
+    if($res === false)
+        throw new Exception("Query failed");
+
+
+    $this->data_results = sql::brute_fetch();
+
+
+    if(!$this->data_headers && $this->data_results)
+      $this->data_headers =  array_combine($tmp = array_keys(reset($this->data_results)), $tmp);
   }
 
-  public function print_data(){
 
-    $this->query->print_html_table_data();
-  }
 
   function trash(){
     $this->sql_delete();
   }
+
   function update($data){
     queries_manager::query_verify($data);
     $this->sql_update($data);
   }
 
-  
 
 
   public function __toString(){
     return "query #{$this->query_id}";
   }
 
+
+
+
+   public static function fast_export($sql_query, $creator = "Anonymous"){
+
+    sql::query($sql_query);
+
+    $data_results = sql::brute_fetch();
+
+    $data_headers =  array_combine($tmp = array_keys(reset($data_results)), $tmp);
+
+
+    return exyks_renderer_excel::export($data_headers, $data_results, array(
+      'title'    => exyks::$head->title,
+      'creator'  => $creator,
+    ));
+
+  }
 
 }

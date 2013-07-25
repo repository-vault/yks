@@ -1,8 +1,8 @@
 <?
 
-class query_param extends _sql_base {
+class queries_param extends _sql_base {
 
-  
+
   const sql_table = 'ks_queries_params_list';
   protected $sql_table = 'ks_queries_params_list';
   protected $sql_key = "param_id";
@@ -58,7 +58,7 @@ class query_param extends _sql_base {
   }
 
   public function  format_value($unsafe_value){
-    if($this->param_type == 'date') 
+    if($this->param_type == 'date')
         return date::validate($unsafe_value);
     return $unsafe_value;
   }
@@ -98,7 +98,7 @@ class query_param extends _sql_base {
 
         $str .= dsp::dd($values);
         $str .= "</select></field>";
-       
+
     }
 
 
