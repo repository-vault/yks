@@ -54,7 +54,7 @@ class exyks_renderer_excel {
         $cell = $out_xml->createElement('Cell');
         $cell->setAttribute('class', $is_header ? 'header cell' : 'cell');
 
-        if($td->nodeValue){
+        if(strlen($td->nodeValue)){
           $cell->appendChild($out_xml->createTextNode($td->nodeValue));
           $cell->setAttribute('Type', 'String');
         }
