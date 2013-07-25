@@ -21,10 +21,10 @@ class query_param extends _sql_base {
   }
 
 
-  public static function create($data, $_POST){
+  public static function create($data, $input_post){
 
     try {
-        $data = self::verify_input($data, $_POST);
+        $data = self::verify_input($data, $input_post);
         $param_id = sql::insert(self::sql_table, $data, true);
 
         return new self($param_id);
@@ -33,11 +33,11 @@ class query_param extends _sql_base {
   }
 
 
-  public function verify_input($data, $_POST){
+  public function verify_input($data, $input_post){
     $param_type = $data['param_type'];
 
     if($param_type == 'query')
-        self::valid_query($data, $_POST);
+        self::valid_query($data, $input_post);
 
     return $data;
   }
@@ -47,9 +47,9 @@ class query_param extends _sql_base {
     return $this->param_key;
   }
 
-  public function valid_query(&$data, $_POST){
+  public function valid_query(&$data, $input_post){
 
-    $sub_query_str = specialchars_decode($_POST['query_contents']);
+    $sub_query_str = specialchars_decode($input_post['query_contents']);
     $data['param_arg0'] = $sub_query_str;
 
     $test = sql::qrow($sub_query_str);
