@@ -9,5 +9,6 @@ CREATE AGGREGATE "public"."concat_comma" ( BASETYPE = "text",    SFUNC = "public
 CREATE AGGREGATE first(int) (    sfunc = coalesce_first,     stype = int );
 CREATE AGGREGATE first(text) (    sfunc = coalesce_first,     stype = text );
 CREATE AGGREGATE first(varchar) (    sfunc = coalesce_first,     stype = varchar );
+CREATE AGGREGATE first(boolean) (    sfunc = coalesce_first,     stype = boolean );
 
 

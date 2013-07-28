@@ -29,4 +29,13 @@ BEGIN
 END;
 </def>
   </procedure>
+  <procedure name="coalesce_first" type="bool" volatility="IMMUTABLE">
+    <param type="bool"/>
+    <param type="bool"/>
+    <def>
+BEGIN
+    return COALESCE($1, $2);
+END;
+</def>
+  </procedure>
 </myks>
