@@ -51,7 +51,7 @@ class cli {
   private static $paths = false;
   static function extend_path($paths, $putenv = true){
     $new_paths      = is_array($paths)?$paths:func_get_args();
-    
+
     $paths = array_merge(self::get_path(), $new_paths);
     $paths = array_filter(array_unique($paths));
 
@@ -60,13 +60,13 @@ class cli {
         putenv("PATH=".$_ENV['PATH']);
     return self::$paths = self::get_path();
   }
-  
+
   static function get_path(){
     $tmp            = array_key_map('strtoupper', $_SERVER);
     self::$paths    = array_filter(explode(PATH_SEPARATOR, $tmp['PATH']));
     return self::$paths;
   }
-  
+
   static function which($bin_name, $force_use_path = false){
     if(self::$OS == self::OS_UNIX && !$force_use_path )
       return trim(`which $bin_name`);
@@ -86,7 +86,7 @@ class cli {
 
     return $bin_name;
   }
-  
+
   static function trace($msg) {
     $args = func_get_args();
     if(count($args) > 1) echo vsprintf(array_shift($args), $args).LF;
@@ -106,7 +106,7 @@ class cli {
     if(is_null($pad_len)) $pad_len = self::$cols;
     $pad_len -= mb_strlen(sprintf($mask, $title));
     $left = ($MODE==STR_PAD_BOTH) ? floor($pad_len/2) : 0;
-    return sprintf($mask, 
+    return sprintf($mask,
             str_repeat($pad, max($left,0)) . $title . str_repeat($pad, max($pad_len - $left,0)));
   }
 
@@ -132,19 +132,19 @@ class cli {
     $cols_len = array_map('floor',  array_map('array_median', $cols_len));
 
     $map = array(
-      'lu' => '╔', 'mu' => '╦', 'ru' => '╗', 
-      'lm' => '╠', 'mm' => '╬', 'rm' => '╣', 
-      'ld' => '╚', 'md' => '╩', 'rd' => '╝', 
+      'lu' => '╔', 'mu' => '╦', 'ru' => '╗',
+      'lm' => '╠', 'mm' => '╬', 'rm' => '╣',
+      'ld' => '╚', 'md' => '╩', 'rd' => '╝',
       'y'  => '║', 'x' => '═',
     );
     $map = array(
-      'lu' => '┌', 'mu' => '┬', 'ru' => '┐', 
-      'lm' => '├', 'mm' => '┼', 'rm' => '┤', 
-      'ld' => '└', 'md' => '┴', 'rd' => '┘', 
+      'lu' => '┌', 'mu' => '┬', 'ru' => '┐',
+      'lm' => '├', 'mm' => '┼', 'rm' => '┤',
+      'ld' => '└', 'md' => '┴', 'rd' => '┘',
       'y'  => '│', 'x' => '─',
     );
 
-    
+
     $out = "";
     $line = array();
     foreach($cols_len as $col=>$len)
@@ -154,7 +154,7 @@ class cli {
       $dy = ($y == 0 ? "u" : ($y != $h ? "m" : "d"));
 
       $row = array();
-      foreach($cols_len as $col=>$len) 
+      foreach($cols_len as $col=>$len)
         $row[]  = self::str_pad($data[$col], $len, $y == 0 ? STR_PAD_BOTH : STR_PAD_RIGHT, $y == 0 ? $map['x'] : " ");
 
       $out .= self::table_line($y == 0 ? $row : $line, $map["l{$dy}"], $map["m{$dy}"], $map["r{$dy}"]).CRLF;
@@ -240,7 +240,7 @@ class cli {
             $line = substr($line, 0, -strlen($out[0]));
         } else $control = false;
 
-        if(self::$OS == self::OS_WINDOWS) 
+        if(self::$OS == self::OS_WINDOWS)
             $line = self::console_in($line);
 
         $data_str .= $line;
@@ -336,12 +336,12 @@ class cli {
         return $WshShell->Run($cmd);
     }
   }
-  
+
   function exec_distant($cmd_mask, $cmds, $file_tick = false){
     cli::box("Commandes", $cmds);
 
     $survey = (bool)$file_tick;
-  
+
     if(!$survey)
         $file_tick = files::tmppath("chk");
 
@@ -353,12 +353,12 @@ class cli {
     $cmds = mask_join(CRLF,  $cmds, "%s >> \"$log_file\"");
     $cmds .= CRLF.'echo "ok">'.$file_tick.CRLF;
     rbx::ok("Loggin in $log_file");
-    
+
     file_put_contents($dist_file, $cmds);
 
     if(file_exists($file_tick))
         unlink($file_tick);
-    
+
     $cmd = sprintf($cmd_mask, $dist_file);
     rbx::ok($cmd);
     cli::exec($cmd);
@@ -378,8 +378,8 @@ class cli {
     $tail->close();
     unlink($log_file ); //drop remote file
   }
-  
-  
+
+
   public static function winpath($path){
     return self::cygpath($path, "-w");
   }
@@ -389,5 +389,32 @@ class cli {
     if(self::$OS == self::OS_WINDOWS)
       return sprintf($quot, $path);
     return sprintf($quot, trim(`cygpath $options "$path"`));
+  }
+
+
+  public static function colorize($str, $fg_color){
+      $fg_color = strtolower($fg_color);
+
+      $foreground_colors['black'] = '0;30';
+      $foreground_colors['dark_gray'] = '1;30';
+      $foreground_colors['blue'] = '0;34';
+      $foreground_colors['light_blue'] = '1;34';
+      $foreground_colors['green'] = '0;32';
+      $foreground_colors['light_green'] = '1;32';
+      $foreground_colors['cyan'] = '0;36';
+      $foreground_colors['light_cyan'] = '1;36';
+      $foreground_colors['red'] = '0;31';
+      $foreground_colors['light_red'] = '1;31';
+      $foreground_colors['purple'] = '0;35';
+      $foreground_colors['light_purple'] = '1;35';
+      $foreground_colors['brown'] = '0;33';
+      $foreground_colors['yellow'] = '1;33';
+      $foreground_colors['light_gray'] = '0;37';
+      $foreground_colors['white'] = '1;37';
+
+      if(!isset($foreground_colors[$fg_color]))
+        return $str;
+
+      return chr(27).'['.$foreground_colors[$fg_color].'m'.$str.chr(27).'[0m';
   }
 }
