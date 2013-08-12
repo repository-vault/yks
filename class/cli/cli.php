@@ -194,14 +194,18 @@ class cli {
     }
 
     for($a=0; $a<count($args); $a+=2) {
-      echo self::pad(" {$args[$a]} ", "═", STR_PAD_BOTH, $a?"╠%s╣":"╔%s╗", $pad_len).LF;
+      self::output( self::pad(" {$args[$a]} ", "═", STR_PAD_BOTH, $a?"╠%s╣":"╔%s╗", $pad_len).LF );
       foreach($args[$a+1] as $line)
-          echo self::pad($line, " ", STR_PAD_RIGHT, "║%s║", $pad_len).LF;
+          self::output( self::pad($line, " ", STR_PAD_RIGHT, "║%s║", $pad_len).LF );
     }
 
-    echo self::pad('', "═", STR_PAD_BOTH, "╚%s╝", $pad_len).LF;
+    self::output( self::pad('', "═", STR_PAD_BOTH, "╚%s╝", $pad_len).LF );
   }
 
+  private static function output($str){
+    //echo $str;
+    fwrite(STDERR, $str);
+  }
 
   public static function password_prompt($prompt = ""){
     if($prompt) echo "$prompt : ";
