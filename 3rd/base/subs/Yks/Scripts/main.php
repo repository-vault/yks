@@ -19,6 +19,10 @@ if(!$access)
     die("Yks script cannot be started from untrusted location ({$_SERVER['REMOTE_ADDR']})");
 
 
+if(!defined('STDERR'))
+  define('STDERR', fopen('php://output', 'w')); //rbx compatibility
+
+
   //********* Exec runner *************
 $runner = new $runner();
 $cmd  = pick($sub1, 'go'); //default cmd is go on all runner :x (should)
