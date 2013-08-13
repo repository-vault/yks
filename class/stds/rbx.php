@@ -21,13 +21,9 @@ class rbx extends Exception {
     if(self::$output_mode!=1) return;
     self::$rbx['log'].="$zone : $msg".LF;
 
-    self::output(cli::pad($msg, ' ', STR_PAD_RIGHT, "%s: $zone").LF);
+    cli::output(cli::pad($msg, ' ', STR_PAD_RIGHT, "%s: $zone").LF);
   }
 
-  private static function output($str){
-    fwrite(STDERR, $str);
-    //echo $str;
-  }
 
   static function delay(){ $_SESSION['rbx']=rbx::$rbx;rbx::$rbx=array(); }
   static function error($msg,$severity=0,$jsx=0){
@@ -39,13 +35,13 @@ class rbx extends Exception {
   }
   static function ok($msg,$jsx=0){ return new self("ok",$msg,$jsx); }
 
-  static function title($title){ self::output(cli::pad(" $title ").LF); }
-  static function line(){ self::output(cli::pad().LF); }
+  static function title($title){ cli::output(cli::pad(" $title ").LF); }
+  static function line(){ cli::output(cli::pad().LF); }
 
   static function init($max,$flag=false){
     self::$max=$max;
     if(self::$flag=$flag) data::store(self::$flag,0,600);
-    if(self::$output_mode) self::output(cli::pad('', ' ', STR_PAD_RIGHT, '[%s]'));
+    if(self::$output_mode) cli::output(cli::pad('', ' ', STR_PAD_RIGHT, '[%s]'));
     return self::$pos=0;
   }
   static function box($title, $msg){
@@ -62,9 +58,9 @@ class rbx extends Exception {
     if(self::$flag) return data::store(self::$flag, $current, 600);
 
     if(!self::$output_mode) return;
-    self::output( "\r" . cli::pad(str_repeat("─", floor($current*(cli::$cols - 2))), ' ', STR_PAD_RIGHT, "[%s]"));
+    cli::output( "\r" . cli::pad(str_repeat("─", floor($current*(cli::$cols - 2))), ' ', STR_PAD_RIGHT, "[%s]"));
     flush();
-    if($current == 1) self::output(LF);
+    if($current == 1) cli::output(LF);
   }
   function __toString(){ return $this->message; }
   static function end(){ if(self::$pos!=100) self::walk(100); }

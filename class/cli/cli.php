@@ -202,8 +202,10 @@ class cli {
     self::output( self::pad('', "═", STR_PAD_BOTH, "╚%s╝", $pad_len).LF );
   }
 
-  private static function output($str){
+  public static function output($str){
     //echo $str;
+    if(self::$OS == self::OS_WINDOWS)
+      $str = cli::console_out($str);
     fwrite(STDERR, $str);
   }
 
