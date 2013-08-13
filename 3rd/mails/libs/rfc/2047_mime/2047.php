@@ -11,7 +11,7 @@ class rfc_2047 {
 
   static function header_encode($str){
     if(preg_match("#[^\x20-\x7E]#", $str))
-        $str = "=?UTF-8?Q?" . quoted_printable_encode($str)."?=";
+        $str = "=?UTF-8?Q?" . php_legacy::quoted_printable_encode_filter($str,1024)."?=";
 
     return $str;
   }
