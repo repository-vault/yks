@@ -86,7 +86,7 @@ class exyks_renderer_excel {
     foreach ($data_headers as $name => $value) {
       $cell = $out_xml->createElement('Cell');
       $cell->setAttribute('class', 'header cell');
-      $cell->appendChild($out_xml->createTextNode($name));
+      $cell->appendChild($out_xml->createTextNode(specialchars_decode($name)));
       $cell->setAttribute('Type', 'String');
 
       $xml_row->appendChild($cell);
@@ -100,7 +100,7 @@ class exyks_renderer_excel {
       foreach ($row as $header => $cell_value) {
         $cell = $out_xml->createElement('Cell');
         $cell->setAttribute('class', 'cell');
-        $cell->appendChild($out_xml->createTextNode($cell_value));
+        $cell->appendChild($out_xml->createTextNode(specialchars_decode($cell_value)));
         $cell->setAttribute('Type', 'String');
 
         $xml_row->appendChild($cell);
