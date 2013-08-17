@@ -202,7 +202,7 @@ class files {
 
 
   public static function delivers_tmp($file, $send_content_type = false){
-    return self::delivers($file, $send_content_type, $delete);
+    return self::delivers($file, $send_content_type, true);
   }
 
   public static function delivers($file, $send_content_type = false, $delete = false){
@@ -223,12 +223,17 @@ class files {
     
     //header("Accept-Ranges: bytes"); //no need
     //header("Content-Transfer-Encoding: binary"); //no need    
+
+    if($mime_type === true)
+      $mime_type = self::content_type($filename);
+    
+    if(starts_with($mime_type, "text/" ))
+      $mime_type .= ";charset=UTF-8";
+    $mime_type = strip_start($mime_type, "Content-Type:");
     
     if($mime_type)
-        header($mime_type===true //auto-detection
-            ? "Content-Type: text/".self::ext($filename).";charset=UTF-8"
-            : "Content-Type: ".end(explode(':', $mime_type,2))); //last part
-
+        header("Content-Type: $mime_type"); 
+        
     $filename = $filename ? $filename : basename($file);
 
     if($metas['filesize']) 
@@ -249,8 +254,8 @@ class files {
   }
 
 
-  public static function download_tmp($file_path, $filename = false){
-    return self::download($file_path, $filename, false, true);
+  public static function download_tmp($file_path, $filename = false, $mime_type = false){
+    return self::download($file_path, $filename, $mime_type, true);
   }
 
   public static function download($file_path, $filename = false, $mime_type = false, $delete = false ){
