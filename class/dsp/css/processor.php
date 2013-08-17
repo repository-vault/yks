@@ -1,14 +1,16 @@
 <?
 
 class css_processor {
-
+  const CB_INLINE_EXTERNALS = 'inline_externals';
+  
   private static $entities;
   private $file_uri;
   private $file_base;
 
   private $file_contents;
-  private $css;
-
+  public $css;
+  private $hooks = array();
+  
   static function init(){
     classes::register_class_path("css_parser", "exts/css/parser.php");
     classes::register_class_path("css_box", "exts/css/mod/box.php");
@@ -18,7 +20,7 @@ class css_processor {
         self::$entities["&{$val['key']};"] = $val['value'];
   }
 
-  private function __construct($uri, $contents = false){
+  public function __construct($uri = "path://public"){
     $this->file_uri   = $uri;
     $this->file_base  = ends_with($this->file_uri, '/')
         ? $this->file_uri
@@ -26,28 +28,41 @@ class css_processor {
 
     css_parser::register_entities(self::$entities);
 
-    if($contents)
+  }
+
+  private function register_std_hooks() {
+   $this->register_hook(array($this, "resolve_boxes" ));
+   $this->register_hook(array($this, "resolve_crops" ));
+   $this->register_hook(array($this, "resolve_imports" ));
+   $this->register_hook(array($this, "resolve_externals" ));
+  }
+  
+  function register_hook($callback){
+    $this->hooks[] = $callback;
+  }
+  
+  private function apply_hooks() {
+    foreach($this->hooks as $callback)
+      call_user_func($callback);
+  }
+
+  private function parse($contents = null) {
+    if(!is_null($contents))
         $this->css    = css_parser::load_string($contents, $this->file_uri);
     else $this->css   = css_parser::load_file($this->file_uri);
   }
-
+  
+  function process($contents = null) {
+    $this->parse($contents);
+    
+    $this->apply_hooks();
+    return $this->css->output();
+  }
 
   static function delivers($path){
     $process = new css_processor($path);
-    echo $process->output();
-  }
-
-
-  private function apply_hooks(){
-    $this->resolve_boxes();
-    $this->resolve_crops();
-    $this->resolve_imports();
-    $this->resolve_externals();
-  }
-
-  private function output(){
-    $this->apply_hooks();
-    return $this->css->output();
+    $process->register_std_hooks();
+    echo $process->process();
   }
 
   private function resolve_boxes(){
@@ -81,7 +96,8 @@ class css_processor {
         if($replace) { try {
             if(!is_file($path)) continue;
             $process = new css_processor($path);
-            $process->apply_hooks();
+            $process->parse();
+            $process->apply_hooks();            
             $this->css->replaces_statement($import, $process->css);
           } catch(Exception $e){
             //something is fuck up in the file behind, leave it.. :/
@@ -94,6 +110,18 @@ class css_processor {
           $path = exyks_paths::expose($path);
           $import->set_expression("\"$path\"");
         }
+    }
+  }
+  
+  private function inline_externals(){
+    $externals = $this->css->xpath("//atblock[@keyword='font-face']//val[starts-with(.,'url')]/ancestor::rule"); // yeah
+    foreach($externals as $external) {
+      foreach($external->values_groups as $gid=>$values) foreach($values as $i=>$value) {
+        $uri = css_parser::split_string((string)$value); $uri = $uri['uri'];
+        $uri = exyks_paths::resolve($uri);
+        $val = "url(\"$uri\")";
+        $external->set_value($val, $i, $gid);
+      }
     }
   }
 
@@ -121,8 +149,9 @@ class css_processor {
     $contents = $node->nodeValue;
 
     try {
-      $css = new self("path://public/a", $contents);
-      $contents = $css->output();
+      $css = new self();
+      $css->register_std_hooks();
+      $contents = $css->process($contents);
     } catch(Exception $e){
       syslog(LOG_INFO, "Corrupted inline css...");
       return;
