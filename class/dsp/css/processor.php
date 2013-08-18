@@ -1,7 +1,14 @@
 <?
 
 class css_processor {
+  
   const CB_INLINE_EXTERNALS = 'inline_externals';
+  const CB_RESOLVE_IMPORTS  = 'resolve_imports';
+
+  private static $inherit_cb = array(
+    self::CB_INLINE_EXTERNALS,
+    self::CB_RESOLVE_IMPORTS,
+  );
   
   private static $entities;
   private $file_uri;
@@ -97,7 +104,12 @@ class css_processor {
             if(!is_file($path)) continue;
 
             $process = new css_processor($path);
-            $process->register_std_hooks();
+              
+            foreach($this->hooks as $cb)
+              if(is_array($cb)
+                && in_array($cb[1], self::$inherit_cb)
+                && $cb[0] === $this)
+                  $process->register_hook(array($process, $cb[1]));
             $process->parse();
             $process->apply_hooks();            
             $this->css->replaces_statement($import, $process->css);
