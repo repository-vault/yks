@@ -95,7 +95,9 @@ class css_processor {
 
         if($replace) { try {
             if(!is_file($path)) continue;
+
             $process = new css_processor($path);
+            $process->register_std_hooks();
             $process->parse();
             $process->apply_hooks();            
             $this->css->replaces_statement($import, $process->css);
