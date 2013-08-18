@@ -12,7 +12,7 @@ class sql {
     '#&&#' => 'AND' // || is for concatenation !
   );
 
-  static private $transaction_level = -1;
+  static private $transactions_stack = array();
 
   const true  = 'TRUE';
   const false = 'FALSE';
@@ -306,41 +306,57 @@ class sql {
   }
 
   static function begin() {
-    self::$transaction_level++;
 
-    if(self::$transaction_level == 0) {
+    $transaction_hash = substr(md5(uniqid()), 0, 12);
+
+    $tmp = self::$transactions_stack[$transaction_hash] = array(
+      'depth'     => self::get_transaction_level() ,
+      'savepoint' => sprintf( '_trans_%s', $transaction_hash),
+    );
+
+    if($tmp['depth'] == 0) {
       sql::query('begin');
     } else {
-      sql::query('SAVEPOINT __subtransaction' . self::$transaction_level);
+      sql::query("SAVEPOINT {$tmp['savepoint']}");
     }
 
-    return self::$transaction_level;
+    return $transaction_hash;
   }
 
-  static function rollback($level = -1) {
-    if(!is_integer($level) || $level < 0) {
-      throw new InvalidArgumentException('Incorrect level passed : ' . $level);
-    }
+  static function rollback($transaction_hash ) {
+    $transaction = self::$transactions_stack[$transaction_hash];
+    if(!$transaction)
+      throw new InvalidArgumentException("Incorrect transaction passed $transaction_hash");
 
-    if($level > 0) {
-      sql::query('ROLLBACK TO SAVEPOINT __subtransaction' . $level);
-    }else {
-      sql::query('rollback');
-    }
+    foreach(self::$transactions_stack as $tmp_hash=>$tmp_trans)
+      if($tmp_trans['depth'] >= $transaction['depth'])
+        unset(self::$transactions_stack[$tmp_hash]);
 
-    self::$transaction_level--;
+    if($transaction['depth'] > 0)
+      sql::query("ROLLBACK TO SAVEPOINT {$transaction['savepoint']}");
+    else
+      sql::query('ROLLBACK');
+
   }
 
-  static function commit($level = -1) {
-    if(!is_integer($level) || $level != self::$transaction_level || $level < 0) {
-      throw new InvalidArgumentException('Incorrect level passed : ' . $level);
-    }
+  private static function get_transaction_level(){
+   $depths = array_extract(self::$transactions_stack, 'depth');
+   return $depths ? max($depths) + 1 : 0;
+  }
 
-    if($level == 0) {
-      sql::query('commit');
-    }
+  static function commit($transaction_hash) {
+   $transaction = self::$transactions_stack[$transaction_hash];
+    if(!$transaction)
+      throw new Exception("Incorrect transaction passed $transaction_hash");
 
-    self::$transaction_level--;
+   unset(self::$transactions_stack[$transaction_hash]);//1
+   $max_depth = self::get_transaction_level();
+
+   if($max_depth > $transaction['depth'] )
+      throw new Exception("Incorrect transaction level passed {$transaction['depth']} < $max_depth");
+
+    if($transaction['depth'] == 0)
+      sql::query('COMMIT');
   }
 
   static function run_in_transaction($action, $args = array()) {
