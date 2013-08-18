@@ -223,16 +223,18 @@ class cli {
   }
 
   public static function bool_prompt($prompt="", $default = null){
-    return bool(self::text_prompt("$prompt (Y/n)", $default ));
+    $yn = $default ? "Y/n" :"y/N";
+    return bool(self::text_prompt("$prompt ($yn)", $default ));
   }
 
   public static function text_prompt($prompt=false, $default = null, &$args = null){
     if(starts_with($default, "argv://")) {
         list($key, $default_value)   = explode("=", strip_start($default, "argv://"),2);
         $default = pick(self::$dict[$key], $default_value);
-        if($default && self::$UNATTENDED_MODE) //unattended
-          return $default;
     }
+
+    if(!is_null($default) && self::$UNATTENDED_MODE) //unattended
+      return $default;
 
     if($default) $prompt .= " [{$default}]";
     if($prompt) echo "$prompt : ";
