@@ -24,15 +24,28 @@ SELECT
         WHEN 'timestamp with time zone' THEN 'timestamptz'
         WHEN 'timestamp without time zone' THEN 'timestamp'
         WHEN 'double precision' THEN 'float'
-		ELSE data_type
+    ELSE data_type
     END ) AS data_type, 
     routine_definition,
-    routine_type
-
+    routine_type,
+    COALESCE(parameters_types, '') AS parameters_types,
+    COALESCE(parameters_count, 0) AS parameters_count
 FROM
  information_schema.routines
 LEFT JOIN  pg_catalog.pg_proc
     ON oid::text = regexp_replace(specific_name, '^.*_([0-9]+)$', E'\\1', 'g')
+
+LEFT JOIN (
+    SELECT specific_name, concat_comma(data_type) AS parameters_types,
+           COUNT(specific_name) AS parameters_count FROM (
+      SELECT *
+        FROM 
+        zks_information_schema_parameters
+        ORDER BY ordinal_position ASC
+    ) AS porder
+    GROUP BY specific_name
+  ) AS parameters USING(specific_name)
+
 
 
 ]]></def>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="concat_ws" type="string">
+  <procedure name="concat_ws" type="string" volatility="IMMUTABLE">
     <param type="string"/>
     <param type="string"/>
     <param type="string"/>

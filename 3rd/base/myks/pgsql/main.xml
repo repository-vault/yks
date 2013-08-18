@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="max" type="int">
+  <procedure name="max" type="int" volatility="IMMUTABLE">
     <param type="int"/>
     <param type="int"/>
     <def><![CDATA[
@@ -11,7 +11,7 @@ BEGIN
 END
 ]]></def>
   </procedure>
-  <procedure name="max" type="string">
+  <procedure name="max" type="string" volatility="IMMUTABLE">
     <param type="string"/>
     <param type="string"/>
     <def><![CDATA[
@@ -21,7 +21,7 @@ BEGIN
 END
 ]]></def>
   </procedure>
-  <procedure name="max" type="float">
+  <procedure name="max" type="float" volatility="IMMUTABLE">
     <param type="float"/>
     <param type="float"/>
     <def><![CDATA[
@@ -31,7 +31,7 @@ BEGIN
 END
 ]]></def>
   </procedure>
-  <procedure name="min" type="int">
+  <procedure name="min" type="int" volatility="IMMUTABLE">
     <param type="bigint"/>
     <param type="bigint"/>
     <def><![CDATA[

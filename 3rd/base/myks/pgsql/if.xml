@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="if" type="int">
+  <procedure name="if" type="int" volatility="IMMUTABLE">
     <param type="bool"/>
     <param type="int"/>
     <param type="int"/>
@@ -11,7 +11,7 @@ BEGIN
 END;
 </def>
   </procedure>
-  <procedure name="if" type="string">
+  <procedure name="if" type="string" volatility="IMMUTABLE">
     <param type="bool"/>
     <param type="string"/>
     <param type="string"/>
@@ -21,7 +21,7 @@ BEGIN
 END;
 </def>
   </procedure>
-  <procedure name="if" type="bool">
+  <procedure name="if" type="bool" volatility="IMMUTABLE">
     <param type="bool"/>
     <param type="bool"/>
     <param type="bool"/>

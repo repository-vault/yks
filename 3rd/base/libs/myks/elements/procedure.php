@@ -22,7 +22,7 @@ abstract class procedure_base extends myks_installer  {
   function modified(){
  
     $same = $this->xml_def == $this->sql_def;
-    if($same) return !$same;
+   if($same) return !$same;
 
     //print_r($this->xml_def);print_r($this->sql_def);die;
     //print_r(array_show_diff($this->xml_def, $this->sql_def,"xml","sql"));die;
@@ -95,39 +95,15 @@ abstract class procedure_base extends myks_installer  {
 //STATIC
   private static function raw_sql_search($proc_name, $proc_schema, $data_type, $params = array()){
 
-    $having    = array();
-    $having  []= "COUNT(parameters.specific_name) = ".count($params);
+    $where    = array(
+      'routine_name'     => $proc_name,
+      'routine_schema'   => $proc_schema,
+      'data_type'        => $data_type,
+      'parameters_count' => count($params),
+      'parameters_types' => join(', ', array_extract($params, 'type')),
+    );
 
-    //concat_comma(information_schema.parameters.ordinal_position)
-
-    if($params) {
-      $params_types = array();
-      foreach($params as $param)
-        $params_types[] = $param['type'];
-
-      $having  []= " concat_comma(parameters.data_type) = '".join(', ',$params_types)."'";
-    }
-
-    $query = "SELECT
-            routine_name, routine_schema, specific_name
-        FROM
-          zks_information_schema_routines
-          LEFT JOIN (
-              SELECT *
-                FROM 
-                zks_information_schema_parameters
-                ORDER BY ordinal_position ASC
-          ) AS parameters USING(specific_name)
-
-        WHERE
-                 routine_name LIKE '{$proc_name}'
-            AND  routine_schema='{$proc_schema}'
-            AND  zks_information_schema_routines.data_type='$data_type'
-        GROUP BY specific_name, routine_schema, routine_name
-        HAVING ".join(' AND ', $having);
-
-
-    sql::query($query);
+    sql::select("zks_information_schema_routines", $where, "routine_name, routine_schema, specific_name");
     return sql::brute_fetch("specific_name");
   }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="right" type="string">
+  <procedure name="right" type="string" volatility="IMMUTABLE">
     <param type="string"/>
     <param type="int"/>
     <def>
@@ -12,7 +12,7 @@ RETURN SUBSTR($1,LENGTH($1)-$2+1);
 END;
 </def>
   </procedure>
-  <procedure name="left" type="string">
+  <procedure name="left" type="string" volatility="IMMUTABLE">
     <param type="string"/>
     <param type="int"/>
     <def>
