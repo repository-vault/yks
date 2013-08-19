@@ -70,7 +70,10 @@ class cli {
   static function which($bin_name, $force_use_path = false){
     if(self::$OS == self::OS_UNIX && !$force_use_path )
       return trim(`which $bin_name`);
+    return self::resolve_path($bin_path);
+  }
 
+  static function resolve_path($bin_path){
     $exts = array_map('strtolower', array_filter(explode(';', $_ENV['PATHEXT'])));
 
       //all search names
@@ -84,7 +87,8 @@ class cli {
         return $full_path;
     }}
 
-    return $bin_name;
+    return false
+;
   }
 
   static function trace($msg) {
