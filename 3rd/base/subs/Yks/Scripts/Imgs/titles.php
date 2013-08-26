@@ -22,7 +22,7 @@ if($bypass_cache || !is_file($img_path)) try {
         throw rbx::error("Image generation failed");
 
 }catch(Exception $e){
-    syslog(LOG_ERR, "Unable to load theme : $e");
+    syslog(LOG_NOTICE, "Unable to load theme : $e");
     die("Unable to load theme");
 }
 

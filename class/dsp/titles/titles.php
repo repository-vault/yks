@@ -46,7 +46,7 @@ class dsp_titles {
         return $theme_config;
     }
 
-    throw rbx::error("Unaccessible theme : '$theme_name'");
+    throw new Exception("Unaccessible theme : '$theme_name'");
   }
 
 
