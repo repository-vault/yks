@@ -4,11 +4,6 @@ class css_processor {
   
   const CB_INLINE_EXTERNALS = 'inline_externals';
   const CB_RESOLVE_IMPORTS  = 'resolve_imports';
-
-  private static $inherit_cb = array(
-    self::CB_INLINE_EXTERNALS,
-    self::CB_RESOLVE_IMPORTS,
-  );
   
   private static $entities;
   private $file_uri;
@@ -107,11 +102,13 @@ class css_processor {
               
             foreach($this->hooks as $cb)
               if(is_array($cb)
-                && in_array($cb[1], self::$inherit_cb)
-                && $cb[0] === $this)
+                && $cb[0] === $this
+                && method_exists ($this, $cb[1])
+                && true)
                   $process->register_hook(array($process, $cb[1]));
+
             $process->parse();
-            $process->apply_hooks();            
+            $process->apply_hooks();
             $this->css->replaces_statement($import, $process->css);
           } catch(Exception $e){
             //something is fuck up in the file behind, leave it.. :/

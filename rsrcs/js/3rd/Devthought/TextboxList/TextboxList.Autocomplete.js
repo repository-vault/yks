@@ -231,23 +231,42 @@ TextboxList.Autocomplete = new Class({
 
 TextboxList.Autocomplete.Methods = {
 
-	standard: {
-		filter: function(values, search, insensitive, max){
-			var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : ''), isTrunc = false;
-			for (var i = 0; i < values.length; i++){
-				if (max != 0 && newvals.length === max) {isTrunc = true; break;}
-				if (values[i][1].test(regexp)) newvals.push(values[i]);
-			}
-			return {'values' : newvals, 'trunc' : isTrunc};
-		},
+  standard: {
+    filter: function(values, search, insensitive, max){
+      var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : ''), isTrunc = false;
+      for (var i = 0; i < values.length; i++){
+        if (max != 0 && newvals.length === max) {isTrunc = true; break;}
+        if (values[i][1].test(regexp)) newvals.push(values[i]);
+      }
+      return {'values' : newvals, 'trunc' : isTrunc};
+    },
 
-		highlight: function(element, search, insensitive, klass){
-			var regex = new RegExp('(<[^>]*>)|('+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
-			return element.set('html', element.get('html').replace(regex, function(a, b, c){
-				return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>';
-			}));
-		}
-	}
+    highlight: function(element, search, insensitive, klass){
+      var regex = new RegExp('(<[^>]*>)|('+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
+      return element.set('html', element.get('html').replace(regex, function(a, b, c){
+        return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>';
+      }));
+    }
+  },
+  
+  delegate: {
+    filter: function(values, search, insensitive, max){
+      var newvals = [], isTrunc = false;
+      for (var i = 0; i < values.length; i++){
+        if (max != 0 && newvals.length === max) {isTrunc = true; break;}
+        newvals.push(values[i]);
+      }
+      return {'values' : newvals, 'trunc' : isTrunc};
+    },
+
+    highlight: function(element, search, insensitive, klass){
+      var regex = new RegExp('(<[^>]*>)|('+ search.escapeRegExp() +')', insensitive ? 'ig' : 'g');
+      return element.set('html', element.get('html').replace(regex, function(a, b, c){
+        return (a.charAt(0) == '<') ? a : '<strong class="'+ klass +'">' + c + '</strong>';
+      }));
+    }
+  }
+
 
 };
 
