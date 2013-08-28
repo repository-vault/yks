@@ -87,16 +87,19 @@ class query  extends _sql_base {
   }
 
 
-
-
    public static function fast_export($sql_query, $creator = "Anonymous"){
 
-    sql::query($sql_query);
+    $res = sql::query($sql_query);
+
+    $data_headers = array();
+    for ($i = 0, $max=pg_num_fields($res); $i < $max; $i++) {
+      $data_headers[$fieldname = pg_field_name($res, $i)] = array(
+          'name'=> $fieldname ,
+          'type'=> exyks_renderer_excel::pg_to_excel_type(pg_field_type($res, $i)),
+      );
+    }
 
     $data_results = sql::brute_fetch();
-
-    $data_headers =  array_combine($tmp = array_keys(reset($data_results)), $tmp);
-
 
     return exyks_renderer_excel::export($data_headers, $data_results, array(
       'title'    => exyks::$head->title,

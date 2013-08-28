@@ -7,6 +7,9 @@ class exyks_renderer_excel {
   private static $XSL_TPL_BOTTOM = "Yks/Renderers/excel_bottom";
   static $creator = 'Anonymous';
 
+  const TYPE_STRING = "String";
+  const TYPE_NUMBER = "number";
+
   static function init(){
     self::$XSL_SERVER_PATH = RSRCS_PATH."/xsl/specials/excel.xsl";
   }
@@ -98,10 +101,13 @@ class exyks_renderer_excel {
       $xml_row = $out_xml->createElement('Row');
 
       foreach ($row as $header => $cell_value) {
+        $header = $data_headers[$header];
+        $type = isset($header['type']) ? $header['type']: self::TYPE_STRING;
+
         $cell = $out_xml->createElement('Cell');
         $cell->setAttribute('class', 'cell');
         $cell->appendChild($out_xml->createTextNode(specialchars_decode($cell_value)));
-        $cell->setAttribute('Type', 'String');
+        $cell->setAttribute('type', $type);
 
         $xml_row->appendChild($cell);
       }
@@ -130,6 +136,16 @@ class exyks_renderer_excel {
 
   }
 
+
+  public static function pg_to_excel_type($pg_type){
+    $number_pg = array("int2", "int4", "int8", "numeric", "float4", "float8");
+    if(in_array($pg_type,$number_pg))
+      return self::TYPE_NUMBER;
+    else
+      return self::TYPE_STRING;
+  }
+
+
   public static function render($str){
     self::process();
     $str = file_get_contents(tpls::tpl(self::$XSL_TPL_TOP))
@@ -138,7 +154,6 @@ class exyks_renderer_excel {
     exyks::render($str);
     die;
   }
-
 
 
 }
