@@ -95,7 +95,7 @@ class query  extends _sql_base {
     for ($i = 0, $max=pg_num_fields($res); $i < $max; $i++) {
       $data_headers[$fieldname = pg_field_name($res, $i)] = array(
           'name'=> $fieldname ,
-          'type'=> exyks_renderer_excel::pg_to_excel_type(pg_field_type($res, $i)),
+          'column_type'=> exyks_renderer_excel::pg_to_excel_type(pg_field_type($res, $i)),
       );
     }
 

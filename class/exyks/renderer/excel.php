@@ -87,9 +87,10 @@ class exyks_renderer_excel {
     //Pour les datas
     $xml_row = $out_xml->createElement('Row');
     foreach ($data_headers as $name => $value) {
+      $name = specialchars_decode(pick($value['column_title'], $name));
       $cell = $out_xml->createElement('Cell');
       $cell->setAttribute('class', 'header cell');
-      $cell->appendChild($out_xml->createTextNode(specialchars_decode($name)));
+      $cell->appendChild($out_xml->createTextNode($name));
       $cell->setAttribute('Type', 'String');
 
       $xml_row->appendChild($cell);
@@ -102,7 +103,7 @@ class exyks_renderer_excel {
 
       foreach ($row as $header => $cell_value) {
         $header = $data_headers[$header];
-        $type = isset($header['type']) ? $header['type']: self::TYPE_STRING;
+        $type = pick($header['column_type'], self::TYPE_STRING);
 
         $cell = $out_xml->createElement('Cell');
         $cell->setAttribute('class', 'cell');
