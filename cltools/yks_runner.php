@@ -71,26 +71,6 @@ class yks_runner {
     }
   }
 
-  function clear_config(){
-
-    if(PHP_SAPI == "cli")
-        return yks_runner::httpd_tunnel(__CLASS__, "clear_config");
-
-
-    rbx::line("Cleaning configuration caches");
-
-    $hash_key   = config::hash_key();
-    $hash_table = storage::fetch($hash_key);
-    if(!$hash_table)
-        throw rbx::error("Invalid hash key, unable to clear configuration caches");
-    foreach($hash_table as $key=>$file){
-        storage::delete($key);
-        rbx::ok("Cleaning hash $key : $file"); 
-    }
-    storage::delete($hash_key);
-    rbx::line();
-
-  }
   
 
   function users(){
@@ -162,19 +142,6 @@ class yks_runner {
 
 
 
-
-
-/**
-* cli tunneling for APC related features
-*/
-  public static function httpd_tunnel($runner, $command, $loopback_ip = null){
-    self::http_auto_check($loopback_ip); //check self http lookup
-
-    $myks_http_url = SITE_URL."/?/Yks/Scripts//$runner;$command|cli";
-    $http_contents = self::wget_dnsless($myks_http_url, $loopback_ip, 20); //extend timeout
-    rbx::ok("Running $myks_http_url on $loopback_ip");
-    echo $http_contents.CRLF;
-  }
 
 
 /**

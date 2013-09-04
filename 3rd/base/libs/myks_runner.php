@@ -53,9 +53,6 @@ class myks_runner {
 */
   function manage_types($loopback_ip = null){ 
 
-    if(PHP_SAPI == "cli")
-        return yks_runner::httpd_tunnel(__CLASS__, "manage_types", $loopback_ip);
-
     rbx::title("Parsing myks definitions");
 
     $types_xml      = data::reload("types_xml");
@@ -114,9 +111,6 @@ class myks_runner {
 * @alias locales 127.0.0.1
 */
   function manage_locales($loopback_ip = null){
-
-    if(PHP_SAPI == "cli")
-        return yks_runner::httpd_tunnel(__CLASS__, "manage_locales", $loopback_ip);
 
     if($verbose) {
       rbx::title("Starting localization");
