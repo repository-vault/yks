@@ -11,25 +11,25 @@ if(substr($start,0,strlen($related)  ) != $related )
   die("Bad configuration");
 
 $apc_key = substr($start, strlen($related) );
-if(!$apc_key)
-  die("Invalid APC key");
 
 
 $method = strtolower($_SERVER['REQUEST_METHOD']);
+
 switch($method){
   case "get":
-    die(apc_fetch($apc_key));
+    $output = $apc_key ? apc_fetch($apc_key) : "pong";
     break;
   case "post":
   case "put":
   case "update":
     $contents = stream_get_contents(fopen("php://input", "r"));
-    apc_store($apc_key, $contents);
-    die("wrote ".strlen($contents));
+    $output = apc_store($apc_key, $contents);
+    break;
   case "delete":
-    apc_delete($apc_key);
-    die("entry deleted");
+    $output = apc_delete($apc_key);
+    break;
   default:
     die("Invalid operation $method");
 }
 
+die(serialize($output));
