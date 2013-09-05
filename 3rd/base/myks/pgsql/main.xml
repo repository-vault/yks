@@ -41,4 +41,22 @@ BEGIN
 END
 ]]></def>
   </procedure>
+  <procedure name="random" type="int">
+    <param type="bigint"/>
+    <def><![CDATA[
+BEGIN
+  return round( random()* $1 );
+END
+]]></def>
+  </procedure>
+  <procedure name="random" type="int">
+    <param type="bigint"/>
+    <param type="bigint"/>
+    <def><![CDATA[
+BEGIN
+  RETURN random(abs($1-$2)) + min($1,$2);
+END
+]]></def>
+  </procedure>
+
 </myks>
