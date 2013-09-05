@@ -386,7 +386,7 @@ class sql_runner {
     $site_code = yks::$get->config->sql->dblink['local_ns'];
 
     if(!$site_code)
-      throw new Exception("Please specify a config/sql/dblink/local_ns directive");
+      throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
 
     $args = func_get_args();
     $args = array_slice($args,1);
