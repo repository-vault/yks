@@ -217,6 +217,13 @@ class imgs {
     return $img;
   }
 
+  static function imagestretch($img, $new_w, $new_h){
+    list($old_w, $old_h) = array( imagesx($img), imagesy($img));
+    $out = self::imagecreatetruealpha($new_w, $new_h);
+    imagecopyresampled($out, $img, 0, 0, 0, 0, $new_w, $new_h, $old_w, $old_h);
+    return $out;
+  }
+
 /** Resize an image based on width and optional height */
   static function imageresize($img, $w, $h=false, $bigger=false){
     list($old_w, $old_h) = array( imagesx($img), imagesy($img));
