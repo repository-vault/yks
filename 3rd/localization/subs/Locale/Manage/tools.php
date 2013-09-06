@@ -1,6 +1,6 @@
 <?
 
-  sql::select('ks_locale_domains_list', array('locale_domain_id' => $locale_domains));
+  sql::select('ks_locale_domains_list', array('locale_domain_id' => array_filter($locale_domains)));
   $locale_domains_list = sql::brute_fetch('locale_domain_id');
 
   if($action == "clean_locale_cache") try {
