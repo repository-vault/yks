@@ -11,6 +11,7 @@ class mime_part {
   private $type_extension;
   public $transfer_encoding;
   public $file_name;
+  public $cid;
 
   function __construct($mail, $part_infos){
     $this->mail = $mail;
@@ -21,6 +22,8 @@ class mime_part {
 
     if($this->is_composed())
         $this->boundary  = "---".substr($part_infos['part_id'].'-'.md5($part_infos['part_id']._NOW),0,32);
+
+    $this->cid = isset($part_infos['cid']) ? $part_infos['cid'] : "CID-".sha1(uniqid());
 
     $this->contents = $part_infos['part_contents'];
 
@@ -40,7 +43,7 @@ class mime_part {
 
         //escape in no longer necessary
     $special_chars_decode = $this->type_extension=="plain";
-    
+
     return $this->mail->apply_context($this->contents, $special_chars_decode);
   }
 
@@ -57,6 +60,8 @@ class mime_part {
 
     $child_part->transfer_encoding = "base64";
     $this->add_child($child_part);
+
+    return $child_part->cid;
   }
 
   function is_composed(){
@@ -79,15 +84,17 @@ class mime_part {
         $str.="; name=\"{$this->file_name}\"";
     $str.=CRLF;
 
+    if($this->cid)
+      $str.="Content-ID: <{$this->cid}>".CRLF;
+
     if(!$this->is_composed())
         $str.=  "Content-Transfer-Encoding: {$this->transfer_encoding}".CRLF;
 
-    if($this->file_name) 
+    if($this->file_name)
         $str.="Content-Disposition:attachment; filename=\"{$this->file_name}\"".CRLF;
 
     return $str.CRLF;
   }
-
 
 /**
 * raw : n'applique aucun encoding, ni headers, retourne uniquement le contenu
