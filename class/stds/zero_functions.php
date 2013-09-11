@@ -37,6 +37,10 @@ function pick(){
   return $val ? $val : end($args);
 }
 
+
+function array_set($array, $k, $v){
+  foreach($array as &$element)  $element[$k] = $v;
+}
 //exclude an element from an array
 function array_remove($array, $val){
   $vals = func_get_args();  $vals = array_shift($vals);

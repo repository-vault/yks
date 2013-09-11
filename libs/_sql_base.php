@@ -253,7 +253,7 @@ abstract class _sql_base  implements ArrayAccess {
 
   function offsetExists ($key){ return isset($this->data[$key])||isset($this->$key); }
   function offsetGet($key){ return $this->$key;}
-  function offsetSet($offset,$value){}
+  function offsetSet($offset, $value){$this->$offset = $value;}
   function offsetUnset($key){unset($this->data[$key]); }
 
 }
