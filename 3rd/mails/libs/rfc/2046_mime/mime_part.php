@@ -26,6 +26,10 @@ class mime_part {
 
   }
 
+  function force_contents($contents){
+    $this->contents = $contents;
+  }
+
   function add_child(mime_part $child){
     $this->children[] = $child;
   }

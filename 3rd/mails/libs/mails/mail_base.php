@@ -7,7 +7,7 @@ abstract class mail_base {
   protected $to = array();
   protected $cc = array();
   protected $dests = array();
-  protected $first_part;
+  public $first_part;
 
   abstract function send($to=false);
 
@@ -49,6 +49,11 @@ abstract class mail_base {
   public function from($from){
     return $this->from = $from;
   }
+
+  public function subject($subject){
+    return $this->subject = $subject;
+  }
+
   public function to($to){ 
     return $this->dest_add("to", $to);
   }
