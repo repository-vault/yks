@@ -92,13 +92,13 @@ class smtp_lite {
     fputs($sock, "MAIL FROM: <$smtp_sender>".CRLF);
     self::server_sync($sock, "250");
 
-    
+
     $errors = array();
     foreach($dests as $mail_to){
       try {
         fputs($sock, "RCPT TO: <$mail_to>".CRLF);
         self::server_sync($sock, "250");
-      } catch(Exception $e){ 
+      } catch(Exception $e){
         error_log($e);
         $errors[] = $mail_to;
       }
@@ -106,7 +106,7 @@ class smtp_lite {
     if($errors)
         rbx::error("Not all recipient are valid (".join(', ',$errors).")");
 
-        
+
     fputs($sock, "DATA".CRLF);
     self::server_sync($sock, "354");
 

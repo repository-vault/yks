@@ -2,22 +2,6 @@
 
 class rfc_2046 {
 
-  function  content_type($file_path){
-    $file_ext = files::ext($file_path);
-
-    $content_types = array(
-        'png'=>'image/png',
-        'gif'=>'image/gif',
-        'txt'=>'text/plain',
-        'pdf'=>'application/pdf',
-    );
-
-    $fallback = $content_types['txt'];
-
-    $content_type = $content_types[$file_ext];
-    return $content_type?$content_type:$fallback;
-  }
-
 
     //mime parse, unused
   public static function mime_decode($headers, $body){
@@ -40,10 +24,10 @@ class rfc_2046 {
 
             unset($part_headers);unset($part_body);
             list($part_headers,$part_body) = explode(CRLF.pop3::BLANK_LINE,trim($part),2);
-            
+
             if(!$part_body) continue; //skipp pad
             $part_headers = pop3::parse_headers($part_headers);
-         
+
             $data['children'][]= mime_decode($part_headers,$part_body);
         }
     } else {

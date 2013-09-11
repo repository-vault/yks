@@ -50,8 +50,11 @@ class mime_part {
   function add_file($file_path, $file_name=false){
     if(!is_file($file_path )) return false;
 
+    $file_ext = files::ext($file_path);
+    $content_type = mime_types::get_content_type($file_ext);
+
     $part_infos  = array(
-        'content-type'  => rfc_2046::content_type($file_path), //depends on file_ext
+        'content-type'  => $content_type,
         'part_contents' => file_get_contents($file_path),
     );
 
