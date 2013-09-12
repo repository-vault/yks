@@ -70,10 +70,10 @@ class cli {
   static function which($bin_name, $force_use_path = false){
     if(self::$OS == self::OS_UNIX && !$force_use_path )
       return trim(`which $bin_name`);
-    return self::resolve_path($bin_path);
+    return self::resolve_path($bin_name);
   }
 
-  static function resolve_path($bin_path){
+  static function resolve_path($bin_name){
     $exts = array_map('strtolower', array_filter(explode(';', $_ENV['PATHEXT'])));
 
       //all search names
@@ -82,13 +82,12 @@ class cli {
 
     foreach(self::$paths as $path) {
       foreach($search as $bin_full_name) {
-      $full_path = $path.DIRECTORY_SEPARATOR.$bin_full_name;
-      if(file_exists($full_path) && is_file($full_path))
-        return $full_path;
+        $full_path = $path.DIRECTORY_SEPARATOR.$bin_full_name;
+        if(file_exists($full_path) && is_file($full_path))
+          return $full_path;
     }}
 
-    return false
-;
+    return false;
   }
 
   static function trace($msg) {
