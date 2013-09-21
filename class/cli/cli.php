@@ -225,7 +225,7 @@ class cli {
     return $password;
   }
 
-  public static function bool_prompt($prompt="", $default = null){
+  public static function bool_prompt($prompt="", $default = false){
     $yn = $default ? "Y/n" :"y/N";
     return bool(self::text_prompt("$prompt ($yn)", $default ));
   }
