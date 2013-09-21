@@ -6,12 +6,18 @@ $args  = array_slice($argv,3);
 
 $_SERVER['SERVER_NAME']     = $host ? $host : 'cli';
 
-define('yks/cli', "Yks cli tools");
+
 define("PUBLIC_PATH", getcwd()."/www");
 
-
-include "yks/class/yks/loader.php";
-exyks::init();
+if(is_file($host)) {
+  $_SERVER['YKS_FREE'] = true;
+  include "yks/class/yks/loader.php";
+  require CLASS_PATH."/functions.php";
+} else {
+  define('yks/cli', "Yks cli tools");
+  include "yks/class/yks/loader.php";
+  exyks::init();
+}
 
 $clyks_config = yks::$get->config->clyks;
 
