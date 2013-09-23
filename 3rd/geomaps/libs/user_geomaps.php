@@ -1,7 +1,5 @@
 <?php
 
-
-
 class user_geomaps extends geomaps {
   private $area_user   = array();
   private $users_colors = array();
@@ -16,12 +14,20 @@ class user_geomaps extends geomaps {
     $this->area_user = sql::brute_fetch("area_id", "user_id"); //one area per user in this one
 
     if($users_colors === false) {
-        $users_list  = array_unique(array_filter(array_values($this->area_user)));
+        $users_list  = $this->users_list();
         $users_colors = array();
-        foreach($users_list as $user_id)
-            $users_colors[$user_id] = self::user_color($user_id);
+
+        $colors = colorstool::distributed_colors(count($users_list), colorstool::GOLDEN_RATIO_CONJUGATE);
+
+        foreach($users_list as $user)
+            $users_colors[$user['user_id']] = array_shift($colors);
     }
     $this->users_colors = $users_colors;
+  }
+
+  public function users_list(){
+      $users_list = users::get_children($this->root_user);
+      return $this->users_list = users::get_infos($users_list);
   }
 
   public static function filter_zipcode($areas_list, $addr_zipcode){
@@ -41,6 +47,10 @@ class user_geomaps extends geomaps {
     return array_sort($success, array('fra-75', 'fra-dep'));
   }
 
+  function get_user_color($user){
+    $user_id = is_numeric($user)?$user:$user['user_id'];
+    return $this->users_colors[$user_id];
+  }
 
 
   static function user_color($user, $hex = false){
@@ -93,7 +103,10 @@ class user_geomaps extends geomaps {
     $this->area_colors = array();
     foreach($this->area_user as $area=>$user_id) {
         if(!$this->users_colors[$user_id]) continue;
-        $this->area_colors[$area] = $this->users_colors[$user_id];
+        $color = $this->users_colors[$user_id];
+        $color = colorstool::rgb_to_html($color['r'], $color['g'], $color['b']);
+
+        $this->area_colors[$area] = hexdec($color);
     }
     parent::render($default_color);
   }
