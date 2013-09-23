@@ -164,7 +164,7 @@ class cli {
       if($y) $out .= self::table_line($row, $map["y"], $map["y"], $map["y"]).CRLF;
     }
     $out .= self::table_line($line, $map["ld"], $map["md"], $map["rd"]).CRLF;
-    echo $out;
+    self::output($out);
   }
 
   function table_line($line, $ml, $mm, $mr) { return $ml . join($mm, $line) . $mr; }
@@ -213,7 +213,7 @@ class cli {
   }
 
   public static function password_prompt($prompt = ""){
-    if($prompt) echo "$prompt : ";
+    if($prompt) self::output( "$prompt : ");
     if(self::$OS & self::OS_WINDOWS) {
         $pwObj = new Com('ScriptPW.Password');
         $password = $pwObj->getPassword();
@@ -221,7 +221,7 @@ class cli {
         system('stty -echo');
         $password = trim(fgets(STDIN));
         system('stty echo');
-    } echo CRLF;
+    } self::output(CRLF);
     return $password;
   }
 
@@ -240,7 +240,7 @@ class cli {
       return $default;
 
     if($default) $prompt .= " [{$default}]";
-    if($prompt) echo "$prompt : ";
+    if($prompt) self::output( "$prompt : ");
 
     $data_str = "";
     do {
