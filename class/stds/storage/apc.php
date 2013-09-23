@@ -13,10 +13,8 @@ class _storage_apc {
 
     if(PHP_SAPI == "cli") {
       self::$gw = (string) yks::$get->config->storage->apc['gw'];
-      if(self::gw_call(self::HTTP_GET, "") != "pong") {
-        error_log("Invalid apc GW configuration");
-        self::$gw = null;
-      }
+      if(self::gw_call(self::HTTP_GET, "") != "pong")
+        throw new Exception("Invalid apc GW configuration");
     }
   }
 
