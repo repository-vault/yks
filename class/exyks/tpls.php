@@ -77,6 +77,7 @@ class tpls {
 
   /* register entities (k=>v) that will be available in &k; for .tpl file */
   public static function export($vals){
+    if(!$vals) return;
     self::$entities = array_merge(self::$entities, $vals);
   }
 
