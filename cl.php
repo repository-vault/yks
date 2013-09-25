@@ -1,19 +1,20 @@
 <?
 
-$host  = $argv[1];
-$entry = $argv[2];
-$args  = array_slice($argv,3);
-
-$_SERVER['SERVER_NAME']     = $host ? $host : 'cli';
 
 
 define("PUBLIC_PATH", getcwd()."/www");
 
-if(is_file($host)) {
+if(is_file($argv[1])) {
+  $entry = $argv[1];
+  $args  = array_slice($argv, 2);
   $_SERVER['YKS_FREE'] = true;
   include "yks/class/yks/loader.php";
   require CLASS_PATH."/functions.php";
 } else {
+  $host  = $argv[1];
+  $entry = $argv[2];
+  $args  = array_slice($argv,3);
+  $_SERVER['SERVER_NAME']     = $host ? $host : 'cli';
   define('yks/cli', "Yks cli tools");
   include "yks/class/yks/loader.php";
   exyks::init();
