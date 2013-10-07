@@ -49,14 +49,12 @@ class cli {
   }
 
   private static $paths = false;
-  static function extend_path($paths, $putenv = true){
-    $new_paths      = is_array($paths)?$paths:func_get_args();
-
-    $paths = array_merge(self::get_path(), $new_paths);
+  static function extend_path($paths, $putenv = true, $before = false){
+    $new_paths      = is_array($paths)?$paths:array($paths);
+    $paths = $before  ? array_merge($new_paths, self::get_path() ) : array_merge(self::get_path(), $new_paths);
     $paths = array_filter(array_unique($paths));
-
     $_ENV['PATH'] = $_SERVER['PATH'] = join(PATH_SEPARATOR, $paths);
-    if(self::$OS == self::OS_WINDOWS && $putenv)
+    if($putenv)
         putenv("PATH=".$_ENV['PATH']);
     return self::$paths = self::get_path();
   }
