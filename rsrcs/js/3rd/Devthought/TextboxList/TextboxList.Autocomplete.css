@@ -1,10 +1,20 @@
 /*
-		This stylesheet belongs to TextboxList - Copyright Guillermo Rauch <http://devthought.com> 2009
+    This stylesheet belongs to TextboxList - Copyright Guillermo Rauch <http://devthought.com> 2009
     Modified by Quentin for IVS
 */
 
 .textboxlist-autocomplete { position: absolute; }
-.textboxlist-autocomplete-placeholder, .textboxlist-autocomplete-results { opacity: 0.9; filter: alpha(opacity=90); background: #eee; -webkit-box-shadow: 0 3px 3px #ccc; -moz-box-shadow: 0 3px 3px #ccc; box-shadow: 0 3px 3px #ccc; border: 1px solid #999; border-top: none; display: none; }
+.textboxlist-autocomplete-placeholder, .textboxlist-autocomplete-results {
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+  background: #eee;
+  -webkit-box-shadow: 0 3px 3px #ccc;
+  -moz-box-shadow: 0 3px 3px #ccc;
+  box-shadow: 0 3px 3px #ccc;
+  border: 1px solid #999;
+  border-top: none; display: none;
+}
+
 .textboxlist-autocomplete-placeholder {
   background-color: #DEE7F8;
   border: 1px solid gray; border-radius: 0 0 8px 8px;
