@@ -35,7 +35,7 @@
 }
 
 /*  TextboxList.Autocomplete Style guidelines
-			Try to keep .textboxlist-autocomplete {} as it is now
-			If you apply custom styles to placeholder, also apply them to results, like it is now.
-			.textboxlist-autocomplete-result {} needs a background for IE.
+  Try to keep .textboxlist-autocomplete {} as it is now
+  If you apply custom styles to placeholder, also apply them to results, like it is now.
+  .textboxlist-autocomplete-result {} needs a background for IE.
 */
