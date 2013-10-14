@@ -38,6 +38,8 @@ define('Ex/yks', 'A cloudy tool');
   define('RSRCS_PATH',   YKS_PATH.DIRECTORY_SEPARATOR.'rsrcs');
   define('CLTOOLS_PATH', YKS_PATH.DIRECTORY_SEPARATOR.'cltools');
 
+  $win = stripos($_SERVER['OS'],'windows')!==false ;
+  define('CLYKS',  $win ? "clyks.bat" : "clyks");
   define('EXYKS',        YKS_PATH.DIRECTORY_SEPARATOR.'web.php');
   define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
 
