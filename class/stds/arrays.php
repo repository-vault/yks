@@ -11,6 +11,19 @@ function make_tree($splat, $root=false, $inverted = false){
     } return $root!==false?array($root=>$tree[$root]):$tree;
 }
 
+ function array_restrict($items, $verif = array()){
+    $out = array();
+    foreach($items as $item_key => $item) {
+      $success = true;
+      foreach($verif as $k => $v)
+        $success &= $item[$k] == $v;
+      if($success)
+        $out[$item_key] = $item;
+    }
+    return $out;
+  }
+
+
 
 function trimmed_mean($X, $k = 0.1) {
   $n = count($X);
