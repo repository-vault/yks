@@ -16,7 +16,8 @@ class locales_manager {
     $base = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     $current_hash = md5($base);
 
-    if($_SESSION['langs']['current_hash'] != $current_hash) {
+    if($_SESSION['langs']['current_hash'] != $current_hash
+       || !$_SESSION['langs']['current']) {
         $_SESSION['langs']['current_hash'] = $current_hash;
         $user_lang =  self::find_best_lang($base);
         $_SESSION['langs']['current'] = $user_lang;
@@ -25,6 +26,7 @@ class locales_manager {
 
     if($forced_domain = yks::$get->config->locales['prefered_locale_domain_id'])
         $user_lang .= "_{$forced_domain}";
+
     exyks::store("USER_LANG", $user_lang);
   }
 
