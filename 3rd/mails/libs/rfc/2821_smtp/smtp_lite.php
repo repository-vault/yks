@@ -12,6 +12,9 @@ class smtp_lite {
   }
 
   public static function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
+    if($body === true && PHP_SAPI == 'cli') 
+      $body = stream_get_contents(STDIN);
+  
     $to = is_array($to) ? $to : array($to);
 
     $contents = $headers.CRLF;
