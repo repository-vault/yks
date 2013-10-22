@@ -33,7 +33,8 @@ class auth {
             "ORDER BY access_zone=access_zone_parent DESC,
         access_zone_parent, access_zone ASC");
 
-    return $access_zones = sql::brute_fetch("access_zone");
+    $access_zones = sql::brute_fetch("access_zone");
+    return $access_zones;
   }
 
 
@@ -95,11 +96,11 @@ class auth {
 
     if($users_tree===false) $users_tree = (array)sess::$sess['users_tree'];
     sql::select('ks_users_access',array('user_id'=>$users_tree),'access_zone, access_lvl');
-    $access = array();while(extract(sql::fetch())) {
+    $access = array(); while(extract(sql::fetch())) {
         $zone_path = $access_zones[$access_zone]['access_zone_path'];
         $access[$zone_path]=array_merge_numeric(
             $access[$zone_path]?$access[$zone_path]:array(),
-            array_flip(array_filter(explode(',',"$access_lvl")))
+            array_combine($tmp = array_filter(explode(',',"$access_lvl")), $tmp)
         );
     }
 
