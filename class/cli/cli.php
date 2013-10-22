@@ -36,7 +36,13 @@ class cli {
         if (starts_with($raw, "-")) {
             if(!preg_match("#^--?([a-z_0-9/:-]+)(?:=(.*))?#i", $raw, $out))
                 continue;
-            self::$dict[$out[1]] = $out[2] == "" ? true : $out[2];
+            $value = !isset($out[2]) ? true : $out[2];
+            if(isset(self::$dict[$out[1]])) {
+              if(!is_array(self::$dict[$out[1]]))
+                self::$dict[$out[1]] = array(self::$dict[$out[1]]);
+              self::$dict[$out[1]][] = $value;
+            } else self::$dict[$out[1]] = $value;
+
         } else self::$args[] = $raw;
     }
 
