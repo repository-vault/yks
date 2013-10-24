@@ -190,7 +190,7 @@ class sql {
     if(is_array($v)) {
       list($type,$val) = each($v);
       if($type === "sql") return "$kesc $val";
-      return $v ? sql::in_join($k,$v) : "FALSE";
+      return sql::in_join($k,$v);
     }
 
     if(is_string($v)) return "$kesc='".sql::clean($v)."'";
@@ -404,7 +404,9 @@ class sql {
   }
 
   static function in_join($field,$vals,$not='') {
-    if((!$vals) && (!$not)) return sql::false;
+    if(!$vals)
+      return  $not ? sql::true : sql::false;
+
     return self::escape($field)." $not IN('".join("','",$vals)."')";
   }
 
