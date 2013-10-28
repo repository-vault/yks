@@ -4,9 +4,7 @@ class myks_gen {
   static public $mykse_xml;
   static public $tables_xml;
 
-  static public $tables_ghosts_views; // (tables can be ghosts of views)
-
-  static $cols=array('Field','Type','Extra','Null','Default','Extra');
+  static $cols = array('Field', 'Type', 'Extra', 'Null', 'Default', 'Extra');
 
   static function init($mykse_xml, $tables_xml){
     if(!classes::init_need(__CLASS__)) return;

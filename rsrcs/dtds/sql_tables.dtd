@@ -5,6 +5,7 @@
 <!ATTLIST table
   name    CDATA    #REQUIRED
   extend  CDATA    #IMPLIED
+  virtual CDATA    #IMPLIED
   %block;
 >
 <!ENTITY % fk_actions "(cascade|set_null|no_action)">

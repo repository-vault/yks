@@ -176,6 +176,9 @@ class mykses {
 
     $joins = array();
     foreach(data::load("tables_xml") as $table_name => $table_xml){ //main loop
+      if(bool($table_xml['virtual']))
+        continue;
+
       $table_fields = fields($table_xml);
       $only_null    = true;
       foreach($table_xml as $field)

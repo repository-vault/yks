@@ -8,6 +8,7 @@ abstract class table_base  extends myks_installer {
   protected $escape_char="`";
 
   protected $table_name;
+  protected $virtual        = false;
 
   protected $keys_xml_def   = array();
   protected $fields_xml_def = array();
@@ -46,6 +47,7 @@ abstract class table_base  extends myks_installer {
 
   function __construct($table_xml){
     $this->xml = $table_xml;
+    $this->virtual   = bool($table_xml['virtual']);
     $this->table_name = sql::resolve( (string) $table_xml['name']);
 
     $this->keys_def=array();
@@ -68,9 +70,8 @@ abstract class table_base  extends myks_installer {
 
 
   function alter_def(){
-
-    if(in_array($this->table_name['hash'], myks_gen::$tables_ghosts_views)) {
-        rbx::ok("-- Double sync from view {$this->table_name['hash']}, skipping");
+    if($this->virtual) {
+        rbx::ok("-- Table is virtual table {$this->table_name['hash']}, skipping");
         return array();
     }
 

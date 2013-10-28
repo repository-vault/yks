@@ -14,8 +14,6 @@ class table extends table_base {
   private $indices;
   private $checks;
 
-  private $ghost_keys;
-
   function __construct($table_xml){
     parent::__construct($table_xml);
 
@@ -32,11 +30,13 @@ class table extends table_base {
     if(!$this->fields_sql_def)
         return;
 
-    foreach($this->keys_sql_def as $k=>$key)
-        if($this->ghost_keys[$k]) {
+    foreach($this->keys_sql_def as $k=>$key) {
+        if(ends_with($k, "_virtual")) {
             rbx::ok("-- Ignore $k fk");
+            unset($this->keys_xml_def[$k]);
             unset($this->keys_sql_def[$k]);
         }
+    }
 
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
@@ -53,21 +53,13 @@ class table extends table_base {
     $this->privileges->xml_infos();
     $this->indices->xml_infos();
     $this->checks->xml_infos();
-
-    foreach($this->keys_xml_def as $k=>$key){
-        $table_hash = $key['refs']['table_schema'].".".$key['refs']['table_name'];
-        if($key['type']!='FOREIGN' || !in_array($table_hash, myks_gen::$tables_ghosts_views))
-            continue;
-        //the key reference to a ghost table
-
-        $this->ghost_keys[$k] = true;
-        unset($this->keys_xml_def[$k]);
-        rbx::ok("-- $k is a ghost reference, skipping");
-    }
   }
 
 
   function modified(){
+    if($this->virtual)
+      return false;
+
     return parent::modified()
         || $this->privileges->modified()
         || $this->triggers->modified()
@@ -79,6 +71,9 @@ class table extends table_base {
 
 
   function alter_def(){
+    if($this->virtual)
+      return array();
+
     return array_merge(
         parent::alter_def(),
         $this->privileges->alter_def(),

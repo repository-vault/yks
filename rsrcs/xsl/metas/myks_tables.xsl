@@ -10,7 +10,7 @@
   <xsl:template match="table">
     <xsl:variable name="name" select="string(@name)"/>
     <xsl:element name="{$name}">
-      <xsl:copy-of select="@birth"/>
+      <xsl:copy-of select="@birth|@virtual"/>
       <xsl:apply-templates select="fields/field">
         <xsl:with-param name="birth" select="@birth"/>
       </xsl:apply-templates>
