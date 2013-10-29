@@ -10,11 +10,13 @@ $deletions_list = sql::brute_fetch("zks_deletion_id");
 
 
 if($action == 'deletion_restore') try {
+    DebugBreak("1@172.19.21.35");
+
     sql::$queries = array();
     $deletion_id = (int)$_POST['deletion_id'];
     if(!$deletions_list[$deletion_id ])
         throw rbx::error("Invalid deletion reference");
-        
+
     _sql_base::raw_restore($deletion_id );
     rbx::ok("Successfully restored deletion : #$deletion_id");
 

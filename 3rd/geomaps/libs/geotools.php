@@ -107,7 +107,7 @@ class geotools {
     $lat = (float)$results['geometry']['location']['lat'];
     $lon = (float)$results['geometry']['location']['lng'];
 
-    return compact('lat', 'lon');
+    return compact('lat', 'lon', 'request');
   }
 
 }

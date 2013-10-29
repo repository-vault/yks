@@ -10,6 +10,7 @@ class WSAuthExternal {
   * @return string session_id
   */
   public static function loginGoogleToken($token){
+
       $infos = file_get_contents("https://www.googleapis.com/oauth2/v3/userinfo?access_token=".$token);
       $infos = json_decode($infos, true);
       if($infos['error']){
@@ -38,11 +39,13 @@ class WSAuthExternal {
 
       $auth_success = sess::update($user_id, true); //skip authentification
 
+      $COOKIE_EXPIRE = bool(yks::$get->config->users['nopersistence']) ? 0 : _NOW+86400*10;
+      setcookie('user_id', $user_id, $COOKIE_EXPIRE,'/', SESS_DOMAIN);
+
       if(!$auth_success)
        throw new SoapFault("BadUser", $infos['email']." is not valid user");
 
 
     return session_id();
   }
-
 }

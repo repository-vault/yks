@@ -31,6 +31,7 @@
 
       try{
         $result = geotools::geodecode_request($data);
+        self::log('Resquest :'.$result['request']);
       }
       catch(Exception $e){
         if($e->getMessage() == geotools::OVER_QUERY_LIMIT){
