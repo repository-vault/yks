@@ -19,16 +19,17 @@ class _storage_apc {
   }
 
   private static function gw_call($method, $key, $data = null){
-    $opts = array('http' => array( 'method'  => $method, 'content' => $data ));
+    $opts = array('http' => array( 'method'  => $method, 'content' => serialize($data) ));
     $context  = stream_context_create($opts);
 
     $url = sprintf("%s/%s", self::$gw, $key);
+
     $result = @file_get_contents($url, false, $context);
     return unserialize($result);
   }
 
   static function store($k, $v, $ttl=0) {
-    if(self::$gw)
+    if(self::$gw) 
       return self::gw_call(self::HTTP_PUT, $k, $v);
     return apc_store($k, $v, $ttl)?$v:false;
   }

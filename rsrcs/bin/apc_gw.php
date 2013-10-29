@@ -23,6 +23,7 @@ switch($method){
   case "put":
   case "update":
     $contents = stream_get_contents(fopen("php://input", "r"));
+    $contents = unserialize($contents);
     $output = apc_store($apc_key, $contents);
     break;
   case "delete":
