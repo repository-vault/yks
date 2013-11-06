@@ -33,17 +33,18 @@ abstract class myks_constraints_base {
 
     $key_name = sprintf($this->keys_name[$TYPE], $this->parent->name['name'], $member, $type);
     $key_name = substr($key_name, 0, 63);
-
     $this->key_stack($type, array($member => $member), $key_name, $refs);
   }
 
   //use this insteadof key_add
   protected function key_stack($type, $members, $key_name, $refs=array()){
     $TYPE=strtoupper($type);
-
-    $this->xml_def[$key_name] = $refs;
+    if(!isset($this->xml_def[$key_name]))
+      $this->xml_def[$key_name] = array('members' => array());
+    
+    $this->xml_def[$key_name] = array_merge($this->xml_def[$key_name], $refs);
     $this->xml_def[$key_name]['type'] = $TYPE;
-    $this->xml_def[$key_name]['members'] = $members;
+    $this->xml_def[$key_name]['members'] = array_merge($this->xml_def[$key_name]['members'], $members);
 
 
   }
