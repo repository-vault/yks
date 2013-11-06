@@ -1,254 +1,128 @@
 <?php
 
+abstract class myks_constraints_base {
 
-abstract class constraints_base extends myks_base {
-  private $rules_xml = null;
+  private  $constraints_xml;
+
+  protected $escape_char="`";
+  public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "INDEX" => "INDEX", "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
+
+  protected $parent;
+
+  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
+  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
+
   protected $sql_def = array();
   protected $xml_def = array();
-  private $signatures = array();
 
-  const rule_nothing = 'NOTHING';
 
-  function __construct($rules_xml, $element_infos, $element_type){
-    $this->element_type = $element_type;
+  protected $keys_name = array(        // $this->table_name, $field, $type
+    'PRIMARY'=>"%s_pkey",
+    'UNIQUE'=>"%s_%s_u_%s",
+    'FOREIGN'=>"%s_%s_%s",
+  );
 
-    $this->element_infos = $element_infos;
-    $this->element_name  = $element_infos['name'];
-    $this->element_name_safe  = $element_infos['safe'];
+  function __construct($parent, $constraints_xml){
+    $this->parent       = $parent;
+    $this->constraints_xml   = $constraints_xml;
+  }
 
-    if(!in_array($this->element_type, array('table', 'view')))
-        throw rbx::error("-- Rules can only be applied to tables or views");
-    $this->rules_xml = $rules_xml;
+  //retro mykse
+  public function key_add($type, $member, $refs=array()){
+    $TYPE = strtoupper($type);
+
+    $key_name = sprintf($this->keys_name[$TYPE], $this->parent->name['name'], $member, $type);
+    $key_name = substr($key_name, 0, 63);
+
+    $this->key_stack($type, array($member => $member), $key_name, $refs);
+  }
+
+  //use this insteadof key_add
+  protected function key_stack($type, $members, $key_name, $refs=array()){
+    $TYPE=strtoupper($type);
+
+    $this->xml_def[$key_name] = $refs;
+    $this->xml_def[$key_name]['type'] = $TYPE;
+    $this->xml_def[$key_name]['members'] = $members;
+
 
   }
 
 
-  function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
-    $key_name = sprintf($this->keys_name[$TYPE], $this->table_name, $field, $type);
+  function sql_infos(){
+   throw new Exception("To be tested...");
 
-    if($TYPE=="PRIMARY"){
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
-        $this->keys_xml_def[$key_name]['members'][$field] = $field;
-    } elseif($TYPE=="UNIQUE"){
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
+  }
 
-        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$field];
-        $this->tmp_key[$field][$field] = $field;
-    } elseif($TYPE == "FOREIGN" && SQL_DRIVER == "pgsql"){
+  function xml_infos(){
+    $i=0;
+    foreach($this->constraints_xml as $constraint_xml){
+        $i++;
+        $type  = strtoupper((string)$constraint_xml['type']);
 
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
-        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$key_name];
-        $this->tmp_key[$key_name][$field] = $field;
+        foreach($constraint_xml->member as $member) $members[(string)$member['column']] = (string)$member['column'];
 
-        $this->keys_xml_def[$key_name]=array_merge($this->keys_xml_def[$key_name],$refs);
-    } else {
-        $this->tmp_key[$type][$field]=$field;
+        if(!($key_name = (string)$constraint_xml['name'])){
+
+          $key_name = "{$this->parent->name['name']}_".strtolower($type)."_$i";
+        }
+
+        $fk_name = sql::resolve((string)$constraint_xml['fk_table']);
+
+        $refs = array(
+          "refs"     => self::build_ref($fk_name['schema'], $fk_name['name'], array_values($members)),
+          "update"   => (string)$constraint_xml['update'],
+          "delete"   => (string)$constraint_xml['delete'],
+          "defer"    => (string)$constraint_xml['defer'],
+        );
+
+        $this->key_stack($type, $members, $key_name, $refs);
     }
 
   }
 
-  function alter_rules(){
-    if($this->xml_def == $this->sql_def) return array();
+  public static function build_ref($table_schema, $table_name, $table_fields){
+    return compact('table_schema', 'table_name', 'table_fields');
+ }
 
+  function modified(){
+    return $this->sql_def != $this->xml_def;
+  }
 
+  function alter_def(){
+    $ec = '"';
+    $table_alter = "ALTER TABLE {$this->parent->name['safe']} ";
     $todo = array();
-    foreach($this->xml_def  as $rule_name=>$rule_infos){
-        if($this->sql_def[$rule_name] == $rule_infos) continue;
-        //print_r($this->sql_def[$rule_name]);print_r($rule_infos);die;
+    if($this->xml_def == $this->sql_def) return $todo;
 
-        $event = strtoupper($rule_infos['event']);
-        $where = $rule_infos['where']?"WHERE {$rule_infos['where']}":'';
-        $definition = (string) $rule_infos['definition'];
-        $signature  = $rule_infos['signature'];
-        $todo []= "CREATE OR REPLACE RULE \"$rule_name\" AS
-            ON $event TO $this->element_name_safe $where
-            DO INSTEAD $definition;";
-        $todo []= $this->sign("RULE", $rule_name, $definition, $signature);
+    foreach($this->sql_def as $key=>$def){
+        if($this->xml_def[$key] != $def)
+            array_unshift($todo, $drop = "$table_alter DROP ".
+                (($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
+                    "CONSTRAINT {$ec}$key{$ec}"
+                    :"INDEX {$ec}$key{$ec}") );
+        else unset($this->xml_def[$key]);
     }
-    foreach(array_keys(array_diff_key($this->sql_def, $this->xml_def)) as $rule_name)
-        $todo[] = "DROP RULE IF EXISTS \"$rule_name\" ON $this->element_name_safe;";
 
+    foreach($this->xml_def as $key=>$def){
+        $members=' ("'.join('","',$def['members']).'")';
+        $type=strtoupper($def['type']);
+        $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
+        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
+        elseif($type=="FOREIGN"){
+            $add.=" REFERENCES ".self::output_ref($def['refs'])." ";
+            if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
+            if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
+            if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
+        } $todo[]="$table_alter $add";
+    }
     return $todo;
   }
 
-
-
-  function modified(){
-    //print_r($this->signatures['xml']);print_r($this->signatures['sql']);die;
-    return $this->signatures['xml'] != $this->signatures['sql'];
-  }
-
-  function sql_infos(){
-
-    if(!$this->sql_def) {
-
-
-
-
-  protected function table_keys(){
-    $where = $this->table_where;
-    $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
-    if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
-    sql::select("information_schema.table_constraints", $where, $cols);
-
-
-    $keys = sql::brute_fetch('constraint_name');$table_keys=array();
-
-    $keys = array_map('array_change_key_case', $keys);
-
-    $usages=array(); $behavior=array();
-    $where['constraint_name']=array_keys($keys);
-
-    if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
-    sql::select("information_schema.key_column_usage", $where, "constraint_name,column_name", $order);
-    while($l=sql::fetch())
-        $table_keys[$l['constraint_name']]['members'][$l['column_name']]=$l['column_name'];
-            //une clée est basé sur au moins UNE colonne ( élimine les checks )
-
-    if(SQL_DRIVER=="pgsql"){ ///FOREIGN_KEYS
-        sql::select("information_schema.constraint_column_usage",
-            array('constraint_name'=>array_keys($table_keys)) );
-        while($l=sql::fetch())
-            $usages[$l['constraint_name']][$l['table_schema']][$l['table_name']][] = $l['column_name'];
-                //="{$l['table_name']}({$l['column_name']})";
-        sql::select("information_schema.referential_constraints",
-            array('constraint_name'=>array_keys($table_keys)));
-        $behavior=sql::brute_fetch('constraint_name');
-    }
-
-
-    foreach($table_keys as $constraint_name=>&$constraint_infos){
-        $key=$keys[$constraint_name];
-        $types=array('PRIMARY KEY'=>'PRIMARY','FOREIGN KEY'=>'FOREIGN','UNIQUE'=>'UNIQUE','INDEX'=>'INDEX');
-
-        $constraint_infos['type']=$type=$types[$key['constraint_type']];
-        if($type=="FOREIGN") {
- 
-            list($usage_schema, $usage_fields) = each($usages[$constraint_name]);
-            list($usage_table, $usage_fields)  = each($usage_fields);
-
-
-            $constraint_infos['table']  = $usage_table;
-            $constraint_infos['update'] = table::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
-            $constraint_infos['delete'] = table::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
-            $constraint_infos['refs']   = table::build_ref($usage_schema, $usage_table, $usage_fields);
-            $constraint_infos['defer']  = bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
-
-        }
-    }
-
-    return $table_keys;
+   public static function output_ref($ref){
+    return  sprintf('"%s"."%s"("%s")',
+        $ref['table_schema'],
+        $ref['table_name'],
+        join('","',$ref['table_fields']) );
  }
-
-
-
-
-     sql::query($query = "
-        SELECT (rs.nspname)::information_schema.sql_identifier AS constraint_schema,
-               (con.conname)::information_schema.sql_identifier AS constraint_name,
-               ("substring"(pg_get_constraintdef(con.oid), 7))::text AS check_clause,
-               d.description AS check_descr
-        FROM 
-            pg_constraint con
-            LEFT JOIN pg_namespace rs
-                ON rs.oid = con.connamespace
-            LEFT JOIN pg_class c
-                ON c.oid = con.conrelid
-            LEFT JOIN pg_type t
-                ON t.oid = con.contypid
-            LEFT JOIN pg_description d
-                ON d.objoid = con.oid
-
-
-        WHERE
-            pg_has_role(COALESCE(c.relowner, t.typowner), 'USAGE'::text)
-            AND con.contype = 'c'::"char"
-
-
-
-SELECT
-        n.nspname                   AS schema_name,
-        c.relname                   AS view_name,
-        r.rulename                  AS rule_name,
-        pg_get_ruledef(r.oid, true) AS compiled_definition,
-        d.description               AS full_description,
-        CASE ev_type::integer
-            WHEN 2 THEN 'update'
-            WHEN 3 THEN 'insert'
-            WHEN 4 THEN 'delete'
-        END AS rule_event
-
-      FROM 
-        pg_rewrite AS r
-        LEFT JOIN pg_class AS c ON c.oid = r.ev_class
-        LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
-        LEFT JOIN pg_description AS d ON r.oid = d.objoid
-      WHERE (r.rulename <> '_RETURN' AND c.relname='$this->element_name')
-        AND (CASE relkind WHEN 'v' THEN 'view' WHEN 'r' THEN 'table' END) = '$this->element_type'
-      ORDER BY r.rulename
-     "); $tmp = sql::brute_fetch('rule_name');
-     $rules = array();
-
-     foreach($tmp as $rule_name=>$rule){
-        $sign = $this->parse_signature_contents($rule['full_description']);
-        $rules[$rule_name] = array(
-            'compiled_definition'=>$rule['compiled_definition'],
-            'definition'=>rtrim($sign['base_definition'],";"),
-            'event'=>$rule['rule_event'],
-            'signature'=> $sign['signature'],
-            'where'=>'',
-        );
-     } $this->sql_def = $rules;
-    }
-    $this->signatures['sql'] = array_extract($this->sql_def, 'signature');
-  }
-
-
-  protected function calc_signature(){
-    $signatures = array();
-    foreach($this->xml_def as $rule_name=>$rule_infos){
-        $signature =  $this->crpt(
-            $rule_infos['compiled_definition'],
-            $rule_infos['definition']);
-
-        $this->xml_def[$rule_name]['signature'] =  $signature;
-        $signatures[$rule_name] = $signature;
-    }
-    return $signatures;
-  } 
-
-
-  function xml_infos() {
-
-    $this->sql_infos(); //we need to self reflect
-
-    $this->xml_def = array();
-
-    foreach($this->rules_xml->rule as $rule) {
-      $event = (string)$rule['on'];
-      $where = (string)$rule['where'];
-      $definition  = rtrim(myks_gen::sql_clean_def($rule),";");
-      if(!$definition) $definition = self::rule_nothing;
-      if($definition!=self::rule_nothing){
-        $definition = "($definition)";
-        $hash = substr(md5($event.$definition),0,5);
-      } else $hash = "nothing";
-      $rule_name = "{$this->element_name}_{$event}_{$hash}";
-
-      $compiled_definition = $this->sql_def[$rule_name]['compiled_definition'];
-
-      $this->xml_def[$rule_name] = compact(
-          'compiled_definition',
-          'definition',
-          'event',
-          'where'
-      );
-    }
-    $this->signatures['xml'] =  $this->calc_signature();
-
-  }
-
-
 }
-
-

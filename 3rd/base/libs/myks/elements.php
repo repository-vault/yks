@@ -19,6 +19,7 @@ classes::register_class_paths(array(
     "view_base"        => "$elements/view.php",
     "procedure_base"   => "$elements/procedure.php",
     "procedures_list"  => "$elements/procedures.php",
+    "myks_constraints_base" => "$elements/constraints.php",
 
     "rule_base"        => "$elements/rule.php",
     "rules"            => "$elements/rules.php",
@@ -29,9 +30,10 @@ classes::register_class_paths(array(
     "myks_table_triggers" => "$elements/table_triggers.php",
 
 
-    "myks_indices"   => "$elements/indices.php",
-    "myks_checks"    => "$elements/checks.php",
+    "myks_indices"     => "$elements/indices.php",
+    "myks_checks"      => "$elements/checks.php",
 
+    "myks_constraints" => "$ds_elements/constraints.php",
     "mykse"            => "$ds_elements/mykse.php",
     "table"            => "$ds_elements/table.php",
     "view"             => "$ds_elements/view.php",

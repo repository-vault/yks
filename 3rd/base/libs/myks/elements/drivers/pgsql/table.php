@@ -4,7 +4,6 @@
 class table extends table_base {
   protected $escape_char="\"";
 
-  public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "INDEX" => "INDEX", "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
   public $tmp_refs=array();
 
 
@@ -17,6 +16,7 @@ class table extends table_base {
   function __construct($table_xml){
     parent::__construct($table_xml);
 
+
     $this->privileges  = new privileges($this, $table_xml->grants, 'table');
     $this->rules    = new rules($this, $table_xml->xpath('rules/rule'), 'table');
     $this->triggers = new myks_table_triggers($this, $table_xml->xpath('triggers/trigger'));
@@ -27,22 +27,13 @@ class table extends table_base {
 
   function sql_infos(){
     parent::sql_infos();
-    if(!$this->fields_sql_def)
-        return;
-
-    foreach($this->keys_sql_def as $k=>$key) {
-        if(ends_with($k, "_virtual")) {
-            rbx::ok("-- Ignore $k fk");
-            unset($this->keys_xml_def[$k]);
-            unset($this->keys_sql_def[$k]);
-        }
-    }
 
     $this->privileges->sql_infos();
     $this->rules->sql_infos();
     $this->triggers->sql_infos();
     $this->indices->sql_infos();
     $this->checks->sql_infos();
+    $this->constraints->sql_infos();
   }
 
   function xml_infos(){
@@ -53,6 +44,7 @@ class table extends table_base {
     $this->privileges->xml_infos();
     $this->indices->xml_infos();
     $this->checks->xml_infos();
+    $this->constraints->xml_infos();
   }
 
 
@@ -65,6 +57,7 @@ class table extends table_base {
         || $this->triggers->modified()
         || $this->indices->modified()
         || $this->checks->modified()
+        || $this->constraints->modified()
         || $this->rules->modified();
 
   }
@@ -80,6 +73,7 @@ class table extends table_base {
         $this->triggers->alter_def(),
         $this->indices->alter_def(),
         $this->checks->alter_def(),
+        $this->constraints->alter_def(),
         $this->rules->alter_def()
     );
   }
@@ -92,14 +86,6 @@ class table extends table_base {
 
     foreach($this->fields_xml_def as $field_name=>$field_xml)
         $parts[]="\"$field_name\" {$field_xml['Type']}";
-
-    foreach($this->keys_xml_def as $key=>$def) {
-        if($def['type']!="PRIMARY")continue;
-        $members=' ("'.join('","',$def['members']).'")';$type=$def['type'];
-        $add = "CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($def['type']=="INDEX")$parts_exts[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";
-        else $parts[]=$add;
-    }
 
     $query = "CREATE TABLE {$this->table_name['safe']} (\n\t".join(",\n\t", $parts)."\n)";
 

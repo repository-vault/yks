@@ -71,6 +71,9 @@
         <grants>
           <xsl:copy-of select="/table[@name=$name]/grant"/>
         </grants>
+        <constraints>
+          <xsl:copy-of select="/table[@name=$name]/constraints/*"/>
+        </constraints>
         <indices>
           <xsl:apply-templates select="/table[@name=$name]/fields[@index]"/>
           <xsl:copy-of select="/table[@name=$name]/indices/*"/>

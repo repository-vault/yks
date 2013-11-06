@@ -1,4 +1,4 @@
-<!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger|checks)+)>
+<!ELEMENT table (abstract?,(fields|indices|rule|grant|trigger|checks|constraints)+)>
 <!ELEMENT def (#PCDATA)>
 <!ENTITY % table_abstraction "(materialized_view|cached_logs|inheritance|tree_integral)">
 
@@ -34,7 +34,20 @@
 <!ELEMENT member EMPTY>
 <!ATTLIST member
  column CDATA #REQUIRED
+ target CDATA #IMPLIED
 >
+
+<!ELEMENT constraints (constraint+)>
+
+<!ELEMENT constraint (member+)>
+<!ATTLIST constraint
+  type (foreign|unique) 'foreign'
+  fk_table CDATA #IMPLIED
+  update %fk_actions; 'cascade'
+  delete %fk_actions; 'no_action'
+  defer (defer|strict) 'defer'
+>
+
 
 
 <!ELEMENT field EMPTY>

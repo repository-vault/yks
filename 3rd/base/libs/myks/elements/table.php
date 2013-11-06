@@ -10,34 +10,18 @@ abstract class table_base  extends myks_installer {
   protected $table_name;
   protected $virtual        = false;
 
-  protected $keys_xml_def   = array();
   protected $fields_xml_def = array();
-
-  protected $keys_sql_def   = array();
   protected $fields_sql_def = array();
   private $abstract;
 
-
-  static $fk_actions_in = array('NO ACTION'=>'no_action', 'CASCADE'=> 'cascade', 'SET NULL'=>'set_null');
-  static $fk_actions_out = array('no_action'=>'NO ACTION', 'cascade'=>'CASCADE','set_null'=> 'SET NULL');
-
-  protected $key_mask=array("PRIMARY"=>"PRIMARY KEY","INDEX"=>"INDEX `%s`","UNIQUE"=>"UNIQUE `%s`");
-
-  protected $key_update=array("PRIMARY"=>"PRIMARY KEY", "UNIQUE"=>"UNIQUE ");
-
-  private $tmp_key;
-
-  protected $keys_name = array(        // $this->table_name, $field, $type
-    'PRIMARY'=>"%s_pkey",
-    'UNIQUE'=>"%s_%s_%s",
-    'FOREIGN'=>"%s_%s_%s",
-  );
+  protected $constraints;
 
   public $comment_xml;
 
   function get_name(){
     return $this->table_name;
   }
+
 
   function delete_def(){
     return array(
@@ -50,7 +34,9 @@ abstract class table_base  extends myks_installer {
     $this->virtual   = bool($table_xml['virtual']);
     $this->table_name = sql::resolve( (string) $table_xml['name']);
 
-    $this->keys_def=array();
+
+
+    $this->constraints   = new myks_constraints($this, $table_xml->xpath('constraints/constraint'));
 
     if($this->xml->abstract) {
         $abstract = $this->xml->abstract;
@@ -61,7 +47,7 @@ abstract class table_base  extends myks_installer {
 
   }
 
-  protected function table_where(){
+  public function table_where(){
     return array(
         'table_name'   => $this->table_name['name'],
         'table_schema' => $this->table_name['schema'],
@@ -82,13 +68,9 @@ abstract class table_base  extends myks_installer {
         return array();
 
     //print_r(array_show_diff($this->fields_sql_def, $this->fields_xml_def,"sql","xml"));die;
-    //print_r(array_show_diff($this->keys_sql_def, $this->keys_xml_def,"sql","xml" ));die;
     //print_r($this->privileges);die;
 
-    $todo = array_merge(
-        $this->alter_fields(),
-        $this->alter_keys()
-    );
+    $todo = $this->alter_fields();
 
     if($this->abstract){
         $todo = array_merge($todo, $this->abstract->alter_def());
@@ -105,7 +87,6 @@ abstract class table_base  extends myks_installer {
 
   function modified(){
     $modified = $this->fields_xml_def != $this->fields_sql_def;
-    $modified |= $this->keys_xml_def != $this->keys_sql_def;
     $modified |= $this->comment_raw != $this->comment_new;
 
     if($this->abstract)
@@ -116,7 +97,7 @@ abstract class table_base  extends myks_installer {
 
 
 /*
-    populate fields_sql_def and keys_sql_def definition based on the SQL structure
+    populate fields_sql_def from the SQL structure
     return (boolean) whereas this table already exists (alter mode) or not (create mode)
 */
 
@@ -153,7 +134,6 @@ abstract class table_base  extends myks_installer {
         return ;
 
     $this->fields_sql_def = $this->table_fields();
-    $this->keys_sql_def   = $this->table_keys();
 
     if($this->abstract)
         $this->abstract->sql_infos();
@@ -189,31 +169,11 @@ abstract class table_base  extends myks_installer {
 
   }
 
-  function key_add($type, $field, $refs=array()){$TYPE=strtoupper($type);
-    $key_name = sprintf($this->keys_name[$TYPE], $this->table_name['name'], $field, $type);
-    $key_name = substr($key_name, 0, 63);
 
-    if($TYPE=="PRIMARY"){
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
-        $this->keys_xml_def[$key_name]['members'][$field] = $field;
-    } elseif($TYPE=="UNIQUE"){
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
-
-        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$field];
-        $this->tmp_key[$field][$field] = $field;
-    } elseif($TYPE == "FOREIGN" && SQL_DRIVER == "pgsql"){
-
-        $this->keys_xml_def[$key_name]['type'] = $TYPE;
-        $this->keys_xml_def[$key_name]['members'] = &$this->tmp_key[$key_name];
-        $this->tmp_key[$key_name][$field] = $field;
-
-        $this->keys_xml_def[$key_name]=array_merge($this->keys_xml_def[$key_name],$refs);
-    } else {
-        $this->tmp_key[$type][$field]=$field;
-    }
-
+  //forward constraints management (from mykse)
+  function key_add($type, $field, $refs=array()){
+    $this->constraints->key_add($type, $field, $refs);
   }
-
 
   function alter_fields() {
     $ec = $this->escape_char;
@@ -280,92 +240,7 @@ abstract class table_base  extends myks_installer {
     return $drops;
   }
 
-  function alter_keys(){
-    $ec = $this->escape_char;
-    $table_alter = "ALTER TABLE {$this->table_name['safe']} ";
-    $todo = array();
-    if($this->keys_xml_def == $this->keys_sql_def) return $todo;
 
-    foreach($this->keys_sql_def as $key=>$def){
-        if($this->keys_xml_def[$key] != $def)
-            array_unshift($todo, $drop = "$table_alter DROP ".
-                (($def['type']=="PRIMARY" || $def['type']=="FOREIGN"|| $def['type']=="UNIQUE")?
-                    "CONSTRAINT {$ec}$key{$ec}"
-                    :"INDEX {$ec}$key{$ec}") );
-        else unset($this->keys_xml_def[$key]);
-    }
-
-    foreach($this->keys_xml_def as $key=>$def){
-        $members=' ("'.join('","',$def['members']).'")';$type=$def['type'];
-        $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
-        elseif($type=="FOREIGN"){
-            $add.=" REFERENCES ".table::output_ref($def['refs'])." ";
-            if($def['delete']) $add.=" ON DELETE ".table::$fk_actions_out[$def['delete']];
-            if($def['update']) $add.=" ON UPDATE ".self::$fk_actions_out[$def['update']];
-            if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
-        } $todo[]="$table_alter $add";
-    }
-    return $todo;
-  }
-
-
-  protected function table_keys(){
-    $where = $this->table_where();
-    $cols = 'constraint_catalog, constraint_schema, constraint_name, table_schema, table_name, constraint_type';
-    if(SQL_DRIVER=="pgsql") $cols.=",is_deferrable";
-    sql::select("information_schema.table_constraints", $where, $cols);
-
-    $keys = sql::brute_fetch('constraint_name');$table_keys=array();
-    $keys = array_map('array_change_key_case', $keys);
-
-    $usages=array(); $behavior=array();
-
-    $where['constraint_name']   = array_keys($keys);
-
-
-    if(SQL_DRIVER=="pgsql") $order ="ORDER BY position_in_unique_constraint ASC";
-    sql::select("information_schema.key_column_usage", $where, "constraint_name,column_name", $order);
-    while($l=sql::fetch())
-        $table_keys[$l['constraint_name']]['members'][$l['column_name']]=$l['column_name'];
-            //une clée est basé sur au moins UNE colonne ( élimine les checks )
-
-    $verif_contraints = array(
-        'constraint_name'   => array_keys($table_keys),
-        'constraint_schema' => $this->table_name['schema'],
-    );
-
-    if(SQL_DRIVER=="pgsql"){ ///FOREIGN_KEYS
-        sql::select("information_schema.constraint_column_usage", $verif_contraints );
-        while($l=sql::fetch())
-            $usages[$l['constraint_name']][$l['table_schema']][$l['table_name']][] = $l['column_name'];
-                //="{$l['table_name']}({$l['column_name']})";
-        sql::select("information_schema.referential_constraints", $verif_contraints );
-        $behavior = sql::brute_fetch('constraint_name');
-    }
-
-
-    foreach($table_keys as $constraint_name=>&$constraint_infos){
-        $key=$keys[$constraint_name];
-        $types=array('PRIMARY KEY'=>'PRIMARY','FOREIGN KEY'=>'FOREIGN','UNIQUE'=>'UNIQUE','INDEX'=>'INDEX');
-
-        $constraint_infos['type']=$type=$types[$key['constraint_type']];
-        if($type=="FOREIGN") {
-
-            list($usage_schema, $usage_fields) = each($usages[$constraint_name]);
-            list($usage_table, $usage_fields)  = each($usage_fields);
-
-
-            $constraint_infos['table']  = $usage_table;
-            $constraint_infos['update'] = table::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
-            $constraint_infos['delete'] = table::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
-            $constraint_infos['refs']   = table::build_ref($usage_schema, $usage_table, $usage_fields);
-            $constraint_infos['defer']  = bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
-
-        }
-    }
-    return $table_keys;
- }
 
  public static function build_ref($table_schema, $table_name, $table_fields){
     return compact('table_schema', 'table_name', 'table_fields');

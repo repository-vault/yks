@@ -29,7 +29,7 @@ abstract class mykse_base  {
 
 
 
-    // faut faire tomber les key sur les types qui ne sont pas directs.. 
+    // faut faire tomber les key sur les types qui ne sont pas directs..
     // OU si le name dans le  birth est différent du type
         // SAUF si on est sur une primary explicite
     // depth==1 est ok
@@ -51,7 +51,7 @@ abstract class mykse_base  {
 
 
 
-    $this->get_def(); 
+    $this->get_def();
 
 
     if(is_null($this->field_def['Null']))
@@ -61,7 +61,7 @@ abstract class mykse_base  {
     $birth_deep = sql::resolve($this->birth_table);
     if($birth_deep
         && !$birth_root
-        && $this->depth > 1) 
+        && $this->depth > 1)
             $this->fk($field_xml, $birth_deep);
 
     if($field_xml['key'] && $this->table )
@@ -76,18 +76,18 @@ abstract class mykse_base  {
     $local_field = $this->field_def["Field"];
     $table_name  = $birth['raw'];
     $birth_xml   = myks_gen::$tables_xml->$table_name;
+
         //resolve distant table fields name
     $fields = array_keys(fields($birth_xml, true), $this->type);
 
         //this is complicated, see http://doc.exyks.org/wiki/Myks:External_references_resolutions
-    $fields = in_array($this->type, $fields)?array($this->type):array_slice($fields,0,1);
+    $fields = in_array($this->type, $fields)?array((string)$this->type):array_slice($fields,0,1);
 
     if(!$fields)
         throw rbx::error("-- Unresolved ext ref on {$this->table}/{$this->type} to {$birth['name']}");
 
     $this->table->key_add('foreign', $local_field, array(
-        "table"    => $birth['name'],
-        "refs"     => table::build_ref($birth['schema'], $birth['name'], $fields ), 
+        "refs"     => table::build_ref($birth['schema'], $birth['name'], $fields ),
         "update"   => (string)$field_xml['update'],
         "delete"   => (string)$field_xml['delete'],
         "defer"    => (string)$field_xml['defer'],
@@ -100,7 +100,7 @@ abstract class mykse_base  {
     $this->mykse_xml = myks_gen::$mykse_xml->$type;
     $this->base_type = (string)$this->mykse_xml['type'];
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
-        throw rbx::error("Unable to resolve `{$this->field_def['Field']}`"); 
+        throw rbx::error("Unable to resolve `{$this->field_def['Field']}`");
 
 
     if(is_null($this->field_def['Null']) && isset($this->mykse_xml['null']))
@@ -128,7 +128,7 @@ abstract class mykse_base  {
   }
 
 
-  function bool_node(){ 
+  function bool_node(){
     $this->field_def["Type"]="boolean";
   }
 
