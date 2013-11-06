@@ -64,7 +64,7 @@ abstract class myks_constraints_base {
         $target_members = array();
         foreach($constraint_xml->member as $member) {
           $members[(string)$member['column']] = (string)$member['column'];
-          $target_members[] = (string)$member['target'];
+          $target_members[(string)$member['column']] = (string)$member['target'];;
         }
 
         if(!($key_name = (string)$constraint_xml['name'])){
@@ -91,10 +91,14 @@ abstract class myks_constraints_base {
  }
 
   function modified(){
+    //print_r(array_show_diff($this->sql_def, $this->xml_def,"sql","xml"));die;
     return $this->sql_def != $this->xml_def;
   }
 
   function alter_def(){
+
+    //print_r(array_show_diff($this->sql_def, $this->xml_def,"sql","xml"));die;
+
     $ec = '"';
     $table_alter = "ALTER TABLE {$this->parent->name['safe']} ";
     $todo = array();

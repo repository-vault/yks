@@ -81,7 +81,7 @@ abstract class mykse_base  {
     $fields = array_keys(fields($birth_xml, true), $this->type);
 
         //this is complicated, see http://doc.exyks.org/wiki/Myks:External_references_resolutions
-    $fields = in_array($this->type, $fields)?array((string)$this->type):array_slice($fields,0,1);
+    $fields = array( $local_field => in_array($this->type, $fields)? (string)$this->type : reset(array_slice($fields,0,1)) );
 
     if(!$fields)
         throw rbx::error("-- Unresolved ext ref on {$this->table}/{$this->type} to {$birth['name']}");

@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+<!-- Helper to check foreign key target columns -->
+  <view name="zks_information_schema_fkcolumns">
+    <def><![CDATA[
+
+
+  SELECT current_database() ::information_schema.sql_identifier AS
+   constraint_catalog,
+         ss.nc_nspname::information_schema.sql_identifier AS constraint_schema,
+         ss.conname::information_schema.sql_identifier AS constraint_name,
+         current_database() ::information_schema.sql_identifier AS table_catalog,
+         ss.nr_nspname::information_schema.sql_identifier AS table_schema,
+         ss.relname::information_schema.sql_identifier AS table_name,
+         a.attname::information_schema.sql_identifier AS column_name,
+         (ss.x) . n::information_schema.cardinal_number AS ordinal_position,
+         (ss.xx) .n  AS position_in_unique_constraint,
+         (ss.rn) AS remote_column_name
+  FROM pg_attribute a,
+       (
+         SELECT r.oid AS roid,
+                r.relname,
+                nc.nspname AS nc_nspname,
+                nr.nspname AS nr_nspname,
+                c.oid AS coid,
+                c.conname,
+                c.contype,
+                c.confkey,
+                c.confrelid,
+                information_schema._pg_expandarray(c.conkey) AS x,
+                information_schema._pg_expandarray(c.confkey) AS xx,
+                remote.index AS ri,
+                remote.name AS rn
+         FROM pg_namespace nr,
+              pg_class r,
+              pg_namespace nc,
+              pg_constraint c,
+              
+              (
+SELECT attname AS name, attnum AS index, c.oid
+FROM pg_attribute a INNER JOIN pg_class c ON a.attrelid = c.oid
+INNER JOIN pg_type t ON a.atttypid = t.oid 
+WHERE attnum > 0 AND attisdropped <> 't'
+
+)  AS remote 
+
+              
+         WHERE nr.oid = r.relnamespace AND
+               r.oid = c.conrelid AND
+               remote.oid  = c.confrelid AND
+               nc.oid = c.connamespace AND
+               (c.contype = ANY (ARRAY [ 'p' ::"char", 'u' ::"char", 'f'
+                ::"char" ])) AND
+               r.relkind = 'r' ::"char" AND
+               NOT pg_is_other_temp_schema(nr.oid) AND
+               (pg_has_role(r.relowner, 'USAGE' ::text) OR
+               has_table_privilege(r.oid, 'SELECT' ::text) OR
+               has_table_privilege(r.oid, 'INSERT' ::text) OR
+               has_table_privilege(r.oid, 'UPDATE' ::text) OR
+               has_table_privilege(r.oid, 'REFERENCES' ::text))
+       ) ss
+  WHERE ss.roid = a.attrelid
+         AND a.attnum =(ss.x) . x
+        AND  ss.ri = (ss.xx) .x
+        AND NOT a.attisdropped;
+        
+
+ 
+]]></def>
+  </view>
+</myks>
