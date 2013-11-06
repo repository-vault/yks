@@ -61,7 +61,11 @@ abstract class myks_constraints_base {
         $i++;
         $type  = strtoupper((string)$constraint_xml['type']);
 
-        foreach($constraint_xml->member as $member) $members[(string)$member['column']] = (string)$member['column'];
+        $target_members = array();
+        foreach($constraint_xml->member as $member) {
+          $members[(string)$member['column']] = (string)$member['column'];
+          $target_members[] = (string)$member['target'];
+        }
 
         if(!($key_name = (string)$constraint_xml['name'])){
 
@@ -71,7 +75,7 @@ abstract class myks_constraints_base {
         $fk_name = sql::resolve((string)$constraint_xml['fk_table']);
 
         $refs = array(
-          "refs"     => self::build_ref($fk_name['schema'], $fk_name['name'], array_values($members)),
+          "refs"     => self::build_ref($fk_name['schema'], $fk_name['name'], $target_members),
           "update"   => (string)$constraint_xml['update'],
           "delete"   => (string)$constraint_xml['delete'],
           "defer"    => (string)$constraint_xml['defer'],
