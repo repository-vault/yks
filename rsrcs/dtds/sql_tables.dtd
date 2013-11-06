@@ -43,7 +43,7 @@
 <!ATTLIST constraint
   type (foreign|unique) 'foreign'
   fk_table CDATA #IMPLIED
-  update %fk_actions; 'cascade'
+  update %fk_actions; 'no_action'
   delete %fk_actions; 'no_action'
   defer (defer|strict) 'defer'
 >
