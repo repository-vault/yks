@@ -216,6 +216,7 @@ class mykses {
 
       foreach($fields as $field_name) {
         $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
+        $fvalues = array_intersect($fvalues, $values);
         if($fvalues)
           $paths[] = array($table_name, $field_name, $fvalues);
       }
