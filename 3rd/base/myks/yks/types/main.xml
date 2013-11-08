@@ -4,7 +4,7 @@
   <mykse type="time" null="null">
     <int size="big" signed="signed"/>
   </mykse>
-  <mykse type="now" default="unix_timestamp()">
+  <mykse type="now" default="unix_timestamp()" null="not_null">
     <mykse type="time"/>
   </mykse>
   <mykse type="date" null="null">
