@@ -2,7 +2,7 @@
 
 //cf doc in the manual
 function mini_proxy($src_url,
-    $forwarded_headers = array('content-length', 'content-type') ) {
+    $forwarded_headers = array('content-length', 'content-type', 'last-modified', 'etag') ) {
 
  $src = fopen($src_url, 'r');
 
@@ -18,6 +18,7 @@ function mini_proxy($src_url,
     if(in_array($header_name, $forwarded_headers))
         header($header_str);
  }
+
  stream_copy_to_stream($src, $out);
  return true;
 }
