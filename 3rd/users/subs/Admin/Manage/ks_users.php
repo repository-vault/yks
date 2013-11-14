@@ -57,7 +57,7 @@ if($action=="user_edit")try {
             } catch(Exception $e){ throw rbx::warn("Unable to save password", "user_login"); }
         } else if($data['auth_type']=='auth_oauth'){
             try {
-                $data = mykses::validate($_POST, array('auth_oauth_endpoint_name'));
+                $data = mykses::validate($_POST, array('auth_oauth_endpoint_name', 'auth_oauth_user_id'));
                 if($data['auth_oauth_endpoint_name'])
                     sql::replace("ks_auth_oauth", $data, $verif_user);
             } catch(Exception $e){ throw rbx::error("Unable to save credentials"); }

@@ -13,7 +13,7 @@
     <string length="32"/>
   </mykse>
   <mykse type="auth_oauth_user_id" null="null">
-    <int size="big"/>
+    <string length="64"/>
   </mykse>
   <mykse type="oauth_token" null="null">
     <text/>

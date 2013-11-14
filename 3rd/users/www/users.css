@@ -24,6 +24,7 @@
 .icon_user_infos { background-image:url(path://skin/icons/user.png); }
 .icon_user_auth, .icon_user_auth_password { background-image:url(path://skin/icons/lock.png); }
 .icon_user_auth_ldap_soap     { background-image:url(path://skin/icons/lock_blue.png); }
+.icon_user_auth_oauth     { background-image:url(path://skin/icons/lock_red.png); }
 .icon_user_auth_disabled { background-image:url(path://skin/icons/lock_gray.png); }
 .icon_zone_trash, .icon_user_trash { background-image:url(path://skin/icons/delete.png); }
 .icon_user_reload { background-image:url(path://skin/icons/reload.png); }
