@@ -11,6 +11,7 @@
   <item key="action.deco">Disconnect</item>
   <item key="auth_type.auth_password">Password authentication</item>
   <item key="auth_type.auth_ldap_soap">LDAP SOAP authentication</item>
+  <item key="auth_type.auth_oauth">oAuth authentication</item>
   <item key="restreint_access">Restricted Access Area</item>
   <item key="action.login">Connect</item>
   <item key="your_login">Login</item>

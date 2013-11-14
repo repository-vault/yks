@@ -11,6 +11,7 @@ class user extends _user {
 
   static function init(){
     user::register("auth_password", "ks_auth_password");
+    user::register("auth_oauth",    "ks_auth_oauth");
   }
 
   static function instanciate($user_id, $forced_tree = false){

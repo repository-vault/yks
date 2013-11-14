@@ -50,6 +50,7 @@
     <enum>
       <val>auth_password</val>
       <val>auth_ldap_soap</val>
+      <val>auth_oauth</val>
     </enum>
   </mykse>
   <mykse type="user_name" default="''">

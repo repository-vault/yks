@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC  "-//YKS//MYKS" "http://rsrcs.exyks.org/dtds/myks.dtd">
+<myks>
+  <table name="ks_auth_oauth">
+    <fields>
+      <field type="user_id" key="primary" delete="cascade"/>
+      <field type="auth_oauth_endpoint_name"/>
+      <field type="oauth_token"/>
+      <field type="auth_oauth_user_id"/>
+    </fields>
+  </table>
+  <mykse type="auth_oauth_endpoint_name">
+    <string length="32"/>
+  </mykse>
+  <mykse type="auth_oauth_user_id" null="null">
+    <int size="big"/>
+  </mykse>
+  <mykse type="oauth_token" null="null">
+    <text/>
+  </mykse>
+</myks>
