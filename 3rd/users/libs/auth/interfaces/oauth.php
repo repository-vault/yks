@@ -34,8 +34,7 @@ class auth_oauth {
         $user_id = $user_id_forced;
 
     $cookie_pswd = self::forge_cookie($user_id);
-    if($user_pswd)
-        $_COOKIE[$cookie_pswd] = sha1($user_pswd);
+    $_COOKIE[$cookie_pswd] = $user_pswd;
     
     if( !($user_id && sess::update($user_id, $skip_auth)) ){
         setcookie('user_id', false);
@@ -64,8 +63,9 @@ class auth_oauth {
 
     $access_token = $auth_oauth['oauth_token'];    
     $cookie_pswd = self::forge_cookie($user_id);
+    $user_pswd   = $endpoint->sign($auth_oauth['auth_oauth_user_id']);
 
-    if($_COOKIE[$cookie_pswd] != sha1($access_token) )
+    if($_COOKIE[$cookie_pswd] != $user_pswd )
       return false;
     
     try {

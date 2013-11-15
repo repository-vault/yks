@@ -11,6 +11,9 @@ class oAuth {
 
   }
 
+  public function sign($str){
+    return hash_hmac("sha1", $str, $this->client_secret);
+  }
 
   public static function forge_url($url, $data) {
     return $url."?".http_build_query($data, "" ,"&");

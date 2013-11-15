@@ -16,7 +16,7 @@ if(!$challenge_mode) {
         'display'      => 'popup',
         'client_id'    => $endpoint->credentials['client_id'],
         'redirect_uri' => $challenge_url,
-        'scope'        => "email,publish_actions",
+        //'scope'        => "email,publish_actions",
     ); $redirect = $endpoint::forge_url("https://www.facebook.com/dialog/oauth", $data);
 
     header("Location:$redirect");
@@ -60,7 +60,7 @@ if(!$challenge_mode) {
     sql::replace("ks_auth_oauth", array( 'oauth_token' => $access_token), $verif_user);
 
     sess::connect();
-    auth_oauth::reload($user_id, $access_token, $continue);
+    auth_oauth::reload($user_id, $endpoint->sign($me['id']),  $continue);
 }
 
 die;
