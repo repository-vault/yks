@@ -14,6 +14,8 @@ class sql_runner {
   private static $sql_ready = false;
 
 
+  private static $blind_mode = false;// dont look in database
+
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
@@ -106,18 +108,11 @@ class sql_runner {
     $this->scan_tables();
     $this->autoinc_sync();
 
-    $this->gc();
     $this->queue(bool($run_queries), "end");
   }
 
   function integrity(){
     interactive_runner::start("sql_integrity");
-  }
-
-  function gc(){
-    rbx::ok("Cleaning expired sessions");
-    $expired = 86400 * 2;
-    sql::delete("zks_sessions_list", "session_start < unix_timestamp() - $expired");
   }
 
   private function queries_queue($queries){
@@ -170,22 +165,6 @@ class sql_runner {
     return !preg_match($filter, $value);
   }
 
-  public function begin(){
-    sql::query("BEGIN");
-    rbx::ok("Begin command sent !");
-  }
-
-  public function rollback(){
-    sql::query("ROLLBACK");
-    sql::query("22");
-    rbx::ok("Rollback command sent !");
-  }
-
-  public function commit(){
-    sql::query("COMMIT");
-    rbx::ok("Commit command sent !");
-  }
-
   /**
    * @alias v * true
    */
@@ -200,12 +179,14 @@ class sql_runner {
         $view_infos['dependencies'],
         $deps_views
       );
+      $forced  = self::$blind_mode || $parent_has_been_reloaded_and_so_should_i_be;
 
       $view_xml = $view_infos['xml'];
       $name = (string)$view_xml['name'];
       if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
-      list($res, $cascade) = myks_gen::view_check($view_xml, $parent_has_been_reloaded_and_so_should_i_be);
+      list($res, $cascade) = myks_gen::view_check($view_xml, $forced);
+
       if(!$res) {
         rbx::ok("-- Nothing to do in $name");
         continue;
@@ -232,7 +213,7 @@ class sql_runner {
       $name = (string)$procedure_xml['name'];
       if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
-      $res = myks_gen::procedure_check($procedure_xml);
+      $res = myks_gen::procedure_check($procedure_xml, self::$blind_mode);
       if(!$res) {
         rbx::ok("-- Nothing to do in $name");
         continue;
@@ -253,6 +234,29 @@ class sql_runner {
     pgsql_auto_inc_sync::doit($this->tables_xml_tdy, $this->types_xml);
   }
 
+
+  function init_database($run_queries = false){
+    self::$blind_mode = true;
+
+    sql::query("CREATE LANGUAGE 'plpgsql' HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
+    $this->scan_procedures("*", $run_queries);
+
+
+    sql::query('CREATE AGGREGATE "concat_comma"(BASETYPE="text",SFUNC="concat_comma",STYPE="text")');
+    sql::query('CREATE AGGREGATE first(int)(sfunc=coalesce_first, stype = int)');
+    sql::query('CREATE AGGREGATE first(text)(sfunc=coalesce_first, stype = text)');
+    sql::query('CREATE AGGREGATE first(varchar)(sfunc=coalesce_first, stype = varchar)');
+    sql::query('CREATE AGGREGATE first(boolean)(sfunc=coalesce_first, stype = boolean )');
+
+
+
+    $this->scan_views("zks", $run_queries);
+
+    self::$blind_mode = false;
+    $this->scan_views("zks", $run_queries);
+    $this->scan_views("zks", $run_queries);
+  }
+  
   /**
   * @alias t * true
   */

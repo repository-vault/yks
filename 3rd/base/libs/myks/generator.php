@@ -3,7 +3,6 @@
 class myks_gen {
   static public $mykse_xml;
   static public $tables_xml;
-
   static $cols = array('Field', 'Type', 'Extra', 'Null', 'Default', 'Extra');
 
   static function init($mykse_xml, $tables_xml){
@@ -20,15 +19,15 @@ class myks_gen {
         return $table->check();
     } catch(rbx $r){}
   }
-  static function procedure_check($proc_xml){
+  static function procedure_check($proc_xml, $force = false){
     try {
         $infos     = sql::resolve( (string)$proc_xml['name'] );
         $procedure = new procedure($infos, $proc_xml);
-        return $procedure->check();
+        return $procedure->check($force);
     } catch(rbx $r){}
   }
 
-  static function view_check($view_xml, $force= false){
+  static function view_check($view_xml, $force = false){
     try {
         $view = new view($view_xml);
         return $view->check($force);

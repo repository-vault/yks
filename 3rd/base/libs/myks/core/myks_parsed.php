@@ -19,9 +19,12 @@ abstract class myks_parsed {
   }
 
 
-  function check(){
+  function check($force = false){
     $this->xml_infos();
-    $this->sql_infos();
+
+    if($force)
+        $this->sql_def = array();
+    else $this->sql_infos();
 
     if($this->modified())
         return $this->alter_def();

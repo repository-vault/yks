@@ -20,9 +20,10 @@ abstract class view_base extends myks_base {
 
   function check($force = false){
     $this->xml_infos();
-    $this->sql_infos();
+    if($force)
+        $this->sql_def = array();
+    else $this->sql_infos();
 
-    if($force) $this->sql_def = array();
     if(!$this->modified())  return false;
     $todo = $this->alter_def();
 
