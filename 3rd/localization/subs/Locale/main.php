@@ -16,11 +16,10 @@ locales_processor::register_mykse_renderer("project_id");
 locales_processor::register_mykse_renderer("lang_key");
 locales_processor::register_mykse_renderer("locale_tag", "tag_id", "tag_name");
 
-user::register("locale_languages", "ks_users_profile_locale_languages");
-user::register("locale_projects", "ks_users_profile_locale_projects");
 
-$locale_languages = sess::$sess->locale_languages;
-$locale_projects  = sess::$sess->locale_projects;
+$locale_languages = array_extract(sess::$sess->lang_key, 'lang_key');
+$locale_projects  = array_extract(sess::$sess->project_id, 'project_id');
+
 
 $locale_domain_id = 'locale_domain_id';
 
