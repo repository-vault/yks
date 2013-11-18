@@ -1,7 +1,9 @@
-.mocha {
-  box-image:url(mocha.png);
-  box-grid-x:14 1 14;
-  box-grid-y:30 15 30;
+@box {
+  .mocha {
+    box-image:url(mocha.png);
+    box-grid-x:14 1 14;
+    box-grid-y:30 15 30;
+  }
 }
 
 
