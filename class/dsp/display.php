@@ -199,39 +199,6 @@ class dsp{
     return date::sprintfc($date, $format, $format_rel);
   }
 
-  // Find documentation in the manual
-  static function nav($tree,$id=false, $depth=0){
-    $ul="<ul ".($id?"id='$id'":'').">"; $str = '';
-    foreach($tree as $link_key=>$link_infos){
-        if($link_infos['access']
-             && !auth::verif(key($link_infos['access']),current($link_infos['access'])))
-                continue;
-        $title=$link_infos['title'];
-        $children=(bool)$link_infos['children'];
-        $current=(substr(exyks::$href,0,strlen($link_key))==$link_key);
-        $target=$link_infos['target']?"target=\"{$link_infos['target']}\"":'';
-        $class=$children?"class='parent'":'';
-        $id = isset($link_infos['id'])? "id='{$link_infos['id']}'":'';
-        $str.="<li $class $id>";
-        $href  = $link_infos['href']?"href='{$link_infos['href']}'":'';
-        $class = $current?"class='current'":'';
-
-        if($theme=$link_infos['theme']){
-            if($current) $theme .= ":on";
-            $element = $href ? "button" : "title";
-            $effects = $link_infos['effects']?"effects=\"{$link_infos['effects']}\"":"";
-            $str.="<$element $target $effects $href theme='{$theme}'>$title</$element>";
-        } else $str.="<a $class $target $href>$title</a>";
-
-        if($children) $str.=self::nav($link_infos['children'],false,$depth+1)."";
-       $str.="</li>";
-    }
-    $ul.= $str;
-    $ul.= "</ul>";
-    return $str?$ul:"";
- }
-
-
   public static function indent_xml($simplexml) {
     $doc = new DOMDocument('1.0', 'UTF-8');
     $doc->formatOutput = true;

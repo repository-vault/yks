@@ -6,7 +6,7 @@ class tpls {
   const TOP = 3;
   const STD = 0;
 
-  static $nav=array();
+  static $nav;
   static private $top    = array();
   static private $bottom = array();
   static $body = false; //if!tpls::$body
@@ -141,11 +141,6 @@ class tpls {
 
     self::$paths['search']  = array_keys($paths);
     self::$paths['replace'] = array_values($paths);
-  }
-
-
-  static function nav($tree){
-    self::$nav = array_merge(self::$nav, $tree);
   }
 
 

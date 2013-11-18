@@ -199,6 +199,7 @@ class exyks {
     if(bool((string)yks::$get->config->site['closed']))
         tpls::css_add("/css/".SITE_BASE."/off.css"); //not mandatory.., but could help
 
+    tpls::$nav = new navigation();
 
     if(JSX){
         tpls::top('Yks/jsx_top', tpls::STD, "jsx");
@@ -207,7 +208,6 @@ class exyks {
         tpls::top("Yks/top");
         tpls::bottom("Yks/bottom");
     }
-
   }
 
     //Ferme les subs : close session, shut SQL link down & co
