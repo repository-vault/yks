@@ -61,7 +61,7 @@ class users  {
         } elseif(strpos($col," ")!==false) $selected[]=$col;
         $selected=join(',',$selected);
     }
-    
+
       //attention, les filtres where ne sont pas appliqués verticalement.
     if($where && $slice=array_keys($tmp=array_filter($where,'is_array'))){
         foreach($slice as $k=>$col){
@@ -89,7 +89,7 @@ class users  {
         .CRLF." $where $order $limit"
     ); list($users_infos) = sql::partial_fetch('user_id', false, $start, $by);
 
-        //traitement vertical 
+        //traitement vertical
         //!! attention on traite (aujoud'hui) au PLUS une colonne de valeur (non membre de la clée)
     $vcols = $cols;
     if($vcols == "*") {
@@ -109,13 +109,13 @@ class users  {
               $index_value = array();
               foreach($tmp['keys'] as $k=>$v) $index_value[$k] = $line[$k];
               $index_value = '{'.mask_join(',', $index_value, '%2$s:%1$s').'}';
-              $users_infos[$line['user_id']][$col_name][$index_value] = $line;          
+              $users_infos[$line['user_id']][$col_name][$index_value] = $line;
             }
           }
         }
       }
-    
-    
+
+
     if(is_null($sort))
         $users_infos = array_sort($users_infos, $users);
     return $users_infos;
@@ -131,7 +131,7 @@ class users  {
   }
 
   static function recompute_tree_from_flying_nodes($users_ids, $uttermost_user = USERS_ROOT){
-    
+
     $tree_table = "ks_users_tree";
     $tree_key   = "user_id";
     $tree = sql_func::filter_parents($users_ids, $tree_table, $tree_key);
@@ -141,7 +141,7 @@ class users  {
       //on recompose un tree complet
      $tree = array();
      foreach($treex as $user_id=>$user){
-       
+
         $parent_id = $user['parent_id'];
         if ($user_id == $parent_id) $parent_id = null;
         if(!$tree[$user_id] ){
@@ -216,13 +216,13 @@ class users  {
       if($child)
         $me['children'][$child_id] = $child;
     }
-    
+
     if (in_array($me['user_type'], $user_type)  || $me['children'])
       return $me;
     return ;
   }
-    
-  
+
+
   function linearize_tree($tree,$depth=0){
     $ret = array();
     if(!$tree)
@@ -234,17 +234,17 @@ class users  {
         $ret += self::linearize_tree($children['children'],$depth+1);
     }return $ret;
 }
-  
-  
-    //this implementation only works for postgres 
+
+
+    //this implementation only works for postgres
     //but it's cool !!! useit !
   static function get_children_infos($parent_id, $where=true, $cols=array(), $sort = false){
     if(!$parent_id) return array();
-    
+
     $query_tree = self::get_children_query($parent_id);
     $query = "SELECT * FROM
         ($query_tree) as tmp
-        LEFT JOIN `ks_users_list` USING(user_id) 
+        LEFT JOIN `ks_users_list` USING(user_id)
     ".sql::where($where);
     sql::query($query);
     $users_list = sql::brute_fetch('user_id');
@@ -295,16 +295,16 @@ class users  {
     if(!classes::init_need(__CLASS__)) return;
 
     $users_type = vals(yks::$get->types_xml->user_type);
-    
+
     // On récupère les tables de types _profile
     self::$users_linear_tables = array_mask($users_type,'%s_profile');
-    
+
     self::$cols_def_horizontal=array(); $tables_xml = yks::$get->tables_xml;
     foreach(self::$users_linear_tables as $k=>$table_name)
         if(!$tables_xml->$table_name) unset(self::$users_linear_tables[$k]);
-        
+
     // On récupère les tables qui étendent Users_list ! /!\ on va avoir des tables en doubles entre les deux.
-        
+
     /*///////////////*/
 
     $tables = array_merge(self::$users_linear_tables, self::$infos_tables);
@@ -320,7 +320,7 @@ class users  {
 
             $keys   = fields($tables_xml->$table_children_name, true);
             $fields = fields($tables_xml->$table_children_name);
-    
+
             if(!in_array('user_id',array_values($keys)))
               contine;
 
@@ -346,7 +346,7 @@ class users  {
             }
         }
      }
-     
+
     self::$cols_def_horizontal['user_id'] = array('ks_users_list');
 
     //done
@@ -372,21 +372,8 @@ class users  {
             $item->{$prop} = $users_list[$item->{$key}];
   }
 
-/*
-    Check if a file the user upload is fine to be used
-    Usage $file_infos = upload_check( upload_type, $_POST['myfile'] )
-    returns compact('tmp_file', 'file_ext');
-*/
   static function upload_check($upload_type, $upload_file){
-    $upload_path = $upload_file['path'];
-
-    $tmp_path = users::get_tmp_path(sess::$sess['user_id']); //tmp upload dir
-    $tmp_file = "$upload_type.$upload_path";
-
-    if(!preg_match(FILE_MASK,$tmp_file)|| !is_file($tmp_file="$tmp_path/$tmp_file") )
-        return false;
-    $file_ext = files::ext($tmp_file);
-    return compact('tmp_file','file_ext');
+    return files::upload_check($upload_type, $upload_file);
   }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*	"Exyks files functions" by Leurent F. (131)
-    distributed under the terms of GNU General Public License - © 2007 
+    distributed under the terms of GNU General Public License - © 2007
 */
 
 
@@ -94,9 +94,8 @@ class files {
   }
 
   public static function create_dir($dir){
-
     if($dir && !is_dir( $dir) ) {
-        $old = umask(0);$res = mkdir($dir, octdec("777") ,true); umask($old); 
+        $old = umask(0);$res = mkdir($dir, octdec("777") ,true); umask($old);
         if(!$res) throw new Exception("Unable to create directory $dir");
     } return $dir;
   }
@@ -105,20 +104,20 @@ class files {
     if(!$file_out) $file_out = $file_path;
     $contents = file_get_contents($file_path);
     $str      = crypt::encrypt($contents, $key);
-    file_put_contents($file_out, $str);        
+    file_put_contents($file_out, $str);
   }
 
   public static function decrypt($file_path, $key, $file_out = false){
     if(!$file_out) $file_out = $file_path;
     $contents = file_get_contents($file_path);
     $str      = crypt::decrypt($contents, $key);
-    file_put_contents($file_out, $str);        
+    file_put_contents($file_out, $str);
   }
 
   public static function empty_dir($dir, $recursive = true) {
     if($recursive)
         self::delete_dir($dir, false, $depth);
-    else 
+    else
         foreach(self::glob($dir) as $file_path)
             if(!is_dir($file_path)) unlink($file_path);
 
@@ -220,31 +219,31 @@ class files {
   private static function download_forge_headers($filename, $mime_type, $metas = array()){
         //http://support.microsoft.com/kb/812935
     header_remove("Set-Cookie");  header_remove("Pragma"); header_remove("Cache-Control");
-    
+
     //header("Accept-Ranges: bytes"); //no need
-    //header("Content-Transfer-Encoding: binary"); //no need    
+    //header("Content-Transfer-Encoding: binary"); //no need
 
     if($mime_type === true)
       $mime_type = self::content_type($filename);
-    
+
     if(starts_with($mime_type, "text/" ))
       $mime_type .= ";charset=UTF-8";
     $mime_type = strip_start($mime_type, "Content-Type:");
-    
+
     if($mime_type)
-        header("Content-Type: $mime_type"); 
-        
+        header("Content-Type: $mime_type");
+
     $filename = $filename ? $filename : basename($file);
 
-    if($metas['filesize']) 
+    if($metas['filesize'])
       header(sprintf("Content-Length:%d", $metas['filesize'] )); //force !chunked
-            
+
     $mask     = 'Content-Disposition: attachment; filename="%s"';
     $filename = utf8_decode($filename);
     // $filename = rfc_-2047::header_encode($filename); ie crap
     header(sprintf($mask, $filename));
   }
-  
+
   public static function download_str($contents, $filename, $mime_type = false ){
     while(@ob_end_clean());
     $metas = array('filesize' => strlen($contents));
@@ -301,7 +300,7 @@ class files {
             $path = die("hERE");
             continue;
         }
-        return false;   
+        return false;
     }
 
     $size  = $res['headers']['Content-Length']->value;
@@ -312,7 +311,7 @@ class files {
 
     return $data;
   }
-  
+
   public static function tmpdir(){mkdir($tmp = self::tmppath()); return $tmp; }
   public static function tmppath($ext= 'tmp') {
       $abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -322,6 +321,25 @@ class files {
         return self::tmppath($ext);
       return $file_path;
   }
+
+
+/*
+    Check if a file the user upload is fine to be used
+    Usage $file_infos = upload_check( upload_type, $_POST['myfile'] )
+    returns compact('tmp_file', 'file_ext');
+*/
+  static function upload_check($upload_type, $upload_file){
+    $upload_path = $upload_file['path'];
+
+    $tmp_file = "$upload_type.$upload_path";
+
+    if(!preg_match(FILE_MASK, $tmp_file)|| !is_file($tmp_file="path://tmp/$tmp_path/$tmp_file") )
+        return false;
+
+    $file_ext = self::ext($tmp_file);
+    return compact('tmp_file', 'file_ext');
+  }
+
 
 
   public static function csv_split($str, $sep = ';'){
@@ -345,7 +363,7 @@ class files {
   }
 
   public static function csv_parse_string($contents, $has_headers = true){
-    
+
     $lines = preg_split("#\r?\n#", rtrim($contents));
     $data = array_map(array(__CLASS__, 'csv_split'), $lines);
     $cols = max(array_map('count', $data));
@@ -400,7 +418,7 @@ class files {
 
     $base_dir   = $options['base_dir'];
     $extra_path = $options['extra_path'];
-    
+
     $zip = new ZipArchive();
 
     $dest_path = pick($options['dest_path'], self::tmppath("zip"));
@@ -502,11 +520,11 @@ class files {
 
     $files = array();
     foreach($phar as $entry) {
-       
+
        if(is_file($entry))
          $tmp = array((string)$entry);
 
-       elseif(is_dir($entry)) 
+       elseif(is_dir($entry))
          $tmp = self::extract_phar_files(self::pharglob($entry));
 
         $files = array_merge($files, $tmp);
@@ -519,7 +537,7 @@ class files {
     $files = array();
     $dh = opendir($dir);
     if($dh === false) return $files;
-    while (($file = readdir($dh)) !== false) 
+    while (($file = readdir($dh)) !== false)
       $files[] = $dir."/".$file;
     closedir($dh);
     return $files;

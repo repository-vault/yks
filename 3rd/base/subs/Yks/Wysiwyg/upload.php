@@ -37,8 +37,7 @@ if($action=="upload_tmp")try {
         throw rbx::error("Le format de votre fichier n'est pas valide.<br />".
             "Les extensions acceptées sont : ".join(', ', $valid_exts));
 
-    $dir = users::get_tmp_path(sess::$sess['user_id'], true);
-    move_uploaded_file($file['tmp_name'], "$dir/$upload_type.$upload_flag.$file_ext");
+    move_uploaded_file($file['tmp_name'], "path://tmp/$upload_type.$upload_flag.$file_ext");
 
     rbx::$rbx['upload'] = array(
         'src'  => $upload_src,
@@ -50,7 +49,7 @@ if($action=="upload_tmp")try {
     storage::delete("upload_$upload_flag");
     rbx::ok("Le fichier «{$file['name']}» a été attaché");
 } catch(rbx $e) {
-} catch(Exception $e){ 
+} catch(Exception $e){
   error_log($e);
   rbx::error("Upload failure");
 }
