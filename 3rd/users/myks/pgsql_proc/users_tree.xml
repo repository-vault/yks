@@ -1,46 +1,29 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-<!-- signature -->
   <procedure name="ks_users_tree" type="record" setof="setof">
-    <param type="int"/>
     <def>
-DECLARE
 
-rec record;
+DECLARE
+ user_line RECORD;
+ parent_line RECORD;
+ d INTEGER;
 BEGIN
- FOR rec IN ( SELECT * FROM `ks_users_tree`($1, 0) AS func(user_id integer, parent_id integer, depth INTEGER) ) LOOP
- 
- RETURN NEXT rec;
+
+FOR user_line IN ( SELECT user_id,  parent_id, depth FROM `ks_users_tree`(1) tree(user_id integer, parent_id integer, depth integer)  ) LOOP
+
+d := 0;
+
+ FOR parent_line IN (SELECT user_line.user_id, parent_id, 0 as depth  FROM `ks_users_parents`(user_line.user_id)  parents(parent_id INTEGER)  ) LOOP
+ 	parent_line.depth := d;
+    RETURN NEXT parent_line;
+    d := d+1;
  END LOOP;
- return;
-END;
-</def>
-  </procedure>
-<!-- specific implementation of generic tree for users_tree -->
-  <procedure name="ks_users_tree" type="record" setof="setof">
-    <param type="int"/>
-    <param type="int"/>
-    <def>
-DECLARE
-myrec record;
-myrec2 record;
-d INTEGER;
-BEGIN
- d := COALESCE($2, 1);
-   FOR  myrec IN (SELECT  *, d as depth FROM `ks_users_tree` WHERE parent_id = $1) LOOP
 
-        RETURN NEXT myrec; --stack return
-        IF(myrec.user_id = $1) THEN
-            CONTINUE;
-        END IF;
-    
-        FOR  myrec2 IN  (SELECT * FROM `ks_users_tree`(myrec.user_id, d+ 1) AS func(user_id INTEGER, parent_id INTEGER, depth INTEGER) )LOOP
-            RETURN NEXT myrec2; -- stack returns
-        END LOOP;
+END LOOP;
 
-  END LOOP;
- RETURN;
+
+RETURN;
 END;
 </def>
   </procedure>
