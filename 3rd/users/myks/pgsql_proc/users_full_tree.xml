@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS" "">
+<myks>
+  <view name="ks_users_tree_integral">
+    <def>
+SELECT * FROM  `ks_users_tree`() tree(user_id INTEGER, parent_id INTEGER, depth INTEGER) 
+    </def>
+  </view>
+</myks>
