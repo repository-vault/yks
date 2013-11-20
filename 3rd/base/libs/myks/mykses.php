@@ -201,21 +201,23 @@ class mykses {
 
       if($only_null){
         foreach($fields as $field_name) {
-          $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
+          $fvalues = array_extract($cvalues, $field_name, true);
           if($fvalues)
             $paths[] = array($table_name, $field_name, $fvalues, 'set_null');
         }
         continue;
       }
 
-      if(($child_type = $deaths[$table_name]) && $recurse) {
-        $values = array_unique(array_extract($cvalues, $child_type));
+      if(($child_type = $deaths[$table_name]) && $recurse && $child_type !=  $myks_type ) {
+        $values = array_extract($cvalues, $child_type, true);
         $depth = self::find_key($child_type, $values, $rmap, $recurse, $hpaths);
         $paths   = array_merge($paths, $depth);
       }
 
+      $values = array_extract($cvalues, $myks_type, true);
+
       foreach($fields as $field_name) {
-        $fvalues = array_unique(array_filter(array_extract($cvalues, $field_name)));
+        $fvalues = array_extract($cvalues, $field_name, true);
         $fvalues = array_intersect($fvalues, $values);
         if($fvalues)
           $paths[] = array($table_name, $field_name, $fvalues);
@@ -228,7 +230,7 @@ class mykses {
 
           foreach($parent_columns as $parent_column) {
             $parent_type = $table_fields[$parent_column];
-            $fvalues = array_unique(array_filter(array_extract($cvalues, $parent_column)));
+            $fvalues = array_extract($cvalues, $parent_column, true);
             $depth = self::find_key($parent_type, $fvalues, $rmap, $recurse, $hpaths);
             $paths   = array_merge($paths, $depth);
           }
