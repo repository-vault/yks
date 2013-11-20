@@ -8,7 +8,7 @@ class _ArrayObject implements ArrayAccess {
 
 
 
-  protected function __get($key){
+  public function __get($key){
     if(method_exists($this, $getter = "get_$key"))
         return $this->$getter();
   }
