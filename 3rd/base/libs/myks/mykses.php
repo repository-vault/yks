@@ -214,11 +214,9 @@ class mykses {
         $paths   = array_merge($paths, $depth);
       }
 
-      $values = array_extract($cvalues, $myks_type, true);
-
       foreach($fields as $field_name) {
         $fvalues = array_extract($cvalues, $field_name, true);
-        $fvalues = array_intersect($fvalues, $values);
+        $fvalues = array_intersect($fvalues, $value);
         if($fvalues)
           $paths[] = array($table_name, $field_name, $fvalues);
       }
