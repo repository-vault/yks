@@ -7,6 +7,12 @@ class _ArrayObject implements ArrayAccess {
   function offsetUnset($key){unset($this->$key); }
 
 
+
+  protected function __get($key){
+    if(method_exists($this, $getter = "get_$key"))
+        return $this->$getter();
+  }
+
   public static function expose($obj){
     if(is_scalar($obj) || is_null($obj)) 
       return $obj;
