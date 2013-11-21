@@ -333,7 +333,7 @@ class files {
 
     $tmp_file = "$upload_type.$upload_path";
 
-    if(!preg_match(FILE_MASK, $tmp_file)|| !is_file($tmp_file="path://tmp/$tmp_path/$tmp_file") )
+    if(!preg_match(FILE_MASK, $tmp_file) || !is_file($tmp_file=exyks_paths::resolve("path://tmp/$tmp_file")) )
         return false;
 
     $file_ext = self::ext($tmp_file);
