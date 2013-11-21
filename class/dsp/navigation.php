@@ -2,7 +2,7 @@
 
 class navigation{
   private $tree = array();
-  
+
 
   public function __construct($conf = null){
     if(is_null($conf))
@@ -15,7 +15,7 @@ class navigation{
   }
 
   function stack($flow){
-    $this->tree = array_merge($this->tree, $flow);
+    $this->tree = array_merge_deep($this->tree, $flow);
   }
 
   function exclude($k){
@@ -57,7 +57,7 @@ class navigation{
     return $tree;
   }
 
-  
+
   public function output($id = "") {
     return self::render($this->export(), $id, 0);
   }
