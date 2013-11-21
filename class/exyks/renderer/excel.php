@@ -87,7 +87,7 @@ class exyks_renderer_excel {
     //Pour les datas
     $xml_row = $out_xml->createElement('Row');
     foreach ($data_headers as $name => $value) {
-      $name = specialchars_decode(pick($value['column_title'], $name));
+      $name = specialchars_decode(pick(is_array($value) ? $value['column_title'] : false, $name));
       $cell = $out_xml->createElement('Cell');
       $cell->setAttribute('class', 'header cell');
       $cell->appendChild($out_xml->createTextNode($name));
