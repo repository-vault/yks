@@ -11,7 +11,7 @@ class navigation{
   }
 
   function load($conf){
-    $this->tree = $this->parse($conf);
+    $this->tree = is_array($conf) ? $conf : $this->parse($conf);
   }
 
   function stack($flow){
