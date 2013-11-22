@@ -29,6 +29,10 @@ class css_declaration extends ibase  {
     return $this->values;
   }
 
+  function set_values_group($values) {
+    $this->values = $values;
+  }
+
   function __toString(){
     $tmp = $this->values;
     foreach($tmp as &$values) $values = join(' ', $values);
@@ -42,6 +46,10 @@ class css_declaration extends ibase  {
 
   function get_name(){
     return $this->property_name;
+  }
+
+  function set_name($property_name) {
+    $this->property_name = $property_name;
   }
 
   function outputXML(){
