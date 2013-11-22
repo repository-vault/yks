@@ -1,10 +1,10 @@
 <?
 
 class css_processor {
-  
+
   const CB_INLINE_EXTERNALS = 'inline_externals';
   const CB_RESOLVE_IMPORTS  = 'resolve_imports';
-  
+
   private static $entities;
   private $file_uri;
   private $file_base;
@@ -12,7 +12,7 @@ class css_processor {
   private $file_contents;
   public $css;
   private $hooks = array();
-  
+
   static function init(){
     classes::register_class_path("css_parser", "exts/css/parser.php");
     classes::register_class_path("css_box", "exts/css/mod/box.php");
@@ -37,12 +37,19 @@ class css_processor {
    $this->register_hook(array($this, "resolve_crops" ));
    $this->register_hook(array($this, "resolve_imports" ));
    $this->register_hook(array($this, "resolve_externals" ));
+
+   $this->register_hook(array($this, "resolve_border_radius" ));
+   $this->register_hook(array($this, "resolve_box_shadow" ));
+   $this->register_hook(array($this, "resolve_transition" ));
+   $this->register_hook(array($this, "resolve_appearance" ));
+   $this->register_hook(array($this, "resolve_text_shadow" ));
+   $this->register_hook(array($this, "resolve_linear_gradient" ));
   }
-  
+
   function register_hook($callback){
     $this->hooks[] = $callback;
   }
-  
+
   private function apply_hooks() {
     foreach($this->hooks as $callback)
       call_user_func($callback);
@@ -53,10 +60,10 @@ class css_processor {
         $this->css    = css_parser::load_string($contents, $this->file_uri);
     else $this->css   = css_parser::load_file($this->file_uri);
   }
-  
+
   function process($contents = null) {
     $this->parse($contents);
-    
+
     $this->apply_hooks();
     return $this->css->output();
   }
@@ -68,7 +75,6 @@ class css_processor {
   }
 
   private function resolve_boxes(){
-
     $boxes = $this->css->xpath("//atblock[@keyword='box']//rule[starts-with(@name,'box')]/ancestor::ruleset[1]");
 
     foreach($boxes as $box) try {
@@ -99,7 +105,7 @@ class css_processor {
             if(!is_file($path)) continue;
 
             $process = new css_processor($path);
-              
+
             foreach($this->hooks as $cb)
               if(is_array($cb)
                 && $cb[0] === $this
@@ -123,7 +129,7 @@ class css_processor {
         }
     }
   }
-  
+
   private function inline_externals(){
     $externals = $this->css->xpath("//atblock[@keyword='font-face']//val[starts-with(.,'url')]/ancestor::rule"); // yeah
     foreach($externals as $external) {
@@ -155,6 +161,98 @@ class css_processor {
      }
   }
 
+  /* Cross navigator resolvers */
+  private function resolve_border_radius() {
+    $array_border_radius = array(
+      'webkit' => '-webkit-border-radius',
+      'gecko' => '-moz-border-radius',
+      'presto' => '-o-border-radius',
+      'trident' => '-khtml-border-radius',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_border_radius) ? $array_border_radius[ENGINE] : 'border-radius';
+    $boxes = $this->css->xpath("//rule[@name='border-radius']");
+    foreach ($boxes as $box) {
+      $box->set_name($new_name);
+    }
+  }
+
+  private function resolve_box_shadow() {
+    $array_box_shadow = array(
+      'webkit' => '-webkit-box-shadow',
+      'gecko' => '-moz-box-shadow',
+      'presto' => '-o-box-shadow',
+      'trident' => '-khtml-box-shadow',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_box_shadow) ? $array_box_shadow[ENGINE] : 'box-shadow';
+    $boxes = $this->css->xpath("//rule[@name='box-shadow']");
+    foreach ($boxes as $box) {
+      $box->set_name($new_name);
+    }
+  }
+
+  private function resolve_transition() {
+    $array_transition = array(
+      'webkit' => '-webkit-transition',
+      'gecko' => '-moz-transition',
+      'presto' => '-o-transition',
+      'trident' => '-khtml-transition',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_transition) ? $array_transition[ENGINE] : 'transition';
+    $boxes = $this->css->xpath("//rule[@name='transition']");
+    foreach ($boxes as $box) {
+      $box->set_name($new_name);
+    }
+  }
+
+  private function resolve_appearance() {
+    $array_appearance = array(
+      'webkit' => '-webkit-appearance',
+      'gecko' => '-moz-appearance',
+      'presto' => '-o-appearance',
+      'trident' => '-khtml-appearance',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_appearance) ? $array_appearance[ENGINE] : 'appearance';
+    $boxes = $this->css->xpath("//rule[@name='appearance']");
+    foreach ($boxes as $box) {
+      $box->set_name($new_name);
+    }
+  }
+
+  private function resolve_text_shadow() {
+    $array_text_shadow = array(
+      'webkit' => '-webkit-text-shadow',
+      'gecko' => '-moz-text-shadow',
+      'presto' => '-o-text-shadow',
+      'trident' => '-khtml-text-shadow',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_text_shadow) ? $array_text_shadow[ENGINE] : 'text-shadow';
+    $boxes = $this->css->xpath("//rule[@name='text-shadow']");
+    foreach ($boxes as $box) {
+      $box->set_name($new_name);
+    }
+  }
+
+  private function resolve_linear_gradient() {
+    $array_linear_gradient = array(
+      'webkit' => '-webkit-linear-gradient',
+      'gecko' => '-moz-linear-gradient',
+      'presto' => '-o-linear-gradient',
+      'trident' => '-khtml-linear-gradient',
+    );
+
+    $new_name = array_key_exists(ENGINE, $array_linear_gradient) ? $array_linear_gradient[ENGINE] : 'linear-gradient';
+    $boxes = $this->css->xpath("//val[starts-with(.,'linear-gradient')]/ancestor::rule");
+    foreach ($boxes as $box) {
+      $new_values = self::replace_tree('linear-gradient', $new_name, $box->get_values_groups(), false);
+      $box->set_values_group($new_values);
+    }
+  }
+
 //inline style rewrite callback
   function style_rewrite($doc, $node){
     $contents = $node->nodeValue;
@@ -168,6 +266,18 @@ class css_processor {
       return;
     }
     $node->nodeValue= $contents;
+  }
+
+  private static function replace_tree($search = '', $replace = '', $array = false, $replace_keys = false) {
+    if (!is_array($array)) return str_replace($search, $replace, $array);
+
+    $new_array = array();
+    foreach ($array as $key => $value) {
+      $new_key = $replace_keys ? str_replace($search, $replace, $key) : $key;
+      $new_array[$new_key] = self::replace_tree($search, $replace, $value, $replace_keys);
+    }
+
+    return $new_array;
   }
 
 }

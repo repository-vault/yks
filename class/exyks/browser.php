@@ -31,7 +31,7 @@
     define('SAFARI', $engine=="webkit");
     define('GECKO', $engine=="gecko");
     define('ROBOT', $engine=="robot");
+    define('ENGINE', $engine);
 
     define('PLATFORM_MOBILE', in_array($platform, array("ipod", "blackberry", "android", "ipad")));
 
- 
