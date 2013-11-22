@@ -1,4 +1,6 @@
 <box theme="&pref.dft;" caption="Restore">
+<mu><?=$pages_list?></mu>
+
 <table class='table'>
   <tr class='line_head'>
     <th>Deletion #</th>
