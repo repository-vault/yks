@@ -38,12 +38,8 @@ class css_processor {
    $this->register_hook(array($this, "resolve_imports" ));
    $this->register_hook(array($this, "resolve_externals" ));
 
-   $this->register_hook(array($this, "resolve_border_radius" ));
-   $this->register_hook(array($this, "resolve_box_shadow" ));
-   $this->register_hook(array($this, "resolve_transition" ));
-   $this->register_hook(array($this, "resolve_appearance" ));
-   $this->register_hook(array($this, "resolve_text_shadow" ));
-   $this->register_hook(array($this, "resolve_linear_gradient" ));
+   $this->register_hook(array($this, "resolve_names" ));
+   $this->register_hook(array($this, "resolve_values" ));
   }
 
   function register_hook($callback){
@@ -162,94 +158,66 @@ class css_processor {
   }
 
   /* Cross navigator resolvers */
-  private function resolve_border_radius() {
-    $array_border_radius = array(
-      'webkit' => '-webkit-border-radius',
-      'gecko' => '-moz-border-radius',
-      'presto' => '-o-border-radius',
-      'trident' => '-khtml-border-radius',
+  private function resolve_names() {
+    $names = array(
+      'border-radius' => array(
+        'webkit' => '-webkit-border-radius',
+        'gecko' => '-moz-border-radius',
+        'presto' => '-o-border-radius',
+        'trident' => '-khtml-border-radius',
+      ),
+      'box-shadow' => array(
+        'webkit' => '-webkit-box-shadow',
+        'gecko' => '-moz-box-shadow',
+        'presto' => '-o-box-shadow',
+        'trident' => '-khtml-box-shadow',
+      ),
+      'transition' => array(
+        'webkit' => '-webkit-transition',
+        'gecko' => '-moz-transition',
+        'presto' => '-o-transition',
+        'trident' => '-khtml-transition',
+      ),
+      'appearance' => array(
+        'webkit' => '-webkit-appearance',
+        'gecko' => '-moz-appearance',
+        'presto' => '-o-appearance',
+        'trident' => '-khtml-appearance',
+      ),
+      'text-shadow' => array(
+        'webkit' => '-webkit-text-shadow',
+        'gecko' => '-moz-text-shadow',
+        'presto' => '-o-text-shadow',
+        'trident' => '-khtml-text-shadow',
+      ),
     );
 
-    $new_name = array_key_exists(ENGINE, $array_border_radius) ? $array_border_radius[ENGINE] : 'border-radius';
-    $boxes = $this->css->xpath("//rule[@name='border-radius']");
-    foreach ($boxes as $box) {
-      $box->set_name($new_name);
+    foreach ($names as $name => $changes) {
+      $new_name = array_key_exists(ENGINE, $changes) ? $changes[ENGINE] : $name;
+      $boxes = $this->css->xpath("//rule[@name='$name']");
+      foreach ($boxes as $box) {
+        $box->set_name($new_name);
+      }
     }
   }
 
-  private function resolve_box_shadow() {
-    $array_box_shadow = array(
-      'webkit' => '-webkit-box-shadow',
-      'gecko' => '-moz-box-shadow',
-      'presto' => '-o-box-shadow',
-      'trident' => '-khtml-box-shadow',
+  private function resolve_values() {
+    $values = array(
+      'linear-gradient' => array(
+        'webkit' => '-webkit-linear-gradient',
+        'gecko' => '-moz-linear-gradient',
+        'presto' => '-o-linear-gradient',
+        'trident' => '-khtml-linear-gradient',
+      ),
     );
 
-    $new_name = array_key_exists(ENGINE, $array_box_shadow) ? $array_box_shadow[ENGINE] : 'box-shadow';
-    $boxes = $this->css->xpath("//rule[@name='box-shadow']");
-    foreach ($boxes as $box) {
-      $box->set_name($new_name);
-    }
-  }
-
-  private function resolve_transition() {
-    $array_transition = array(
-      'webkit' => '-webkit-transition',
-      'gecko' => '-moz-transition',
-      'presto' => '-o-transition',
-      'trident' => '-khtml-transition',
-    );
-
-    $new_name = array_key_exists(ENGINE, $array_transition) ? $array_transition[ENGINE] : 'transition';
-    $boxes = $this->css->xpath("//rule[@name='transition']");
-    foreach ($boxes as $box) {
-      $box->set_name($new_name);
-    }
-  }
-
-  private function resolve_appearance() {
-    $array_appearance = array(
-      'webkit' => '-webkit-appearance',
-      'gecko' => '-moz-appearance',
-      'presto' => '-o-appearance',
-      'trident' => '-khtml-appearance',
-    );
-
-    $new_name = array_key_exists(ENGINE, $array_appearance) ? $array_appearance[ENGINE] : 'appearance';
-    $boxes = $this->css->xpath("//rule[@name='appearance']");
-    foreach ($boxes as $box) {
-      $box->set_name($new_name);
-    }
-  }
-
-  private function resolve_text_shadow() {
-    $array_text_shadow = array(
-      'webkit' => '-webkit-text-shadow',
-      'gecko' => '-moz-text-shadow',
-      'presto' => '-o-text-shadow',
-      'trident' => '-khtml-text-shadow',
-    );
-
-    $new_name = array_key_exists(ENGINE, $array_text_shadow) ? $array_text_shadow[ENGINE] : 'text-shadow';
-    $boxes = $this->css->xpath("//rule[@name='text-shadow']");
-    foreach ($boxes as $box) {
-      $box->set_name($new_name);
-    }
-  }
-
-  private function resolve_linear_gradient() {
-    $array_linear_gradient = array(
-      'webkit' => '-webkit-linear-gradient',
-      'gecko' => '-moz-linear-gradient',
-      'presto' => '-o-linear-gradient',
-      'trident' => '-khtml-linear-gradient',
-    );
-
-    $new_name = array_key_exists(ENGINE, $array_linear_gradient) ? $array_linear_gradient[ENGINE] : 'linear-gradient';
-    $boxes = $this->css->xpath("//val[starts-with(.,'linear-gradient')]/ancestor::rule");
-    foreach ($boxes as $box) {
-      $new_values = self::replace_tree('linear-gradient', $new_name, $box->get_values_groups(), false);
-      $box->set_values_group($new_values);
+    foreach ($values as $value => $changes) {
+      $new_name = array_key_exists(ENGINE, $changes) ? $changes[ENGINE] : $value;
+      $boxes = $this->css->xpath("//val[starts-with(.,'$value')]/ancestor::rule");
+      foreach ($boxes as $box) {
+        $new_values = self::replace_tree($value, $new_name, $box->get_values_groups(), false);
+        $box->set_values_group($new_values);
+      }
     }
   }
 
