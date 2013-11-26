@@ -40,7 +40,7 @@ class exyks_auth_api {
   public static function loginFromId($user_id){
     //DebugBreak("1@172.51.1.88");
     $trusted_ips = explode(";", yks::$get->config->apis->authapi['trusted_ip']);
-    $is_trusted = in_array($_SERVER['REMOTE_ADDR'] , $trusted_ips);
+    $is_trusted = in_array(exyks::$CLIENT_ADDR , $trusted_ips);
     if(!$is_trusted)
       throw new Exception("Only from trusted ip");
 
