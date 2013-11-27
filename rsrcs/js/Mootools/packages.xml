@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<js ns="mootools">
+  <package name="mootools.full">
+    <dep key="mootools-more"/>
+    <dep key="mootools-core"/>
+  </package>
+</js>
