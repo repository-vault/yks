@@ -61,7 +61,7 @@ class config extends KsimpleXMLElement {
 
     $base = yks::$get->config->site['debug'];
     $base = preg_split(VAL_SPLITTER, $base);
-    $result = http::ip_allow($base);
+    $result = http::ip_allow($base, exyks::$CLIENT_ADDR);
     return $result;
   }
 
