@@ -230,8 +230,8 @@ class cli {
   }
 
   public static function bool_prompt($prompt="", $default = false){
-    $yn = $default ? "Y/n" :"y/N";
-    return bool(self::text_prompt("$prompt ($yn)", $default ));
+    $yn = $default ? "y" :"n";
+    return bool(self::text_prompt($prompt, $default ));
   }
 
   public static function text_prompt($prompt=false, $default = null, &$args = null){
