@@ -87,11 +87,7 @@ class yks
 
     $site_code = strtr($config->site['code'], '.', '_');
 
-    define('SQL_DRIVER',      pick($config->sql['driver'], 'pgsql'));
-    define('STORAGE_DRIVER',  pick($config->storage['driver'], 'apc'));
-
     define('SITE_CODE',      strtolower($site_code));
-
     define('SITE_URL',       $SITE_URL);
     define('SITE_BASE',      ucfirst($site_code));
     define('SITE_DOMAIN',    pick($config->site['domain'], $domain['host']));
@@ -141,6 +137,11 @@ class yks
     $exts = pick($config->classes['exts'], $config->paths['exts']);
 
     $call_init = ((string)$config->classes['call_init']) != 'false';
+
+    exyks_paths::init();
+
+    define('SQL_DRIVER',      pick($config->sql['driver'], 'pgsql'));
+    define('STORAGE_DRIVER',  pick($config->storage['driver'], 'apc'));
 
     classes::extend_include_path($paths);
     classes::activate($exts); //it's okay to activate again, autoload seems to be smart enough
