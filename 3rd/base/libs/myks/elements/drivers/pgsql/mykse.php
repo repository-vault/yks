@@ -53,12 +53,12 @@ class mykse extends mykse_base {
 
 
   function enum_node(){
-        $set=((string)$this->mykse_xml['set'])=='set';
-        $length=0;foreach(vals($this->mykse_xml) as $val)$length=max($length,strlen($val));
-    $type=$set?'set':'enum';
-        if($set)$length=255;
-    $this->field_def["Type"] = "varchar($length)";
+    $type = (string)$this->type.'_enum';
 
+    $set=((string)$this->mykse_xml['set'])=='set';
+    if($set)$type .='[]';
+
+    $this->field_def["Type"] = $type;
   }
 
 

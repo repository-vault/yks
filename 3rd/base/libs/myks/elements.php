@@ -39,6 +39,7 @@ classes::register_class_paths(array(
     "view"             => "$ds_elements/view.php",
     "procedure"        => "$ds_elements/procedure.php",
     "rule"             => "$ds_elements/rule.php",
+    "fields"           => "$ds_elements/fields.php",
 
     "table_abstract"    => "$elements/table_abstract.php",
     "materialized_view" => "$elements/materialized_view.php",

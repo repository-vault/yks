@@ -4,27 +4,46 @@
   <view name="zks_information_schema_columns">
     <def><![CDATA[
 
-SELECT
+SELECT rn.nspname as table_schema,
+       c.relname as table_name,
+       attname AS column_name,
+      CASE
+          WHEN t.typelem <> 0::oid AND t.typlen =(- 1) THEN 'ARRAY'
+            ::text
+          WHEN n.nspname = 'pg_catalog' ::name THEN
+            CASE format_type(a.atttypid, NULL::integer)
+               WHEN '"trigger"' ::text THEN 'trigger' ::character varying
+               WHEN 'character varying' ::text THEN
+              (('varchar(' ::text || information_schema._pg_char_max_length(information_schema._pg_truetypid(a.*, t.*), information_schema._pg_truetypmod(a.*, t.*)) ::information_schema.cardinal_number::text) || ')' ::text) ::character varying
+               WHEN 'timestamp with time zone' ::text THEN 'timestamptz' ::character
+                 varying
+               WHEN 'timestamp without time zone' ::text THEN 'timestamp'::character varying
+               ELSE format_type(a.atttypid, NULL::integer)
+            END
+        ELSE t.typname::text
+      END::information_schema.character_data AS data_type,
+       NOT attnotnull AS is_nullable,
+regexp_replace(regexp_replace(pg_get_expr(d.adbin, a.attrelid, true)::text, '::[a-z ]+'
+           ::text, '' ::text, 'g' ::text), ',[ ]+' ::text, ',' ::text, 'g'
+           ::text)
+       AS column_default
+FROM pg_attribute a
+INNER JOIN pg_class c ON a.attrelid = c.oid
+INNER JOIN pg_type t ON a.atttypid = t.oid
 
-    table_schema, 
-    table_name,
-    column_name,
+LEFT OUTER JOIN pg_attrdef d ON d.adrelid = c.oid AND d.adnum = a.attnum
+LEFT OUTER JOIN pg_description ds ON ds.objoid = c.oid AND ds.objsubid = a.attnum
 
--- chk routines.xml
-    (CASE data_type
-        WHEN '"trigger"' THEN 'trigger'
-        WHEN 'character varying' THEN 'varchar(' || character_maximum_length || ')'
-        WHEN 'timestamp with time zone' THEN 'timestamptz'
-        WHEN 'timestamp without time zone' THEN 'timestamp'
-        ELSE data_type
-    END ) AS data_type, 
+INNER JOIN pg_namespace n ON t.typnamespace = n.oid
+INNER JOIN pg_namespace rn ON c.relnamespace = rn.oid
 
-    (is_nullable='YES') as is_nullable,
+LEFT OUTER JOIN pg_collation coll ON coll.oid = a.attcollation
+LEFT OUTER JOIN pg_namespace collns ON collns.oid = coll.collnamespace
 
-
-    regexp_replace(regexp_replace(column_default, '::[a-z ]+', '', 'g'), ',[ ]+',',','g') AS column_default
-
-FROM information_schema.columns
+WHERE TRUE
+  AND attnum > 0
+  AND attisdropped <> 't'
+ORDER BY a.attnum
 
 ]]></def>
   </view>
