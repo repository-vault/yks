@@ -74,6 +74,8 @@ class xml {
     $fpi = self::$dtds_paths[$FPI];
     if(!$fpi) throw new Exception("Unknow fpi");
 
+    $fpi['dtd_path'] = strtr(realpath($fpi['dtd_path']), '\\', '/');
+
     $search_mask = '#<\!DOCTYPE\s+(%s)\s+PUBLIC\s+"%s"[^>]*>#';
     $search_mask = sprintf($search_mask, $fpi['root_mask'], $fpi['fpi_mask']);
     $replace = '<!DOCTYPE $1 SYSTEM "'.$fpi['dtd_path'].'">';
