@@ -146,19 +146,6 @@ abstract class table_base  extends myks_installer {
     $this->constraints->key_add($type, $field, $refs);
   }
 
-  public function drop_views_from_altered_columns($columns){
-    $where = $this->table_where();
-    $where['column_name'] = $columns;
-    sql::select("information_schema.view_column_usage", $where, "DISTINCT view_schema, view_name");
-    $views_list = sql::brute_fetch();
-    $ec = $this->escape_char;
-    $drops  = array();
-    foreach($views_list as $view) {
-        $drops[] = "DROP VIEW IF EXISTS $ec{$view['view_schema']}$ec.$ec{$view['view_name']}$ec CASCADE";
-    }
-    return $drops;
-  }
-
 
 
  public static function build_ref($table_schema, $table_name, $table_fields){

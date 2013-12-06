@@ -1,6 +1,6 @@
 <?php
 
-class fields {
+class fields extends myks_fields{
 
   private  $fields_xml;
 
@@ -92,8 +92,21 @@ class fields {
         $drop_columns[] = $field_name;
     }
 
-    $drop_views = $this->parent->drop_views_from_altered_columns($drop_columns);
+    $drop_views = $this->drop_views_from_altered_columns($drop_columns);
     $todo = array_merge( $drop_views, $todo);
     return $todo;
+  }
+
+  private function drop_views_from_altered_columns($columns){
+    $where = $this->table_where();
+    $where['column_name'] = $columns;
+    sql::select("information_schema.view_column_usage", $where, "DISTINCT view_schema, view_name");
+    $views_list = sql::brute_fetch();
+    $ec = $this->escape_char;
+    $drops  = array();
+    foreach($views_list as $view) {
+        $drops[] = "DROP VIEW IF EXISTS $ec{$view['view_schema']}$ec.$ec{$view['view_name']}$ec CASCADE";
+    }
+    return $drops;
   }
 }
