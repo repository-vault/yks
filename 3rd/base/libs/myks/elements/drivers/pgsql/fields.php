@@ -1,18 +1,6 @@
 <?php
 
-class fields extends myks_fields{
-
-  private  $fields_xml;
-
-  private $parent;
-
-  private $sql_def = array();
-  private $xml_def = array();
-
-  function __construct($parent, $fields_xml){
-    $this->parent     = $parent;
-    $this->fields_xml = $fields_xml;
-  }
+class fields extends myks_fields {
 
   function sql_infos(){
     sql::select("zks_information_schema_columns", $this->parent->table_where());
@@ -28,17 +16,6 @@ class fields extends myks_fields{
             'Null'      => bool($column['is_nullable']),
         );
     }
-  }
-
-  function xml_infos(){
-    foreach($this->fields_xml->field as $field_xml){
-        $mykse=new mykse($field_xml,$this->parent);
-        $this->xml_def[$mykse->field_def['Field']] = $mykse->field_def;
-    }
-  }
-
-  function modified(){
-    return $this->sql_def != $this->xml_def;
   }
 
   function alter_def(){
@@ -98,7 +75,7 @@ class fields extends myks_fields{
   }
 
   private function drop_views_from_altered_columns($columns){
-    $where = $this->table_where();
+    $where = $this->parent->table_where();
     $where['column_name'] = $columns;
     sql::select("information_schema.view_column_usage", $where, "DISTINCT view_schema, view_name");
     $views_list = sql::brute_fetch();

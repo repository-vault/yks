@@ -31,6 +31,7 @@ classes::register_class_paths(array(
 
 
     "myks_indices"     => "$elements/indices.php",
+    "myks_fields"     => "$elements/fields.php",
     "myks_checks"      => "$elements/checks.php",
 
     "myks_constraints" => "$ds_elements/constraints.php",
