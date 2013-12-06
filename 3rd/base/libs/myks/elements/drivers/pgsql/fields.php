@@ -1,6 +1,7 @@
 <?php
 
 class fields extends myks_fields {
+  protected $escape_char="\"";
 
   function sql_infos(){
     sql::select("zks_information_schema_columns", $this->parent->table_where());

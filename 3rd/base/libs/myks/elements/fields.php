@@ -1,5 +1,7 @@
 <?php
-  abstract class myks_fields {
+  abstract class myks_fields extends myks_parsed{
+    protected $escape_char="`";
+
     protected  $fields_xml;
 
     protected $parent;
@@ -7,8 +9,6 @@
     protected $sql_def = array();
     protected $xml_def = array();
 
-    abstract function sql_infos();
-    abstract function alter_def();
 
     function __construct($parent, $fields_xml){
       $this->parent     = $parent;
@@ -25,5 +25,4 @@
     function modified(){
       return $this->sql_def != $this->xml_def;
     }
-
   }
