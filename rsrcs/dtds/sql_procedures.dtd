@@ -3,9 +3,10 @@
 
 
 
-<!ATTLIST param 
+<!ATTLIST param
   name	CDATA	#IMPLIED
-  type	CDATA	#REQUIRED
+  type  CDATA  #REQUIRED
+  default	CDATA	#IMPLIED
 >
 
 <!ATTLIST procedure

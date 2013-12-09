@@ -20,7 +20,7 @@ abstract class procedure_base extends myks_installer  {
   }
 
   function modified(){
- 
+
     $same = $this->xml_def == $this->sql_def;
    if($same) return !$same;
 
@@ -65,13 +65,16 @@ abstract class procedure_base extends myks_installer  {
 
     $args=array();
     foreach((array)$this->xml_def['params'] as $param) {
+        $default = $param['default'] ? '= '.$param['default'] : '';
         $type = pick($transtype[$param['type']], $param['type']);
-        $args[] = $param['name'].' '.$type;
+        $args[] = $param['name'].' '.$type . $default;
     }
 
     $args = join(', ',$args);
 
     $volatility = $this->xml_def['volatility'];
+
+
 
     $out  = $this->xml_def['setof'].' '.pick($transtype[$this->xml_def['type']], $this->xml_def['type']);
     $ret = "CREATE OR REPLACE FUNCTION {$this->proc_name['safe']}($args) RETURNS $out AS\n\$body\$\n";
@@ -83,7 +86,7 @@ abstract class procedure_base extends myks_installer  {
 //return all procedures matching search criteria
   static function sql_search($proc_name, $proc_schema, $type, $params = array()){
     $find = self::raw_sql_search($proc_name, $proc_schema, $type, $params);
-    $ret = array(); 
+    $ret = array();
     foreach($find as $infos){
         $tmp = sql::resolve("{$infos['routine_schema']}.{$infos['routine_name']}");
         $tmp = new procedure($tmp, new stdclass());;
@@ -168,6 +171,7 @@ abstract class procedure_base extends myks_installer  {
         $data['params'][]=array(
             'type'    => (string)$param_xml['type'],
             'name'    => isset($param_xml['name'])?(string)$param_xml['name']:null,
+            'default'    => isset($param_xml['default'])?(string)$param_xml['default']:null,
         );
     }
 
