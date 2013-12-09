@@ -20,7 +20,7 @@ $select_cols = array(
       "user_update",
       "coalesce(user_connect , 0) as user_connect",
       "depth",
-      "parent_id",      
+      "parent_id",
       );
 //$cols .= ", ".join(',', $affichage);
 
@@ -36,6 +36,7 @@ $requested_zone = (array) sess::retrieve("search_results");
 
 
 $access_zone_list = auth::get_access_zones();
+array_sort_deep($access_zone_list, 'access_zone_path');
 
 $access_zone_list_dsp =  $requested_zone
     ?array_intersect_key( $access_zone_list, array_flip($requested_zone) )
@@ -56,11 +57,11 @@ foreach($access_list as $access) {
 foreach($users_list as $user_id => &$user_infos){
     $user_infos['parent_tree']      = array_reverse(array_keys(linearize_tree($users_tree[$user_id])));
     $user_infos['inherited_rights'] = array();
-    
+
     foreach($user_infos['parent_tree'] as  $parent_id) {
         $parent_rights = $users_list[$parent_id]['local_rights'];
         if(!$parent_rights) continue;
         $user_infos['inherited_rights'] =  array_merge_numeric ($user_infos['inherited_rights'] , $parent_rights);
-    } 
+    }
 } unset($user_infos);
 
