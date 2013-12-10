@@ -252,7 +252,7 @@ class stdClassSerializable {
 function objectify($item) {
   if(is_scalar($item) || is_null($item))
     return $item;
-    
+
   $out = new stdClassSerializable($item);
   foreach($item as $k=>$v)
     $out->$k = is_array($v) ? objectify($v) : $v;
@@ -265,6 +265,12 @@ function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
     foreach($tmp as $name=>$val)
         if(preg_match($mask, $name)) $constants[sprintf($format, $name)] = $val;
     return $constants;
+}
+
+function first($array) {
+  if(!is_array($array)) return null;
+  $keys = array_keys($array);
+  return $array[$keys[0]];
 }
 
 
