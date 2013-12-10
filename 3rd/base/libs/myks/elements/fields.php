@@ -6,10 +6,6 @@
 
     protected $parent;
 
-    protected $sql_def = array();
-    protected $xml_def = array();
-
-
     function __construct($parent, $fields_xml){
       $this->parent     = $parent;
       $this->fields_xml = $fields_xml;

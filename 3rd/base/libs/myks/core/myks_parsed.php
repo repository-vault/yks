@@ -9,6 +9,9 @@ abstract class myks_parsed {
 //return array($queries);
   abstract function alter_def();
 
+  protected $sql_def = array();
+  protected $xml_def = array();
+
 
   function __get($key){
     if(method_exists($this, $getter = "get_$key"))
@@ -29,7 +32,7 @@ abstract class myks_parsed {
     if($this->modified())
         return $this->alter_def();
     return array();
-    
+
   }
 
 }
