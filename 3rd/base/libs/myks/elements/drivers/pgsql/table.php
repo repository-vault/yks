@@ -25,6 +25,12 @@ class table extends table_base {
     $this->checks   = new myks_checks($this, $table_xml->xpath('checks/check'));
   }
 
+   /**
+   * Use it when check cannot be in xml
+   */
+   function check_add($name, $def){
+      $this->checks->add_check($name, $def);
+   }
 
   function sql_infos(){
     parent::sql_infos();

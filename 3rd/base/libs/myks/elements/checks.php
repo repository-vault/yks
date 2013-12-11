@@ -27,6 +27,9 @@ class myks_checks {
 
     $this->parent->comment_xml->checks = new SimpleXMLElement("<checks/>");
 
+  }
+
+  private function generate_sign_xml(){
     foreach($this->xml_def as $check_name => $check_def)  {
         $sign = hash_hmac( 'md5', $check_def['check_clause'], $this->sql_def[$check_name] ['check_clause']);
         $this->xml_def[$check_name]['check_sign'] = $sign;
@@ -36,7 +39,13 @@ class myks_checks {
   }
 
   function xml_infos(){
-    $this->xml_def = array(); $i=0;
+    if(empty($this->xml_def)){
+      $this->xml_def = array();
+      $i=0;
+    }
+    else{
+      $i = count($this->xml_def);
+    }
 
     foreach($this->checks_xml as $check_xml){ $i++;
         $check_name = pick((string)$check_xml['name'], "{$this->parent->name['name']}_chk_$i");
@@ -60,7 +69,15 @@ class myks_checks {
     }
   }
 
+  function add_check($name, $def){
+    $this->xml_def[$name] = array(
+      'check_name'   => $name,
+      'check_clause' => $def,
+    );
+  }
+
   function modified(){
+    $this->generate_sign_xml();
     $sql = array_extract($this->sql_def, "check_sign");
     $xml = array_extract($this->xml_def, "check_sign");
     return $sql != $xml;
