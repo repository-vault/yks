@@ -17,7 +17,7 @@ class myks_parser {
   public static function init(){
 
     $paths = array();
-    //list paths
+    //list paths 
     foreach(yks::$get->config->myks->myks_paths->iterate("path") as $path)
         $paths[] = exyks_paths::resolve($path['path']);
 
