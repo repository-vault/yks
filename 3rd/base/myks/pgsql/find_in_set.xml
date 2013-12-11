@@ -6,9 +6,11 @@
     <param name="list" type="string"/>
     <param name="separator" default="','::character varying" type="string"/>
     <def>
+      <![CDATA[
       BEGIN
-        return need = ANY (string_to_array(list, separator));
+        return string_to_array(need, separator) <@ (string_to_array(list, separator));
       END;
+      ]]>
     </def>
   </procedure>
   <procedure name="find_in_set" type="boolean" volatility="IMMUTABLE">
@@ -16,9 +18,11 @@
     <param name="list" type="string"/>
     <param name="separator" default="','::character varying" type="string"/>
     <def>
+      <![CDATA[
       BEGIN
-        return need = ANY (string_to_array(list, separator));
+        return need::text = ANY (string_to_array(list, separator));
       END;
+      ]]>
     </def>
   </procedure>
 </myks>
