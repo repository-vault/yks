@@ -72,6 +72,7 @@
           <xsl:copy-of select="/table[@name=$name]/grant"/>
         </grants>
         <constraints>
+          <xsl:apply-templates select="/table[@name=$name]/fields[@constraint]"/>
           <xsl:copy-of select="/table[@name=$name]/constraints/*"/>
         </constraints>
         <indices>
@@ -111,6 +112,24 @@
         <member column="{$name}"/>
       </xsl:for-each>
     </index>
+  </xsl:template>
+  <xsl:template name="fields_constraint" match="fields[@constraint]">
+    <!-- beware that XSL is proceeded AFTER DTD validation - we must specify IMPLIED attrs -->
+    <constraint type="{@constraint}" defer="best">
+      <xsl:for-each select="field">
+        <xsl:variable name="name">
+          <xsl:choose>
+            <xsl:when test="@name">
+              <xsl:value-of select="@name"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@type"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <member column="{$name}"/>
+      </xsl:for-each>
+    </constraint>
   </xsl:template>
   <xsl:template name="fields_check_alternative" match="fields[@check]">
     <check type="alternative">

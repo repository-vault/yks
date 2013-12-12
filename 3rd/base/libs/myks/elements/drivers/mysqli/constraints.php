@@ -5,5 +5,5 @@
       'UNIQUE'=>"%s_%s_%s",
     );
 
-    public $key_mask=array("PRIMARY"=>"PRIMARY KEY","INDEX"=>"INDEX `%s`","UNIQUE"=>"UNIQUE `%s`");
+    public $key_mask = array("PRIMARY"=>"PRIMARY KEY", "UNIQUE"=>"UNIQUE `%s`");
   }

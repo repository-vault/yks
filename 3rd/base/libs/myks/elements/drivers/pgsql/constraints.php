@@ -1,6 +1,6 @@
 <?php
   class myks_constraints extends myks_constraints_base {
-    public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "INDEX" => "INDEX", "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
+    public $key_mask=array("PRIMARY"=>'PRIMARY KEY',  "UNIQUE"=>'UNIQUE', 'FOREIGN'=>'FOREIGN KEY' );
 
     function sql_infos(){
 
@@ -46,10 +46,12 @@
       $behavior = sql::brute_fetch('constraint_name');
 
       foreach($this->sql_def as $constraint_name=> &$constraint_infos){//!
-        $key=$keys[$constraint_name];
-        $types= array('PRIMARY KEY'=>"PRIMARY",  "INDEX" => "INDEX", "UNIQUE"=>'UNIQUE', 'FOREIGN KEY'=>'FOREIGN' );
+        $key = $keys[$constraint_name];
+        $types= array('PRIMARY KEY'=>"PRIMARY",  "UNIQUE"=>'UNIQUE', 'FOREIGN KEY'=>'FOREIGN' );
 
         $constraint_infos['type']=$type=$types[$key['constraint_type']];
+        $constraint_infos['defer']  = bool($key['is_deferrable']) && bool($key['is_deferrable']) ? 'defer':'strict';
+
         if($type=="FOREIGN") {
 
             list($usage_schema, $usage_fields) = each($usages[$constraint_name]);
@@ -58,7 +60,7 @@
             $constraint_infos['update'] = self::$fk_actions_in[$behavior[$constraint_name]['update_rule']];
             $constraint_infos['delete'] = self::$fk_actions_in[$behavior[$constraint_name]['delete_rule']];
             $constraint_infos['refs']   = self::build_ref($usage_schema, $usage_table, $usage_fields);
-            $constraint_infos['defer']  = bool($key['is_deferrable'])&&bool($key['is_deferrable'])?'defer':'strict';
+
         }
     }
   }

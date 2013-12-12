@@ -64,7 +64,7 @@ class sql_stmt_parser {
       if($out['null']) $field['Null'] = (int)($out['null']=="NULL");
 
       if($out['key']) {
-          $types=array('PRIMARY KEY'=>'PRIMARY','FOREIGN KEY'=>'FOREIGN','UNIQUE'=>'UNIQUE','INDEX'=>'INDEX');
+          $types=array('PRIMARY KEY'=>'PRIMARY','FOREIGN KEY'=>'FOREIGN','UNIQUE'=>'UNIQUE');
           $type = $types[$out['key']];
           if(!$field['Field']) {//on est sur un couple de clef uniquement
             $members = self::parse_strings($str, $i);

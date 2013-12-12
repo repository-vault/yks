@@ -43,7 +43,7 @@ abstract class mykse_base  {
         && ($field_xml['type']==$this->field_def['Field']
             || $field_xml['key'] == "primary")
         && $field_xml['key'] != "unique"  ){
-            $this->table->key_add('primary',$this->field_def["Field"]);
+            $this->table->key_add('primary', $this->field_def["Field"]);
             $this->field_def['Null'] = false;
             $this->birth = true;
       } else $this->fk($field_xml, $birth_root);
