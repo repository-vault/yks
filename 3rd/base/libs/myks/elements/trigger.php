@@ -17,8 +17,6 @@ class myks_trigger extends myks_installer {
 * condition_timing BEFORE/AFTER
 */
 
-  private $sql_def; 
-  private $xml_def;
   private $table_ref;
 
   private $procedure;

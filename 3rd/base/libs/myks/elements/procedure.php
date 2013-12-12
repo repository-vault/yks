@@ -24,7 +24,7 @@ abstract class procedure_base extends myks_installer  {
     $same = $this->xml_def == $this->sql_def;
    if($same) return !$same;
 
-    //print_r($this->xml_def);print_r($this->sql_def);die;
+    //print_r($this->xml_def);print_r($this->sql_def);//die;
     //print_r(array_show_diff($this->xml_def, $this->sql_def,"xml","sql"));die;
 
     return !$same;
