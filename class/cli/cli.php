@@ -314,7 +314,7 @@ class cli {
         if(in_array($name, $longs ))
           $options[$name][] = false;
         elseif(in_array("$name:", $longs ))
-          $options[$name][] = reset(each($argv));
+          $options[$name][] = first(each($argv));
         continue;
       }
 
@@ -324,7 +324,7 @@ class cli {
         if(in_array($name, $shorts))
           $options[$name][] = false;
         elseif(in_array("$name:", $shorts))
-          list($options[$name][], $chunk) =  array($chunk ? $chunk : reset(each($argv)), null);
+          list($options[$name][], $chunk) =  array($chunk ? $chunk : first(each($argv)), null);
       } while($chunk);
 
     }

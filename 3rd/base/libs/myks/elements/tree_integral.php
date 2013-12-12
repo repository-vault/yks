@@ -24,7 +24,7 @@ class tree_integral extends table_abstract {
     $type   = $fields[$key];
 
     unset($fields[$key]); //drop main field
-    $parent = reset(array_keys($fields, $type));//parent is the second field of same type
+    $parent = first(array_keys($fields, $type));//parent is the second field of same type
     unset($fields[$parent]); //drop parent field
     $depth = key($fields); //last field is depth information
 

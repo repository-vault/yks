@@ -65,7 +65,7 @@
 
       sql::select($this->geochecker['origin_table'], array($this->geochecker['origin_field_id'] => $this->origin_id), join(', ', $new_cols));
 
-      return reset(sql::brute_fetch());
+      return first(sql::brute_fetch());
     }
 
     /**

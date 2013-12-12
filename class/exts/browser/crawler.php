@@ -18,7 +18,7 @@ class crawler extends window {
   }
 
   function walk(){
-    return reset(array_keys($this->urls, false));
+    return first(array_keys($this->urls, false));
   }
 
   function skip($url){

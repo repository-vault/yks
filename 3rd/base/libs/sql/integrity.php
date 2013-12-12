@@ -13,7 +13,7 @@ class sql_integrity {
   //permet de formater un tuple de recherche pour une destruction des elements 
   // e.g : user_tree : (user_id, parent_id)
   private static function tuplize($v, $s="'"){
-    return count($v)>1 ? "($s".join("$s, $s",$v)."$s)" : "$s".reset($v)."$s";
+    return count($v)>1 ? "($s".join("$s, $s",$v)."$s)" : "$s".first($v)."$s";
   }
 
   public static function check(){

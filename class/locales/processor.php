@@ -28,7 +28,7 @@ class locales_processor {
     if(!$birth_table_name = (string) $type_xml['birth']) return;
     $birth_fields = fields( yks::$get->tables_xml->$birth_table_name);
     //look for a "_name" field in birth table
-    $birth_name = $birth_name?$birth_name:reset(preg_split('#_id|_key$#', $myks_type))."_name";
+    $birth_name = $birth_name ? $birth_name : first(preg_split('#_id|_key$#', $myks_type))."_name";
     if(!$birth_fields[$birth_name]) return; // no explicit field founded, abort
     self::register_std_renderer($myks_type, $birth_table_name, $birth_name, $birth_key);
     return true;

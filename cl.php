@@ -34,7 +34,7 @@ $helpers = array(
 $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
 
 if(is_file($entry)) {
-  $first_class = reset(php::file_get_php_classes($entry));
+  $first_class = first(php::file_get_php_classes($entry));
   classes::register_class_path($first_class, $entry);
   $entry = $first_class;
 }

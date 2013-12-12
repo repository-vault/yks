@@ -14,7 +14,7 @@ if(!function_exists('preg_reduce')) {
 
 if(!function_exists('pick')) {
     //return the first non empty value
-    function pick(){ $args = func_get_args(); return reset(array_filter($args)); }
+    function pick(){ $args = func_get_args(); return first(array_filter($args)); }
 }
 
 if(!function_exists('innerHTML')) {

@@ -28,7 +28,7 @@ class table extends table_base {
             'Null'=>($column['Null']=="YES"),
         );
         if($data['Default']==='' || ($data['Type']=='text' && !$data['Null']) ){
-            $type = reset(explode('(',$data['Type']));
+            $type = first(explode('(',$data['Type']));
             if($type=="enum" || $type=="set") $data['Default']=null;
             else  $data['Default']="''";
         }

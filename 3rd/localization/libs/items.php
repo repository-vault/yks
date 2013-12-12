@@ -9,7 +9,7 @@ class locale_item extends _sql_base {
   protected $sql_key = "item_key";
  
   static function instanciate($item_key) {
-    return reset(self::from_ids($item_key));
+    return first(self::from_ids($item_key));
   }
 
   static function from_ids($ids){

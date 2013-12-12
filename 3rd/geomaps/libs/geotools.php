@@ -102,7 +102,7 @@ class geotools {
     if($json['status'] != 'OK')
       throw new Exception(self::NO_RESULT);
 
-    $results = reset($json['results']);
+    $results = first($json['results']);
 
     $lat = (float)$results['geometry']['location']['lat'];
     $lon = (float)$results['geometry']['location']['lng'];

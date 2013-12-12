@@ -24,7 +24,7 @@ class talk extends _sql_base {
     $this->order_by = $cols;
   }
 
-  static function instanciate($talk_id){  return reset(self::from_ids(array($talk_id))); }
+  static function instanciate($talk_id){  return first(self::from_ids(array($talk_id))); }
   static function from_ids($ids) {
     $ret = self::from_where(array(self::sql_key=>$ids));
     return array_sort($ret, $ids);

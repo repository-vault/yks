@@ -84,7 +84,7 @@ class WordTemplateTable {
   */
   protected function detectRow(){
     /** @var $node DOMElement */
-    $node = reset($this->field_list);
+    $node = first($this->field_list);
     $node = $node->node->parentNode;
     while($node->nodeName != 'w:tr'){
       $node = $node->parentNode;

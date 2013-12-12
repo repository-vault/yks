@@ -64,7 +64,7 @@ class auth_ldap_soap {
     $success       = false;    
     $user_mail     = sql::value("ks_users_profile", compact('user_id'), 'user_mail');
     $exploded_mail = explode('@', $user_mail); //only variables can be passed by reference
-    $user_login    = reset($exploded_mail); //!
+    $user_login    = first($exploded_mail); //!
     $endpoint_name = sql::value(self::sql_table, compact('user_id'), 'auth_ldap_soap_endpoint_name');
     $endpoint_url  = self::$endpoints_list[$endpoint_name];
     

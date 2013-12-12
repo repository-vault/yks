@@ -78,7 +78,7 @@ class http_proxy {
 
 
   private static function getipbyhostname($hostname){
-    $infos = reset(dns_get_record ($hostname, DNS_A));
+    $infos = first(dns_get_record ($hostname, DNS_A));
     return $infos['ip'];
   }
 

@@ -28,6 +28,6 @@
       $where =  array(
         self::sql_key => $id
       );
-      return reset(self::from_where($where));
+      return first(self::from_where($where));
     }
   }

@@ -30,7 +30,7 @@ class user extends _user {
     $table_keys = fields($table_xml,'primary'); 
     $row_unique = (count($table_keys)==1 && current($table_keys)=='user_id');
     unset($table_keys['user_id']);
-    $table_key = count($table_keys)==1?reset($table_keys):false;
+    $table_key = count($table_keys) == 1 ? first($table_keys) : false;
          //on indexe les resultat sur la deuxieme clée(si unique, hors user_id de join)
     self::$tables_registration[$key] = compact('table_name', 'table_key', 'row_unique');
   }

@@ -70,7 +70,7 @@ class auth {
     $diff = array_intersect((array) sess::$sess['users_tree'], $asked_tree);
     $users_tree = $skip_auth ? $asked_tree : self::get_tree($diff, $asked_tree);
 
-    if($users_tree === false || reset($users_tree) != exyks::retrieve('USERS_ROOT'))
+    if($users_tree === false || first($users_tree) != exyks::retrieve('USERS_ROOT'))
        return false;
 
     return compact('user_id', 'users_tree');

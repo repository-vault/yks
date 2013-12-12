@@ -100,7 +100,7 @@ abstract class rule_base extends myks_base {
     if($this->sql_def) 
       return;
 
-    $rule = reset(self::raw_sql_search(
+    $rule = first(self::raw_sql_search(
         $this->parent->name,
         $this->parent_type,
         $this->rule_name['name']

@@ -42,7 +42,7 @@ class dsp{
     $birth_xml = yks::$get->tables_xml->$birth_table_name;
     $birth_fields = fields($birth_xml);
       //look for a "_name" field in birth table
-    $birth_name = reset(preg_split('#_id|_key$#', $field_type))."_name";
+    $birth_name = first(preg_split('#_id|_key$#', $field_type))."_name";
     $nbs = sql::lines($birth_table_name);
 
     if($birth_fields[$birth_name]) { //!!We have a birth field description

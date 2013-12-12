@@ -13,7 +13,7 @@ class data {
   static function fetch($flag)  { return storage::fetch(FLAG_APC."_$flag"); }
   static function register($flag, $callback, $file=false){
     self::$callbacks[$flag] = $callback;
-    if($file) classes::register_class_path(reset($callback), $file);
+    if($file) classes::register_class_path(first($callback), $file);
   }
   static function load($flag,$zone=''){
     $tmp = self::fetch(trim("{$flag}_{$zone}",'_'));

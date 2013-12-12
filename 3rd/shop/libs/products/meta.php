@@ -13,7 +13,7 @@ class products_meta extends _sql_base {
   
   static function instanciate($meta_product_id) {
     $meta_products = self::from_where(array(self::sql_key => $meta_product_id));
-    return reset($meta_products);
+    return first($meta_products);
   } 
   
   static function from_where($where){

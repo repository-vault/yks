@@ -11,7 +11,7 @@ class products extends _sql_base {
 
   static function instanciate($product_id) {
     $products = self::from_ids(array($product_id), false);
-    return reset($products);
+    return first($products);
   }
 
   static function from_ids($ids, $related_products=true) {
@@ -176,7 +176,7 @@ class products extends _sql_base {
 
     if($product_start_id=(int)$product_infos['product_id'])
     $products_infos=array($product_start_id=>$product_infos);
-    $first = reset($product_infos);
+    $first = first($product_infos);
 
     if(!$item['product_id']){ // si $product_infos['product_id'] existe deja.. rien à faire
       $products_infos = self::get_tree_definition($product_infos);

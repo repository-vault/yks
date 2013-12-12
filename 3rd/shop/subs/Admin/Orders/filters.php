@@ -28,7 +28,7 @@ if($action=="filters_set")try{
     $order_by = $_POST['order_by'];
     $current_liste->order_by($order_by,"DESC");
 
-    $filter_field = reset($_POST['filter_by']); //uniquement le 1er pr l'instant ( peu être dyn.)
+    $filter_field = first($_POST['filter_by']); //uniquement le 1er pr l'instant ( peu être dyn.)
     $filter_value = $_POST[$filter_field];
 
     $filters=array( $filter_field => $filter_value );

@@ -258,7 +258,7 @@ class cms_nodes_manager {
   static function get_leaf(cms_node $node){
     $children = $node->children;
     if(!$children) return $node;
-    return reset($children)->leaf;
+    return first($children)->leaf;
   }
 
   static function deliver(cms_node $node, $recursive_up = true, $inner_contents = ''){

@@ -425,7 +425,7 @@ class sql {
 
   static function value() {
     $arg = func_get_args();
-    return reset(call_user_func_array(array(__CLASS__, 'row'), $arg));
+    return first(call_user_func_array(array(__CLASS__, 'row'), $arg));
   }
 
   static function rows($lnk = false) {

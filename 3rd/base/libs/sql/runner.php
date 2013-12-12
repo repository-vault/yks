@@ -403,7 +403,7 @@ class sql_runner {
       $table_columns = $sql_columns;
     } else {
 
-      $table_xml = reset($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
+      $table_xml = first($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
       if(!$table_xml) {
           //last chance for unmapped tables
         if($sql_columns)

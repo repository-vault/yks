@@ -41,7 +41,7 @@ class worker_server extends _sql_base {
   }
 
   public static function instanciate($worker_id){
-    return reset(self::from_where(array(self::sql_key => $worker_id)));
+    return first(self::from_where(array(self::sql_key => $worker_id)));
   }
 
   //Check this is the correct ip address for the worker

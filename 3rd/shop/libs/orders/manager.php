@@ -13,7 +13,7 @@ class orders_manager extends _sql_base {
         if(!$profile_key) continue;
         list($table_name, $field_name, $profile_key, $additive_options)
             = preg_list('#^(.*?)\[(.*?)\]\[(.*?)\](?:\[(.*?)\])?$#', $profile_key);
-        $key_name = reset(fields(yks::$get->tables_xml->$table_name,"primary"));
+        $key_name = first(fields(yks::$get->tables_xml->$table_name,"primary"));
         $verif_criteria  = array($key_name =>$order->$field_name);
 
         if($additive_options) {

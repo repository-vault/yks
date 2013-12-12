@@ -8,7 +8,7 @@ $nodes = cms_node::from_where($verif_root);
 $node_types = array_extract($nodes, 'node_type', true);
 
 if(!$node_type)
-    $node_type = reset($node_types);
+    $node_type = first($node_types);
 
 $nodes_list = array();
 if($node_type) {

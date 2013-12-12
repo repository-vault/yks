@@ -146,7 +146,7 @@ abstract class _user extends _sql_base {
   function __sql_where($sql_table = false){
     $key = $this->sql_key;
     if($sql_table && $table_xml  = yks::$get->tables_xml->$sql_table)
-        $key = reset(array_keys(fields($table_xml), _user::sql_key));
+        $key = first(array_keys(fields($table_xml), _user::sql_key));
     return array($key => $this->user_id);
   }
 

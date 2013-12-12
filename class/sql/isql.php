@@ -111,7 +111,7 @@ abstract class isql {
   }
 
   static function value($table, $where = sql::true, $cols='*', $extras=''){
-    return reset(sql::row($table, $where,  $cols, $extras));
+    return first(sql::row($table, $where,  $cols, $extras));
   }
 
   static function lines($table){
@@ -119,7 +119,7 @@ abstract class isql {
   }
 
   static function qrow($query)   { sql::query($query); return sql::fetch(); }
-  static function qvalue($query) { return reset(sql::qrow($query)); }
+  static function qvalue($query) { return first(sql::qrow($query)); }
 
   static function replace($table, $vals, $where=array(), $auto_indx=false){
     $data = sql::row($table, $where);

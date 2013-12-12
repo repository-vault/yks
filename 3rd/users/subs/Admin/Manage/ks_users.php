@@ -3,7 +3,7 @@ $module_locale = false;
 foreach(exyks::get_modules_list() as $modules){
   if($modules->key == 'localization'){
     $module_locale = $modules;
-    $locale_path = reset(array_keys($module_locale->virtual_paths));
+    $locale_path = first(array_keys($module_locale->virtual_paths));
     break;
   }
 }

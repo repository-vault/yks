@@ -52,7 +52,7 @@ class yks_list {
     if(!is_array($table_name))
         $table_name = array($table_name);
     $this->tables_name = $table_name;
-    $table_name = reset($this->tables_name);
+    $table_name = first($this->tables_name);
 
         //retourne le nom de la clée primaire de la table
         //on ne s'interesse qu'à la premiere table ici

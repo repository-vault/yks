@@ -8,7 +8,7 @@ $classes0 = get_declared_classes();
 include $include_path;
 $classes1 = get_declared_classes();
 
-$first_class = reset(array_diff($classes1, $classes0));
+$first_class = first(array_diff($classes1, $classes0));
 if(!$first_class)
   exit("No valid class");
 

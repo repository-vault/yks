@@ -33,7 +33,7 @@ function array_extract($array, $col, $clean=false){
     //return the first non empty value, or the last one
 function pick(){
   $args = func_get_args();
-  $val  = reset(array_filter($args));
+  $val  = first(array_filter($args));
   return $val ? $val : end($args);
 }
 
@@ -52,8 +52,8 @@ function pick_in(){
     $args = func_get_args();
 
     $possibles = array_pop($args);
-    $value = reset(array_filter($args));
-    return in_array($value, $possibles) ? $value : reset($possibles);
+    $value = first(array_filter($args));
+    return in_array($value, $possibles) ? $value : first($possibles);
 }
 
 
@@ -151,7 +151,7 @@ function preg_clean($filter, $str, $rem = true){
 }
 
 function preg_list($mask, $str){ return preg_match($mask, $str, $out)?array_slice($out,1):array(); }
-function preg_reduce($mask, $str){ return reset(preg_list($mask, $str)); }
+function preg_reduce($mask, $str){ return first(preg_list($mask, $str)); }
 
 
 

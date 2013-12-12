@@ -30,7 +30,7 @@ abstract class cms_node extends _sql_base {
         $this->data = $from->data;
     } else {
         if(is_numeric($from)) {
-            $data = reset(cms_nodes_manager::build_nodes(array('node_id' => $from)));
+            $data = first(cms_nodes_manager::build_nodes(array('node_id' => $from)));
             parent::__construct($data);
         } else parent::__construct($from);
 
@@ -52,7 +52,7 @@ abstract class cms_node extends _sql_base {
 
 
   public static function instanciate($value){
-    $data = reset(cms_nodes_manager::build_nodes(array('node_id' => $value)));
+    $data = first(cms_nodes_manager::build_nodes(array('node_id' => $value)));
     if(!$data)
         throw new Exception("Invalid instanciate $from");
 

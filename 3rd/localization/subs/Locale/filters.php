@@ -65,7 +65,7 @@ if($action=="apply_filters") try {
     $lang_str_list  = (array)$_POST['lang_str'];
 
     if(!$domain_id_list && count($locale_domains_list) == 1) {
-      $_locale_domain = reset($locale_domains_list);
+      $_locale_domain = first($locale_domains_list);
       $domain_id_list = array($_locale_domain['locale_domain_id']);
     }
     

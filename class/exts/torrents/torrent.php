@@ -54,7 +54,7 @@ class torrent implements ArrayAccess {
     if(ends_with($announce['host'], $domain) || $this['announce'] == $domain) {
       if(!$this['announce-list'])
         throw new Exception("No tracker to fallback");
-       $this->struct['announce'] = reset(reset($this['announce-list']));
+       $this->struct['announce'] = first(first($this['announce-list']));
     }
 
     $this->trackers_cleanup();

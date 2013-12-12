@@ -66,7 +66,7 @@ class query  extends _sql_base {
 
 
     if(!$this->data_headers && $this->data_results)
-      $this->data_headers =  array_combine($tmp = array_keys(reset($this->data_results)), $tmp);
+      $this->data_headers =  array_combine($tmp = array_keys(first($this->data_results)), $tmp);
   }
 
 

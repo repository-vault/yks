@@ -36,7 +36,7 @@ class xml {
     libxml_clear_errors(); libxml_use_internal_errors();
     $res = simplexml_import_dom($doc);
     if($first_element)
-        return reset($res->xpath("//$first_element"));
+        return first($res->xpath("//$first_element"));
     else return $res;
   }
 
