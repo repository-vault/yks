@@ -7,7 +7,6 @@
 class mykse extends mykse_base {
 
   function int_node(){
-
     $sizes=array(
         'mini'    => 'smallint',
         'small'   => 'smallint',
@@ -23,12 +22,12 @@ class mykse extends mykse_base {
         $this->field_def["Default"] = "auto_increment('$field_name','{$table_name['name']}')";
     }
 
+
     $this->field_def["Type"] = $type;
   }
 
 
   function default_value($type){
-
     if( $this->field_def['Default']==null && isset($this->mykse_xml['default'])){
         $this->field_def['Default']=(string)$this->mykse_xml['default'];
         if($this->field_def['Default']=="unix_timestamp()"){
@@ -53,12 +52,16 @@ class mykse extends mykse_base {
 
 
   function enum_node(){
-        $set=((string)$this->mykse_xml['set'])=='set';
-        $length=0;foreach(vals($this->mykse_xml) as $val)$length=max($length,strlen($val));
-    $type=$set?'set':'enum';
-        if($set)$length=255;
+    $set=((string)$this->mykse_xml['set'])=='set';
+    if(!$set){
+      $length=0;
+      foreach(vals($this->mykse_xml) as $val) {
+        $length=max($length,strlen($val));
+      }
+    }else{
+      $length = 255;
+    }
     $this->field_def["Type"] = "varchar($length)";
-
   }
 
 

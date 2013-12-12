@@ -256,7 +256,7 @@ class sql_runner {
     $this->scan_views("zks", $run_queries);
     $this->scan_views("zks", $run_queries);
   }
-  
+
   /**
   * @alias t * true
   */
@@ -269,6 +269,7 @@ class sql_runner {
       if($this->pattern_exlude_filter($only_stuff, $name)) continue;
 
       $res = myks_gen::table_check($table_xml);
+
       if(!$res) {
         rbx::ok("-- Nothing to do in $name");
         continue;

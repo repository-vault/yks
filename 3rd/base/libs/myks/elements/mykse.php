@@ -5,7 +5,7 @@
 	this class export the basic field SQL definition from a myks_xml structure
   */
 
-abstract class mykse_base  {
+abstract class mykse_base {
 
   public $field_def = array();
   protected $table;
@@ -19,7 +19,7 @@ abstract class mykse_base  {
   function  __construct($field_xml, $table = null){
 
     $this->table = $table;
-    $this->type  = $field_xml['type'];
+    $this->type  = (string)$field_xml['type'];
     $this->field_def = array(
         'Field'   => (string) $field_xml['name'],
         'Extra'   => '',
@@ -49,14 +49,10 @@ abstract class mykse_base  {
       } else $this->fk($field_xml, $birth_root);
     }
 
-
-
     $this->get_def();
-
 
     if(is_null($this->field_def['Null']))
         $this->field_def['Null'] = false;
-
 
     $birth_deep = sql::resolve($this->birth_table);
     if($birth_deep
@@ -67,8 +63,13 @@ abstract class mykse_base  {
     if($field_xml['key'] && $this->table )
         $this->table->key_add("{$field_xml['key']}","{$this->field_def['Field']}");
 
+    if($this->base_type == "enum" && $this->table){
+      $table_name = $this->table->get_name();
+      $name = sprintf('chk_%s_%s_enum', $table_name['name'], $this->field_def['Field']);
+      $def  = sprintf("find_in_set(\"%s\", '%s')", $this->field_def['Field'], join(',', vals($this->mykse_xml)));
+      $this->table->check_add($name, $def);
+    }
   }
-
 
   private function fk($field_xml, $birth){
      //rbx::ok("FK to ".$field_xml->asXML()." ".json_encode($birth));
@@ -126,7 +127,6 @@ abstract class mykse_base  {
 
     return $this->field_def;
   }
-
 
   function bool_node(){
     $this->field_def["Type"]="boolean";

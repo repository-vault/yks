@@ -36,7 +36,13 @@ class myks_checks {
   }
 
   function xml_infos(){
-    $this->xml_def = array(); $i=0;
+    if(empty($this->xml_def)){
+      $this->xml_def = array();
+      $i=0;
+    }
+    else{
+      $i = count($this->xml_def);
+    }
 
     foreach($this->checks_xml as $check_xml){ $i++;
         $check_name = pick((string)$check_xml['name'], "{$this->parent->name['name']}_chk_$i");
@@ -58,6 +64,13 @@ class myks_checks {
 
         $this->xml_def[$check_name] = $data;
     }
+  }
+
+  function add_check($name, $def){
+    $this->xml_def[$name] = array(
+      'check_name'   => $name,
+      'check_clause' => $def,
+    );
   }
 
   function modified(){

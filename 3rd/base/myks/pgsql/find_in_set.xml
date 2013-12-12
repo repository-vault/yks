@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
-  <procedure name="find_in_set" type="int" volatility="IMMUTABLE">
+  <procedure name="find_in_set" type="bool" volatility="IMMUTABLE">
     <param name="need" type="string"/>
     <param name="list" type="string"/>
-    <def>
-BEGIN
-return  position(','||need||',' in ','||list||',');
-END;
-</def>
+    <def><![CDATA[
+      BEGIN
+        return if(need = '', false, string_to_array(need, ',') <@ (string_to_array(list, ',')));
+      END;
+      ]]></def>
   </procedure>
-  <procedure name="find_in_set" type="int" volatility="IMMUTABLE">
+  <procedure name="find_in_set" type="bool" volatility="IMMUTABLE">
     <param name="need" type="int"/>
     <param name="list" type="string"/>
-    <def>
-BEGIN
-return  position(','||need||',' in ','||list||',');
-END;
-</def>
+    <def><![CDATA[
+      BEGIN
+        return need::text = ANY (string_to_array(list, ','));
+      END;
+      ]]></def>
   </procedure>
 </myks>
