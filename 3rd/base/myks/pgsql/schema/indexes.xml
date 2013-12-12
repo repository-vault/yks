@@ -2,6 +2,10 @@
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
   <view name="zks_information_schema_indexes">
+<!-- 
+Attention ! Some constraints (unique) may create an auto generated index, we dont want to manage them !
+-->
+
     <def><![CDATA[
 
 SELECT
@@ -20,8 +24,10 @@ FROM pg_index i
     JOIN pg_class ct ON i.indrelid = ct.oid
     LEFT JOIN pg_user u ON u.usesysid = ci.relowner
     LEFT JOIN pg_namespace nt ON nt.oid = ci.relnamespace
-WHERE ci.relkind IN ('i','')
-     AND nt.nspname NOT IN ('pg_catalog', 'pg_toast')
+WHERE TRUE
+  AND ci.relkind IN ('i','')
+  AND nt.nspname NOT IN ('pg_catalog', 'pg_toast')
+  AND (nt.nspname, ct.relname , ci.relname ) NOT IN (SELECT table_schema, table_name, constraint_name FROM information_schema.table_constraints)
 ORDER BY 1,2;
 
 ]]></def>
