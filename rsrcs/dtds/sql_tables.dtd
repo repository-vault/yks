@@ -20,6 +20,7 @@
 <!ATTLIST fields
   check  (alternative)  #IMPLIED
   index  (unique)  #IMPLIED
+  constraint  (unique)  #IMPLIED
 >
 
 <!ELEMENT indices (index+)>
@@ -45,7 +46,7 @@
   fk_table CDATA #IMPLIED
   update %fk_actions; 'no_action'
   delete %fk_actions; 'no_action'
-  defer (defer|strict) 'defer'
+  defer (defer|strict|best) 'best'
 >
 
 
@@ -60,7 +61,7 @@
   %null;
   update %fk_actions; 'cascade'
   delete %fk_actions; 'no_action'
-  defer (defer|strict) 'defer'
+  defer (defer|strict|best) 'best'
 >
 
 <!-- abstract tables  -->
