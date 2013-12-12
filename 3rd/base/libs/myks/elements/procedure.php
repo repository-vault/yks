@@ -150,8 +150,9 @@ abstract class procedure_base extends myks_installer  {
         '*', 'ORDER BY ordinal_position');
     while($l = sql::fetch()){
         $this->sql_def['params'][]=array(
-            'type' => $l['data_type'],
-            'name' => $l['parameter_name'],
+            'type'     => $l['data_type'],
+            'name'     => $l['parameter_name'],
+            'default'  => null,
         );
     }
   }
