@@ -41,7 +41,7 @@ abstract class myks_constraints_base {
     $TYPE=strtoupper($type);
     if(!isset($this->xml_def[$key_name]))
       $this->xml_def[$key_name] = array('members' => array());
-    
+
     $this->xml_def[$key_name] = array_merge($this->xml_def[$key_name], $refs);
     $this->xml_def[$key_name]['type'] = $TYPE;
     $this->xml_def[$key_name]['members'] = array_merge($this->xml_def[$key_name]['members'], $members);
@@ -62,6 +62,7 @@ abstract class myks_constraints_base {
         $type  = strtoupper((string)$constraint_xml['type']);
 
         $target_members = array();
+        $members = array();
         foreach($constraint_xml->member as $member) {
           $members[(string)$member['column']] = (string)$member['column'];
           $target_members[(string)$member['column']] = (string)$member['target'];;
@@ -73,7 +74,6 @@ abstract class myks_constraints_base {
         }
 
         $fk_name = sql::resolve((string)$constraint_xml['fk_table']);
-
         $refs = array(
           "refs"     => self::build_ref($fk_name['schema'], $fk_name['name'], $target_members),
           "update"   => (string)$constraint_xml['update'],
@@ -96,7 +96,6 @@ abstract class myks_constraints_base {
   }
 
   function alter_def(){
-
     //print_r(array_show_diff($this->sql_def, $this->xml_def,"sql","xml"));die;
 
     $ec = '"';
@@ -117,7 +116,12 @@ abstract class myks_constraints_base {
         $members=' ("'.join('","',$def['members']).'")';
         $type=strtoupper($def['type']);
         $add = "ADD CONSTRAINT $key ".$this->key_mask[$type]." $members ";
-        if($type=="INDEX") { $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;}
+        if($type=="INDEX") {
+          $todo[]="CREATE INDEX $key ON {$this->table_name['safe']} $members";continue;
+        }
+        elseif($type=="UNIQUE") {
+            if($def['defer']=='defer') $add.=" DEFERRABLE INITIALLY DEFERRED";
+        }
         elseif($type=="FOREIGN"){
             $add.=" REFERENCES ".self::output_ref($def['refs'])." ";
             if($def['delete']) $add.=" ON DELETE ".self::$fk_actions_out[$def['delete']];
