@@ -123,7 +123,8 @@ abstract class table_base  extends myks_installer {
   }
 
   public function save_comment(){
-    if($this->comment_raw == $this->comment_new) return; //ras
+    if($this->comment_raw == $this->comment_new)
+      return array(); //ras
     $comment_sql = sprintf("COMMENT ON %s %s IS %s",
             $this->sql_type,
             $this->table_name['safe'],

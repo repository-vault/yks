@@ -23,7 +23,8 @@ class myks_checks {
     $this->sql_def = sql::brute_fetch("check_name");
 
     foreach($this->parent->comment_xml->xpath("checks/check") as $check)
-        $this->sql_def[(string)$check['name']]['check_sign'] = (string)$check['sign'];
+        if(isset($this->sql_def[(string)$check['name']]))
+          $this->sql_def[(string)$check['name']]['check_sign'] = (string)$check['sign'];
 
     $this->parent->comment_xml->checks = new SimpleXMLElement("<checks/>");
 
@@ -76,6 +77,7 @@ class myks_checks {
   function modified(){
     $sql = array_extract($this->sql_def, "check_sign");
     $xml = array_extract($this->xml_def, "check_sign");
+    //print_r(compact('sql', 'xml'));
     return $sql != $xml;
     return $this->sql_def != $this->xml_def;
   }
