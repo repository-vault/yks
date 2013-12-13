@@ -102,7 +102,7 @@ abstract class table_base  extends myks_installer {
       FROM
         pg_class AS c
         LEFT JOIN pg_namespace AS n ON n.oid = c.relnamespace
-        LEFT JOIN pg_description AS d ON c.relfilenode = d.objoid
+        LEFT JOIN pg_description AS d ON c.oid = d.objoid
       $where;
     ";
     $this->comment_raw = sql::qvalue($query, 'full_description');
