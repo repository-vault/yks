@@ -59,6 +59,7 @@ class sql {
 
     $query = self::unfix($query);
         $start_time = microtime(true);
+
     self::$result = pg_query($serv, $query);
         $duration = microtime(true) - $start_time;
         $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
@@ -458,7 +459,9 @@ class sql {
       return $str;
     }
 
-    return strtr(addslashes($str), array('`'=>'&#96;'));
+    $lnk = self::$link;
+    $serv = isset(self::$lnks[$lnk]) ? self::$lnks[$lnk] : self::connect($lnk);
+    return strtr(pg_escape_string($serv, $str), array('`'=>'&#96;'));
   }
 
   static function set_link($lnk) {
