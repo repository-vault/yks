@@ -15,7 +15,7 @@ abstract class _user extends _sql_base {
 
   //attention, a n'utiliser que si on est certain que la liste contient un arbre complet
   //todo : check
-  static function from_ids($ids, $class ){
+  static function from_ids($ids, $class = 'user'){
     $users = array();
     foreach($ids as $user_id) {
         $user = self::instanciate($user_id, $class);
@@ -175,4 +175,8 @@ abstract class _user extends _sql_base {
     if(isset($this->storage[$key]))
         return $this->storage[$key];
   }
+
+
+    //override sql_base
+  function offsetExists ($key){ return isset($this->computed[$key]) || parent::offsetExists($key);}
 }
