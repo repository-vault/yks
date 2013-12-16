@@ -20,10 +20,10 @@ class crypt {
     $ppk_infos = openssl_pkey_get_details($ppk);
     if(!openssl_pkey_export ($ppk, $contents))
         throw new Exception("Fail to export private key");
-    $private_key = self::cleanupPem($contents);
-    $public_key  = self::cleanupPem($ppk_infos['key']);
-
-    return compact('private_key', 'public_key');
+    $private_key     = self::cleanupPem($contents);
+    $public_key      = self::cleanupPem($ppk_infos['key']);
+    $private_openssh = self::pem2openssh($public_key);
+    return compact('private_key', 'public_key', 'private_openssh');
   }
   
   public static function ExtractPublicFromPrivateKey($private_key){
