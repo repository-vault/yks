@@ -67,6 +67,10 @@ abstract class mykse_base {
       $table_name = $this->table->get_name();
       $name = sprintf('chk_%s_%s_enum', $table_name['name'], $this->field_def['Field']);
       $def  = sprintf("find_in_set(\"%s\", '%s')", $this->field_def['Field'], join(',', vals($this->mykse_xml)));
+
+      if($this->field_def['Null'] = 'null')
+        $def .= sprintf(' OR "%s"= \'\'', $this->field_def['Field']);
+
       $this->table->check_add($name, $def);
     }
   }
