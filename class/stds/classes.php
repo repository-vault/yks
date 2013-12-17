@@ -82,7 +82,7 @@ class classes {
     if($exts) spl_autoload_extensions($exts);
 
     spl_autoload_register(array(__CLASS__, "autoload"));
-    spl_autoload_register(array(__CLASS__, "spl_autoload")); 
+    spl_autoload_register(array(__CLASS__, "spl_autoload"));
 
   }
 
@@ -93,13 +93,13 @@ class classes {
     if(function_exists('trait_exists') && trait_exists($class_name, false))
       return;
 
-    if(!class_exists($class_name))
+    if(!class_exists($class_name) && !interface_exists($class_name))
         throw new Exception("Unable to load $class_name");
 
     if(!self::$_call_init)
         return;
 
-    if(isset(self::$inited_classes[$class_name])) 
+    if(isset(self::$inited_classes[$class_name]))
         return;
 
     if(method_exists($class_name, '__construct_static'))
