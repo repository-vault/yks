@@ -196,12 +196,13 @@ class interactive_runner {
 
       $param_id = 0; $args = array();
       foreach($command_args_mask as $param_name=>$param_infos){
-        $param_in = array_key_exists($param_id++, $command_args) ? $command_args[$param_id] : (
+        $param_in = array_key_exists($param_id, $command_args) ? $command_args[$param_id] : (
                         array_key_exists($param_name, $command_dict) ? $command_dict[$param_name] : (
                           array_key_exists('default', $param_infos) ? $param_infos['default'] : (
                               cli::text_prompt("\${$this->className}[{$param_name}]" ))));
 
         $args[] = $param_in;
+        $param_id++;
       }
 
       return array($command_infos['callback'], $args);

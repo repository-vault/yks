@@ -235,12 +235,32 @@ class sql_runner {
   }
 
 
-  function init_database($run_queries = false){
+  function init_database(){
     self::$blind_mode = true;
 
-    sql::query("CREATE LANGUAGE 'plpgsql' HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
-    $this->scan_procedures("*", $run_queries);
+    sql::select('pg_namespace', sql::true, 'nspname');
+    $schemas = sql::fetch_all();
 
+    //Get main user
+    //TODO: use a grant_all in myks config
+    $main_user = (string)yks::$get->config->sql->links->db_link['user'];
+
+    $conf = yks::$get->config->myks->prefixs;
+    foreach($conf->attributes() as $prefix){
+      //Create schemas
+      $v = (string)$prefix;
+      $schema = substr($v, 0, strpos($v, '.'));
+      if(in_array($schema, $schemas))
+        continue;
+      $sql = "CREATE SCHEMA %s AUTHORIZATION postgres";
+      sql::query(sprintf($sql, $schema));
+
+      //Grant user acces to schema
+      $sql = "GRANT ALL PRIVILEGES ON SCHEMA %s TO %s";
+      sql::query(sprintf($sql, $schema, $main_user));
+    }
+
+    $this->scan_procedures("*", true);
 
     sql::query('CREATE AGGREGATE "concat_comma"(BASETYPE="text",SFUNC="concat_comma",STYPE="text")');
     sql::query('CREATE AGGREGATE first(int)(sfunc=coalesce_first, stype = int)');
@@ -248,14 +268,25 @@ class sql_runner {
     sql::query('CREATE AGGREGATE first(varchar)(sfunc=coalesce_first, stype = varchar)');
     sql::query('CREATE AGGREGATE first(boolean)(sfunc=coalesce_first, stype = boolean )');
 
+    //Don't ask.
+    foreach(range(0,3) as $i)
+      $this->scan_views("zks", true);
 
-
-    $this->scan_views("zks", $run_queries);
-
+    //Loop on views
     self::$blind_mode = false;
-    $this->scan_views("zks", $run_queries);
-    $this->scan_views("zks", $run_queries);
+    foreach(range(0,20) as $i){
+      $nb = 0;
+      $this->scan_views("*", true);
+      $nb += $this->last_execution_count;
+      $this->scan_tables("*", true);
+      $nb += $this->last_execution_count;
+      if(!$nb)
+        break;
+    }
+    if($this->last_execution_count)
+      throw new Exception("Still some queries to init DB");
   }
+
 
   /**
   * @alias t * true
