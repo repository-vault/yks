@@ -121,7 +121,7 @@ class files {
         foreach(self::glob($dir) as $file_path)
             if(!is_dir($file_path)) unlink($file_path);
 
-    self::create_dir($dir);
+    return self::create_dir($dir);
   }
 
     //return all files in a dir, including dotfiles
