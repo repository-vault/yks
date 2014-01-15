@@ -31,7 +31,7 @@ var Browser = $merge({
 		},
 
 		trident: function(){
-			return (!window.ActiveXObject) ? false : ((window.XMLHttpRequest) ? ((document.querySelectorAll) ? 6 : 5) : 4);
+			return (!window.ActiveXObject) ? (document.querySelectorAll ? 7 : false) : ((window.XMLHttpRequest) ? ((document.querySelectorAll) ? 6 : 5) : 4);
 		},
 
 		webkit: function(){
@@ -57,21 +57,20 @@ Browser.Platform[Browser.Platform.name] = true;
 
 var ua = navigator.userAgent.toLowerCase(),
 	platform = navigator.platform.toLowerCase(),
-	UA = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, 'unknown', 0],
-	name =  (UA[1] == 'version') ? UA[3] : UA[1],
-	mode = name && document.documentMode,
-  engine = '';
+	UA = ua.match(/(opera|ie|trident|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|rv:(\d.?)|$)/) || [null, 'unknown', 0],
+	name = (UA[1] == 'version') ? UA[3] : (UA[1] == 'trident' ? 'ie' : UA[1]),
+	mode = (UA[1] == 'ie' || UA[1] == 'trident') && document.documentMode,
+	engine = '';
 
-  if(name =='firefox') engine = 'gecko';
-  if(name =='opera') engine = 'presto';
-  if(name =='chrome' || name =='safari' ) engine = 'webkit';
-  if(name =='ie') engine = 'trident';
+	if(name =='firefox') engine = 'gecko';
+	if(name =='opera') engine = 'presto';
+	if(name =='chrome' || name =='safari' ) engine = 'webkit';
+	if(name =='ie') engine = 'trident';
 
-  var version = Browser.Engines[engine]();
+	var version = Browser.Engines[engine]();
 
-  Browser.Engine = {name: engine, version: version};
-  Browser.Engine[engine] = Browser.Engine[engine + version] = true;
-
+	Browser.Engine = {name: engine, version: version};
+	Browser.Engine[engine] = Browser.Engine[engine + version] = true;
 
 })();
 
@@ -156,13 +155,22 @@ var Document = new Native({
 		$uid(doc);
 		doc.head = doc.getElementsByTagName('head')[0];
 		doc.html = doc.getElementsByTagName('html')[0];
+
 		if (Browser.Engine.trident && Browser.Engine.version <= 4) $try(function(){
 			doc.execCommand("BackgroundImageCache", false, true);
 		});
-		if (Browser.Engine.trident) doc.window.attachEvent('onunload', function(){
-			doc.window.detachEvent('onunload', arguments.callee);
-			doc.head = doc.html = doc.window = null;
-		});
+		if (Browser.Engine.trident){
+			var call = function(){
+				doc.window.detachEvent('onunload', arguments.callee);
+				doc.head = doc.html = doc.window = null;
+			}
+
+			if(Browser.Engine.version > 6){
+				doc.window.addEventListener('onunload', call);
+			}else{
+				doc.window.attachEvent('onunload', call);
+			}
+		}
 		return $extend(doc, Document.Prototype);
 	},
 
