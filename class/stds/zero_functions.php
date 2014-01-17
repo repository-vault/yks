@@ -267,10 +267,16 @@ function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
     return $constants;
 }
 
-function first($array) {
-  if(!is_array($array)) return null;
-  $keys = array_keys($array);
-  return $array[$keys[0]];
+function first($obj) {
+  if(!is_array($obj)) {
+    if(!is_a($obj, 'Traversable'))
+      return null;
+    foreach($obj as $tmp)
+      return $tmp;
+    return null;
+  }
+  $keys = array_keys($obj);
+  return $obj[$keys[0]];
 }
 
 
