@@ -268,8 +268,9 @@ class mykses {
       }
     }
 
+    sort($joins);
     //Link joins
-    $sql = implode("\n UNION \n", $joins);
+    $sql = implode("\n UNION ", $joins);
 
     return $sql;
   }
