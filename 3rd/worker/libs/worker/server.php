@@ -47,7 +47,7 @@ class worker_server extends _sql_base {
   //Check this is the correct ip address for the worker
   public function check($ip){
     if($this->worker_ip != $ip)
-      throw new Exception("Invalid ip");
+      throw new Exception("Invalid ip ($ip) ");
   }
 
   public function tick(){
