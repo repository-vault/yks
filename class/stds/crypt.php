@@ -61,7 +61,9 @@ class crypt {
         throw new Exception("Invalid CA certificate.");
     }
 
-    // Create self signed cert
+    // Create a signed cert (by CA or self signed)
+    if(!$ca_pkey)
+      $ca_pkey = $private_key; // self sign
     $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, 365);
     if(!$cert){
       while ($msg = openssl_error_string())
