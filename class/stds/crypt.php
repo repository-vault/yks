@@ -2,7 +2,7 @@
 
 class crypt {
   const ASN_LONG_LEN  = 0x80;
-  
+
 
   public static function pwgen($length){
     return substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', $length)), 0, $length);
@@ -15,7 +15,7 @@ class crypt {
       'private_key_type' => OPENSSL_KEYTYPE_RSA,
       'encrypt_key'      => false,
     ); $options = array_merge($options, $rsa_options);
-    
+
     $ppk       = openssl_pkey_new($options);
     $ppk_infos = openssl_pkey_get_details($ppk);
     if(!openssl_pkey_export ($ppk, $contents))
@@ -25,15 +25,66 @@ class crypt {
     $private_openssh = self::pem2openssh($public_key);
     return compact('private_key', 'public_key', 'private_openssh');
   }
-  
+
+  // Build a signed certificate from a private key.
+  // It can use a specified CA cert & private key
+  // It's self signed when no CA is given (default)
+  public static function BuildCertificate($subject, $private_key_raw, $ca_pkey_raw = null, $ca_cert_raw = null){
+
+    // Open private key
+    $private_pem = crypt::BuildPemKey($private_key_raw, crypt::PEM_PRIVATE);
+    $private_key = openssl_pkey_get_private($private_pem);
+    if(!$private_key)
+      throw new Exception("Failed to open generated private key.");
+
+    // Create a CSR
+    $options = array(
+      'digest_alg'       => 'sha1',
+      'private_key_bits' => 2048,
+      'private_key_type' => OPENSSL_KEYTYPE_RSA,
+      'encrypt_key'      => false,
+    );
+    $csr = openssl_csr_new($subject, $private_key, $options);
+    if(!$csr)
+      throw new Exception("Failed to create a CSR.");
+
+    // Convert raw CA to OpenSSL instances
+    $ca_pkey = null;
+    $ca_cert = null;
+    if($ca_pkey_raw && $ca_cert_raw){
+      $ca_pkey = openssl_pkey_get_private(self::BuildPemKey($ca_pkey_raw, self::PEM_PRIVATE));
+      if(!$ca_pkey)
+        throw new Exception("Invalid CA private key.");
+
+      $ca_cert = openssl_x509_read(self::BuildPemKey($ca_cert_raw, self::PEM_CERTIFICATE));
+      if(!$ca_cert)
+        throw new Exception("Invalid CA certificate.");
+    }
+
+    // Create self signed cert
+    $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, 365);
+    if(!$cert){
+      while ($msg = openssl_error_string())
+        syslog(LOG_ERR, $msg);
+      throw new Exception("Failed to create a cert.");
+    }
+
+    // Export the cert
+    openssl_x509_export($cert, $cert_output);
+    if(!$cert_output)
+      throw new Exception("Failed to output a cert.");
+
+    return crypt::cleanupPem($cert_output);
+  }
+
   public static function ExtractPublicFromPrivateKey($private_key){
-    
+
     //Get private id
     $private_key = crypt::BuildPemKey($private_key, crypt::PEM_PRIVATE);
     $openssl_priv = openssl_get_privatekey($private_key);
     if(!$openssl_priv)
       throw new Exception("Invalid private key.");
-    
+
     //Get details
     $key_details = openssl_pkey_get_details($openssl_priv);
     if(!$key_details)
@@ -43,14 +94,14 @@ class crypt {
 
     return self::cleanupPem($key_details['key']);
   }
-  
-  
+
+
   private static function cypherInit($passphrase, $raw = false){
     $algo    = MCRYPT_RIJNDAEL_128;
 //    $algo    = MCRYPT_DES;
 
     $cipher  = mcrypt_module_open($algo, '', MCRYPT_MODE_CBC, '');
-    
+
     // Don't touch the pass pharse, i know what i'm doing
     $key256 = $raw ? $passphrase : md5($passphrase);
 
@@ -59,19 +110,19 @@ class crypt {
 
     if(strlen($key256) > $key_size && $raw)
       throw new Exception("The raw passphrase is too large and would be truncated.");
-    
+
     $key    = substr($key256, 0, $key_size);
     $iv     = substr($key256, 0, $iv_size);
 
     mcrypt_generic_init($cipher, $key, $iv);
-    
+
     return $cipher;
   }
 
 
   static function encrypt($clearText, $passphrase, $out64 = false) {
     $cipher  = self::cypherInit($passphrase);
-    
+
     $cipherText = mcrypt_generic($cipher, $clearText);
     if($out64) $cipherText = base64_encode($cipherText);
     return $cipherText;
@@ -93,34 +144,34 @@ class crypt {
   function crypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '='){
 
     // Use ONE cypher
-    $cypher = crypt::cypherInit($passphrase); 
+    $cypher = crypt::cypherInit($passphrase);
 
     $offset = strlen($token);
 
     //Hash while reading
     $hasher = hash_init('md5');
-    
+
     while(!feof($input_stream)){
       $buffer = fread($input_stream, $bufferSize - $offset);
       if(!$buffer)
         break;
       $bufferCrypted = mcrypt_generic($cypher, $buffer.$token);
-      
+
       $bCSize = strlen($bufferCrypted);
       if($bCSize != $bufferSize && !feof($input_stream))
         throw new Exception("Encrypted Buffer size mismatch ($bCSize != $bufferSize).");
-      
+
       hash_update($hasher, $bufferCrypted);
-      
+
       fwrite($output_stream, $bufferCrypted);
     }
-    
+
     fclose($output_stream);
     fclose($input_stream);
-    
+
     return hash_final($hasher);
   }
-  
+
   //Use streams for this function
   function decrypt_stream($input_stream, $output_stream, $passphrase, $bufferSize = 8192, $token = '=', $fullOutput = false){
 
@@ -129,7 +180,7 @@ class crypt {
 
     //Hash while reading
     $hasher = hash_init('md5');
-    
+
     $offset = strlen($token);
     $cpt = 0;
     while(!feof($input_stream)){
@@ -145,16 +196,16 @@ class crypt {
       $bufferDecrypted = substr($bufferDecrypted, 0, -$offset);
       if($output_stream)
         fwrite($output_stream, $bufferDecrypted);
-      
+
       hash_update($hasher, $bufferDecrypted);
-      
+
       $cpt += strlen($bufferDecrypted);
     }
-    
+
     if($output_stream)
       fclose($output_stream);
     fclose($input_stream);
-    
+
     $hash = hash_final($hasher);
     if($fullOutput)
       return array(
@@ -166,7 +217,8 @@ class crypt {
 
   const PEM_PUBLIC = "public";
   const PEM_PRIVATE = "private";
-   
+  const PEM_CERTIFICATE= "certificate";
+
   public static function BuildAuthorizedKey($key){
     $tmp_path = files::tmppath();
     file_put_contents($tmp_path, $key);
@@ -176,12 +228,12 @@ class crypt {
     exec($cmd, $out);
     return join('', $out);
   }
-  
+
 
 
   public static function cleanupPem($key){
     $key = preg_replace("#\r?\n#" , "", $key);
-    $key = preg_reduce("#^-+BEGIN(?: RSA)? (?:PUBLIC|PRIVATE) KEY-+(.*?)-+END(?: RSA)? (?:PUBLIC|PRIVATE) KEY-+#m", $key);
+    $key = preg_reduce("#^-+BEGIN(?: RSA)? (?:PUBLIC|PRIVATE)?(?:CERTIFICATE| KEY)-+(.*?)-+END(?: RSA)? (?:PUBLIC|PRIVATE)?(?:CERTIFICATE| KEY)-+#m", $key);
     return $key;
   }
 
@@ -189,15 +241,22 @@ class crypt {
 
   public static function BuildPemKey($key_str, $type=crypt::PEM_PUBLIC) {
     $lines = str_split($key_str, 64);
-
-    if($type == crypt::PEM_PRIVATE){
-      array_unshift ($lines, "-----BEGIN RSA PRIVATE KEY-----");
-      array_push    ($lines, "-----END RSA PRIVATE KEY-----");
-    }else{
-      array_unshift ($lines, "-----BEGIN PUBLIC KEY-----");
-      array_push    ($lines, "-----END PUBLIC KEY-----");
+    switch($type){
+      case self::PEM_PRIVATE:
+        array_unshift ($lines, "-----BEGIN RSA PRIVATE KEY-----");
+        array_push    ($lines, "-----END RSA PRIVATE KEY-----");
+        break;
+      case self::PEM_PUBLIC:
+        array_unshift ($lines, "-----BEGIN PUBLIC KEY-----");
+        array_push    ($lines, "-----END PUBLIC KEY-----");
+        break;
+      case self::PEM_CERTIFICATE:
+        array_unshift ($lines, "-----BEGIN CERTIFICATE-----");
+        array_push    ($lines, "-----END CERTIFICATE-----");
+        break;
+      default:
+        throw new Exception("Unsupported PEM type $type");
     }
-
     return join("\n", $lines);
   }
 
