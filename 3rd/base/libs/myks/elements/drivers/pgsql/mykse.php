@@ -50,6 +50,9 @@ class mykse extends mykse_base {
     }else return parent::resolve($type);
   }
 
+  function json_node(){
+    $this->field_def["Type"]="json";
+  }
 
   function enum_node(){
     $set=((string)$this->mykse_xml['set'])=='set';

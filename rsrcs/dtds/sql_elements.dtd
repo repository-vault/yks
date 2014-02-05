@@ -28,11 +28,11 @@
 >
 
 
-  
+
 <!ELEMENT string  (#PCDATA)>
 <!ATTLIST string
   %null;
-  length	CDATA	"12" 
+  length	CDATA	"12"
 >
 
 <!ELEMENT text (CDATA)*>
@@ -40,8 +40,9 @@
   %null;
 >
 
+<!ELEMENT json (CDATA)*>
 
-<!ELEMENT mykse (mykse|text|string|enum|int)?>
+<!ELEMENT mykse (mykse|text|string|enum|int|json)?>
 
 <!ATTLIST mykse
   type  CDATA	#REQUIRED

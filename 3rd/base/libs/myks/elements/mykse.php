@@ -127,10 +127,12 @@ abstract class mykse_base {
     elseif($this->base_type=="enum") $this->enum_node();
     elseif($this->base_type=="text") $this->text_node();
     elseif($this->base_type=="bool") $this->bool_node();
+    elseif($this->base_type=="json") $this->json_node();
     else $this->resolve($this->base_type)->get_def();
 
     return $this->field_def;
   }
+
 
   function bool_node(){
     $this->field_def["Type"]="boolean";
