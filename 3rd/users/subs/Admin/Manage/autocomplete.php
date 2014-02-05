@@ -1,9 +1,7 @@
 <?php
 $result = array();
 
-$where = sprintf(
-  "user_id = %s OR user_name ILIKE '%%%s%%' OR user_mail ILIKE '%%%s%%'",
-  (int)$_POST['search'], $_POST['search'], $_POST['search']);
+$where = sql::make_search_blob("user_id || user_name || user_mail", $_POST['search']);
 
 $cols = array("user_id", "user_name", "user_mail");
 $tables = array(
