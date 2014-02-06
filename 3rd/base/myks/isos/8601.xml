@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <table name="iso_8601_timezones">
+    <fields>
+      <field type="timezone_code" key="primary"/>
+      <field type="utc_offset" name="utc_offset"/>
+      <field type="utc_offset" name="utc_dst_offset"/>
+      <field type="country_code_alpha2" name="country_code"/>
+      <field type="boolean" name="useful" default="true"/>
+    </fields>
+  </table>
+  <mykse type="timezone_code" birth="iso_8601_timezones">
+    <string length="128"/>
+  </mykse>
+  <mykse type="utc_offset">
+    <int size="float"/>
+  </mykse>
+</myks>
