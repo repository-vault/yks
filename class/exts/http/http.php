@@ -158,7 +158,10 @@ class http {
   }
 
   public static function ip_allow($ranges, $ip = false){
-    if($ip === false) $ip = $_SERVER['REMOTE_ADDR'];
+    if($ip === false)
+        $ip = $_SERVER['REMOTE_ADDR'];
+    if(!$ranges)
+        return $ip;
     $hostname = gethostbyaddr($ip);
     foreach($ranges as $range){
       //dummy check
