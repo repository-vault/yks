@@ -25,7 +25,7 @@ class http {
   static function client_addr($trusted_proxies = array(), $jumps = null, $remote_addr = null){
     if(is_null($remote_addr)) $remote_addr = $_SERVER['REMOTE_ADDR'];
     if(is_null($jumps))   $jumps = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    if(!is_array($jumps)) $jumps = preg_split(VAL_SPLITTER, $jumps);
+    if(!is_array($jumps)) $jumps = array_filter(preg_split(VAL_SPLITTER, $jumps));
 
     if(!self::ip_allow($trusted_proxies, $remote_addr) || !$jumps)
       return $remote_addr;
@@ -91,13 +91,13 @@ class http {
     $server_addr = $_SERVER['SERVER_ADDR'];
 
     if(self::$WIN) {
-      if(!self::$console_host) 
+      if(!self::$console_host)
           self::$console_host = new console_host('C:\\Windows\\system32\\netstat.exe -n -p tcp');
       $output = self::$console_host->exec();
     } else {
-      exec("netstat -p tcp -n 2>/dev/null", $output); $output = join(CRLF, $output);  
+      exec("netstat -p tcp -n 2>/dev/null", $output); $output = join(CRLF, $output);
     }
-    
+
     $mask = "#^\s*TCP.*{$server_addr}:{$server_port}\s*{$client_addr}:{$client_port}\s*([A-Z]+)\s*$#mi";
     $status = preg_reduce($mask, $output);
     return ($status != "ESTABLISHED");
@@ -146,8 +146,8 @@ class http {
     return $body;
   }
 
-  
-  public static function ip_check_cidr ($IP, $CIDR) { 
+
+  public static function ip_check_cidr ($IP, $CIDR) {
     list ($net, $mask) = explode ("/", $CIDR);
     if(!$mask) $mask = 32;
     $ip_net = ip2long ($net);
@@ -180,9 +180,9 @@ class http {
     return false;
   }
 
-  
+
   public static function delete_file($http_remote){
-    
+
     $gw = parse_url($http_remote);
 
     $schemes = array('http' => 80, 'https' => 443);
@@ -205,7 +205,7 @@ class http {
     $res = stream_get_contents($dest);
     return $res;
   }
-  
+
   public static function put_file($file_path, $http_remote, $extras_headers = array()){
     if(!is_file($file_path))
         throw new Exception("Invalid file path");
@@ -232,15 +232,15 @@ class http {
       "Host"           => $gw['host'],
       "Content-Length" =>  $file_size,
     ), $extras_headers);
-      
-    
+
+
     $query_head = "PUT $path HTTP/1.0".CRLF
                   .mask_join(CRLF, $headers, '%2$s: %1$s').CRLF
                   .CRLF;
 
-    
+
     $res =  fwrite($dest, $query_head);
-    
+
     //stream_copy_to_stream($file, $fp);
 
     stream_copy_to_stream($file, $dest);
