@@ -54,6 +54,15 @@ class mykse extends mykse_base {
     $this->field_def["Type"]="json";
   }
 
+
+  function guid_node(){
+    $this->field_def["Type"]="uuid";
+
+    if($this->birth)
+        $this->field_def["Default"] = "uuid_generate_v4()";
+  }
+  
+
   function enum_node(){
     $set=((string)$this->mykse_xml['set'])=='set';
     if(!$set){

@@ -267,6 +267,7 @@ class sql_runner {
     sql::query('CREATE AGGREGATE first(text)(sfunc=coalesce_first, stype = text)');
     sql::query('CREATE AGGREGATE first(varchar)(sfunc=coalesce_first, stype = varchar)');
     sql::query('CREATE AGGREGATE first(boolean)(sfunc=coalesce_first, stype = boolean )');
+    sql::query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
     //Don't ask.
     foreach(range(0,3) as $i)

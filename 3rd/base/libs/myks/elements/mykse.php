@@ -102,6 +102,7 @@ abstract class mykse_base {
 
   protected function resolve($type){
 
+    //debugbreak("1@172.19.103.21");
     $this->mykse_xml = myks_gen::$mykse_xml->$type;
     $this->base_type = (string)$this->mykse_xml['type'];
     if($this->depth++ > $this->depth_max && !$this->mykse_xml)
@@ -128,6 +129,7 @@ abstract class mykse_base {
     elseif($this->base_type=="text") $this->text_node();
     elseif($this->base_type=="bool") $this->bool_node();
     elseif($this->base_type=="json") $this->json_node();
+    elseif($this->base_type=="guid") $this->guid_node();
     else $this->resolve($this->base_type)->get_def();
 
     return $this->field_def;
@@ -138,6 +140,10 @@ abstract class mykse_base {
     $this->field_def["Type"]="boolean";
   }
 
+  function guid_node(){
+    $this->field_def["Type"]="uuid";
+  }
+  
   function text_node(){
     $this->field_def["Type"]="text";
   }

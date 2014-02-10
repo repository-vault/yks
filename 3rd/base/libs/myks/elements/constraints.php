@@ -72,7 +72,7 @@ abstract class myks_constraints_base {
         $members = array();
         foreach($constraint_xml->member as $member) {
           $members[(string)$member['column']] = (string)$member['column'];
-          $target_members[(string)$member['column']] = (string)$member['target'];;
+          $target_members[(string)$member['column']] = pick((string)$member['target'], (string)$member['column']);
         }
 
         if(!($key_name = (string)$constraint_xml['name']))

@@ -40,9 +40,6 @@
   <mykse type="boolean">
     <mykse type="bool"/>
   </mykse>
-  <mykse type="bool">
-    <mykse type="bool"/>
-  </mykse>
   <mykse type="uri" null="null">
     <string length="250"/>
   </mykse>
@@ -66,5 +63,12 @@
   </mykse>
   <mykse type="html">
     <mykse type="text"/>
+  </mykse>
+  <!-- Inner types self - definition - yeah -->
+  <mykse type="bool">
+    <mykse type="bool"/>
+  </mykse>
+  <mykse type="json" default="'{}'">
+    <mykse type="json"/>
   </mykse>
 </myks>
