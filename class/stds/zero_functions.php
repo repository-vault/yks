@@ -29,7 +29,12 @@ function paths_merge($path_root, $path, $default="."){
     return realpath($path_root.DIRECTORY_SEPARATOR.$path);
 }
 
-
+function array_apply($array, $method) {
+  $ret = array();
+  foreach($array as $k=>$v)
+      $ret[$k] = call_user_func(array($v, $method));
+  return $ret;
+}
 
 function array_extract($array, $col, $clean=false){
     $ret = array();
