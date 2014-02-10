@@ -162,7 +162,7 @@ class http {
         $ip = $_SERVER['REMOTE_ADDR'];
     if(!$ranges)
         return $ip;
-    $hostname = gethostbyaddr($ip);
+    $hostname = null;
     foreach($ranges as $range){
       //dummy check
       if($range == $hostname)
@@ -172,6 +172,8 @@ class http {
         if(self::ip_check_cidr($ip, $range))
           return true;
       } else { //ip name, check with wildcard
+        if(is_null($hostname))
+          $hostname = gethostbyaddr($ip);  //this can take up to 5s
         $mask = strtr($range, array("*" => ".*", "." =>  "\."));
         if(preg_match("#^$mask$#", $hostname))
           return true;
