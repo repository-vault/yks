@@ -199,6 +199,21 @@ class dsp{
     return date::sprintfc($date, $format, $format_rel);
   }
 
+  public static function date_format_tz($timezone='UTC', $format=DATETIME_MASK, $timestamp=_NOW) {
+    try {
+      $datetime = new DateTime();
+      $datetime->setTimestamp($timestamp);
+      $datetime->setTimezone(new DateTimeZone($timezone));
+      $result = $datetime->format($format);
+    }
+    catch (Exception $e) {
+      trigger_error($e->getMessage(), E_USER_WARNING);
+      $result = false;
+    }
+
+    return $result;
+  }
+
   public static function indent_xml($simplexml) {
     $doc = new DOMDocument('1.0', 'UTF-8');
     $doc->formatOutput = true;
