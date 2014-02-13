@@ -5,6 +5,8 @@ class sql {
   static public $queries = array();
   static private $link='db_link';
   static private $result;
+  static private $result_types;
+  static private $result_types_store;
   static public $servs=null;
   static public $rows=0;
   static public $log=true;
@@ -61,8 +63,16 @@ class sql {
         $start_time = microtime(true);
 
     self::$result = pg_query($serv, $query);
+
         $duration = microtime(true) - $start_time;
         $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
+
+    self::$result_types = self::$result_types_store = array();
+    $num = pg_num_fields(self::$result);
+    for($a=0;$a<$num; $a++)
+      self::$result_types[pg_field_name(self::$result, $a)] = pg_field_type(self::$result, $a);
+    self::$result_types_store['has_bool'] = in_array('bool', self::$result_types);
+
     if(self::$log) self::$queries["log_". $running] = $query . " -- $duration";
     if(self::$result === false) {
       $error = htmlspecialchars(pg_last_error(self::$lnks[self::$link]));
@@ -79,15 +89,20 @@ class sql {
   }
 
   static function fetch($result = null) {
-    // WTF is that ? Is it an error ? If so, it must throw.
     $result = isset($result) ? $result : self::$result;
 
-    if(!$result) {
+    if(!$result)
       return array();
-    }
 
     $tmp = pg_fetch_assoc($result);
-    return $tmp?$tmp:array();
+    $tmp = $tmp ? $tmp : array();
+    if(count($tmp) === 0)
+      return;
+    
+    if(self::$result_types_store['has_bool']) foreach(self::$result_types as $k=>$type)
+      if($type == 'bool') $tmp[$k] = bool($tmp[$k]);
+
+    return $tmp;
   }
 
   //This function works the same way array_reindex does, please refer to the manual
@@ -132,6 +147,9 @@ class sql {
     if($start) {
       pg_result_seek(self::$result, $start);
     }
+
+
+
 
     while(($l=self::fetch()) && ($by?$line++<$by:true)) {
       $tmp[$id?$l[$id]:$c++]=$val?$l[$val]:$l;
