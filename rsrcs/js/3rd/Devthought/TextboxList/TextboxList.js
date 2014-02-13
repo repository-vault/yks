@@ -151,6 +151,7 @@ var TextboxList = new Class({
 
   onAdd: function(bit){
     if (this.options.unique && bit.is('box')) this.index.push(this.uniqueValue(bit.value));
+
     if (bit.is('box')){
       var prior = this.getBit($(bit).getPrevious());
       if ((prior && prior.is('box') && this.options.inBetweenEditableBits) || (!prior && this.options.startEditableBit)){
@@ -162,11 +163,10 @@ var TextboxList = new Class({
   },
 
   onRemove: function(bit){
-    if (!this.focused) return;
     if (this.options.unique && bit.is('box')) this.index.erase(this.uniqueValue(bit.value));
+    this.focusRelative('next', bit);
     var prior = this.getBit($(bit).getPrevious());
     if (prior && prior.is('editable')) prior.remove();
-    this.focusRelative('next', bit);
   },
 
   focusRelative: function(dir, to){
@@ -218,6 +218,10 @@ var TextboxList = new Class({
 
   update: function(){
     this.original.set('value', this.options.encode(this.getValues()));
+  },
+
+  toFormQuery:function(){
+    return this.options.encode(this.getValues());
   },
 
   clearList : function() {
@@ -293,9 +297,8 @@ var TextboxListBit = new Class({
   },
 
   remove: function(){
-    this.blur();
-    this.textboxlist.onRemove(this);
     this.bit.destroy();
+    this.textboxlist.onRemove(this);
     return this.fireBitEvent('remove');
   },
 
