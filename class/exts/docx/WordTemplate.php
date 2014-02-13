@@ -144,12 +144,12 @@ class WordTemplate {
   /**
   * Replace image by another
   *
-  * @param array $value_list for each new image key(contentType, name, data)
+  * @param array $value_list for each new image key(contentType, name, data or path)
   */
   public function replaceImg($value_list){
     foreach($value_list as $id => $value){
       $this->addContentType($value['ext'], $value['contentType']);
-      $rid = $this->addMedia($value['name'], $value['data']);
+      $rid = $this->addMedia($value['name'], pick($value['path'], $value['data']));
       if(isset($this->img_list[$id])){
         $this->img_list[$id]->setValue($rid);
       }
@@ -180,19 +180,20 @@ class WordTemplate {
   * add a media in document
   *
   * @param string $name
-  * @param string $data
+  * @param string $data file content or file PATH
   */
   protected function addMedia($name, $data){
     $this->loadRelDom();
     $name = urlencode(strtolower($name));
 
+    $media_path = $this->doc.self::MEDIADIR.'/'.$name;
     if(file_exists($media_path)){
       if(md5($data) != md5_file($media_path)){
         $i = 0;
-        $new_name = $name.'_'.$i;
+        $new_name = $i.'_'.$name;
         while(file_exists($this->doc.self::MEDIADIR.$new_name)){
           $i++;
-          $new_name = $name.'_'.$i;
+          $new_name = $i.'_'.$name;
         }
         $name = $new_name;
       }
@@ -205,7 +206,11 @@ class WordTemplate {
     }
 
     $media_path = $this->doc.self::MEDIADIR.'/'.$name;
-    file_put_contents($media_path, $data);
+
+    if(file_exists($data))
+      copy($data, $media_path);
+    else
+      file_put_contents($media_path, $data);
 
     $rel_list = $this->rel_dom->getElementsByTagName('Relationship');
     $nb = $rel_list->length + 1; //already order
