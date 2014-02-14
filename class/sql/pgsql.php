@@ -97,7 +97,7 @@ class sql {
     $tmp = pg_fetch_assoc($result);
     $tmp = $tmp ? $tmp : array();
     if(count($tmp) === 0)
-      return;
+      return $tmp;
     
     if(self::$result_types_store['has_bool']) foreach(self::$result_types as $k=>$type)
       if($type == 'bool') $tmp[$k] = bool($tmp[$k]);
