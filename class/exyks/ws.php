@@ -87,6 +87,9 @@ class exyks_ws {
 
     $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips);
 
+    if($_SERVER['REQUEST_METHOD']=='OPTIONS')
+      die;
+
     if($_SERVER['REQUEST_METHOD']=='GET') {
         if(!$access) {
             header("HTTP/1.0 403 access denied");
@@ -97,6 +100,13 @@ class exyks_ws {
         die;
     }
 
+    if($_GET['mode'] == 'rest') {
+      $method  = $_GET['method'];
+      $class = new $class_name();
+      $query = $_POST ? $_POST : json_decode(stream_get_contents(fopen("php://input", "r")), true);
+      $res = call_user_func_array(array($class, $method ), $query);
+      die($res);
+    }
 
     //autodetect if current argument is session_id, init session if so
     $SOAP_SESSION_ID = null;
