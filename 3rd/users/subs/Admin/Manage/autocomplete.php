@@ -8,7 +8,7 @@ $tables = array(
   'ks_users_profile',
   'user_id' => 'ks_users_tree'
 );
-sql::select($tables, $where, join(',', $cols), "GROUP BY user_id ORDER BY user_name");
+sql::select($tables, $where, join(',', $cols), "GROUP BY ".join(',', $cols)." ORDER BY user_name");
 
 $sql_results = sql::brute_fetch();
 foreach($sql_results as $row){
