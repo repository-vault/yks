@@ -1,7 +1,8 @@
-<box theme="&pref.dft;" style="width:400px" options="modal,fly,close" id="user_infos" caption="Gestion des droits">
+<box theme="&pref.dft;" style="width:400px" options="modal,fly,close,reload" id="user_infos" caption="Gestion des droits">
 
 Vous êtes ici : <?=$parent_path?><br/>
 
+<label for="show_defined">Show all defined</label> <input type="checkbox" id="show_defined" name="defined" />
 
 <ks_form ks_action="access_save" submit="Enregistrer">
 
@@ -13,7 +14,7 @@ Vous êtes ici : <?=$parent_path?><br/>
     foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl)
         echo "<th>&access_lvl.$access_lvl;</th>";
     ?>
-  <th>Notes</th>  
+  <th>Notes</th>
   </tr>
     </thead>
 <?
@@ -51,14 +52,54 @@ if($root_zone) echo "</tbody>";
 ?>
 
 </table>
+</ks_form>
 <domready>
     var css_class = 'on'+(Browser.Engine.trident?"_ie":'');
     $$('#access_zones_list thead').addEvent('click',function(){
         Element.activate(this.getNext(), css_class);
     });
     Element.activate($('access_areas_root_contents'), css_class );
-</domready>
 
+    $('show_defined').addEvent('change', function(){
+      if(this.checked){
+        $$('#access_zones_list tbody').each(function(group){
+          group.addClass(css_class);
+          group.getChildren("tr").each(function(tr){
+            if(tr.querySelectorAll('input[type=checkbox]:checked').length == 0){
+              tr.addClass('hidden');
+            }
+          });
+        });
+      }
+      else {
+        $$('#access_zones_list tbody tr').removeClass('hidden');
+        Element.activate($('access_areas_root_contents'), css_class);
+      }
+    });
+</domready>
+<hr/>
+<ks_form ks_action="access_duplicate" submit="Dupliquer">
+  <field title="Duplicate to user">
+      <input type="text" id="duplicate_user" name="duplicate_user"/>
+    </field>
 </ks_form>
+<domready src="/?/Yks/Scripts/Js|path://3rd/usage/TextboxList.js">
+    <![CDATA[
+    var domainLst = new WTextboxList('duplicate_user', {
+      max: 25,
+      unique:true,
+      plugins: {
+        autocomplete: {
+          minLength: 2,
+          queryRemote: true,
+          useCache: false,
+          remote: {
+            url: '?<?=$href_fold?>/autocomplete//duplicate'
+          }
+        }
+      }
+    });
+   ]]>
+  </domready>
 </box>
 
