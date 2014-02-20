@@ -33,7 +33,7 @@ if($action=="access_duplicate")try {
     $parent_access[$user->user_id] = auth::get_access(array_diff($user->users_tree,array($user->user_id)) );
   }
 
-  $source_access = array_merge_recursive($user_access, $access);
+  $source_access = array_replace_recursive($user_access, $access);
 
   foreach($access_zones as $access_zone=>$zone_infos){
     if($source_access[$zone_infos['access_zone_path']]){
