@@ -1,4 +1,4 @@
-<box theme="&pref.dft;" caption="Gestion de zone" class="float_right" options="reload">
+<box theme="&pref.dft;" caption="Gestion de zone" class="float_right" options="reload, close, fly, modal">
     <ks_form ks_action="zone_manage" submit="Creer la zone">
         <field type="access_zone" title="Nom de la zone" value="<?=$zone['access_zone']?>"/>
         <field title="Zone parente" >

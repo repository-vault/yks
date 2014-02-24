@@ -1,4 +1,6 @@
-<box theme="&pref.dft;" caption="Gestion des zones d'accès" id="access_zone_box" class="float_left" style="width:620px">
+<box theme="&pref.dft;" caption="Gestion des zones d'accès" id="access_zone_box" class="float_left" style="width:900px">
+
+<button href="?&href_fold;/manage" target='manage_access'>Create new access area</button>
 
 <table class='table' id="access_zone_list">
     <tr class='line_head'>
@@ -23,6 +25,7 @@ foreach($access_zones as $access_zone=>$zone_infos){
 }
 ?>
 </table>
+<button href="?&href_fold;/manage" target='manage_access'>Create new access area</button>
 
 <script>
 function zone_delete(access_zone){
