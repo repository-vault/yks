@@ -25,8 +25,8 @@ if($action == "zone_manage") try {
 
 
         rbx::ok("Une nouvelle zone {$data['access_zone']} a été créée");
-        jsx::js_eval("Jsx.open('/?$href_fold/list', 'access_zone_box',this)");
-        jsx::$rbx = false;
+        jsx::js_eval(jsx::PARENT_RELOAD);
+
     } else {
 
         sql::replace("ks_access_zones", $data, compact('access_zone'));
