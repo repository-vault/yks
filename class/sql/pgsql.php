@@ -67,18 +67,20 @@ class sql {
         $duration = microtime(true) - $start_time;
         $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
 
-    self::$result_types = self::$result_types_store = array();
-    $num = pg_num_fields(self::$result);
-    for($a=0;$a<$num; $a++)
-      self::$result_types[pg_field_name(self::$result, $a)] = pg_field_type(self::$result, $a);
-    self::$result_types_store['has_bool'] = in_array('bool', self::$result_types);
-
     if(self::$log) self::$queries["log_". $running] = $query . " -- $duration";
     if(self::$result === false) {
       $error = htmlspecialchars(pg_last_error(self::$lnks[self::$link]));
 
       throw new SqlException($error . ' in request ' . htmlspecialchars($query)); //!
     }
+
+    self::$result_types = self::$result_types_store = array();
+    $num = pg_num_fields(self::$result);
+    for($a=0;$a<$num; $a++)
+      self::$result_types[pg_field_name(self::$result, $a)] = pg_field_type(self::$result, $a);
+    self::$result_types_store['has_bool'] = in_array('bool', self::$result_types);
+
+
 
     if($arows) {
       $arows = pg_affected_rows(self::$result);
