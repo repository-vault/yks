@@ -85,7 +85,7 @@ class exyks_ws {
 
     list($class_name, $wsdl_file, $use_sess, $wsdl_ns, $wsdl_ips) = self::resolve($_GET['class']);
 
-    $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips);
+    $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips, exyks::$CLIENT_ADDR);
 
     if($_SERVER['REQUEST_METHOD']=='OPTIONS')
       die;
