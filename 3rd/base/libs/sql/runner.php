@@ -236,6 +236,7 @@ class sql_runner {
 
 
   function init_database(){
+      //dont try to lookup database (it's empty !)
     self::$blind_mode = true;
 
     sql::select('pg_namespace', sql::true, 'nspname');
@@ -275,8 +276,16 @@ class sql_runner {
 
     //Loop on views
     self::$blind_mode = false;
-    foreach(range(0,20) as $i){
+    $this->updata_database();
+  }
+
+  function update_database(){
+    $jupiter_rotation_speed = 20;
+
+    foreach(range(0, $jupiter_rotation_speed) as $i){
       $nb = 0;
+      $this->scan_procedures("*", true);
+      $nb += $this->last_execution_count;
       $this->scan_views("*", true);
       $nb += $this->last_execution_count;
       $this->scan_tables("*", true);
@@ -284,10 +293,10 @@ class sql_runner {
       if(!$nb)
         break;
     }
+
     if($this->last_execution_count)
       throw new Exception("Still some queries to init DB");
   }
-
 
   /**
   * @alias t * true
