@@ -14,7 +14,12 @@ class myks_parser {
   const myks_fpi = "-//YKS//MYKS";
 
   static private $myks_paths;
+  static private $yks_config;
+
   public static function init(){
+
+    $yks_config  = xml_to_dict(simplexml_load_string(yks::$get->config->asXML(true)));
+    self::$yks_config = array_mask($yks_config, null, "{{%s}}");
 
     $paths = array();
     //list paths 
@@ -50,7 +55,8 @@ class myks_parser {
 
     foreach($files as $xml_file){
         try {
-            $doc = xml::load_file($xml_file, LIBXML_MYKS, self::myks_fpi);
+            $contents = str_set(file_get_contents($xml_file), self::$yks_config);
+            $doc = xml::load_string($contents, LIBXML_MYKS, self::myks_fpi);
         } catch(Exception $e){ rbx::error("$xml_file n'est pas valide"); continue; }
         $tmp_node = $this->myks_gen->importNode($doc->documentElement, true);
         $main_xml->appendChild($tmp_node);

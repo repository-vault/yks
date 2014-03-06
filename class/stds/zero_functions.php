@@ -70,10 +70,10 @@ function pick_in(){
 }
 
 
-function array_mask($array, $vmask, $kmask="%s"){
+function array_mask($array, $vmask = null, $kmask="%s"){
   $ret = array();
   foreach($array as $k=>$v)
-    $ret[sprintf($kmask, $k, $v)] = sprintf($vmask, $v, $k);
+    $ret[sprintf($kmask, $k, $v)] = is_null($vmask) ? $v : sprintf($vmask, $v, $k);
   return $ret;
 }
 

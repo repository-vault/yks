@@ -227,12 +227,12 @@ function array_filter_criteria($list, $criteria){
 }
 
 
-function xml_to_dict($xml, $pfx){
+function xml_to_dict($xml, $pfx = ""){
     if(is_string($xml))
         $xml = simplexml_load_file($xml);
     $ret  = array();
     $name = strtoupper($xml->getName());
-    if($pfx) $name = $pfx.$name;
+    $name = $pfx.$name;
 
     if(!count($xml->children())) //! != $xml->children()
         $ret[$name] = (string)$xml;
