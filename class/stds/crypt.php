@@ -64,7 +64,7 @@ class crypt {
     // Create a signed cert (by CA or self signed)
     if(!$ca_pkey)
       $ca_pkey = $private_key; // self sign
-    $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, 365, array(), $serial);
+    $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, 365, $options, $serial);
     if(!$cert){
       while ($msg = openssl_error_string())
         syslog(LOG_ERR, $msg);
