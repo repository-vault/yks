@@ -43,7 +43,6 @@ class json_parser {
   
   private static function walk($str, &$i){
     $i += strspn($str, self::pad, $i);
-
     if($str{$i} == '{')
       $value = self::parse_hash($str, $i);
     elseif($str{$i} == '[')
@@ -84,6 +83,9 @@ class json_parser {
 
     $data = array();
     do {
+      if(self::consume($str, "}", $i))
+        break;
+
       $key   = self::parse_simple($str, $i);
       if($str{$i++} != ':')
         throw new Exception("Invalid hash key");
@@ -98,9 +100,9 @@ class json_parser {
 
     //$mask = '#"((?:\\\.|[^"\\\])*)"#i'; // http://stackoverflow.com/questions/2148587
 
-    $mask = "#^\s*(?:([0-9]+)|([a-z_]+[0-9a-z_])|'([^\']*)'|\"((?:\\\.|[^\"\\\])*)\")\s*#i";
+    $mask = "#^\s*(?:(-?[0-9]+)|([a-z_]+[0-9a-z_])|'([^\']*)'|\"((?:\\\.|[^\"\\\])*)\")\s*#i";
     if(!preg_match($mask, substr($str,$i), $out))
-      throw new Exception("Invalid simple value ...");
+      throw new Exception("Invalid simple value at $i");
 
     $i += strlen($out[0]);
     list($dv, $sv, $qv) = array($out[1], $out[2], pick($out[3], $out[4]));
