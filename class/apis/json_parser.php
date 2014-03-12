@@ -100,7 +100,7 @@ class json_parser {
 
     //$mask = '#"((?:\\\.|[^"\\\])*)"#i'; // http://stackoverflow.com/questions/2148587
 
-    $mask = "#^\s*(?:(-?[0-9]+)|([a-z_]+[0-9a-z_])|'([^\']*)'|\"((?:\\\.|[^\"\\\])*)\")\s*#i";
+    $mask = "#^\s*(?:(-?[0-9.]+)|([a-z_]+[0-9a-z_])|'([^\']*)'|\"((?:\\\.|[^\"\\\])*)\")\s*#i";
     if(!preg_match($mask, substr($str,$i), $out))
       throw new Exception("Invalid simple value at $i");
 
