@@ -276,7 +276,7 @@ class sql_runner {
 
     //Loop on views
     self::$blind_mode = false;
-    $this->updata_database();
+    $this->update_database();
   }
 
   function update_database(){
