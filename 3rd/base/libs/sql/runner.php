@@ -284,8 +284,8 @@ class sql_runner {
 
     foreach(range(0, $jupiter_rotation_speed) as $i){
       $nb = 0;
-      $this->scan_procedures("*", true);
-      $nb += $this->last_execution_count;
+      //$this->scan_procedures("*", true);
+      //$nb += $this->last_execution_count;
       $this->scan_views("*", true);
       $nb += $this->last_execution_count;
       $this->scan_tables("*", true);
