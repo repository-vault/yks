@@ -42,7 +42,7 @@
 
 <!ELEMENT constraint (member+)>
 <!ATTLIST constraint
-  type (foreign|unique) 'foreign'
+  type (foreign|unique|primary) 'foreign'
   fk_table CDATA #IMPLIED
   update %fk_actions; 'no_action'
   delete %fk_actions; 'no_action'
