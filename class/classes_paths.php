@@ -70,6 +70,7 @@ classes::register_class_paths(array(
     "php_legacy"           => CLASS_PATH."/apis/legacy.php",
     "unix"                 => CLASS_PATH."/apis/unix.php",
     "yphar"                => CLASS_PATH."/apis/yphar.php",
+    "dpkg"                 => CLASS_PATH."/apis/dpkg.php",
     "yksauthdrupal"        => CLASS_PATH."/apis/drupal/AuthDrupal.php",
 
 
