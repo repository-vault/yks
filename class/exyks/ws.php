@@ -41,16 +41,16 @@ class exyks_ws {
 
   // return tupple list($class_name, $wsdl_file)
   public static function resolve($class) {
-    if(isset(static::$classes[$class]))
+    if(isset(self::$classes[$class]))
         $class_name = $class;
-    else foreach(static::$classes as $_class_name=>$class_infos) {
+    else foreach(self::$classes as $_class_name=>$class_infos) {
       if(in_array($class, $class_infos['aliases'])) {
         $class_name = $_class_name;
         break;
       }
     }
 
-    $wsdl_infos = static::$classes[$class_name];
+    $wsdl_infos = self::$classes[$class_name];
     if(!isset($wsdl_infos)) {
         if($_SERVER['HTTP_SOAPACTION'])
             throw new SoapFault("server", "No valid class '$class_name','{$_SERVER['HTTP_SOAPACTION']} selected");
@@ -91,7 +91,7 @@ class exyks_ws {
 
     rbx::$output_mode = 0;
 
-    list($class_name, $wsdl_file, $use_sess, $wsdl_ns, $wsdl_ips, $wsdl_host) = static::resolve($_GET['class']);
+    list($class_name, $wsdl_file, $use_sess, $wsdl_ns, $wsdl_ips, $wsdl_host) = self::resolve($_GET['class']);
 
     $access = is_null($wsdl_ips) ? true : http::ip_allow($wsdl_ips, exyks::$CLIENT_ADDR);
 
