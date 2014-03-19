@@ -42,10 +42,8 @@ class config extends KsimpleXMLElement {
 
     list($file_path, $search) = $parts;
     $file_path = paths_merge(ROOT_PATH, $file_path);
-    if(! file_exists($file_path)) {
-      error_log("Configuration file do not exists $file_path ($path)");
-      return $tmp;
-    }
+    if(! file_exists($file_path))
+      throw new Exception("Configuration file do not exists $file_path ($path)");
 
     $ret = self::load($file_path);
     if($search) $ret = $ret->search($search, true); //autocreate
