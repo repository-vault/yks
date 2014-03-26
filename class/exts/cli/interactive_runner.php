@@ -4,7 +4,6 @@ class interactive_runner {
   private $obj;
   private $className;
   private $commands_list;
-  private $command_completion;
   private $current_command_completion = null;
 
   private $command_pipe;
@@ -78,21 +77,20 @@ class interactive_runner {
     else {
       $line = $this->current_command_completion ? : substr($infos['line_buffer'], 0, $infos['end']);
       $args = cli::parse_args($line);
-      $method = array_shift($args);
-      $pos = count($args);
-      $method_parameters = $this->command_completion[$method];
-
-      if(substr($line, -1) != " "){//is next ?
-        $pos -= 1;
-      }
-      elseif(count($method_parameters) <= $pos){
-          return false;
-      }
-
-      $completion = $method_parameters[$pos];
+      $method_name = array_shift($args);
+      $command_hash = $this->generate_command_hash($this->className, $method_name);
+      $command = $this->commands_list[$command_hash];
+      if(!$command)
+        return false;
+      $command_args    = array_keys(array_msort($command['usage']['params'], array('position' => SORT_ASC)));
+      $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
+      $completion = $command['usage']['params'][$arg_name]['completion']?:array();
+      if(!$completion)
+        echo "$arg_name\n";
     }
     $completion = array_filter($completion);
-    return empty($completion) ? "" : $completion;
+
+    return empty($completion) ? array(" ") : $completion;
   }
 
 
@@ -392,8 +390,7 @@ class interactive_runner {
           && !$method->isStatic()
           && !$is_magic
           && !$method->isConstructor()
-          && !$this->static
-	) {
+          && !$this->static ) {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
@@ -417,7 +414,8 @@ class interactive_runner {
 
       foreach($params as $param) {
         $param_infos = array(
-          'position' => $param->getPosition(),
+          'position'   => $param->getPosition(),
+          'completion' => array(),
         );
         if($param->isOptional()){
           $param_infos['optional'] = true;
@@ -427,18 +425,15 @@ class interactive_runner {
 
       }
       $this->command_register($command_ns, $command_key, $callback, $usage);
+      $command_hash = $this->generate_command_hash($command_ns, $command_key);
 
       if($autocompletes = $doc['args']['autocomplete']['values']){
         foreach($autocompletes as $values){
-          $arg_name  = array_shift($values);
-          if(empty($values)) continue;
-          $command_hash = $this->generate_command_hash($command_ns, $command_key);
-          if($this->commands_list[$command_hash]['usage']['params'][substr($arg_name, 1)]){
-            $position = $this->commands_list[$command_hash]['usage']['params'][substr($arg_name, 1)]['position'];
-            $this->command_completion($command_key, $position, $values);
-          }
-         }
-      }
+          $arg_name  = substr(array_shift($values), 1);
+          if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
+            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion'] = $values;
+        }
+     }
 
       if($aliases = $doc['args']['alias']['values']) foreach($aliases as $args) {
         $alias_name  = array_shift($args);
@@ -450,9 +445,6 @@ class interactive_runner {
     return $reflect;
   }
 
-  private function command_completion($command_key, $position, $values){
-    $this->command_completion[$command_key][$position] = $values;
-  }
 
   /**
 * toggle fullsize mode
