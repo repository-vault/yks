@@ -1,5 +1,8 @@
 <?php
 
+class UnresolvedModule extends Exception {}
+class UnresolvedOptionalModule extends UnresolvedModule {}
+
 class exyks_module {
 
   private $manifest_xml;
@@ -28,8 +31,10 @@ class exyks_module {
         $manifest_file = $manifest_dest;
     elseif(is_file($manifest_file = "$manifest_dest/manifest.xml"));
     elseif(is_file($manifest_file = "$manifest_dest/{$this->key}.xml"));
-    else throw new Exception("Unresolved module #{$this->key} in $manifest_dest");
-
+    else{
+      $class = (bool($module_xml['optional'])) ? UnresolvedOptionalModule : UnresolvedModule;
+      throw new $class("Unresolved module #{$this->key} in $manifest_dest");
+    }
 
     $this->manifest_file = $manifest_file;
 
@@ -91,8 +96,12 @@ class exyks_module {
     return $this->key;
   }
 
-  private function get_manifest_xml(){
+  public function get_manifest_xml(){
     return $this->manifest_xml;
+  }
+
+  public function get_root(){
+    return $this->module_root;
   }
 
   private function paths($from){
