@@ -12,6 +12,7 @@ class cli {
   public static $args = array(); //unparsed arguments
   public static $dict = array(); //parsed arguments
   private static $UNATTENDED_MODE = false;
+  private static $history = array();
 
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
@@ -243,25 +244,32 @@ class cli {
       return $default;
 
     if($default) $prompt .= " [{$default}]";
-    if($prompt) self::output( "$prompt : ");
 
     $data_str = "";
-    do {
+    if(!extension_loaded('readline')){
+      if($prompt) self::output( "$prompt : ");
+      do {
         $line =  fread(STDIN, 1024);
 
         if(preg_match("#[\x01-\x1F]\r?\n$#", $line, $out)) {
-            $control = ord($out[0]);
-            $line = substr($line, 0, -strlen($out[0]));
+          $control = ord($out[0]);
+          $line = substr($line, 0, -strlen($out[0]));
         } else $control = false;
 
         if(self::$OS == self::OS_WINDOWS)
-            $line = self::console_in($line);
+          $line = self::console_in($line);
 
         $data_str .= $line;
         $args = self::parse_args(trim($data_str), $complete);
-    } while( ! ($complete || in_array($control, array(26))) );
+      } while( ! ($complete || in_array($control, array(26))) );
 
-    if($control == 26) $args = array();
+      if($control == 26) $args = array();
+    }
+    else{
+      $data_str = readline($prompt ? "$prompt : ": '');
+      $args = self::parse_args(trim($data_str));
+    }
+
     $out = trim($data_str);
 
     if($out == "" && !is_null($default))
@@ -431,5 +439,17 @@ class cli {
         return $str;
 
       return chr(27).'['.$foreground_colors[$fg_color].'m'.$str.chr(27).'[0m';
+  }
+
+  public static function register_completion($function){
+    if(self::$OS == self::OS_WINDOWS || !extension_loaded('readline')) return false;
+
+    readline_completion_function($function);
+  }
+
+  public static function add_history($line){
+    self::$history[] = $line;
+    if(extension_loaded('readline'))
+      readline_add_history($line);
   }
 }

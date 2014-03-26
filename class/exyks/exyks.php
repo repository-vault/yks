@@ -23,7 +23,7 @@ class exyks {
   public static $vars = array();
 
   static function get_modules_list(){    return self::$modules_list;  }
-  
+
 
   static function init() {
 
@@ -62,25 +62,29 @@ class exyks {
     define('USERS_ROOT',     (int)yks::$get->config->users['root']);
     self::store('USERS_ROOT', USERS_ROOT); //drop constants here
 
-    
+
     if(yks::$get->config->site['hostname']) {
         $hostname = trim(`hostname`);
         if(yks::$get->config->site['hostname'] != $hostname)
           yks::fatality(yks::FATALITY_CONFIG, "Invalid local host name {$hostname}");
     }
-        
+
     self::$get = new self();
 
     self::$modules_list = array();
-    if(!SITE_STANDALONE) 
+    if(!SITE_STANDALONE)
       self::$modules_list[] = new exyks_module(array(
         'key'      => "base",
         'manifest' => "path://yks/3rd/base",
     ));
 
-    foreach(yks::$get->config->modules->iterate("module") as $module)
-      self::$modules_list[] = new exyks_module($module);
-
+    foreach(yks::$get->config->modules->iterate("module") as $module){
+      try{
+        self::$modules_list[] = new exyks_module($module);
+      }catch(UnresolvedOptionalModule $e){
+        // Just skip errors on optional modules
+      }
+    }
 
     self::extends_include_path();
   }
@@ -119,11 +123,11 @@ class exyks {
 
     if(yks::$get->config->site['render'] == 'inline')
       tpls::register_custom_element("box[@src]", array(__CLASS__, 'inline_box'));
-          
-       
+
+
     tpls::register_custom_element("field", array('tpls', 'inline_field'));
-    
-    
+
+
     define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
 
@@ -228,7 +232,7 @@ class exyks {
     extract($vars);
     tpls::export($vars); //!
 
-    exyks::bench('display_start'); 
+    exyks::bench('display_start');
     ob_start();
 
     jsx::set(array(

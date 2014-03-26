@@ -4,6 +4,7 @@ class interactive_runner {
   private $obj;
   private $className;
   private $commands_list;
+  private $current_command_completion = null;
 
   private $command_pipe;
   private $file;
@@ -55,6 +56,41 @@ class interactive_runner {
       else
         $this->obj = $reflector->IsInstantiable() ? ($args ? $reflector->newInstanceArgs($args) : $reflector->newInstance() ) : $this->className;
     }
+
+    cli::register_completion(array($this, 'completion_function'));
+  }
+
+  /**
+   * @interactive_runner disable
+   */
+  public function completion_function($input, $index){
+    $infos = readline_info();
+    $completion = array();
+
+    if(!$index && !$this->current_command_completion){
+      foreach ($this->commands_list as $command) {
+        if($command['command_ns'] == $this->className){
+          $completion[] = $command['command_key'];
+        }
+      }
+    }
+    else {
+      $line = $this->current_command_completion ? : substr($infos['line_buffer'], 0, $infos['end']);
+      $args = cli::parse_args($line);
+      $method_name = array_shift($args);
+      $command_hash = $this->generate_command_hash($this->className, $method_name);
+      $command = $this->commands_list[$command_hash];
+      if(!$command)
+        return false;
+      $command_args    = array_keys(array_msort($command['usage']['params'], array('position' => SORT_ASC)));
+      $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
+      $completion      = $command['usage']['params'][$arg_name]['completion'];
+      if(!$completion)
+        $completion = array();
+    }
+    $completion = array_filter($completion);
+
+    return empty($completion) ? array("") : $completion;
   }
 
 
@@ -127,8 +163,12 @@ class interactive_runner {
     $this->command_aliases($this->className, $command_key, array($alias_name=>$args) );
   }
 
+  private function generate_command_hash($command_ns, $command_key){
+    return "$command_ns::$command_key";
+  }
+
   private function command_aliases($command_ns, $command_key){
-    $command_hash = "$command_ns::$command_key";
+    $command_hash = $this->generate_command_hash($command_ns, $command_key);
     if(!isset($this->commands_list[$command_hash]))
       return false;
 
@@ -143,7 +183,7 @@ class interactive_runner {
     return true;
   }
   private function command_register($command_ns, $command_key, $callback, $usage){
-    $command_hash = "$command_ns::$command_key";
+    $command_hash = $this->generate_command_hash($command_ns, $command_key);
     $this->commands_list[$command_hash] = array(
       'command_ns'  => $command_ns,
       'command_key' => $command_key,
@@ -165,7 +205,6 @@ class interactive_runner {
   }
 
   private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
-
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
         if(isset($command_infos['aliases'][$command_prompt]))
@@ -196,14 +235,30 @@ class interactive_runner {
 
       $param_id = 0; $args = array();
       foreach($command_args_mask as $param_name=>$param_infos){
-        $param_in = array_key_exists($param_id, $command_args) ? $command_args[$param_id] : (
-                        array_key_exists($param_name, $command_dict) ? $command_dict[$param_name] : (
-                          array_key_exists('default', $param_infos) ? $param_infos['default'] : (
-                              cli::text_prompt("\${$this->className}[{$param_name}]" ))));
+
+        if(array_key_exists($param_id, $command_args)){
+          $param_in = $command_args[$param_id];
+        }
+        else{
+          if(array_key_exists($param_name, $command_dict)){
+            $param_in = $command_dict[$param_name];
+          }
+          else {
+            if(array_key_exists('default', $param_infos)){
+             $param_in = $param_infos['default'];
+            }
+            else {
+              $this->current_command_completion = join(' ', $this->last_command).' ';
+              $param_in = cli::text_prompt("\${$this->className}[{$param_name}]", null);
+              $this->current_command_completion = null;
+            }
+          }
+        }
 
         $args[] = $param_in;
         $param_id++;
       }
+      cli::add_history($command_prompt.' '.join(' ', $args));
 
       return array($command_infos['callback'], $args);
   }
@@ -339,8 +394,7 @@ class interactive_runner {
           && !$method->isStatic()
           && !$is_magic
           && !$method->isConstructor()
-          && !$this->static
-	) {
+          && !$this->static ) {
         $callback = array(&$instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
@@ -363,7 +417,10 @@ class interactive_runner {
       $usage = array('params'=>array(), 'doc' => $doc['doc'], 'hide' => in_array("hide", $tmp));
 
       foreach($params as $param) {
-        $param_infos = array();
+        $param_infos = array(
+          'position'   => $param->getPosition(),
+          'completion' => array(),
+        );
         if($param->isOptional()){
           $param_infos['optional'] = true;
           $param_infos['default']  = $param->getDefaultValue();
@@ -371,21 +428,29 @@ class interactive_runner {
         $usage['params'][$param->getName()] = $param_infos;
 
       }
-
       $this->command_register($command_ns, $command_key, $callback, $usage);
+      $command_hash = $this->generate_command_hash($command_ns, $command_key);
+
+      if($autocompletes = $doc['args']['autocomplete']['values']){
+        foreach($autocompletes as $values){
+          $arg_name  = strip_start(array_shift($values), '$');
+          if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
+            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion'] = $values;
+        }
+     }
 
       if($aliases = $doc['args']['alias']['values']) foreach($aliases as $args) {
         $alias_name  = array_shift($args);
         if(!( $alias_name && $command_key)) continue;
         $this->command_aliases($command_ns, $command_key, array($alias_name=>$args) );
       }
-
     }
 
     return $reflect;
   }
 
-/**
+
+  /**
 * toggle fullsize mode
 * @interactive_runner hide
 * @alias fs
@@ -423,4 +488,5 @@ class interactive_runner {
 
     $runner->run(); //private internal
   }
+
 }
