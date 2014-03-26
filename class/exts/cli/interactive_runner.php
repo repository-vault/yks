@@ -84,13 +84,13 @@ class interactive_runner {
         return false;
       $command_args    = array_keys(array_msort($command['usage']['params'], array('position' => SORT_ASC)));
       $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
-      $completion = $command['usage']['params'][$arg_name]['completion']?:array();
+      $completion      = $command['usage']['params'][$arg_name]['completion'];
       if(!$completion)
-        echo "$arg_name\n";
+        $completion = array();
     }
     $completion = array_filter($completion);
 
-    return empty($completion) ? array(" ") : $completion;
+    return empty($completion) ? array("") : $completion;
   }
 
 
