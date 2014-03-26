@@ -429,7 +429,7 @@ class interactive_runner {
 
       if($autocompletes = $doc['args']['autocomplete']['values']){
         foreach($autocompletes as $values){
-          $arg_name  = substr(array_shift($values), 1);
+          $arg_name  = strip_start(array_shift($values), '$');
           if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
             $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion'] = $values;
         }
