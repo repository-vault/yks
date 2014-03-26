@@ -84,8 +84,8 @@ class interactive_runner {
       if($command['usage']['params']) {
         $tmp_trailing_optionnal = 0; $tmp_str = array();
         foreach($command['usage']['params'] as $param_name=>$param_infos){
-            $tmp_str [] = ($param_infos['optional'] ? '[':'')."\$$param_name";
-            if($param_infos['optional']) $tmp_trailing_optionnal++;
+            $tmp_str [] = (isset($param_infos['optional']) ? '[':'')."\$$param_name";
+            if(isset($param_infos['optional'])) $tmp_trailing_optionnal++;
         }
         $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
       }

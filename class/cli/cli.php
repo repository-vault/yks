@@ -279,6 +279,7 @@ class cli {
     preg_match_all($mask, $str, $out, PREG_SET_ORDER);
 
     foreach($out as $part_id => $step){
+        $step += array_fill(0, 5, null);
         list($sep, $value) = array($step[1]!='', pick($step[2], $step[3], $step[4]));
         $digest .= $step[0];
 
