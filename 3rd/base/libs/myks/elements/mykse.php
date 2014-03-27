@@ -87,7 +87,10 @@ abstract class mykse_base {
     $fields = array_keys(fields($birth_xml, true), $this->type);
 
         //this is complicated, see http://doc.exyks.org/wiki/Myks:External_references_resolutions
-    $fields = array( $local_field => in_array($this->type, $fields)? (string)$this->type : first(array_slice($fields,0,1)) );
+    if($birth_xml)
+      $fields = array( $local_field => in_array($this->type, $fields)? (string)$this->type : first(array_slice($fields,0,1)) );
+    else
+      $fields = array( $local_field => $local_field); // for non declared tables
 
     if(!$fields)
         throw rbx::error("-- Unresolved ext ref on {$this->table}/{$this->type} to {$birth['name']}");
@@ -144,7 +147,7 @@ abstract class mykse_base {
   function guid_node(){
     $this->field_def["Type"]="uuid";
   }
-  
+
   function text_node(){
     $this->field_def["Type"]="text";
   }
