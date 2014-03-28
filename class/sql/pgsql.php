@@ -304,11 +304,12 @@ class sql {
   }
 
 
-    //escape a field using driver's escape char...
-  function escape($str){
+  /// Escape a field name using driver's escape char.
+  public static function escape($str) {
     if(!preg_match('#^[a-z0-9_.-]+$#i', $str))
       return $str;
-    return sql::$esc.str_replace('.', sql::$esc.'.'.sql::$esc, $str).sql::$esc;
+
+    return sql::$esc . str_replace('.', sql::$esc . '.' . sql::$esc, $str) . sql::$esc;
   }
 
   static function from($tables){

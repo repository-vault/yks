@@ -120,8 +120,8 @@ class interactive_runner {
       if($command['usage']['params']) {
         $tmp_trailing_optionnal = 0; $tmp_str = array();
         foreach($command['usage']['params'] as $param_name=>$param_infos){
-            $tmp_str [] = ($param_infos['optional'] ? '[':'')."\$$param_name";
-            if($param_infos['optional']) $tmp_trailing_optionnal++;
+            $tmp_str [] = (isset($param_infos['optional']) ? '[':'')."\$$param_name";
+            if(isset($param_infos['optional'])) $tmp_trailing_optionnal++;
         }
         $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
       }
@@ -278,28 +278,32 @@ class interactive_runner {
 * @interactive_runner disable
 * runner's internal looop, signal management
 */
-  function run(){
+  protected function run() {
+    $run = $start = null;
+    if(!empty(cli::$dict['ir://run']))
+      $run = cli::$dict['ir://run'];
+    else if(!empty(cli::$dict['ir://start']))
+      $start = cli::$dict['ir://start'];
 
-    if( ($run = cli::$dict['ir://run']) || ($start = cli::$dict['ir://start']) ){
-      if($run === true) $run = "run";
-      list($command_callback, $command_args) = $this->command_parse(pick($run, $start), array(), cli::$dict);
+    if($run || $start) {
+      if($run === true)
+        $run = 'run';
+
+      list($command_callback, $command_args) = $this->command_parse(pick($run, $start), [], cli::$dict);
       $res = call_user_func_array($command_callback, $command_args);
       if($res !== null)
-          cli::box("Response", $res);
+        cli::box('Response', $res);
 
-      if($run) die;
+      if($run)
+        exit();
     }
 
 
-    while(true){
-
+    for(;;) {
       $this->command_loop();
-
       if($this->command_pipe == SIGTERM)
         return;
-
     }
-
   }
 
   private $last_command;
@@ -467,21 +471,22 @@ class interactive_runner {
 /**
 * @interactive_runner disable
 */
-  static public function start($obj, $args = array()){
+  static public function start($obj, $args = array()) {
 
     if(isset(cli::$dict['ir://output']))
       rbx::$output_mode = cli::$dict['ir://output'];
 
 
-    if(!is_array($args)) $args = array($args);
+    if(!is_array($args))
+      $args = [$args];
     $runner = new self($obj, $args);
 
-    if(cli::$dict['ir://fs'])
+    if(!empty(cli::$dict['ir://fs']))
       $runner->fullsize();
-    else  $runner->help();
+    else
+      $runner->help();
 
     $runner->run(); //private internal
   }
 
 }
-
