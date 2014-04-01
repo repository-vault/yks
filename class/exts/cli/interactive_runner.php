@@ -195,15 +195,6 @@ class interactive_runner {
     $this->command_aliases($command_ns, $command_key, $command_key, $command_hash);
   }
 
-/**
-* @interactive_runner hide
-*/
-  function php($cmd){
-    $args = func_get_args(); $args = join(' ', $args);
-    rbx::ok("Exec $args");
-    eval($args);
-  }
-
   private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
       $command_resolve = array();
       foreach($this->commands_list as $command_hash=>$command_infos)
