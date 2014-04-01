@@ -105,18 +105,32 @@ class date {
   }
 
 
-  public static function human_diff($timestamp, $max = 2){
+  const FORMAT_LIGHT = 'FORMAT_LIGHT';
+  const FORMAT_FULL  = 'FORMAT_FULL';
 
-    $steps = array(
-      's'   => 60,
-      'min' => 60,
-      'hour' => 24,
-      'day' => 30,
-      'month' => 12,
-      'year' => 0,
-    );
+  private static $FORMATS = array(
+   self::FORMAT_FULL => array(
+     '%d s'       => 60,
+     '%d min%s'   => 60,
+     '%d hour%s'  => 24,
+     '%d day%s'   => 30,
+     '%d month%s' => 12,
+     '%d year%s'  => 0,
+   ),
+  self::FORMAT_LIGHT => array(
+     '%ds'       => 60,
+     '%dm'       => 60,
+     '%dh'       => 24,
+     '%dd'       => 30,
+     '%dmonth%s' => 12,
+     '%dy'       => 0,
+   ),
+  );
 
-    $out = array('s' => '0 s');
+  public static function human_diff($timestamp, $max = 2, $format = self::FORMAT_FULL ){
+    $steps = self::$FORMATS[$format];
+
+    $out = array($name = key($steps) => sprintf($name, 0) );
     foreach($steps as $name => $step_time){
       if($step_time == 0){
         $current = floor($timestamp);
@@ -125,7 +139,7 @@ class date {
         $timestamp /= $step_time;
       }
       if($current > 0)
-        $out[$name] = "$current $name".($name != 's' && $current > 1 ? 's' : '');
+        $out[$name] = sprintf($name, $current, $current > 1 ? 's' : '');
     }
     return implode(' ', array_slice(array_reverse($out), 0, $max));
   }
