@@ -116,8 +116,7 @@ var Jsx = new Class({
     if(!anchor) return false;
 
     anchor.getElements("script").each(function(script){
-        var content = script.innerText ? script.innerText : script.textContent;
-        scripts+=content+";\n";
+        scripts+=(script.innerText || script.textContent)+";\n";
         script.dispose();
     });
 
