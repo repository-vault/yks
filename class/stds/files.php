@@ -116,7 +116,7 @@ class files {
 
   public static function empty_dir($dir, $recursive = true) {
     if($recursive)
-        self::delete_dir($dir, false, $depth);
+        self::delete_dir($dir, false);
     else
         foreach(self::glob($dir) as $file_path)
             if(!is_dir($file_path)) unlink($file_path);
