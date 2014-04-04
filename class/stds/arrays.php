@@ -102,7 +102,9 @@ function json_encode_lite($json){
     return $json;
 }
 
-function array_get($array,$col){return $col?$array[$col]:$array; }
+function array_get(array $array, $key, $default = null) {
+  return array_key_exists($key, $array) ? $array[$key] : $default;
+}
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
     $args = func_get_args();
