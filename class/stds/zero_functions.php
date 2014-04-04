@@ -288,11 +288,10 @@ function first($obj) {
       return $tmp;
     return null;
   }
+
   $keys = array_keys($obj);
+  if(!count($keys))
+    return null;
+
   return $obj[$keys[0]];
 }
-
-
-
-
-
