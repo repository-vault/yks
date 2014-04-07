@@ -75,7 +75,7 @@ class interactive_runner {
       }
     }
     else {
-      $line = $this->current_command_completion ? : substr($infos['line_buffer'], 0, $infos['end']);
+      $line = pick($this->current_command_completion, substr($infos['line_buffer'], 0, $infos['end']) );
       $args = cli::parse_args($line);
       $method_name = array_shift($args);
       $command_hash = $this->generate_command_hash($this->className, $method_name);
@@ -275,7 +275,8 @@ class interactive_runner {
 * runner's internal looop, signal management
 */
   protected function run() {
-    $run = $start = null;
+    $run = $start = array();
+
     if(!empty(cli::$dict['ir://run']))
       $run = cli::$dict['ir://run'];
     else if(!empty(cli::$dict['ir://start']))
@@ -285,10 +286,16 @@ class interactive_runner {
       if($run === true)
         $run = 'run';
 
-      list($command_callback, $command_args) = $this->command_parse(pick($run, $start), [], cli::$dict);
-      $res = call_user_func_array($command_callback, $command_args);
-      if($res !== null)
-        cli::box('Response', $res);
+      if($start && !is_array($start)) $start = array($start);
+      if($run  && !is_array($run)) $run = array($run);
+
+      foreach(array_merge($start, $run) as $cmd) {
+        list($command_callback, $command_args) = $this->command_parse($cmd, [], cli::$dict);
+        print_r($cmd);var_dump($command_args);
+        $res = call_user_func_array($command_callback, $command_args);
+        if($res !== null)
+          cli::box('Response', $res);
+      }
 
       if($run)
         exit();
@@ -302,7 +309,7 @@ class interactive_runner {
     }
   }
 
-  private $last_command;
+  private $last_command = array();
   private static $REPLAY_COMMAND = array('r');
 
     //embeded object loop, deal with commands
