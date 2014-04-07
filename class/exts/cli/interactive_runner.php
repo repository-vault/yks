@@ -486,7 +486,7 @@ class interactive_runner {
 
 
     if(!is_array($args))
-      $args = [$args];
+      $args = array($args);
     $runner = new self($obj, $args);
 
     if(!empty(cli::$dict['ir://fs']))
