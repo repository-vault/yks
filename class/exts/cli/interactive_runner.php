@@ -84,10 +84,15 @@ class interactive_runner {
         return false;
       $command_args    = array_keys(array_msort($command['usage']['params'], array('position' => SORT_ASC)));
       $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
-      $completion      = $command['usage']['params'][$arg_name]['completion'];
-      if(!$completion)
+
+      if($completion_callback = $command['usage']['params'][$arg_name]['completion_callback']) 
+        $completion = call_user_func($completion_callback, $this->obj);
+      else if($completion_values      = $command['usage']['params'][$arg_name]['completion_values']) 
+        $completion = $completion_values;
+      else 
         $completion = array();
     }
+
     $completion = array_filter($completion);
 
     return empty($completion) ? array("") : $completion;
@@ -425,8 +430,14 @@ class interactive_runner {
       if($autocompletes = $doc['args']['autocomplete']['values']){
         foreach($autocompletes as $values){
           $arg_name  = strip_start(array_shift($values), '$');
-          if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
-            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion'] = $values;
+          if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name])) {
+            $callback  = preg_match("#^([a-z0-9_]+)::([a-z0-9_]+)$#", first($values), $out) && count($values) == 1;
+            if($callback) 
+              $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_callback'] = array($out[1] == 'self' ? $className : $out[1], $out[2]);
+            else
+              $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_values'] = $values;
+
+          }
         }
      }
 

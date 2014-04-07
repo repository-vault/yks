@@ -165,9 +165,12 @@ class sql_runner {
     return !preg_match($filter, $value);
   }
 
-  /**
-   * @alias v * true
-   */
+
+
+/**
+* @alias v * true
+* @autocomplete only_stuff self::views_list
+*/
   function scan_views($only_stuff = '*', $run_queries = false){
     rbx::title("Analysing views");
     $this->dependencies_ordering();
@@ -422,7 +425,10 @@ class sql_runner {
   }
 
 
-
+/**
+* @alias v * true
+* @autocomplete table_name self::dblink_elements
+*/
   function dblink($table_name){
 
     $site_code = yks::$get->config->sql->dblink['local_ns'];
@@ -519,4 +525,31 @@ class sql_runner {
   function find_key($myks_type, $value){
     return mykses::dump_key($myks_type, $value);
   }
+
+
+/******** Autocomplete helpers *********/
+/**
+* @interactive_runner hide
+*/
+  public static function views_list($instance){
+    return array_keys($instance->views_list);
+  }
+/**
+* @interactive_runner hide
+*/
+  public static function tables_list($instance){
+    $tables_list = array();
+    foreach($instance->tables_xml->table as $table_xml)
+      $tables_list[] = (string)$table_xml['name'];
+    return $tables_list;
+  }
+
+/**
+* @interactive_runner hide
+*/
+   public static function dblink_elements($instance){
+    return array_merge(self::views_list($instance), self::tables_list($instance));
+   }
+
+
 }
