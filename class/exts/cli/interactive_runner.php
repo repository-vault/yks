@@ -290,8 +290,7 @@ class interactive_runner {
       if($run  && !is_array($run)) $run = array($run);
 
       foreach(array_merge($start, $run) as $cmd) {
-        list($command_callback, $command_args) = $this->command_parse($cmd, [], cli::$dict);
-        print_r($cmd);var_dump($command_args);
+        list($command_callback, $command_args) = $this->command_parse($cmd, array(), cli::$dict);
         $res = call_user_func_array($command_callback, $command_args);
         if($res !== null)
           cli::box('Response', $res);
