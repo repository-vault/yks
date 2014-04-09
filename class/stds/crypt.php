@@ -17,12 +17,28 @@ class crypt {
     ); $options = array_merge($options, $rsa_options);
 
     $ppk       = openssl_pkey_new($options);
+    if(!$ppk)
+      throw new Exception("Failed to generate a private key");
     $ppk_infos = openssl_pkey_get_details($ppk);
     if(!openssl_pkey_export ($ppk, $contents))
         throw new Exception("Fail to export private key");
+
+    // On OpenSSL 1.0.X export PEM to traditional format
+    if(OPENSSL_VERSION_NUMBER >= 0x010000000){
+      $tmp = files::tmppath('key');
+      file_put_contents($tmp, $contents);
+      $cmd = "openssl rsa -in $tmp 2>/dev/null";
+      exec($cmd, $out, $exit);
+      unlink($tmp); // cleanup !
+      if($exit != 0)
+        throw new Exception("Failed to convert private key to traditional format. Missing openssl exec ?");
+      $contents = implode(PHP_EOL, $out);
+    }
+
     $private_key     = self::cleanupPem($contents);
     $public_key      = self::cleanupPem($ppk_infos['key']);
     $private_openssh = self::pem2openssh($public_key);
+
     return compact('private_key', 'public_key', 'private_openssh');
   }
 
