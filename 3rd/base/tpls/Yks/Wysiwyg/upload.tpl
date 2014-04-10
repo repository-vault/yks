@@ -3,7 +3,7 @@
 <box id="upload_file" theme="&pref.dft;" caption="&wysiwyg.file_attach;" options="close,modal,fly">
 <ks_form ks_action="upload_tmp" enctype="multipart/form-data" submit="&action.upload_tmp;" action="/?$href_fold//$upload_flag;$upload_src;$upload_type/upload" target="upload_frame">
 
-<span style="font-size:10px">(&wysiwyg.valid_exts; : {$upload_def['exts']} ; poids maxi. : {$upload_def['size']} Ko)</span>
+<span style="font-size:10px">(&wysiwyg.valid_exts; : {$upload_def['exts']} ; poids maxi. : {$max_size})</span>
 
   <fields>
 	<input type="hidden" name="APC_UPLOAD_PROGRESS" value="$upload_flag" />

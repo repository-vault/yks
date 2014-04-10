@@ -20,6 +20,7 @@ if(!$upload_def){
     return rbx::error("Unable to load '$upload_type' config, please check config.xml ");
 }
 
+$max_size = dsp::file_size($upload_def['size']*1024);
 
 if($action=="upload_tmp")try {
 
@@ -32,12 +33,20 @@ if($action=="upload_tmp")try {
     if( !is_file($file['tmp_name']) )
         throw rbx::error("Le fichier est invalide");
     if( ($file['size']/1024) > $upload_def['size'] )
-        throw rbx::error("Votre fichier est trop lourd, il ne peut excéder {$upload_def['size']} Ko");
+        throw rbx::error("File is too large, it should not exceed $max_size");
     if(!in_array($file_ext, $valid_exts) && !in_array('*',$valid_exts)) // Si on a pas l'ext et si on a pas autorisé le whilecard
         throw rbx::error("Le format de votre fichier n'est pas valide.<br />".
             "Les extensions acceptées sont : ".join(', ', $valid_exts));
 
-    move_uploaded_file($file['tmp_name'], "path://tmp/$upload_type.$upload_flag.$file_ext");
+    $dest = exyks_paths::resolve("path://tmp/$upload_type.$upload_flag.$file_ext");
+
+     if($file['post_data_reading'])
+        rename($file['tmp_name'], $dest);
+      else
+        move_uploaded_file($file['tmp_name'], $dest);
+
+    if(!is_file($dest))
+      throw rbx::error("Unknown transfert error, sorry");
 
     rbx::$rbx['upload'] = array(
         'src'  => $upload_src,

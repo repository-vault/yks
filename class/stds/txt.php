@@ -113,14 +113,14 @@ class txt {
 
   private static function _cps_to_utf8($cp){
     if ($cp < 0x80)
-        $utf8 = chr($cp);
+      $utf8 = chr($cp);
     else if($cp<0x800)     // 2 bytes
-        $utf8 = (chr(0xC0 | $cp>>6) . chr(0x80 | $cp & 0x3F));
-    else if($cp<0x10000)   // 3 bytes
+      $utf8 = (chr(0xC0 | $cp>>6) . chr(0x80 | $cp & 0x3F));
+      else if($cp<0x10000)   // 3 bytes
         $utf8 = (chr(0xE0 | $cp>>12) . chr(0x80 | $cp>>6 & 0x3F) . chr(0x80 | $cp & 0x3F));
-    else if($cp<0x200000) // 4 bytes
-        $utf8 = (chr(0xF0 | $cp>>18) . chr(0x80 | $cp>>12 & 0x3F) . chr(0x80 | $cp>>6 & 0x3F) . chr(0x80 | $cp & 0x3F));
-    return $utf8;
+        else if($cp<0x200000) // 4 bytes
+          $utf8 = (chr(0xF0 | $cp>>18) . chr(0x80 | $cp>>12 & 0x3F) . chr(0x80 | $cp>>6 & 0x3F) . chr(0x80 | $cp & 0x3F));
+          return $utf8;
   }
 
   //to unicode code point
@@ -137,27 +137,27 @@ class txt {
   }
 
   private static function _utf8_to_cp($chars, &$id)
-    {
+  {
     if( ($chars[$id]>=240)&&($chars[$id]<=255) )
-        $cp =    (intval($chars[$id]-240)<<18)
-               + (intval($chars[++$id]-128)<<12)
-               + (intval($chars[++$id]-128)<<6)
-               + (intval($chars[++$id]-128)<<0);
+      $cp =    (intval($chars[$id]-240)<<18)
+      + (intval($chars[++$id]-128)<<12)
+      + (intval($chars[++$id]-128)<<6)
+      + (intval($chars[++$id]-128)<<0);
     elseif( ($chars[$id]>=224)&&($chars[$id]<=239) )
-        $cp =   (intval($chars[$id]-224)<<12)
-              + (intval($chars[++$id]-128)<<6)
-              + (intval($chars[++$id]-128)<<0);
+      $cp =   (intval($chars[$id]-224)<<12)
+      + (intval($chars[++$id]-128)<<6)
+      + (intval($chars[++$id]-128)<<0);
     elseif( ($chars[$id]>=192)&&($chars[$id]<=223) )
-        $cp =   (intval($chars[$id]-192)<<6)
-              +(intval($chars[++$id]-128)<<0);
+      $cp =   (intval($chars[$id]-192)<<6)
+      +(intval($chars[++$id]-128)<<0);
     else
-        $cp = $chars[$id];
+      $cp = $chars[$id];
 
     return $cp;
   }
 
 
-//cp950 specifics (windows DOS)
+  //cp950 specifics (windows DOS)
   public static function cp950_to_utf8($str){
     $out = "";
     foreach(unpack('C*', $str) as $char)
@@ -176,6 +176,43 @@ class txt {
 
     return strtr($str, array('À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'Ç'=>'C', 'ç'=>'c', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ÿ'=>'y', 'Ñ'=>'N', 'ñ'=>'n'));
   }
+
+
+
+  private static function parse_headers($headers){
+    require_once "yks/3rd/mails/libs/rfc/822_mail/822.php";
+    $head = preg_replace('#'.CRLF.'[\s]+#',' ',$headers); $message_headers=array();
+
+    preg_match_all("#(.*?):\s*(.*)#",$head,$out,PREG_SET_ORDER);
+    foreach($out as $data){
+      $data[1]=ucfirst(preg_replace("#(-[a-z])#e",'strtoupper("$1")',$data[1]));
+      if(strpos($data[2], ";") !== false){ //loading extras
+        list($value,$params) = explode(';',$data[2],2);
+        $data=array($data[1]=>$value,$data[1]."-Details"=>rfc_822::header_extras(";$params"));
+      } else $data=array($data[1]=>rfc_822::header_decode($data[2]));
+      $message_headers = array_merge_recursive($message_headers,$data);
+    }
+    return $message_headers;
+  }
+
+
+  public static function multipart_decode($buffer, $boundary){
+
+    $data = array();
+    $parts = explode(CRLF . '--' . $boundary, $buffer);
+    foreach($parts as $part) {
+      unset($part_headers);unset($part_body);
+      list($part_headers, $part_body) = explode(CRLF.CRLF, $part,2);
+
+      if(!$part_body) continue; //skipp pad
+      $part_headers = self::parse_headers($part_headers);
+
+      $data[]= array($part_headers, $part_body);
+    }
+
+    return $data;
+  }
+
 }
 
 
