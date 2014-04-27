@@ -426,7 +426,6 @@ class sql_runner {
 
 
 /**
-* @alias v * true
 * @autocomplete table_name self::dblink_elements
 */
   function dblink($table_name){
