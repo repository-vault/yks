@@ -24,6 +24,12 @@ function make_tree($splat, $root=false, $inverted = false){
   }
 
 
+function array_compare($a, $b, $comp){
+  $same = true;
+  foreach($comp as $field) $same &= ($a[$field] == $b[$field]);
+  return $same;
+}
+
 
 function trimmed_mean($X, $k = 0.1) {
   $n = count($X);
