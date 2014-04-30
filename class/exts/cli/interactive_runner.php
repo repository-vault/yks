@@ -336,9 +336,10 @@ class interactive_runner {
 
       } catch(Exception $e){
         echo CRLF;
-        $msg = $e->getTraceAsString();
-        $msg = strtr($msg, array(YKS_PATH=>'yks', getcwd().DIRECTORY_SEPARATOR => ''));
-        cli::box("!! Uncatched exception !!", $e->getMessage(), "trace", $msg, array('trim'));
+        $msg = $e->getMessage() ? $e->getMessage()  : $e;
+        $trace = $e->getTraceAsString();
+        $trace = strtr($trace, array(YKS_PATH=>'yks', getcwd().DIRECTORY_SEPARATOR => ''));
+        cli::box("!! Uncatched exception !!", $msg , "trace", $trace, array('trim'));
         continue;
       }
 
