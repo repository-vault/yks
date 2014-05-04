@@ -43,6 +43,21 @@ class files {
     } return ($path{0}==$ds?$ds:'').join($ds, $out);
   }
 
+
+  public static function tar($files_list, $compress = true){
+    $tmp = files::tmppath();
+    $archive = new PharData($tmp, FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_PATHNAME, null, Phar::TAR);
+    foreach($files_list as $file_name => $file_path)
+        $archive->addFile($file_path, $file_name);
+    unset($archive);
+    if(!$compress)
+        return $tmp;
+    $compressed = files::compress($tmp);
+    unlink($tmp);
+    return $compressed;
+  }
+
+
   public static function compress($file_path, $file_out = false){
     if(!$file_out) $file_out = "$file_path.gz";
     $contents = file_get_contents($file_path);
