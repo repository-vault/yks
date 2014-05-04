@@ -77,17 +77,16 @@ class interactive_runner {
     else {
       $line = pick($this->current_command_completion, substr($infos['line_buffer'], 0, $infos['end']) );
       $args = cli::parse_args($line);
-      $method_name = array_shift($args);
-      $command_hash = $this->generate_command_hash($this->className, $method_name);
-      $command = $this->commands_list[$command_hash];
-      if(!$command)
+      $method_name   = array_shift($args);
+      $command_infos = $this->lookup($method_name);
+      if(!$command_infos)
         return false;
-      $command_args    = array_keys(array_msort($command['usage']['params'], array('position' => SORT_ASC)));
+      $command_args    = array_keys(array_msort($command_infos['usage']['params'], array('position' => SORT_ASC)));
       $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
 
-      if($completion_callback = $command['usage']['params'][$arg_name]['completion_callback']) 
+      if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback']) 
         $completion = call_user_func($completion_callback, $this->obj);
-      else if($completion_values      = $command['usage']['params'][$arg_name]['completion_values']) 
+      else if($completion_values      = $command_infos['usage']['params'][$arg_name]['completion_values']) 
         $completion = $completion_values;
       else 
         $completion = array();
@@ -101,15 +100,14 @@ class interactive_runner {
 
 /**
 * show available commands
+* @autocomplete command interactive_runner::get_commands_list
 * @alias ?
 */
   function help( $command = null){
-      $command_resolve = array();
-      foreach($this->commands_list as $command_hash=>$command_infos)
-        if($command_infos['command_key'] == $command) {
-          cli::box($command, join(LF, $command_infos['usage']['doc']));
-          return;
-      }
+    if($command_infos = $this->lookup($command)) {
+      cli::box($command, join(LF, $command_infos['usage']['doc']));
+      return;
+    }
 
     $msgs = array();
 
@@ -172,6 +170,19 @@ class interactive_runner {
     return "$command_ns::$command_key";
   }
 
+  private function lookup($command_prompt){
+    $command_resolve = array();
+
+    foreach($this->commands_list as $command_hash=>$command_infos)
+      if(isset($command_infos['aliases'][$command_prompt]))
+        $command_resolve[] = $command_infos;
+
+    if(count($command_resolve) > 1)
+      throw rbx::error("Too many results for command '*::$command_prompt', please specify ns");
+
+    return first($command_resolve);
+  }
+
   private function command_aliases($command_ns, $command_key){
     $command_hash = $this->generate_command_hash($command_ns, $command_key);
     if(!isset($this->commands_list[$command_hash]))
@@ -201,26 +212,17 @@ class interactive_runner {
   }
 
   private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
-      $command_resolve = array();
-      foreach($this->commands_list as $command_hash=>$command_infos)
-        if(isset($command_infos['aliases'][$command_prompt]))
-          $command_resolve[] = $command_hash;
 
       if(!$command_prompt)
         throw new Exception("No command");
 
-      if(!$command_resolve) {
+      $command_infos = $this->lookup($command_prompt);
+
+      if(!$command_infos) {
         if($this->magic_call)
           return array(array($this->obj, $command_prompt), $command_args);
         else throw rbx::error("Invalid command key '$command_prompt'");
       }
-
-      if(count($command_resolve) > 1)
-        throw rbx::error("Too many results for command '*::$command_prompt', please specify ns");
-
-      $command_hash      = $command_resolve[0];
-      $command_infos     = $this->commands_list[$command_hash];
-
 
       $alias_args        = $command_infos['aliases'][$command_prompt];
 
@@ -437,14 +439,13 @@ class interactive_runner {
       if($autocompletes = $doc['args']['autocomplete']['values']){
         foreach($autocompletes as $values){
           $arg_name  = strip_start(array_shift($values), '$');
-          if(isset($this->commands_list[$command_hash]['usage']['params'][$arg_name])) {
-            $callback  = preg_match("#^([a-z0-9_]+)::([a-z0-9_]+)$#", first($values), $out) && count($values) == 1;
-            if($callback) 
-              $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_callback'] = array($out[1] == 'self' ? $className : $out[1], $out[2]);
-            else
-              $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_values'] = $values;
-
-          }
+          if(!isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
+            continue;
+          $callback  = preg_match("#^([a-z0-9_]+)::([a-z0-9_]+)$#", first($values), $out) && count($values) == 1;
+          if($callback)
+            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_callback'] = array($out[1] == 'self' ? $className : $out[1], $out[2]);
+          else
+            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_values'] = $values;
         }
      }
 
@@ -477,6 +478,10 @@ class interactive_runner {
     $this->help();
   }
 
+
+
+  private static $current_runner = null;
+
 /**
 * @interactive_runner disable
 */
@@ -488,14 +493,17 @@ class interactive_runner {
 
     if(!is_array($args))
       $args = array($args);
-    $runner = new self($obj, $args);
+    self::$current_runner = new self($obj, $args);
 
     if(!empty(cli::$dict['ir://fs']))
-      $runner->fullsize();
+      self::$current_runner->fullsize();
     else
-      $runner->help();
+      self::$current_runner->help();
 
-    $runner->run(); //private internal
+    self::$current_runner->run(); //private internal
   }
+
+    //helpers for interactive runner completion
+  private static function get_commands_list(){ return array_keys(self::$current_runner->commands_list); }
 
 }
