@@ -147,6 +147,7 @@ class WordTemplate {
   * @param array $value_list for each new image key(contentType, name, data or path)
   */
   public function replaceImg($value_list){
+    $value_list = array_filter($value_list);
     foreach($value_list as $id => $value){
       $this->addContentType($value['ext'], $value['contentType']);
       $rid = $this->addMedia($value['name'], pick($value['path'], $value['data']));
@@ -206,7 +207,6 @@ class WordTemplate {
     }
 
     $media_path = $this->doc.self::MEDIADIR.'/'.$name;
-
     if(file_exists($data))
       copy($data, $media_path);
     else
