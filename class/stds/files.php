@@ -328,12 +328,13 @@ class files {
   }
 
   public static function tmpdir(){mkdir($tmp = self::tmppath()); return $tmp; }
-  public static function tmppath($ext= 'tmp') {
-      $abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      $rand = substr(str_shuffle($abc.$abc.$abc), 0,8);
-      $file_path = rtrim(sys_get_temp_dir(),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR."$ext-$rand.$ext";
+  public static function tmppath($ext= 'tmp', $use_local_tmp = false) {
+      $abc   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      $rand  = substr(str_shuffle($abc.$abc.$abc), 0,8);
+      $fname = "$ext-$rand.$ext";
+      $file_path = $use_local_tmp ?  exyks_paths::resolve("path://tmp/$fname") : rtrim(sys_get_temp_dir(),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$fname;
       if(file_exists($file_path))
-        return self::tmppath($ext);
+        return self::tmppath($ext, $use_local_tmp );
       return $file_path;
   }
 
