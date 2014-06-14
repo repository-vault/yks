@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE myks PUBLIC "-//YKS//MYKS">
+<myks>
+  <procedure name="text_to_version" type="int[]">
+    <param name="version_key" type="string"/>
+    <def>
+BEGIN
+  RETURN string_to_array(replace(version_key, '-', '.'), '.');
+END;
+</def>
+  </procedure>
+</myks>
