@@ -97,6 +97,8 @@ abstract class procedure_base extends myks_installer  {
 
 //STATIC
   private static function raw_sql_search($proc_name, $proc_schema, $data_type, $params = array()){
+    if(ends_with($data_type, "[]"))
+      $data_type = "ARRAY";
 
     $where    = array(
       'routine_name'     => $proc_name,
@@ -134,6 +136,9 @@ abstract class procedure_base extends myks_installer  {
     ); $data = sql::row("zks_information_schema_routines", $verif_proc);
 
     if(!$data) return false;
+
+    if($data['data_type'] == "ARRAY")
+       $data['data_type'] = $this->xml_def['type'];
 
     $this->sql_def = array(
         'name'       => $data['routine_name'],
