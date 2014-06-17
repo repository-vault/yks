@@ -280,6 +280,14 @@ function retrieve_constants($mask = "#.*?#", $format="{%s}", $useronly = true){
     return $constants;
 }
 
+ /// Like sprintf but all parameters go through escapeshellarg.
+function sprintfshell($mask){
+  $args = func_get_args();
+  $args = array_map('escapeshellarg', array_slice($args, 1));
+  return call_user_func('vsprintf', $mask, $args);
+}
+
+ 
 function first($obj) {
   if(!is_array($obj)) {
     if(!is_a($obj, 'Traversable'))
