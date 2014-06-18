@@ -182,7 +182,7 @@ abstract class _sql_base  implements ArrayAccess {
     self::raw_restore($deletion_id);
   }
 
-  function delete($reason, $rmap = array()){
+  function delete($reason = false, $rmap = array()){
     if(!$reason)
       throw rbx::error("Please specify motivation");
 
