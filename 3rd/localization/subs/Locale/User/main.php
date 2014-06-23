@@ -25,6 +25,6 @@ catch(rbx $e){
 
 sql::select('ks_locale_domains_list', sql::true);
 $locale_domains_list = sql::brute_fetch('locale_domain_id');
-$user_languages = array_extract($user['computed']['lang_key'], 'lang_key');
+$user_languages = array_extract($user->lang_key, 'lang_key');
 
 
