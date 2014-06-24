@@ -58,22 +58,33 @@ class classes {
   }
 
   static function autoload($class_name){
+    if(!$class_name)
+      return false;
 
-    if(!$class_name) return false;
-
+    $raw_name = $class_name;
     $class_name = strtolower($class_name);
 
     if(isset(self::$classes_paths[$class_name])) {
         $file = self::$classes_paths[$class_name]; //direct path
         include $file;
+    } elseif(strpos($class_name, '\\') ) {
+        $file_path = strtr($raw_name, array('\\'=>'/')) . '.php';
+
+        if(file_exists(stream_resolve_include_path($file_path)))
+          require_once $file_path;
+        else
+          return;
     } elseif(isset(self::$classes_aliases[$class_name])){
         self::alias($class_name, self::$classes_aliases[$class_name]);
     } elseif(strpos($class_name, "_") ) {
         $file_path = strtr($class_name, array('_'=>'/') ).".php"; //include_path
         if(file_exists(stream_resolve_include_path($file_path)))
           include $file_path;
-        else return;
-    } else return ; //leave it to the spl_autoload(); , yeap ?
+        else
+          return;
+    } else {
+      return; //leave it to the spl_autoload(); , yeap ?
+    }
 
     self::init($class_name);
   }
