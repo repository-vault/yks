@@ -212,6 +212,20 @@ class date {
     return $date;
   }
 
+  /**
+  * Date conversion into a timestamp
+  *
+  * @param mixed $date
+  */
+  static function time_to_timestamp($time) {
+    $dtm = date_default_timezone_get();
+    date_default_timezone_set('UTC');
 
+    $date_data = preg_split("#[.hH:]#", $time);
+    $time = sprintf("%02d:%02d:00", $date_data[0], $date_data[1]);
+
+    date_default_timezone_set($dtm);
+    return strtotime($time, 0);
+  }
 }
 
