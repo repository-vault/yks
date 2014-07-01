@@ -224,7 +224,8 @@ class date {
     if($time && !preg_match(self::hour24_regex, $time))
       throw rbx::error("Time « $time » is not valid.");
 
-    $time = str_replace(array('h','H','.',' '),':',$time)
+    $date_data = preg_split("#[.hH:]#", $time);
+    $time = sprintf("%02d:%02d:00", $date_data[0], $date_data[1]);
 
     $dtm = date_default_timezone_get();
     date_default_timezone_set('UTC');
