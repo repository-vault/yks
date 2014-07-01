@@ -2,6 +2,8 @@
 
 class date {
 
+  const hour24_regex = '#^([01]?[0-9]|2[0-3])[hH:]([0-5][0-9])?(:[0-9]{2})?$#';
+
   static function validate($date, $format=DATE_MASK, $zero_time = false){
     $format=preg_replace("#[a-z]#i","%$0",strtr($format,array('i'=>'M','s'=>'S')));
 
@@ -213,19 +215,24 @@ class date {
   }
 
   /**
-  * Date conversion into a timestamp
+  * Hour with human format conversion into a timestamp
   *
-  * @param mixed $date
+  * @param mixed $time
   */
   static function time_to_timestamp($time) {
+
+    if($time && !preg_match(self::hour24_regex, $time))
+      throw rbx::error("Time « $time » is not valid.");
+
+    $time = str_replace(array('h','H','.',' '),':',$time)
+
     $dtm = date_default_timezone_get();
     date_default_timezone_set('UTC');
 
-    $date_data = preg_split("#[.hH:]#", $time);
-    $time = sprintf("%02d:%02d:00", $date_data[0], $date_data[1]);
+    $res = strtotime($time, 0); //!
 
     date_default_timezone_set($dtm);
-    return strtotime($time, 0);
+    return $res;
   }
 }
 
