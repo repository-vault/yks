@@ -25,6 +25,22 @@ class ipkg {
   }
 
   public static function mk2($control_files, $files_list){
+
+    $tmp_dir = files::tmppath();
+    files::create_dir($tmp_dir);
+
+    foreach(array('data' => $files_list, 'control' => $control_files) as $dir => $files_list)
+    foreach($files_list as $file_name => $file_path) {
+      if(!is_file($file_path)) continue;
+      files::create_dir(dirname($dest = "$tmp_dir/$dir/$file_name"));
+      copy($file_path, $dest); chmod($dest, fileperms($file_path));
+    }
+
+    $archive = self::forge($tmp_dir);
+    files::empty_dir($tmp_dir);
+    return $archive;
+
+
     $data    = files::tar($files_list);
     $control = files::tar($control_files);
     file_put_contents($extras = files::tmppath(), "2.0\n");
@@ -37,20 +53,22 @@ class ipkg {
     return $archive;
   }
 
-  function forge($path){
+  public static function forge($path){
     $path = realpath($path);
     $old  = getcwd(); $tmp_dir = files::tmppath();
     files::create_dir($tmp_dir); chdir($tmp_dir);
-    exec("tar -C $path/control -cvzf control.tar.gz  .");
-    exec("tar -C $path/data -cvzf data.tar.gz  .");
+    exec("tar --owner=0 --group=0 -C $path/control -cvzf control.tar.gz  .");
+    exec("tar --owner=0 --group=0 -C $path/data -cvzf data.tar.gz  .");
     file_put_contents("debian-binary", "2.0\n");
 
-    exec("tar -C . -cvzf ../archive .");
-    $archive = realpath("../archive"); chdir($old);
+
+    $name = basename(files::tmppath());
+    exec("tar -C . -cvzf ../$name .");
+    $archive = realpath("../$name");
+    chdir($old);
 
     files::delete_dir($tmp_dir, true);
 
-    $dest = basename($path);
-    rename($archive, "public/$dest.ipk");
+    return $archive;
   }
 }
