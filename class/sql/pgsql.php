@@ -292,8 +292,15 @@ class sql {
       unset($cond[$k]); $cond = array_merge($cond, $obj->__sql_where($table));
     }
 
-    $slice=array_filter(array_keys($cond),'is_numeric');
-    $conds=array_intersect_key($cond,array_flip($slice));
+    $slice = array_filter(array_keys($cond),'is_numeric');
+
+    foreach($slice as $k)
+       if(is_array($map  = $cond[$k]))
+         $cond[$k] = vsprintf( $command = array_shift($map), array_map(array(__CLASS__, 'clean'), $map));
+
+       //only numerical keys here
+    $conds = array_intersect_key($cond,array_flip($slice));
+      //only complex keys here
     foreach(array_diff_key($cond,array_flip($slice)) as $k=>$v)
       $conds[]= sql::conds($k, $v);
     return $conds?"$keyword ".join(" $mode ",$conds):'';
