@@ -85,7 +85,7 @@ class interactive_runner {
       $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
 
       if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback']) 
-        $completion = call_user_func($completion_callback, $this->obj);
+        $completion = call_user_func($completion_callback, $args, $this->obj);
       else if($completion_values      = $command_infos['usage']['params'][$arg_name]['completion_values']) 
         $completion = $completion_values;
       else 
