@@ -55,8 +55,8 @@ class win32_cli {
     echo cli::which($file_path);
   }
 
-  public static function touch($file_path){
-    touch($file_path, time());
+  public static function touch($file_path, $from_file = null){
+    touch($file_path, is_file($from_file) ? filemtime($from_file) : time() );
   }
 
   public static function crypt($str, $salt = null){
