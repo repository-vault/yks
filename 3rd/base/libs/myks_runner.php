@@ -17,7 +17,7 @@ class myks_runner {
   }
 
   function __construct(){
-    $compatibility = pick(yks::$get->config->themes['compatibility'], "html5");
+    $compatibility = exyks::$COMPATIBILITY;
     rbx::ok("XSL engine in '$compatibility' mode");
 
     $this->xml_filename     = RSRCS_PATH."/xsl/$compatibility/root.xsl";       //meta XSL source

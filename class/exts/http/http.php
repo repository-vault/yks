@@ -36,12 +36,15 @@ class http {
   }
 
 
-  static function parse_headers($headers_str){
-    $headers_str = preg_replace('#'.CRLF.self::LWSP.'+#',' ',$headers_str);
+  static function parse_headers($headers_input){
     $headers = array();
 
-    $liste = explode(CRLF, $headers_str);
-    foreach($liste as $header_str) {
+    if(is_string($headers_input)) {
+      $headers_str = preg_replace('#'.CRLF.self::LWSP.'+#',' ',$headers_input);
+      $headers_input = explode(CRLF, $headers_input);
+    }
+
+    foreach($headers_input as $header_str) {
         $header = header::parse_string($header_str); $name = $header->name;
         if(!$header) continue;
         if(in_array($name, self::$headers_onlyraw)) $header->value = $header->value_raw;

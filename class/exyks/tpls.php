@@ -162,7 +162,7 @@ class tpls {
     $attr_title = specialchars_encode($field->getAttribute('title')); // read
 
     if($attr_title){
-      if(bool(yks::$get->config->themes['bootstrap']))
+      if(exyks::$COMPATIBILITY == exyks::COMPATIBLITY_HTML5)
         $title = self::create_element($doc, 'label', $attr_title, array('for'=>$id));
       else
         $title = self::create_element($doc, 'span', $attr_title.' : ');
