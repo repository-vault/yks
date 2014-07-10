@@ -76,9 +76,9 @@ class dsp{
 
 
   public static function pages($max, $by, $page_id, $format, $target = false, $step = true){
-   if(bool(yks::$get->config->themes['bootstrap']))
-     return self::pages_html5($max, $by, $page_id, $format, $target, $step);
-   return self::pages_quirks($max, $by, $page_id, $format, $target, $step);
+    if(exyks::$COMPATIBILITY == exyks::COMPATIBLITY_HTML5)
+      return self::pages_html5($max, $by, $page_id, $format, $target, $step);
+    return self::pages_quirks($max, $by, $page_id, $format, $target, $step);
   }
 
   // Find documentation in the manual
