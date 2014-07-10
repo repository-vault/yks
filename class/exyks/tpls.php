@@ -151,9 +151,10 @@ class tpls {
   * @param DomElement field
   */
   static function inline_field($doc, $field){
-
+    static $field_count = 0;
     $type = $field->getAttribute('type');
-    $name = $field->hasAttribute('name') ? $field->getAttribute('name') : $type;
+    $name = pick($field->getAttribute('name'), $type);
+    $id   = pick($field->getAttribute('id'), 'field_'.$name);
 
     $container = self::create_element($doc, 'p');
     self::clone_args($container,  $field, array('id', 'class'));
@@ -161,7 +162,10 @@ class tpls {
     $attr_title = specialchars_encode($field->getAttribute('title')); // read
 
     if($attr_title){
-      $title = self::create_element($doc, 'span', $attr_title.' : ');
+      if(bool(yks::$get->config->themes['bootstrap']))
+        $title = self::create_element($doc, 'label', $attr_title, array('for'=>$id));
+      else
+        $title = self::create_element($doc, 'span', $attr_title.' : ');
       $container->appendChild($title);
     }
 
@@ -183,15 +187,16 @@ class tpls {
       $new_attr = array(
         'type'  => in_array($true_type, array('sha1', 'password') ) ? "password" :  "text",
         'name'  => $name,
+        'id'    => $id,
         'class' => 'input_'.$true_type,
       );
       $output_element = self::create_element($doc, 'input', null, $new_attr);
-        self::clone_args($output_element,  $field, array('value', 'style', 'name', 'id', 'disabled'));
+        self::clone_args($output_element,  $field, array('value', 'style', 'disabled', 'placeholder'));
     }
 
     ///////file
     if($true_type == 'file'){
-      $output_element = self::create_element($doc, 'input', null, array('name' => $name, 'type' => 'file'));
+      $output_element = self::create_element($doc, 'input', null, array('name' => $name, 'type' => 'file', 'id' => $id));
       self::clone_args($output_element,  $field, array('style'));
     }
 
@@ -225,9 +230,8 @@ class tpls {
     }
 
     if(in_array($true_type, array('html', 'text', 'textarea')) ){
-      $new_attr = array(
-        'name'  => $name,
-      );
+      $new_attr = compact('name', 'id');
+
       if($true_type == "html")
         $new_attr[ 'class' ]  = 'wyzzie';
 
@@ -240,6 +244,7 @@ class tpls {
       $new_attr = array(
         'type' => 'checkbox',
         'name' => $name,
+        'id'   => $id,
       );
       $output_element = self::create_element($doc, 'input', NULL, $new_attr);
 
