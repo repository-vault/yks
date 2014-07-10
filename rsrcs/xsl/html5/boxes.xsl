@@ -11,6 +11,9 @@
           <xsl:if test="contains(@options,'close')">
             <span class="box_action {$theme}_close"> </span>
           </xsl:if>
+          <xsl:if test="contains(@options,'reload')">
+            <span class="box_action {$theme}_reload"> </span>
+          </xsl:if>
         </p>
       </xsl:if>
       <xsl:if test="not(./node())">
