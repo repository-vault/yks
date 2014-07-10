@@ -6,7 +6,7 @@
       <xsl:attribute name="class"><xsl:value-of select="@class"/> box <xsl:if test="$jsx"><xsl:if test="contains(@options,'modal')"> modal</xsl:if><xsl:if test="contains(@options,'fly')"> fly </xsl:if></xsl:if><xsl:if test="@theme"><xsl:value-of select="@theme"/>_box </xsl:if></xsl:attribute>
       <xsl:copy-of select="@style|@id|@src|@url"/>
       <xsl:if test="@caption">
-        <p class="title">
+        <p class="title box_title">
           <xsl:value-of select="@caption"/>
           <xsl:if test="contains(@options,'close')">
             <span class="box_action {$theme}_close"> </span>

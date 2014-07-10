@@ -58,7 +58,7 @@ var Box = new Class({
         //!!!
     if(!anchor.makeDraggable && Browser.Engine.trident){ anchor.$family = false; $(anchor); }
 
-    var drag_anchor = $E("*[class$='_u']",anchor);
+    var drag_anchor = $E("*[class$='_u'],p.box_title",anchor);
     if(drag_anchor) anchor.makeDraggable({handle:drag_anchor.addClass('dragged')});
     anchor.addEvent('click', this.focus.bind(this) );
 
