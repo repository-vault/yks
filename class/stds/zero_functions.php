@@ -110,7 +110,7 @@ function alist($args){
 function bool($val,$str=false){
     if(is_string($val)) {
         $val=strtolower($val);
-        $val=$val && $val!="false" && $val !="no" && $val !="n" && $val !="f";
+        $val=$val && $val!="false" && $val !="no" && $val !="n" && $val !="f" && $val !="off";
     }else $val=(bool)$val;
     return $str?($val?"true":"false"):$val;
 }

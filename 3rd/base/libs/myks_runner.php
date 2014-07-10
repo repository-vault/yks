@@ -17,10 +17,17 @@ class myks_runner {
   }
 
   function __construct(){
-    $this->xml_filename     = RSRCS_PATH."/xsl/root.xsl";              //meta XSL source
+    $compatibility = pick(yks::$get->config->themes['compatibility'], "html5");
+    rbx::ok("XSL engine in '$compatibility' mode");
+
+    $this->xml_filename     = RSRCS_PATH."/xsl/$compatibility/root.xsl";       //meta XSL source
+    if(!is_file($this->xml_filename))
+        throw new Exception("Invalid XSL compatibility");
+
     $this->xsl_filename     = RSRCS_PATH."/xsl/metas/xsl_gen.xsl";     //meta XSL stylesheet
 
     $this->browsers_engines = array( 'trident', 'gecko', 'webkit', 'presto', 'mobile');
+
     $this->rendering_sides  = array( 'server', 'client');
 
   }

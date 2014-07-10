@@ -74,8 +74,15 @@ class dsp{
     return "<field title='$field_name' type='$field_type' name='$field_name' value='$field_value'  $extras/>";
   }
 
+
+  public static function pages($max, $by, $page_id, $format, $target = false, $step = true){
+   if(bool(yks::$get->config->themes['bootstrap']))
+     return self::pages_html5($max, $by, $page_id, $format, $target, $step);
+   return self::pages_quirks($max, $by, $page_id, $format, $target, $step);
+  }
+
   // Find documentation in the manual
-  static function pages($max, $by, $page_id, $href, $target=false, $step=true){
+  private static function pages_quirks($max, $by, $page_id, $href, $target, $step){
     $str="";
     if($by) for($a=0; $a<$max; $a += $by){
         $b=$a/$by; $tmp=$b+1; $total=ceil($max/$by);
@@ -88,6 +95,23 @@ class dsp{
     }
     $end = ($page_id*$by +1 )."-".min(($page_id+1)*$by+1, $max);
     return $str?$str." ($end/$max)":'';
+  }
+
+  private static function pages_html5($max, $by, $page_id, $href_mask, $target, $step){
+    $str = "";
+    if($by) for($a=0; $a<$max; $a += $by){
+        $b = $a/$by; $tmp=$b+1; $total=ceil($max/$by);
+        $class = ($b==$page_id) ? "class='active'" : "";
+        $href = sprintf($href_mask, $b);
+        if($step && $b>4 && $b<$page_id-2){
+            if($b==5) $str.="<li class='disabled'><a href='#0'>…</a></li>"; continue;
+        } elseif($step && $b>$page_id+2 && $b<$total-5){
+            if($b==$page_id+3) $str.="<li class='disabled'><a href='#0'>…</a></li>"; continue;
+        }
+        $str.="<li  $class><a href='$href' ".($target?"target='$target'":'').">$tmp</a></li>";
+    }
+    $end = ($page_id*$by +1 )."-".min(($page_id+1)*$by+1, $max);
+    return "<ul>$str<li class='disabled'><a href='#0'>($end/$max)</a></li></ul>";
   }
 
   static function radio($type,$actives=false,$mode="radio"){

@@ -162,13 +162,13 @@ class css_processor {
     $names = array(
       'border-radius' => array(
         'webkit' => '-webkit-border-radius',
-        'gecko' => '-moz-border-radius',
+        'gecko' => 'border-radius',
         'presto' => '-o-border-radius',
         'trident' => '-khtml-border-radius',
       ),
       'box-shadow' => array(
         'webkit' => '-webkit-box-shadow',
-        'gecko' => '-moz-box-shadow',
+        'gecko' => 'box-shadow',
         'presto' => '-o-box-shadow',
         'trident' => '-khtml-box-shadow',
       ),
