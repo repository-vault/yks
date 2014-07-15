@@ -381,7 +381,9 @@ class interactive_runner {
     if(is_null($instance) && !$className)
       throw new Exception("Cannot scan unknown static class");
 
-    $className = pick($className, get_class($instance));
+    if(!$className) 
+      $className = get_class($instance);
+
     if(!$command_ns) $command_ns = $className;
     $reflect   = new ReflectionClass($className);
     $methods   = $reflect->getMethods();
