@@ -10,7 +10,7 @@ class interactive_runner {
   private $file;
   private $magic_call; //does current object support __call ?
   private $static; //static mode
-  private $silent;
+  private $output; //output mode, might be rbx, raw or json
 
   const ns = "runner";
 
@@ -22,21 +22,23 @@ class interactive_runner {
 
   function __construct($from, $args = array()){
 
-      // --ir://raw or --ir://output=0  will force silent mode
-    if(isset(cli::$dict['ir://raw']))
-      cli::$dict['ir://output'] = 0;
-
-    if(isset(cli::$dict['ir://output'])) {
-      rbx::$output_mode = cli::$dict['ir://output'];
-      $this->silent = !rbx::$output_mode;
+    if(isset(cli::$dict['ir://raw'])) {
+      $this->output = 'raw';
+    }
+    if(isset(cli::$dict['ir://json'])) {
+      $this->output = 'json';
     }
 
+    if(isset(cli::$dict['ir://output'])) {
+      if(!bool(cli::$dict['ir://output'])) $this->output = "raw";
+      elseif(cli::$dict['ir://output'] === true) $this->output = "rbx";
+      else $this->output = cli::$dict['ir://output'];
+    }
+
+    rbx::$output_mode = $this->output == "rbx";
 
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
-
-
     $this->reflection_scan($this, self::ns); //register runners own commands
-
 
     $this->obj  = null;
     $this->static = cli::$dict['ir://static'];
@@ -307,8 +309,10 @@ class interactive_runner {
         list($command_callback, $command_args) = $this->command_parse($cmd, array(), cli::$dict);
         $res = call_user_func_array($command_callback, $command_args);
         if($res !== null) {
-          if($this->silent)
+          if($this->output == "raw")
             echo $res;
+          elseif($this->output == "json")
+            echo json_encode($res);
           else cli::box('Response', $res);
         }
       }
@@ -351,6 +355,8 @@ class interactive_runner {
         if($res !== null) {
           if($this->silent)
             echo $res;
+          elseif($this->output == "json")
+            echo json_encode($res);
           else cli::box('Response', $res);
         }
 
