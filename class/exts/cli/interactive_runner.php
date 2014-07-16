@@ -10,6 +10,7 @@ class interactive_runner {
   private $file;
   private $magic_call; //does current object support __call ?
   private $static; //static mode
+  private $silent;
 
   const ns = "runner";
 
@@ -20,6 +21,17 @@ class interactive_runner {
   }
 
   function __construct($from, $args = array()){
+
+      // --ir://raw or --ir://output=0  will force silent mode
+    if(isset(cli::$dict['ir://raw']))
+      cli::$dict['ir://output'] = 0;
+
+    if(isset(cli::$dict['ir://output'])) {
+      rbx::$output_mode = cli::$dict['ir://output'];
+      $this->silent = !rbx::$output_mode;
+    }
+
+
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
 
 
@@ -294,8 +306,11 @@ class interactive_runner {
       foreach(array_merge($start, $run) as $cmd) {
         list($command_callback, $command_args) = $this->command_parse($cmd, array(), cli::$dict);
         $res = call_user_func_array($command_callback, $command_args);
-        if($res !== null)
-          cli::box('Response', $res);
+        if($res !== null) {
+          if($this->silent)
+            echo $res;
+          else cli::box('Response', $res);
+        }
       }
 
       if($run)
@@ -333,8 +348,11 @@ class interactive_runner {
 
       try {
         $res =  call_user_func_array($command_callback, $command_args);
-        if($res !== null)
-            cli::box("Response", $res);
+        if($res !== null) {
+          if($this->silent)
+            echo $res;
+          else cli::box('Response', $res);
+        }
 
       } catch(Exception $e){
         echo CRLF;
@@ -488,10 +506,6 @@ class interactive_runner {
 * @interactive_runner disable
 */
   static public function start($obj, $args = array()) {
-
-    if(isset(cli::$dict['ir://output']))
-      rbx::$output_mode = cli::$dict['ir://output'];
-
 
     if(!is_array($args))
       $args = array($args);
