@@ -10,9 +10,13 @@ class interactive_runner {
   private $file;
   private $magic_call; //does current object support __call ?
   private $static; //static mode
-  private $output; //output mode, might be rbx, raw or json
+  private $output; //output mode,  see below
 
   const ns = "runner";
+
+  const OUTPUT_RBX  = 'rbx';
+  const OUTPUT_JSON = 'json';
+  const OUTPUT_RAW  = 'raw';
 
   static function init(){
     if(!classes::init_need(__CLASS__)) return;
@@ -21,21 +25,22 @@ class interactive_runner {
   }
 
   function __construct($from, $args = array()){
+    $this->output = self::OUTPUT_RBX;
 
     if(isset(cli::$dict['ir://raw'])) {
-      $this->output = 'raw';
+      $this->output = self::OUTPUT_RAW;
     }
     if(isset(cli::$dict['ir://json'])) {
-      $this->output = 'json';
+      $this->output = self::OUTPUT_JSON;
     }
 
     if(isset(cli::$dict['ir://output'])) {
-      if(!bool(cli::$dict['ir://output'])) $this->output = "raw";
-      elseif(cli::$dict['ir://output'] === true) $this->output = "rbx";
+      if(!bool(cli::$dict['ir://output'])) $this->output = self::OUTPUT_RAW;
+      elseif(cli::$dict['ir://output'] === true) $this->output = self::OUTPUT_RBX;
       else $this->output = cli::$dict['ir://output'];
     }
 
-    rbx::$output_mode = $this->output == "rbx";
+    rbx::$output_mode = $this->output == self::OUTPUT_RBX;
 
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
     $this->reflection_scan($this, self::ns); //register runners own commands
@@ -309,9 +314,9 @@ class interactive_runner {
         list($command_callback, $command_args) = $this->command_parse($cmd, array(), cli::$dict);
         $res = call_user_func_array($command_callback, $command_args);
         if($res !== null) {
-          if($this->output == "raw")
+          if($this->output == self::OUTPUT_RAW)
             echo $res;
-          elseif($this->output == "json")
+          elseif($this->output == self::OUTPUT_JSON)
             echo json_encode($res);
           else cli::box('Response', $res);
         }
@@ -353,9 +358,9 @@ class interactive_runner {
       try {
         $res =  call_user_func_array($command_callback, $command_args);
         if($res !== null) {
-          if($this->silent)
+          if($this->output == self::OUTPUT_RAW)
             echo $res;
-          elseif($this->output == "json")
+          elseif($this->output == self::OUTPUT_JSON)
             echo json_encode($res);
           else cli::box('Response', $res);
         }
