@@ -250,6 +250,8 @@ class files {
 
     $filename = $filename ? $filename : basename($file);
 
+   header("Content-Encoding: none"); //prevent chunked delivery
+
     if($metas['filesize'])
       header(sprintf("Content-Length:%d", $metas['filesize'] )); //force !chunked
 
@@ -276,7 +278,6 @@ class files {
     while(@ob_end_clean());
     $metas = array('filesize' => filesize($file_path));
     self::download_forge_headers($filename ? $filename : basename($file_path), $mime_type, $metas);
-
     readfile($file_path);
     if($delete) unlink($file_path);
     die;
