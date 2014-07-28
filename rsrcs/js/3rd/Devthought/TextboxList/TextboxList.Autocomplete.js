@@ -31,7 +31,7 @@ TextboxList.Autocomplete = new Class({
     onlyFromValues: false,
     queryRemote: false,
     overflowResults: false,
-    useCache:true,
+    useCache: true,
     remote: {
       url: '',
       param: 'search',
@@ -39,7 +39,8 @@ TextboxList.Autocomplete = new Class({
       loadPlaceholder: 'Please wait...'
     },
     method: 'standard',
-    placeholder: 'Type to receive suggestions'
+    placeholder: 'Type to receive suggestions',
+    allowWhilechar: false
   },
 
   initialize: function(textboxlist, options){
@@ -107,7 +108,7 @@ TextboxList.Autocomplete = new Class({
   },
 
   showResults: function(search){
-    var filteredResults = this.method.filter(this.values, search, this.options.insensitive, this.options.maxResults);
+    var filteredResults = this.method.filter(this.values, search, this.options);
     var results = filteredResults.values;
     if (this.index) results = results.filter(function(v){ return !this.index.contains(v); }, this);
     this.hidePlaceholder();
@@ -231,12 +232,14 @@ TextboxList.Autocomplete = new Class({
 });
 
 TextboxList.Autocomplete.Methods = {
-
+  // The JS do the filtering
   standard: {
-    filter: function(values, search, insensitive, max){
-      var newvals = [], regexp = new RegExp(search.escapeRegExp(), insensitive ? 'i' : ''), isTrunc = false;
+    filter: function(values, search, options){
+      if(options.allowWhilechar && search == '*')
+        return {'values' : values, 'trunc' : false};
+      var newvals = [], regexp = new RegExp(search.escapeRegExp(), options.insensitive ? 'i' : ''), isTrunc = false;
       for (var i = 0; i < values.length; i++){
-        if (max != 0 && newvals.length === max) {isTrunc = true; break;}
+        if (options.maxResults != 0 && newvals.length === options.maxResults) {isTrunc = true; break;}
         if (values[i][1].test(regexp)) newvals.push(values[i]);
       }
       return {'values' : newvals, 'trunc' : isTrunc};
@@ -249,12 +252,15 @@ TextboxList.Autocomplete.Methods = {
       }));
     }
   },
-  
+
+  // The remote page do the filtering
   delegate: {
-    filter: function(values, search, insensitive, max){
+    filter: function(values, search, options){
+      if(options.allowWhilechar && search == '*')
+        return {'values' : values, 'trunc' : false};
       var newvals = [], isTrunc = false;
       for (var i = 0; i < values.length; i++){
-        if (max != 0 && newvals.length === max) {isTrunc = true; break;}
+        if (options.maxResults != 0 && newvals.length === options.maxResults) {isTrunc = true; break;}
         newvals.push(values[i]);
       }
       return {'values' : newvals, 'trunc' : isTrunc};
