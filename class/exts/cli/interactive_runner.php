@@ -295,7 +295,7 @@ class interactive_runner {
 * @interactive_runner disable
 * runner's internal looop, signal management
 */
-  protected function run() {
+  public function run() {
     $run = $start = array();
 
     if(!empty(cli::$dict['ir://run']))
