@@ -87,9 +87,6 @@ if($uids) {
 
     $packer->feed_var("Doms.loaders", $headers);
     $packer->feed_script("window.addEvent('domready', Screen.initialize);");
-    if(bool(yks::$get->config->themes['bootstrap']))
-        $packer->feed_script(file_get_contents("path://yks.root/bootstrap.js"));
-
 
 }
 
