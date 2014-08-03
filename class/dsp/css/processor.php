@@ -70,6 +70,78 @@ class css_processor {
     echo $process->process();
   }
 
+  static function delivers_stylus($path){
+
+  $paths = array(
+    "bootstrap"       => RSRCS_PATH . "/themes/bootstrap",
+    "bootstrap-2.3.2" => RSRCS_PATH . "/themes/bootstrap-2.3.2",
+    "yks-bootstrap"   => RSRCS_PATH . "/themes/yks-bootstrap",
+    "public"          => PUBLIC_PATH,
+  ); 
+  $js_data = json_encode(compact('paths', 'path'));
+
+  $str = <<<EOS
+    require('nyks');
+    var  stylus = require('stylus'),
+         path   = require('path'),
+         utils = require('stylus/lib/utils.js'),
+         fs     = require('fs');
+
+    var js_data = $js_data; //from php
+
+    var Resolver = require('nyks/src/resolver.js');
+
+    var resolver = new Resolver();
+    //extend stylus find with custom path:// resolver
+    Object.each(js_data.paths, function(v, k){ resolver.register(k, v); });
+
+    var oldfind = utils.find;
+    utils.find = function(path, paths, ignore){
+      return oldfind(resolver.resolve(path), paths, ignore);
+    }
+
+    var oldlu = utils.lookup;
+    if(false) utils.lookup = function(path, paths, ignore, resolveURL){
+      return oldlu(path, paths, ignore, resolveURL);
+    }
+
+    var style  = stylus("", { filename: 'stdin' , compress: false});
+    style.import(js_data.path);
+
+    //style.define('url', stylus.resolver());
+    style.set('include css', true);
+    //style.define("icon-font-path", "bop/");
+
+    style.render(function(err, str){
+      if(err)
+        return process.stdout.write("" + err);
+
+      process.stdout.write(str);
+    });
+EOS;
+
+    $descriptorspec = array(
+        0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+        1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+        2 => array("pipe", "w") // stderr is a pipe to write to
+    );
+
+    $env = array('some_option' => 'aeiou');
+    $options = array('suppress_errors' => true, 'binary_pipes' => true, 'bypass_shell' => true);
+    $process = proc_open('node', $descriptorspec, $pipes, YKS_PATH, $options);
+    if(!$process)
+     throw new Exception("Cannot start node");
+
+    fwrite($pipes[0], $str);
+    fclose($pipes[0]); //close stdin, node start
+
+    $contents = stream_get_contents($pipes[1]); //read until end
+    fclose($pipes[1]);
+    $return_value = proc_close($process);
+
+    die($contents);
+  }
+
   private function resolve_boxes(){
     $boxes = $this->css->xpath("//atblock[@keyword='box']//rule[starts-with(@name,'box')]/ancestor::ruleset[1]");
 

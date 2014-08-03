@@ -12,6 +12,16 @@ define('TYPE_ICO', "Content-Type: image/x-icon");
 
 
 switch(files::ext($full)) {
+  case 'styl':
+    header(TYPE_CSS);
+    files::highlander();
+    try {
+        css_processor::delivers_stylus($path);
+    } catch(Exception $e){
+        error_log($e->getMessage());
+        files::delivers($full);
+    }
+    break;
   case 'css':
     header(TYPE_CSS);
     files::highlander();
