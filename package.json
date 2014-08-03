@@ -1,0 +1,29 @@
+{
+  "name": "yks",
+  "version": "0.1.2",
+  "description": "exupery style",
+  "keywords": [
+    "mootools",
+    "native",
+    "api"
+  ],
+  "dependencies": {
+    "stylus": "https://github.com/131/stylus/archive/0.47.3-yks.tar.gz",
+    "nyks": "*"
+  },
+  "homepage": "http://github.com/131/yks",
+  "author": {
+    "name": "François Leurent",
+    "email": "131.phg@cloudyks.org",
+    "url": "http://github.com/131/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:131/yks.git"
+  },
+  "readme": "# ex/yks toolkit\r\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/131/yks/issues"
+  }
+}
