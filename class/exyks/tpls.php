@@ -154,10 +154,13 @@ class tpls {
     static $field_count = 0;
     $type = $field->getAttribute('type');
     $name = pick($field->getAttribute('name'), $type);
-    $id   = pick($field->getAttribute('id'), 'field_'.$name);
+    $id   = pick($field->getAttribute('id'), $name);
 
-    $container = self::create_element($doc, 'p');
-    self::clone_args($container,  $field, array('id', 'class'));
+    $container = self::create_element($doc, 'p', null, array(
+        'class' => $field->getAttribute('class'),
+        'id'    => "field_$id",
+    ));
+    
 
     $attr_title = specialchars_encode($field->getAttribute('title')); // read
 
