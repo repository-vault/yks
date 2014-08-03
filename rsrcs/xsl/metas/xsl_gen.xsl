@@ -7,17 +7,8 @@
   <wxsl:param name="engine_name" value="gecko"/>
   <!-- /params -->
   <wxsl:template match="/wxsl:stylesheet">
-    <wxsl:variable name="external_mode">
-      <wxsl:choose>
-        <wxsl:when test="$rendering_side = 'client' and ( $engine_name = 'gecko' or $engine_name = 'trident')">XSL_DOCUMENT</wxsl:when>
-        <wxsl:otherwise>XSL_NODE_SET</wxsl:otherwise>
-      </wxsl:choose>
-    </wxsl:variable>
     <xsl:stylesheet>
       <wxsl:copy-of select="@*"/>
-      <wxsl:if test="$external_mode='XSL_NODE_SET'">
-        <wxsl:attribute name="extension-element-prefixes">ewxsl</wxsl:attribute>
-      </wxsl:if>
       <wxsl:apply-templates select="wxsl:output|wxsl:variable"/>
       <wxsl:apply-templates select="wxsl:import"/>
       <wxsl:apply-templates select="wxsl:template"/>
