@@ -373,8 +373,8 @@ hyphens(mode = auto) {
 
 // Opacity
 opacity(opacity) {
-  opacity: (opacity/100);
-  filter: 'alpha(opacity=%s)' % opacity;
+  opacity: (opacity);
+  filter: 'alpha(opacity=%s)' % (opacity * 100);
 }
 
 
