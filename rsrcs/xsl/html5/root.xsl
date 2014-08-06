@@ -6,6 +6,7 @@
   <xsl:import href="tables.xsl"/>
   <xsl:import href="links.xsl"/>
   <xsl:import href="toggle.xsl"/>
+  <xsl:import href="helpers.xsl"/>
   <xsl:output method="xml" cdata-section-elements="cdata" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" " mxsl-mode="trident" mxsl-side="client"/>
   <xsl:output method="xml" cdata-section-elements="cdata script" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" " mxsl-mode="webkit,gecko,presto" mxsl-side="client"/>
   <xsl:output method="xml" cdata-section-elements="cdata" version="1.0" encoding="utf-8" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system=" " mxsl-side="server"/>
