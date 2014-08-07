@@ -1,4 +1,7 @@
+icon-font-path = "/?/Yks/Scripts/Contents|path://bootstrap/fonts/";
+
 @import "path://bootstrap/stylus/bootstrap.styl";
+
 
 @import "base.css";
 @import "icons.css";
