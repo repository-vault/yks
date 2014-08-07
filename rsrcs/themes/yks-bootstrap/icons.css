@@ -12,8 +12,11 @@
     @extend .glyphicon-user;
 }
 
-.icon-plus {
+.icon-add {
     @extend .glyphicon-plus;
+}
+.icon-edit {
+    @extend .glyphicon-pencil;
 }
 
 

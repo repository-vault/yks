@@ -15,17 +15,14 @@ input[type="submit"].btn.btn-mini {
 }
 
 
-div.pagination > span, div.pagination > ul {
+div.pagination-container > span, div.pagination-container > ul {
   vertical-align:middle;
 }
 
 
-div.pagination > ul {
-  @extend .pagination;
-}
-
 span.label {
   @extend .label;
-  line-height:2em;
+  display:inline-block;
   font-size:85%;
+  margin:2px;
 }

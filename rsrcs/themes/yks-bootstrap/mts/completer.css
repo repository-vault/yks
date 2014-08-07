@@ -9,8 +9,6 @@
 .textboxlist-bit { 
   list-style-type: none;
   float: left;
-  display: block;
-  padding: 0;
   margin: 2px;
   cursor: default;
 }
@@ -23,13 +21,13 @@
     height: 14px;
     margin-bottom:0px!important ;
     font: 11px "Lucida Grande", Verdana;
+
 }
 
 .textboxlist-bit-editable-input:focus { outline: 0; }
 
 .textboxlist-bit-box {
   position: relative;
-  padding: 0 5px;
   cursor: default;
   @extend span.label, .label-info;
 }
@@ -58,12 +56,16 @@
   margin-top:-3px!important;
   margin-left:5px!important;
   border-radius:0px;
+  left:auto;
+  right:auto;
 }
 
 .textboxlist-autocomplete-result, .textboxlist-autocomplete-placeholder {
-  padding-left:2px;
-  padding-right:2px;
-
+  color: #333333;
+  font-weight: 400;
+  line-height: 1.42857;
+  padding: 3px 20px;
+  white-space: nowrap;
 }
 
 .textboxlist-autocomplete-result-focus {

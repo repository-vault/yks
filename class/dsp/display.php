@@ -111,7 +111,7 @@ class dsp{
         $str.="<li  $class><a href='$href' ".($target?"target='$target'":'').">$tmp</a></li>";
     }
     $end = ($page_id*$by +1 )."-".min(($page_id+1)*$by+1, $max);
-    return "<ul>$str<li class='disabled'><a href='#0'>($end/$max)</a></li></ul>";
+    return "<ul class='pagination'>$str<li class='disabled'><a href='#0'>($end/$max)</a></li></ul>";
   }
 
   static function radio($type,$actives=false,$mode="radio"){
