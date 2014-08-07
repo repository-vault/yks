@@ -15,9 +15,12 @@ class exyks_paths {
     self::register("yks", YKS_PATH);
 
     self::register("here", ROOT_PATH);
-
     self::register("skin",    RSRCS_PATH."/themes/Yks", self::default_ns, true);
     self::register("skin.js", RSRCS_PATH."/js", self::default_ns, true);
+
+    self::register("bootstrap", RSRCS_PATH."/themes/bootstrap", self::default_ns, true);
+    self::register("skin.bootstrap", RSRCS_PATH."/themes/yks-bootstrap", self::default_ns, true);
+
     self::register("public",  PUBLIC_PATH, self::default_ns, true);
     self::register("cache",   CACHE_PATH, self::default_ns, true);
     self::register("cache",   CACHE_PATH, self::default_ns, true);
@@ -39,6 +42,13 @@ class exyks_paths {
 
     self::$consts_cache = retrieve_constants();
 
+  }
+
+  public function expose_public_paths(){
+    return array_column( array_restrict(self::$paths, array(
+        'public'=> true,
+        'ns' => self::default_ns
+    )), "dest", "key");
   }
 
   public static function register($key, $dest, $ns = self::default_ns, $public = false){

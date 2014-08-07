@@ -71,14 +71,9 @@ class css_processor {
   }
 
   static function delivers_stylus($path){
+    $paths = exyks_paths::expose_public_paths();
 
-  $paths = array(
-    "bootstrap"       => RSRCS_PATH . "/themes/bootstrap",
-    "bootstrap-2.3.2" => RSRCS_PATH . "/themes/bootstrap-2.3.2",
-    "yks-bootstrap"   => RSRCS_PATH . "/themes/yks-bootstrap",
-    "public"          => PUBLIC_PATH,
-  ); 
-  $js_data = json_encode(compact('paths', 'path'));
+    $js_data = json_encode(compact('paths', 'path'));
 
   $str = <<<EOS
     require('nyks');
