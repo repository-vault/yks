@@ -9,10 +9,10 @@
         <p class="title box_title">
           <xsl:value-of select="@caption"/>
           <xsl:if test="contains(@options,'close')">
-            <span class="box_action {$theme}_close"> </span>
+            <span class="box_action {$theme}_close"><xsl:comment/></span>
           </xsl:if>
           <xsl:if test="contains(@options,'reload')">
-            <span class="box_action {$theme}_reload"> </span>
+            <span class="box_action {$theme}_reload"><xsl:comment/></span>
           </xsl:if>
         </p>
       </xsl:if>
