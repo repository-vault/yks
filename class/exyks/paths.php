@@ -80,14 +80,18 @@ class exyks_paths {
    }
 
   public static function resolve_public($path, $ns = self::default_ns){
-    $path_infos = parse_url($path);
-    $domain = $path_infos['host'];
 
-    $domain_public = self::$paths["$ns/$domain"]['public'];
-    if(!$domain_public)
+    $path_infos = parse_url($path);
+    $domain = self::$paths["$ns/{$path_infos['host']}"];
+
+    if(!$domain['public'])
         throw new Exception("Unaccessible path $path");
 
-    return self::resolve($path);
+    $full = realpath(self::resolve($path));
+    if(!starts_with($full, $domain['dest']))
+        throw new Exception("Cannot traverse in public path");
+
+    return $full; 
   }
 
   public static function resolve($path, $ns = false){
