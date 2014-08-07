@@ -157,7 +157,7 @@ class tpls {
     $id   = pick($field->getAttribute('id'), $name);
 
     $container = self::create_element($doc, 'p', null, array(
-        'class' => $field->getAttribute('class'),
+        'class' => "field_group ".$field->getAttribute('class'),
         'id'    => "field_$id",
     ));
     
