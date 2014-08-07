@@ -1,4 +1,5 @@
-.textboxlist { font: 11px "Lucida Grande", Verdana; cursor: text; }
+.textboxlist { cursor: text; }
+
 .textboxlist-bits {
   overflow: hidden;
   margin: 0;
@@ -28,11 +29,9 @@
 
 .textboxlist-bit-box {
   position: relative;
-  line-height: 18px;
   padding: 0 5px;
-
   cursor: default;
-  @extend .label, .label-info;
+  @extend span.label, .label-info;
 }
 .textboxlist-bit-box-focus { background: #598BEC; color: #fff; }
 
@@ -64,7 +63,7 @@
 .textboxlist-autocomplete-result, .textboxlist-autocomplete-placeholder {
   padding-left:2px;
   padding-right:2px;
-  @extend li;
+
 }
 
 .textboxlist-autocomplete-result-focus {

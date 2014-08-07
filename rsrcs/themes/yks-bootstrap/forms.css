@@ -1,0 +1,12 @@
+.ks_form .field_group {
+  @extend .form-group;
+  input, select {
+      @extend .form-control;
+  }
+
+}
+
+
+.submit button {
+  @extend .btn-success;
+}

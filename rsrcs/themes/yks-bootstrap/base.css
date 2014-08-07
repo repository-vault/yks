@@ -19,6 +19,13 @@ div.pagination > span, div.pagination > ul {
   vertical-align:middle;
 }
 
+
+div.pagination > ul {
+  @extend .pagination;
+}
+
 span.label {
-    margin: 0 2px;
+  @extend .label;
+  line-height:2em;
+  font-size:85%;
 }

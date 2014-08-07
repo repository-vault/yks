@@ -1,7 +1,29 @@
+.icon {
+    @extend .glyphicon;
+}
 
+.icon-remove {
+    @extend .glyphicon-remove;
+}
+.icon-repeat {
+    @extend .glyphicon-repeat;
+}
+.icon-user {
+    @extend .glyphicon-user;
+}
+
+.icon-plus {
+    @extend .glyphicon-plus;
+}
+
+
+.icon-white {
+  color: #fff;
+}
 
 .icon-disabled {
     color: #000000;
     cursor: pointer;
     text-decoration: none;
 }
+
