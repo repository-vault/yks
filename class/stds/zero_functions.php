@@ -122,6 +122,13 @@ if(!function_exists("header_remove")) {
   }
 }
 
+if(!function_exists("array_column")) {
+  function array_column($array, $column_key = null, $index_key = null) { //5.5
+    return php_legacy::array_column($array, $column_key, $index_key);
+  }
+}
+
+
 if(!function_exists('stream_resolve_include_path')) { //5.3
   function stream_resolve_include_path($file_path) {
     return php_legacy::stream_resolve_include_path($file_path);

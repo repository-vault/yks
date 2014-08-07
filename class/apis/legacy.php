@@ -2,6 +2,13 @@
 /* Legacy are php (now) native function */
 class php_legacy {
 
+  static function array_column($array, $column_key = null, $index_key = null) {
+    $ret = array();
+    foreach($array as $k=>$v)
+        $ret[is_null($index_key) ? $k : $v[$index_key]] = is_null($column_key) ? $v : $v[$column_key];
+    return $ret;
+  }
+
   static function  header_remove($header_name) { 
     header("$header_name:", true);
   }
