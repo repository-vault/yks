@@ -11,7 +11,7 @@ function abort($code) {
     if($code==404 && $dest==exyks::$href_ks) yks::fatality(yks::FATALITY_404);
     if(ERROR_PAGE==exyks::$href) return; //empeche les redirections en boucle
 
-    $_SESSION[SESS_TRACK_ERR]="/?".exyks::$href_ks;
+    $_SESSION[SESS_TRACK_ERR] = $_SERVER['REQUEST_URI'];
 
     if(JSX){if($code!=403)rbx::error($code);
         else jsx::js_eval("Jsx.open('/?$dest','error_box',this)");
