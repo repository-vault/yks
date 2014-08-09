@@ -14,12 +14,13 @@
       <dep key="path://yks/Jsx/Jsx.A.js"/>
       <description>Extend secured mailto links</description>
     </module>
-
+    <module key="path://yks/Interface/Boostrap.js">
+      <description>Bootstrap events</description>
+    </module>
     <module key="path://3rd/usage/TextboxList.js" expose="WTextboxList" head="true">
       <dep key="path://3rd/Devthought/TextboxList/TextboxList.Autocomplete.js"/>
       <description>Extend a basic text input with tag picking</description>
     </module>
-
     <module key="path://3rd/usage/DatePicker.js" expose="DatePicker" matches="input.input_time,input.input_date" head="true">
       <dep key="path://3rd/Arian/DatePicker.js"/>
       <description>Extend a basic text input into a small but usefull calendar</description>
@@ -69,7 +70,6 @@
     <module key="path://yks/Interface/Title.js" expose="Title" matches="img.button.effects,input.button.effects" head="true">
       <description>Title</description>
     </module>
-
     <module key="path://yks/Interface/Selection.js" head="true"/>
     <dep key="path://mt.more/Fx/Fx.Accordion.js" head="true"/>
     <dep key="path://mt.core/Utilities/Cookie.js" head="true"/>
