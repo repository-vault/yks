@@ -39,7 +39,11 @@ class crypt {
     $public_key      = self::cleanupPem($ppk_infos['key']);
     $private_openssh = self::pem2openssh($public_key);
 
-    return compact('private_key', 'public_key', 'private_openssh');
+
+        //fingerprint is the md5 of the base64 decoded public key (openssh format)
+    $data = strtok(trim(strip_start($private_openssh, 'ssh-rsa')), ' ');
+    $fingerprint     = md5(base64_decode($data));
+    return compact('private_key', 'public_key', 'private_openssh', 'fingerprint');
   }
 
   // Build a signed certificate from a private key.
@@ -238,11 +242,44 @@ class crypt {
   const PEM_CERTIFICATE= "certificate";
 
 
-  public static function BuildAuthorizedKey($key){
-    $pubkey = self::ExtractPublicFromPrivateKey(self::cleanupPem($key));
+  public static function BuildAuthorizedKey($private_key){
+    $pubkey = self::ExtractPublicFromPrivateKey(self::cleanupPem($private_key));
     $key = self::pem2openssh($pubkey);
     return $key;
   }
+
+
+    //fingerprint is the md5 of the base64 decoded public key (openssh format)
+  public static function GetFingerPrint($private_key){
+    list(,$key) = explode(' ', self::BuildAuthorizedKey($private_key),2);
+    return md5(base64_decode($key));
+
+  /**
+        //initial implementation uses stdin && ssh-keygen
+    $pubkey = self::BuildAuthorizedKey($private_key);
+
+    //use stdin so we dont write pkey in command line
+    $descriptorspec = array( array("pipe", "r"), array("pipe", "w"), array("pipe", "w") );
+    $process = proc_open('( ssh-keygen -lf /dev/stdin <<< $(cat /dev/stdin) )', $descriptorspec, $pipes);
+    if (!is_resource($process))
+        throw new Exception("Invalid process");
+    fwrite($pipes[0], $pubkey);
+    fclose($pipes[0]);
+
+    $contents = stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    $return_value = proc_close($process);
+    if($return_value !== 0)
+        throw new Exception("Invalid return value");
+    $contents = explode(' ', trim($contents), 3);
+
+    return array(
+        'key_size'        => $contents[0],
+        'key_fingerprint' => str_replace(':', '', $contents[1]),
+        'key_comment'     => $contents[2],
+    );
+  */
+  } 
 
 
   public static function cleanupPem($key){
