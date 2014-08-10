@@ -237,16 +237,12 @@ class crypt {
   const PEM_PRIVATE = "private";
   const PEM_CERTIFICATE= "certificate";
 
+
   public static function BuildAuthorizedKey($key){
-    $tmp_path = files::tmppath();
-    file_put_contents($tmp_path, $key);
-    chmod($tmp_path, 0600);
-
-    $cmd = "ssh-keygen -f $tmp_path -y";
-    exec($cmd, $out);
-    return join('', $out);
+    $pubkey = self::ExtractPublicFromPrivateKey(self::cleanupPem($key));
+    $key = self::pem2openssh($pubkey);
+    return $key;
   }
-
 
 
   public static function cleanupPem($key){
