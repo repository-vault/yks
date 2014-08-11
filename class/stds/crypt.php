@@ -281,9 +281,7 @@ class crypt {
 
 
   public static function pem_seal($public_key, $data){
-    $public_key = openssl_pkey_get_public($public_key);
     openssl_seal($data, $sealed, $env, array($public_key) );
-    openssl_free_key($public_key);
 
     $body = crypt::pem_forge(array(
         array('type' => "MESSAGE",   'data' => $sealed),
@@ -294,17 +292,12 @@ class crypt {
   }
 
   public static function pem_open($private_key, $payload){
-    $private_key = openssl_get_privatekey($private_key);
-    if(!$private_key)
-      throw new Exception("Invalid private key");
-
         // decrypt the data and store it in $open
       $blocks = array_column(self::pem_parse($payload), 'data', 'type');
 
       if (!openssl_open($blocks['MESSAGE'], $open, $blocks['ENVELOPPE'], $private_key))
         throw new Exception("Corrupted payload");
 
-    openssl_free_key($private_key);
     return $open;
   }
 
