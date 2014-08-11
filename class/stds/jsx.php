@@ -40,7 +40,10 @@ class jsx {
     //eval'd code is untouched
     if($eval){if($var)$json=substr($json,0,-1).",$eval}"; else $json='{'.$eval.'}';}
 
-    return locales_manager::translate($json);
+    $out = locales_manager::translate($json);
+    //local_manager will escape un-translated entites
+    $out = str_replace("&amp;", "&", $out);
+    return $out;
   }
 
   static function set($key, $val=false){
