@@ -2,7 +2,7 @@
 
 class crypt {
   const ASN_LONG_LEN  = 0x80;
-
+  const SSH_RSA       = "ssh-rsa";
 
   public static function pwgen($length){
     return substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', $length)), 0, $length);
@@ -37,13 +37,11 @@ class crypt {
 
     $private_key     = self::cleanupPem($contents);
     $public_key      = self::cleanupPem($ppk_infos['key']);
-    $private_openssh = self::pem2openssh($public_key);
+    $public_openssh  = self::pem2openssh($public_key);
+    $fingerprint     = self::GetFingerPrint($public_openssh);
+    $private_openssh = $public_openssh; // historical typo, please remove this asap
 
-
-        //fingerprint is the md5 of the base64 decoded public key (openssh format)
-    $data = strtok(trim(strip_start($private_openssh, 'ssh-rsa')), ' ');
-    $fingerprint     = md5(base64_decode($data));
-    return compact('private_key', 'public_key', 'private_openssh', 'fingerprint');
+    return compact('private_key', 'public_key', 'private_openssh', 'fingerprint', 'public_openssh');
   }
 
   // Build a signed certificate from a private key.
@@ -250,8 +248,8 @@ class crypt {
 
 
     //fingerprint is the md5 of the base64 decoded public key (openssh format)
-  public static function GetFingerPrint($private_key){
-    list(,$key) = explode(' ', self::BuildAuthorizedKey($private_key),2);
+  public static function GetFingerPrint($public_key){
+    list(,$key) = explode(' ', $public_key ,2);
     return md5(base64_decode($key));
 
   /**
@@ -282,12 +280,65 @@ class crypt {
   } 
 
 
+  public static function pem_seal($public_key, $data){
+    $public_key = openssl_pkey_get_public($public_key);
+    openssl_seal($data, $sealed, $env, array($public_key) );
+    openssl_free_key($public_key);
+
+    $body = crypt::pem_forge(array(
+        array('type' => "MESSAGE",   'data' => $sealed),
+        array('type' => "ENVELOPPE", 'data' => $env[0]),
+    ));
+
+    return $body;
+  }
+
+  public static function pem_open($private_key, $payload){
+    $private_key = openssl_get_privatekey($private_key);
+    if(!$private_key)
+      throw new Exception("Invalid private key");
+
+        // decrypt the data and store it in $open
+      $blocks = array_column(self::pem_parse($payload), 'data', 'type');
+
+      if (!openssl_open($blocks['MESSAGE'], $open, $blocks['ENVELOPPE'], $private_key))
+        throw new Exception("Corrupted payload");
+
+    openssl_free_key($private_key);
+    return $open;
+  }
+
+
+
   public static function cleanupPem($key){
     $key = preg_replace("#\r?\n#" , "", $key);
     $key = preg_reduce("#^-+BEGIN(?: RSA)? (?:PUBLIC|PRIVATE)?(?:CERTIFICATE| KEY)-+(.*?)-+END(?: RSA)? (?:PUBLIC|PRIVATE)?(?:CERTIFICATE| KEY)-+#m", $key);
     return $key;
   }
 
+  public function pem_forge($blocks, $binary = true){
+    $out = array();
+    foreach($blocks as $block) {
+        $out[] = sprintf("-----BEGIN %s-----", $block['type']);
+        $out = array_merge($out, str_split( $binary ? base64_encode($block['data']) : $block['data'], 64));
+        $out[] = sprintf("-----END %s-----", $block['type']);
+    }
+    return join("\n", $out)."\n";
+  }
+
+  public function pem_parse($file, $binary = true){
+    $blocks = array(); $part = null; $block = null;
+    foreach(explode("\n", $file) as $line) {
+        if(preg_match('#^-{5}BEGIN (.*?)-{5}$#', $line, $out)) {
+            $part = $out[1]; $block = "";
+        } else if($part && $line == "-----END $part-----") {
+            $blocks[] = array('type' => $part, 'data' => $binary ? base64_decode($block) : $block);
+            $part = null; $block = null;
+        } else if($part)
+            $block .= $line;        
+    }
+    return $blocks;
+  }
 
 
   public static function BuildPemKey($key_str, $type=crypt::PEM_PUBLIC) {
@@ -324,12 +375,13 @@ class crypt {
   }
 
   public static function openssh2pem($openssh_data) {
+    $openssh_data = strip_start($openssh_data, self::SSH_RSA);
     $data = base64_decode($openssh_data);
 
     list(,$alg_len)  = unpack('N', substr($data, 0, 4));
     $alg = substr($data, 4, $alg_len);
 
-    if ($alg !== 'ssh-rsa')
+    if ($alg !== self::SSH_RSA)
         return FALSE;
 
     list(, $e_len) = unpack('N', substr($data, 4 + strlen($alg), 4));
@@ -385,12 +437,11 @@ class crypt {
     list($number_seq)    = self::parseASN($numbers['data']);
     list($n, $e)         = self::parseASN($number_seq['data']);
 
-    $alg = "ssh-rsa";
-    $data = pack("N", strlen($alg)).$alg;
+    $data  = pack("N", strlen(self::SSH_RSA)).self::SSH_RSA;
     $data .= pack("N", strlen($e['data'])).$e['data'];
     $data .= pack("N", strlen($n['data'])).$n['data'];
 
-    return $alg." ".base64_encode($data);
+    return self::SSH_RSA." ".base64_encode($data);
   }
 
 
