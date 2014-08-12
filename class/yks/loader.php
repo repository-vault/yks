@@ -50,7 +50,6 @@ include "$class_path/yks/yks.php";
 
 if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
     classes::extend_include_path("$class_path/psr4");
-    include "$class_path/stds/traits.php";
     include "$class_path/stds/pcntl.php";
 }
 
