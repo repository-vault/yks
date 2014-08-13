@@ -120,9 +120,9 @@ class browser {
 
     if(is_resource($out))
       $out_stream = $out;
-    elseif(is_string($out))
-      $out_stream = fopen($file_path, "w");
-    else $out_stream = fopen('php://temp', 'w');
+    elseif(is_string($out)) {
+      $out_stream = fopen($out, "w");
+    } else $out_stream = fopen('php://temp', 'w');
 
 
     $lnk = $this->get_lnk($url);
