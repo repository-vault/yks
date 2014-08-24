@@ -8,6 +8,7 @@ define('Ex/yks', 'A cloudy tool');
 
   //CLI need to know the server port (80 by default)
   if(!isset($_SERVER['SERVER_PORT'])) $_SERVER['SERVER_PORT'] = 80;
+
       //first thing first, where am i
   if(!defined('PUBLIC_PATH')) {
       //where am i
@@ -38,7 +39,7 @@ define('Ex/yks', 'A cloudy tool');
   define('RSRCS_PATH',   YKS_PATH.DIRECTORY_SEPARATOR.'rsrcs');
   define('CLTOOLS_PATH', YKS_PATH.DIRECTORY_SEPARATOR.'cltools');
 
-  $win = stripos($_SERVER['OS'],'windows')!==false ;
+  $win = isset($_SERVER['OS']) && stripos($_SERVER['OS'],'windows')!==false ;
   define('CLYKS',  $win ? "clyks.bat" : "clyks");
   define('EXYKS',        YKS_PATH.DIRECTORY_SEPARATOR.'web.php');
   define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));

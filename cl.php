@@ -4,10 +4,13 @@
 
 define("PUBLIC_PATH", getcwd()."/www");
 
+$argv += array('', '', ''); //default values
+
 if(is_file($argv[1])) {
   $entry = $argv[1];
   $args  = array_slice($argv, 2);
   $_SERVER['YKS_FREE'] = true;
+  $_SERVER['SERVER_NAME'] = 'cli';
   include "yks/class/yks/loader.php";
   require CLASS_PATH."/functions.php";
 } else {

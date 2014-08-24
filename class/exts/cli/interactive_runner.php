@@ -73,7 +73,11 @@ class interactive_runner {
       if($instanciate)
         $this->obj = call_user_func_array(array($this->className, 'instanciate'), $args);
       else
-        $this->obj = $reflector->IsInstantiable() ? ($args ? $reflector->newInstanceArgs($args) : $reflector->newInstance() ) : $this->className;
+        $this->obj = $reflector->IsInstantiable()
+                          ? ($args && !is_null( $reflector->getConstructor ())
+                             ? $reflector->newInstanceArgs($args)
+                             : $reflector->newInstance() )
+                          : $this->className;
     }
 
     cli::register_completion(array($this, 'completion_function'));

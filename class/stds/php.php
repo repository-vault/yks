@@ -2,7 +2,7 @@
 
 class php {
 
-  function file_get_php_classes($file_path) {
+  public static function file_get_php_classes($file_path) {
     if(!is_file($file_path))
         return array();
     $php_code = file_get_contents($file_path);
