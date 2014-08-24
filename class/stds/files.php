@@ -191,6 +191,28 @@ class files {
   }
 
 
+  //filesize for file > 2GB, thx linda.collins@mailinator.com
+  public static function filesize_big($file_path) {
+    $fp = fopen($file_path, 'r');
+    $pos = 0;
+    $size = 1<<10<<10<<10; //1GB
+    fseek($fp, 0, SEEK_SET);
+    while ($size > 1) {
+      fseek($fp, $size, SEEK_CUR);
+      if (fgetc($fp) === false) {
+        fseek($fp, -$size, SEEK_CUR); //rewind
+        $size = (int)($size / 2);
+      } else {
+        fseek($fp, -1, SEEK_CUR); //fgetc
+        $pos += $size;
+      }
+    }
+
+    while (fgetc($fp) !== false)  $pos++;
+    fclose($fp);
+    return $pos;
+  }
+
     //fix windows DST issue
   function touch($file_path, $mtime){
     touch($file_path, $mtime); clearstatcache();
