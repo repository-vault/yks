@@ -52,6 +52,12 @@ class interactive_runner {
         $this->className = $from;
         if($this->static)
           $this->obj = $from; //static mode
+
+        ob_start(); //prevent autoloader to print anything (e.g. shebang)
+        if(!class_exists($from)) //FORCE AUTOLOADER HERE !!
+          throw new Exception("Invalid class '$from'");
+        ob_end_clean();
+
     } else {
         $this->obj       = $from;
         $this->className = get_class($this->obj);
