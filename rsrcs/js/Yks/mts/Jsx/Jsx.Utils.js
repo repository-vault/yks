@@ -19,6 +19,10 @@ Jsx.open = function(url, target, bind, chain){
     return new Jsx({url:url, target:target, method:'get'}, $(bind)).fire(chain);
 };
 
+Jsx.popup = function(url, options, target){
+    window.open(url, target || "_blank", 'menubar=no,location=no,scrollbars=no,status=no,titlebar=no,' + options);
+}
+
 
 Jsx.dd_load = function(data, bind, dest){
     var box = $(bind).getBox(), url=data.url || box.url; delete data.url; data.jsx=true;
