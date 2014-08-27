@@ -1,6 +1,5 @@
 <?
 
-
 class dpkg {
 
   public static function extract_control($package_file){
@@ -15,6 +14,37 @@ class dpkg {
   public static function parse_control_file($control_file)
   {
     return self::parse_control(file_get_contents($control_file));
+  }
+
+
+  public static function parse_dependency($dependency_raw) {
+    $PATTERN_DEPENDENCIES = <<<EOS
+    /
+      (?P<package_name>[\w\d-]+)\s*
+      (?:\(\s*
+          (?P<version_operator>[<>=]{1,3})? \s* (?P<package_version>[\d\.\-]+)
+       \s*\))?\s*
+      (?:\[\s*
+        (?P<arch_operator>[!])? \s* (?P<restricted_arch>[\w0-9-]+)
+      \s*\])?\s*
+    /x
+EOS;
+
+    $dependency = compact('dependency_raw');
+
+      if(preg_match($PATTERN_DEPENDENCIES, $dependency_raw, $out))
+        $dependency = array_merge($dependency, array_sort($out, array('package_name', 'version_operator', 'package_version', 'restricted_arch', 'arch_operator')));
+
+    return $dependency;
+  }
+
+  public static function parse_dependencies($depend_line){
+    $dependencies = array();
+    $matches_dependencies = preg_split("#\s*,\s*#", $depend_line);
+    foreach($matches_dependencies as $dependency_part)
+        $dependencies[] = self::parse_dependency($dependency_part);
+
+    return $dependencies;
   }
 
   public static function parse_control($control)
