@@ -47,7 +47,7 @@ class crypt {
   // Build a signed certificate from a private key.
   // It can use a specified CA cert & private key
   // It's self signed when no CA is given (default)
-  public static function BuildCertificate($subject, $private_key_raw, $ca_pkey_raw = null, $ca_cert_raw = null, $serial = null){
+  public static function BuildCertificate($subject, $private_key_raw, $ca_pkey_raw = null, $ca_cert_raw = null, $serial = null, $days=365){
 
     // Open private key
     $private_pem = crypt::BuildPemKey($private_key_raw, crypt::PEM_PRIVATE);
@@ -82,7 +82,7 @@ class crypt {
     // Create a signed cert (by CA or self signed)
     if(!$ca_pkey)
       $ca_pkey = $private_key; // self sign
-    $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, 365, $options, $serial);
+    $cert = openssl_csr_sign($csr, $ca_cert, $ca_pkey, $days, $options, $serial);
     if(!$cert){
       while ($msg = openssl_error_string())
         syslog(LOG_ERR, $msg);
@@ -277,7 +277,7 @@ class crypt {
         'key_comment'     => $contents[2],
     );
   */
-  } 
+  }
 
 
   public static function pem_seal($public_key, $data){
@@ -328,7 +328,7 @@ class crypt {
             $blocks[] = array('type' => $part, 'data' => $binary ? base64_decode($block) : $block);
             $part = null; $block = null;
         } else if($part)
-            $block .= $line;        
+            $block .= $line;
     }
     return $blocks;
   }
