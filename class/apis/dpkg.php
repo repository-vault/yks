@@ -78,12 +78,19 @@ EOS;
     return $ret;
   }
 
-  public static function write_control_file($blocks, $control_path)
+
+  public static function write_control($blocks)
   {
     $control = "";
     foreach ($blocks as $block) {
       $control .= mask_join("\n", $block, '%2$s: %1$s')."\n\n";
     }
+    return $control;
+  }
+
+  public static function write_control_file($blocks, $control_path)
+  {
+    $control = self::write_control($blocks);
     file_put_contents($control_path, $control);
   }
 }
