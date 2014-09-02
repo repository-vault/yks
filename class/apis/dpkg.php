@@ -40,7 +40,7 @@ EOS;
 
   public static function parse_dependencies($depend_line){
     $dependencies = array();
-    $matches_dependencies = preg_split("#\s*,\s*#", $depend_line);
+    $matches_dependencies = preg_split("#\s*,\s*#", $depend_line, -1, PREG_SPLIT_NO_EMPTY);
     foreach($matches_dependencies as $dependency_part)
         $dependencies[] = self::parse_dependency($dependency_part);
 
