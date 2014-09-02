@@ -31,9 +31,9 @@ class ipkg {
 
     foreach(array('data' => $files_list, 'control' => $control_files) as $dir => $files_list)
     foreach($files_list as $file_name => $file_path) {
-      if(!is_file($file_path)) continue;
       files::create_dir(dirname($dest = "$tmp_dir/$dir/$file_name"));
-      copy($file_path, $dest); chmod($dest, fileperms($file_path));
+      $cmd = "rsync -a $file_path $dest";
+      passthru($cmd);
     }
 
     $archive = self::forge($tmp_dir);
