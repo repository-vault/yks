@@ -65,7 +65,7 @@
         <dep key="path://yks/Jsx/Jsx.js"/>
         <description>Expose misc files management utilities</description>
       </module>
-      <module key="path://yks/Jsx/Jsx.A.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([target='_blank']):not([href^='mailto:'])">
+      <module key="path://yks/Jsx/Jsx.A.js" expose="Jsx.A" matches="*[href]:not(.ext):not(.std):not([href^='#']):not([target='_top']):not([target='_blank']):not([target='_self']):not([href^='mailto:'])">
         <dep key="path://yks/Jsx/Jsx.js"/>
         <dep key="path://yks/Jsx/Box.js"/>
         <dep key="path://yks/Jsx/Screen.js"/>
