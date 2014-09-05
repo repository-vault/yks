@@ -185,8 +185,7 @@ class cli {
     $args = func_get_args(); $pad_len = self::$cols;
     $options = count($args)%2==1?array_pop($args) : array();
 
-    $dotrim = in_array('trim', $options);
-    $dotrim = true;
+    $dotrim = !in_array('notrim', $options);
 
     for($a=1;$a<count($args);$a+=2) {
       $msg= &$args[$a];

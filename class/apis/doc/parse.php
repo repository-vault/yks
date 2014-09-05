@@ -7,12 +7,13 @@ class doc_parser {
   static function parse($str){
     if(!$str) return false;
     $res = array();
-
       //unix style LF
     $str = preg_replace("#\r?\n#", "\n", $str);
+    $str = strip_end(strip_start($str, "/**\n"), "*/");
 
     $args = array(); $doc = array();
-    if(preg_match_all("#^\s*\*\s+(.*?)$#m", $str, $out)) {
+    if(preg_match_all("#^\s*\* ?(.*?)$#m", $str, $out)) {
+
       foreach($out[1] as $line){
         if($arg = self::arg($line)) {
           $args[$arg[0]]['computed'] = $arg[1];
@@ -20,7 +21,6 @@ class doc_parser {
         } else $doc[] = $line;
       }
     }
-
     return compact('args', 'doc');
 
   }

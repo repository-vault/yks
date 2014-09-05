@@ -6,6 +6,11 @@ class interactive_runner {
   private $commands_list;
   private $current_command_completion = null;
 
+
+  const LOOP_IDL  = 'LOOP_IDL';  //loop not running
+  const LOOP_RUN  = 'LOOP_RUN';  //loop running
+  const LOOP_QUIT = 'LOOP_QUIT'; //loop end
+
   private $command_pipe;
   private $file;
   private $magic_call; //does current object support __call ?
@@ -129,14 +134,44 @@ class interactive_runner {
   }
 
 
+
+  private function help_cmd($command){
+    if($command['usage']['cli'])
+      return "(none) -- ONLY AVAILABLE THROUGH CLI";
+
+    $str = "{$command['command_key']} ";
+    $parametred_aliases = array_filter($command['aliases']);
+
+    $aliases  = array_keys(array_diff_key($command['aliases'], $parametred_aliases));
+    $aliases  = array_diff($aliases, array($command['command_key'], $command['command_hash']));
+    if($aliases) $str.= "(".join(', ', $aliases).") ";
+
+    if($command['usage']['params']) {
+      $tmp_trailing_optionnal = 0; $tmp_str = array();
+      foreach($command['usage']['params'] as $param_name=>$param_infos){
+          $tmp_str [] = (isset($param_infos['optional']) ? '[':'')."\$$param_name";
+          if(isset($param_infos['optional'])) $tmp_trailing_optionnal++;
+      }
+      $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
+    }
+    return $str;
+  }
+
 /**
 * show available commands
 * @autocomplete command interactive_runner::get_commands_list
 * @alias ?
+* @alias tada tuutu
 */
   function help( $command = null){
     if($command_infos = $this->lookup($command)) {
-      cli::box($command, join(LF, $command_infos['usage']['doc']));
+
+      $doc = $command_infos['usage']['doc'];
+
+      array_unshift($doc, "Usage : ".$this->help_cmd($command_infos));
+
+      cli::box($command, join(LF, $doc), array('notrim' => true));
+
       return;
     }
 
@@ -144,26 +179,15 @@ class interactive_runner {
 
     foreach($this->commands_list as $command_hash=>$command) {
       if($command['usage']['hide']) continue;
-      $str = "{$command['command_key']} ";
-      $parametred_aliases = array_filter($command['aliases']);
+      if(!$command['usage']['cli']) $str = $this->help_cmd($command);
+      else $str = "{$command['command_key']} (cli-only)";
 
-      $aliases  = array_keys(array_diff_key($command['aliases'], $parametred_aliases));
-      $aliases  = array_diff($aliases, array($command['command_key'], $command_hash));
-      if($aliases) $str.= "(".join(', ', $aliases).") ";
-
-      if($command['usage']['params']) {
-        $tmp_trailing_optionnal = 0; $tmp_str = array();
-        foreach($command['usage']['params'] as $param_name=>$param_infos){
-            $tmp_str [] = (isset($param_infos['optional']) ? '[':'')."\$$param_name";
-            if(isset($param_infos['optional'])) $tmp_trailing_optionnal++;
-        }
-        $str .= join(', ', $tmp_str).str_repeat("]", $tmp_trailing_optionnal);
-      }
-
-      if($doc = $command['usage']['doc'])
-        $str = $str . str_repeat(" ", max(1, cli::$cols - strlen($str) - strlen($doc[0]) - 2)).$doc[0];
+      if(isset($command['usage']['doc']) && $doc = trim($command['usage']['doc'][0]))
+        $str = $str . str_repeat(" ", max(1, cli::$cols - strlen($str) - strlen($doc) - 2)).$doc;
 
       $msgs[$command['command_ns']][] = $str;
+
+      $parametred_aliases = array_filter($command['aliases']);
 
       foreach($parametred_aliases as $alias_name=>$args)
         $msgs[$command['command_ns']][] = "$alias_name (={$command['command_key']} ".join(" ", $args).")";
@@ -229,9 +253,12 @@ class interactive_runner {
 
     return true;
   }
+
+
   private function command_register($command_ns, $command_key, $callback, $usage){
     $command_hash = $this->generate_command_hash($command_ns, $command_key);
     $this->commands_list[$command_hash] = array(
+      'command_hash'=> $command_hash,
       'command_ns'  => $command_ns,
       'command_key' => $command_key,
       'usage'       => $usage,
@@ -248,6 +275,11 @@ class interactive_runner {
         throw new Exception("No command");
 
       $command_infos = $this->lookup($command_prompt);
+      if($command_infos['usage']['cli'] && $this->command_pipe == self::LOOP_RUN) {
+        if(cli::bool_prompt("Command only available through cli. Open help ?", false)) $this->help($command_infos['command_hash']);
+        throw new Exception("Invalid command");
+      }
+
 
       if(!$command_infos) {
         if($this->magic_call)
@@ -298,7 +330,7 @@ class interactive_runner {
 * @alias exit
 */
   function quit(){
-    $this->command_pipe = SIGTERM;
+    $this->command_pipe = self::LOOP_QUIT;
     rbx::ok("Quit");
   }
 
@@ -338,12 +370,7 @@ class interactive_runner {
         exit();
     }
 
-
-    for(;;) {
-      $this->command_loop();
-      if($this->command_pipe == SIGTERM)
-        return;
-    }
+    $this->command_loop();
   }
 
   private $last_command = array();
@@ -352,8 +379,9 @@ class interactive_runner {
     //embeded object loop, deal with commands
   private function command_loop(){
    ///system("stty -icanon");
+    $this->command_pipe = self::LOOP_RUN;
 
-    while(is_null($this->command_pipe)){
+    while($this->command_pipe != self::LOOP_QUIT){
 
       try {
         $command_split = array();
@@ -462,7 +490,10 @@ class interactive_runner {
       if(in_array("disable", $tmp))
         continue;
 
-      $usage = array('params'=>array(), 'doc' => $doc['doc'], 'hide' => in_array("hide", $tmp));
+      $usage = array('params'=>array(), 'doc' => $doc['doc'],
+                'hide' => in_array("hide", $tmp),
+                'cli'  => in_array("cli", $tmp), //only available via cli
+      );
 
       foreach($params as $param) {
         $param_infos = array(
