@@ -104,20 +104,22 @@ class interactive_runner {
       }
     }
     else {
-      $line = pick($this->current_command_completion, substr($infos['line_buffer'], 0, $infos['end']) );
+      $line = pick($this->current_command_completion, substr($infos['line_buffer'], 0, $infos['point']) );
       $args = cli::parse_args($line);
       $method_name   = array_shift($args);
       $command_infos = $this->lookup($method_name);
       if(!$command_infos)
         return false;
-      $command_args    = array_keys(array_msort($command_infos['usage']['params'], array('position' => SORT_ASC)));
-      $arg_name        = $command_args[max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)))];
 
-      if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback']) 
-        $completion = call_user_func($completion_callback, $args, $this->obj);
-      else if($completion_values      = $command_infos['usage']['params'][$arg_name]['completion_values']) 
+      $command_args    = array_keys(array_msort($command_infos['usage']['params'], array('position' => SORT_ASC)));
+      $arg_index       = max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)));
+      $arg_name        = $command_args[$arg_index];
+
+      if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback'])
+        $completion = call_user_func($completion_callback, array_get($args, $arg_index), $this->obj);
+      else if($completion_values      = $command_infos['usage']['params'][$arg_name]['completion_values'])
         $completion = $completion_values;
-      else 
+      else
         $completion = array();
     }
 
