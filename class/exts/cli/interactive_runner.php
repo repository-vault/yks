@@ -217,10 +217,18 @@ class interactive_runner {
       if($command_hash != $command['command_hash'] && ( $command_infos['usage']['hide']
         || $command_infos['command_ns'] != $this->className) ) continue;
         //title
+
+      $msgs = $command_infos['usage']['doc'] ? $command_infos['usage']['doc'] : array();
+
       $rbx_msgs[] = "Command : {$command_infos['command_key']}";
-      $msgs    = $command_infos['usage']['doc'];
+
       array_unshift($msgs, "Usage :". $this->help_cmd($command_infos));
       $rbx_msgs[] = join(LF, $msgs);
+    }
+
+    if(!$rbx_msgs) {
+      rbx::error("No documentation available");
+      return;
     }
 
     $rbx_msgs[] = array('notrim' => true);
