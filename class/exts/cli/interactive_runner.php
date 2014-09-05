@@ -75,6 +75,9 @@ class interactive_runner {
         $reflector = $this->reflection_scan($this->obj, $this->className, $this->className);
     }
 
+    $this->classDoc = doc_parser::parse($reflector->getDocComment());
+
+
     $mode_str = is_null($this->obj) ? "auto-instanciation" : "existing object";
     rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
 
@@ -157,25 +160,14 @@ class interactive_runner {
     return $str;
   }
 
+
 /**
-* show available commands
-* @autocomplete command interactive_runner::get_commands_list
 * @alias ?
-* @alias tada tuutu
+* @interactive_runner hide
 */
-  function help( $command = null){
-    if($command_infos = $this->lookup($command)) {
-
-      $doc = $command_infos['usage']['doc'];
-
-      array_unshift($doc, "Usage : ".$this->help_cmd($command_infos));
-
-      cli::box($command, join(LF, $doc), array('notrim' => true));
-
-      return;
-    }
-
-    $msgs = array();
+  function list_commands(){
+    $msgs      = array();
+    $rbx_msgs = array();
 
     foreach($this->commands_list as $command_hash=>$command) {
       if($command['usage']['hide']) continue;
@@ -191,17 +183,47 @@ class interactive_runner {
 
       foreach($parametred_aliases as $alias_name=>$args)
         $msgs[$command['command_ns']][] = "$alias_name (={$command['command_key']} ".join(" ", $args).")";
-
-
     }
 
-    $rbx_msgs = array();
     foreach($msgs as $command_ns=>$msgs) {
         //title
       $rbx_msgs[] = $command_ns == $this->className ? "Commands list" : "From $command_ns";
       $rbx_msgs[] = join(LF, $msgs);
     }
 
+    call_user_func_array(array('rbx', 'box'), $rbx_msgs);
+  }
+
+/**
+* show available commands
+* @autocomplete command interactive_runner::get_commands_list
+* @alias man
+*/
+  function help( $command = null){
+
+    $rbx_msgs = array();
+
+    if($this->classDoc) {
+      $rbx_msgs [] = "Global usage";
+      $rbx_msgs [] = join(LF, $this->classDoc['doc']);
+    }
+
+    $commands_list = $this->commands_list;
+    if($command = $this->lookup($command)) 
+      $commands_list = array_sort($commands_list, $command['command_hash']);
+
+
+    foreach($commands_list as $command_hash=>$command_infos) {
+      if($command_hash != $command['command_hash'] && ( $command_infos['usage']['hide']
+        || $command_infos['command_ns'] != $this->className) ) continue;
+        //title
+      $rbx_msgs[] = "Command : {$command_infos['command_key']}";
+      $msgs    = $command_infos['usage']['doc'];
+      array_unshift($msgs, "Usage :". $this->help_cmd($command_infos));
+      $rbx_msgs[] = join(LF, $msgs);
+    }
+
+    $rbx_msgs[] = array('notrim' => true);
     call_user_func_array(array('rbx', 'box'), $rbx_msgs);
   }
 
@@ -549,7 +571,7 @@ class interactive_runner {
     } else
       cli::$cols = trim(`tput cols`);
 
-    $this->help();
+    $this->list_commands();
   }
 
 
@@ -568,7 +590,7 @@ class interactive_runner {
     if(!empty(cli::$dict['ir://fs']))
       self::$current_runner->fullsize();
     else
-      self::$current_runner->help();
+      self::$current_runner->list_commands();
 
     self::$current_runner->run(); //private internal
   }
