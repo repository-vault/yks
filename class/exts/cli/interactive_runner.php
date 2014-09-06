@@ -162,6 +162,16 @@ class interactive_runner {
 
 
 /**
+* @alias y true
+* @alias n false
+* @interactive_runner hide
+*/
+  function yes_mode($mode = true){
+     cli::$unattended = bool($mode);
+     rbx::ok("Unattended mode is ".(cli::$unattended ? "on" : "off"));
+  }
+
+/**
 * @alias ?
 * @interactive_runner hide
 */
@@ -174,7 +184,7 @@ class interactive_runner {
       if(!$command['usage']['cli']) $str = $this->help_cmd($command);
       else $str = "{$command['command_key']} (cli-only)";
 
-      if(isset($command['usage']['doc']) && $doc = trim($command['usage']['doc'][0]))
+      if(isset($command['usage']['doc'][0]) && $doc = trim($command['usage']['doc'][0]))
         $str = $str . str_repeat(" ", max(1, cli::$cols - strlen($str) - strlen($doc) - 2)).$doc;
 
       $msgs[$command['command_ns']][] = $str;
