@@ -11,7 +11,7 @@ class cli {
 
   public static $args = array(); //unparsed arguments
   public static $dict = array(); //parsed arguments
-  private static $UNATTENDED_MODE = false;
+  public static $unattended = false;
   private static $history = array();
 
   static function init(){
@@ -27,7 +27,7 @@ class cli {
       ob_start(array('cli', 'console_out'), 2);
 
     self::load_args($_SERVER['argv']);
-    self::$UNATTENDED_MODE = (bool) self::$dict['cli://unattended'];
+    self::$unattended = (bool) self::$dict['cli://unattended'];
 
   }
   public static function load_args($args){
@@ -119,7 +119,7 @@ class cli {
   }
 
   public static function pause($prompt = ''){
-    if(self::$UNATTENDED_MODE) return;
+    if(self::$unattended) return;
     echo "[PAUSE $prompt Press Any key]";
     self::text_prompt();
   }
@@ -239,7 +239,7 @@ class cli {
         $default = pick(self::$dict[$key], $default_value);
     }
 
-    if(!is_null($default) && self::$UNATTENDED_MODE) //unattended
+    if(!is_null($default) && self::$unattended) //unattended
       return $default;
 
     if($default) $prompt .= " [{$default}]";
