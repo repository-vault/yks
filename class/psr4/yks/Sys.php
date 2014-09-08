@@ -22,13 +22,47 @@ class Sys
         return $home;
     }
 
+
+    /**
+    * Add a public key in a customer authorization file
+    * @return void
+    */
+    public static function addUserPubkey($user, $newKey)
+    {
+      if(!self::isRoot())
+        throw new \Exception("You must be root");
+
+        syslog(LOG_INFO, "Adding key to $user : $newKey");
+        $path = Sys::getHome($user) . '/.ssh/authorized_keys';
+        $dir = dirname($path);
+
+        if (!file_exists($dir)) {
+            mkdir($dir);
+            chmod($dir, 0700);
+            chown($dir, $user);
+        }
+
+        $keys = file_exists($path) ? file($path) : [];
+        $keys[] = $newKey;
+        $keys = array_unique(array_filter(array_map('trim', $keys)));
+        sort($keys);
+
+        file_put_contents($path, implode(PHP_EOL, $keys) . PHP_EOL);
+        chmod($path, 0600);
+        chown($path, $user);
+    }
+
     /**
      * @return bool true if the current user has root privileges.
      */
     public static function isRoot()
     {
+      static $isRoot = null;
+      if(!is_null($isRoot))
+        return $isRoot;
         // Don't use `whoami` as it's not present on all systems (eg. OpenWrt).
-        return trim(shell_exec('id -u')) === '0';
+      $isRoot = trim(shell_exec('id -u')) === '0';
+      return $isRoot;
     }
 
     /**
