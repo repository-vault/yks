@@ -120,7 +120,7 @@ class interactive_runner {
         return false;
 
       $command_args    = array_keys(array_msort($command_infos['usage']['params'], array('position' => SORT_ASC)));
-      $arg_index       = max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1)));
+      $arg_index       = pick($this->mandatory_arg_index, max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1))) );
       $arg_name        = $command_args[$arg_index];
 
       if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback'])
@@ -309,6 +309,9 @@ class interactive_runner {
     $this->command_aliases($command_ns, $command_key, $command_key, $command_hash);
   }
 
+
+  private $mandatory_arg_index; //autocomplete helper
+
   private function command_parse($command_prompt, $command_args = array(), $command_dict = array()) {
 
       if(!$command_prompt)
@@ -334,11 +337,11 @@ class interactive_runner {
 
       $command_args_mask = $command_infos['usage']['params'];
 
-      $param_id = 0; $args = array();
+      $this->mandatory_arg_index = 0; $args = array();
       foreach($command_args_mask as $param_name=>$param_infos){
 
-        if(array_key_exists($param_id, $command_args)){
-          $param_in = $command_args[$param_id];
+        if(array_key_exists($this->mandatory_arg_index, $command_args)){
+          $param_in = $command_args[$this->mandatory_arg_index];
         }
         else{
           if(array_key_exists($param_name, $command_dict)){
@@ -357,7 +360,7 @@ class interactive_runner {
         }
 
         $args[] = $param_in;
-        $param_id++;
+        $this->mandatory_arg_index++;
       }
       cli::add_history($command_prompt.' '.join(' ', $args));
 
@@ -425,6 +428,7 @@ class interactive_runner {
 
       try {
         $command_split = array();
+        $this->mandatory_arg_index = null;
         cli::text_prompt('$'.$this->className, null, $command_split);
         if($command_split == self::$REPLAY_COMMAND)
             $command_split = $this->last_command;
