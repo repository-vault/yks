@@ -17,6 +17,8 @@ class interactive_runner {
   private $static; //static mode
   private $output; //output mode,  see below
 
+  public $current_call; //read only structure with current call args
+
   const ns = "runner";
 
   const OUTPUT_RBX  = 'rbx';
@@ -122,10 +124,13 @@ class interactive_runner {
       $command_args    = array_keys(array_msort($command_infos['usage']['params'], array('position' => SORT_ASC)));
       $arg_index       = pick($this->mandatory_arg_index, max(0, (count($args) - (substr($line, -1) == " " ? 0 : 1))) );
       $arg_name        = $command_args[$arg_index];
+      if(!$this->mandatory_arg_index && count($args))
+        foreach($command_args as $k=>$v)
+          $this->current_call['args'][$v] = array_get($args, $k);
 
       if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback'])
-        $completion = call_user_func($completion_callback, array_get($args, $arg_index), $this->obj);
-      else if($completion_values      = $command_infos['usage']['params'][$arg_name]['completion_values'])
+        $completion = call_user_func($completion_callback, array_get($args, $arg_index), $this->obj,  $this, $args);
+      else if($completion_values  = $command_infos['usage']['params'][$arg_name]['completion_values'])
         $completion = $completion_values;
       else
         $completion = array();
@@ -337,7 +342,8 @@ class interactive_runner {
 
       $command_args_mask = $command_infos['usage']['params'];
 
-      $this->mandatory_arg_index = 0; $args = array();
+      $this->mandatory_arg_index  = 0;
+      $this->current_call['args'] = array();
       foreach($command_args_mask as $param_name=>$param_infos){
 
         if(array_key_exists($this->mandatory_arg_index, $command_args)){
@@ -359,12 +365,12 @@ class interactive_runner {
           }
         }
 
-        $args[] = $param_in;
+        $this->current_call['args'][$param_name] = $param_in;
         $this->mandatory_arg_index++;
       }
-      cli::add_history($command_prompt.' '.join(' ', $args));
+      cli::add_history($command_prompt.' '.join(' ', $this->current_call['args']));
 
-      return array($command_infos['callback'], $args);
+      return array($command_infos['callback'], $this->current_call['args']);
   }
 
 /**
@@ -542,7 +548,8 @@ class interactive_runner {
       foreach($params as $param) {
         $param_infos = array(
           'position'   => $param->getPosition(),
-          'completion' => array(),
+          'completion_values'   => null,
+          'completion_callback' => null,
         );
         if($param->isOptional()){
           $param_infos['optional'] = true;
@@ -557,13 +564,26 @@ class interactive_runner {
       if($autocompletes = $doc['args']['autocomplete']['values']){
         foreach($autocompletes as $values){
           $arg_name  = strip_start(array_shift($values), '$');
+          $raw       = first($values);
           if(!isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
             continue;
-          $callback  = preg_match("#^([a-z0-9_]+)::([a-z0-9_]+)$#", first($values), $out) && count($values) == 1;
-          if($callback)
-            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_callback'] = array($out[1] == 'self' ? $className : $out[1], $out[2]);
+
+          unset($callback_definition);
+          unset($statics_definition);
+          $callback  = preg_match("#^([a-z0-9_]+)::([a-z0-9_]+)$#i", $raw, $callback_definition) && count($values) == 1;
+          $statics   = preg_match("#^([a-z0-9_]+)::\\\$([a-z0-9_]+)$#i", $raw, $statics_definition) && count($values) == 1;
+
+          $usage = &$this->commands_list[$command_hash]['usage']['params'][$arg_name];
+
+          if($statics) {
+            $class = new ReflectionClass($statics_definition[1]);
+            $usage['completion_values'] = $class->getStaticPropertyValue($statics_definition[2]);
+           } elseif($callback)
+            $usage['completion_callback'] = array($callback_definition[1] == 'self' ? $className : $callback_definition[1], $callback_definition[2]);
           else
-            $this->commands_list[$command_hash]['usage']['params'][$arg_name]['completion_values'] = $values;
+            $usage['completion_values'] = $values;
+
+          unset($usage);
         }
      }
 
