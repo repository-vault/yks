@@ -121,7 +121,7 @@
      * @param string $calendar_id
      * @param string $title
      * @param string $location
-     * @param array  $attendees_user_mail
+     * @param array  $attendees_users
      * @param date   $date       (YYYY-MM-DD)
      * @param time   $time_start (HH:MM:SS)
      * @param time   $time_end
@@ -131,7 +131,7 @@
      *
      * @return string Inserted event ID
      */
-    public function add_event($calendar_id, $title, $location, $description, $attendees_user_mail, $date, $time_start, $time_end, $color_id, $timezone = "Europe/Paris", $optParams = array()) {
+    public function add_event($calendar_id, $title, $location, $description, $attendees_users, $date, $time_start, $time_end, $color_id, $timezone = "Europe/Paris", $optParams = array()) {
       $event = new Google_Service_Calendar_Event();
 
       $event->setSummary($title);
@@ -141,22 +141,25 @@
 
       $attendees = array();
 
-      if($attendees_user_mail) foreach($attendees_user_mail as $user_mail => $user_name) {
+      if($attendees_users) foreach($attendees_users as $user_mail => $user_infos) {
         $attendee = new Google_Service_Calendar_EventAttendee();
         $attendee->setEmail($user_mail);
-        $attendee->setDisplayName($user_name);
+        $attendee->setDisplayName($user_infos['name']);
+        $attendee->setResource($user_infos['resource']);
         $attendees[] = $attendee;
       }
 
       $event->attendees = $attendees;
 
-      $start = new Google_Service_Calendar_EventDateTime();
-      $start->setDateTime($date.'T'.$time_start);
+      $start          = new Google_Service_Calendar_EventDateTime();
+      $start_datetime = ($time_start) ? $date.'T'.$time_start : $date;
+      $start->setDateTime($start_datetime);
       $start->setTimeZone($timezone);
       $event->setStart($start);
 
-      $end = new Google_Service_Calendar_EventDateTime();
-      $end->setDateTime($date.'T'.$time_end);
+      $end          = new Google_Service_Calendar_EventDateTime();
+      $end_datetime = ($time_start) ? $date.'T'.$time_end : $date;
+      $end->setDateTime($end_datetime);
       $end->setTimeZone($timezone);
       $event->setEnd($end);
 
@@ -192,10 +195,11 @@
 
       $attendees = array();
 
-      if($attendees_user_mail) foreach($attendees_user_mail as $user_mail => $user_name) {
+      if($attendees_users) foreach($attendees_users as $user_mail => $user_infos) {
         $attendee = new Google_Service_Calendar_EventAttendee();
         $attendee->setEmail($user_mail);
-        $attendee->setDisplayName($user_name);
+        $attendee->setDisplayName($user_infos['name']);
+        $attendee->setResource($user_infos['resource']);
         $attendees[] = $attendee;
       }
 
