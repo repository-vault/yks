@@ -4,35 +4,9 @@
 
     //Public API access
     public $authUrl;
-
-    //OAuth 2.0 Service
-
-    private $key = 'AIzaSyDK6HCGXdHLJH-_ajXz1xmJmM7X5RbKHXk';
-
-    private $client_id_service = '324105369659-0af7mss9isb5vdgnpvi3f0h60jhv0nru.apps.googleusercontent.com';
-
-    private $service_account_name_service = '324105369659-0af7mss9isb5vdgnpvi3f0h60jhv0nru@developer.gserviceaccount.com';
-
-    private $key_file_location = '/rsrcs/Intervenants_Agenda-6289a260f638.p12';
-
-    //OAuth 2.0 Application
-
-    private $key_file_content;
-
-    private $client_id_application = '324105369659-7uud1ll9q08nfeitu7d1qjstes1n2n8r.apps.googleusercontent.com';
-
-    private $service_account_name_application = '324105369659-7uud1ll9q08nfeitu7d1qjstes1n2n8r@developer.gserviceaccount.com';
-
-    private $client_secret = 'cpQ2Cjc7Z6u5popqMO2daBQU';
-
-    private $redirect_uri = 'http://crm.klambard.si.ivsdev.net/?/Crm/Client/oauth2callback//';
-
     private $token_data;
-
     private $client;
-
     private $service;
-
     private $authentification_type;
 
     /**
@@ -50,18 +24,22 @@
       $this->client->setApplicationName("Intervenant_Calendar");
       $this->service = new Google_Service_Calendar($this->client);
 
-      if($this->authentification_type == 'oauth2.0_service' && (!strlen($this->client_id_service) || !strlen($this->service_account_name_service) || !strlen($this->key_file_location))) return missingServiceAccountDetailsWarning();
-      if($this->authentification_type == 'oauth2.0_application' && (!strlen($this->client_id_application) || !strlen($this->service_account_name_application) || !strlen($this->redirect_uri))) return missingServiceAccountDetailsWarning();
+      if($this->authentification_type == 'oauth2.0_service' && (!strlen(yks::$get->config->google->calendar->oauth->service['client_id']) || !strlen(yks::$get->config->google->calendar->oauth->service['email_address']) || !strlen(yks::$get->config->google->calendar->oauth->service['key_file']))) return missingServiceAccountDetailsWarning();
+      if($this->authentification_type == 'oauth2.0_application' && (!strlen(yks::$get->config->google->calendar->oauth->application['client_id']) || !strlen(yks::$get->config->google->calendar->oauth->application['email_address']) || !strlen(yks::$get->config->google->calendar->oauth->application['redirect_uri']))) return missingServiceAccountDetailsWarning();
 
-      if($this->authentification_type == 'public_server') $this->client->setDeveloperKey($this->key);
+      if($this->authentification_type == 'public_server') $this->client->setDeveloperKey(yks::$get->config->google->calendar->public['key']);
 
       if($this->authentification_type == 'oauth2.0_service') {
         if(isset($_SESSION['service_google_token'])) {
           $this->client->setAccessToken($_SESSION['service_google_token']);
         }
-
-        $this->key_file_content = file_get_contents(ROOT_PATH.$this->key_file_location);
-        $cred                   = new Google_Auth_AssertionCredentials($this->service_account_name_service, array('https://www.googleapis.com/auth/calendar'), $this->key_file_content);
+//DebugBreak("1@172.19.21.55");
+        $key_file_content = file_get_contents(ROOT_PATH.yks::$get->config->google->calendar->oauth->service['key_file']);
+        $cred                   = new Google_Auth_AssertionCredentials(
+          yks::$get->config->google->calendar->oauth->service['email_address'],
+          array('https://www.googleapis.com/auth/calendar'),
+          $key_file_content
+        );
         $this->client->setAssertionCredentials($cred);
 
         if($this->client->getAuth()->isAccessTokenExpired()) {
@@ -72,9 +50,9 @@
       }
 
       if($this->authentification_type == 'oauth2.0_application') {
-        $this->client->setClientId($this->client_id_application);
-        $this->client->setClientSecret($this->client_secret);
-        $this->client->setRedirectUri($this->redirect_uri);
+        $this->client->setClientId(yks::$get->config->google->calendar->oauth->application['client_id']);
+        $this->client->setClientSecret(yks::$get->config->google->calendar->oauth->application['client_secret']);
+        $this->client->setRedirectUri(yks::$get->config->google->calendar->oauth->application['redirect_uri']);
         $this->client->setScopes('https://www.googleapis.com/auth/calendar');
         $this->client->setAccessType('offline');
 
