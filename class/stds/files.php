@@ -350,6 +350,12 @@ class files {
     return $data;
   }
 
+
+  public static function tmpfile(){
+    $tmpfile = tmpfile();
+    return array(array_get(stream_get_meta_data($tmpfile), 'uri'), $tmpfile);
+  }
+
   public static function tmpdir(){mkdir($tmp = self::tmppath()); return $tmp; }
   public static function tmppath($ext= 'tmp', $use_local_tmp = false) {
       $abc   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
