@@ -4,10 +4,10 @@
 
     //Public API access
     public $authUrl;
-    private $token_data;
     private $client;
     private $service;
     private $authentification_type;
+    private $service_google_token;
 
     /**
      * Constructor
@@ -30,10 +30,10 @@
       if($this->authentification_type == 'public_server') $this->client->setDeveloperKey(yks::$get->config->google->calendar->public['key']);
 
       if($this->authentification_type == 'oauth2.0_service') {
-        if(isset($_SESSION['service_google_token'])) {
-          $this->client->setAccessToken($_SESSION['service_google_token']);
-        }
-//DebugBreak("1@172.19.21.55");
+        $this->service_google_token = pick($_SESSION['service_google_token'], $this->service_google_token);
+        if($this->service_google_token)
+          $this->client->setAccessToken($this->service_google_token);
+
         $key_file_content = file_get_contents(ROOT_PATH.yks::$get->config->google->calendar->oauth->service['key_file']);
         $cred                   = new Google_Auth_AssertionCredentials(
           yks::$get->config->google->calendar->oauth->service['email_address'],
@@ -46,7 +46,7 @@
           $this->client->getAuth()->refreshTokenWithAssertion($cred);
         }
 
-        $_SESSION['service_google_token'] = $this->client->getAccessToken();
+        $this->service_google_token = $_SESSION['service_google_token'] = $this->client->getAccessToken();
       }
 
       if($this->authentification_type == 'oauth2.0_application') {
@@ -72,11 +72,7 @@
         }
       }
 
-      if($this->client->getAccessToken()) {
-      }
-      else {
-        $this->authUrl = $this->client->createAuthUrl();
-      }
+      if($this->authentification_type == 'oauth2.0_application' && !$this->client->getAccessToken()) $this->authUrl = $this->client->createAuthUrl();
     }
 
     /**
