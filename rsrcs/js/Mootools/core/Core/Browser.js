@@ -64,9 +64,10 @@ var ua = navigator.userAgent.toLowerCase(),
 
 	if(name =='firefox') engine = 'gecko';
 	if(name =='opera') engine = 'presto';
-	if(name =='chrome' || name =='safari' ) engine = 'webkit';
+	if(name =='chrome' || name =='safari' || platform == 'ipad') engine = 'webkit';
 	if(name =='ie') engine = 'trident';
-
+        
+        engine = engine || 'gecko';
 	var version = Browser.Engines[engine]();
 
 	Browser.Engine = {name: engine, version: version};
