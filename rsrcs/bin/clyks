@@ -1,5 +1,6 @@
 #!/usr/bin/env php
-<?
+<?php
+
 if(isset($_ENV['php_value_include_path']))
   set_include_path($_ENV['php_value_include_path']);
 
