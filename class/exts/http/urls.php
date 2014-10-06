@@ -22,7 +22,7 @@ class urls {
     //return compact('domain', 'tld', 'sub', 'host')
   static function parse_host($host){
     $tlds = self::tlds();
-    $parts = explode('.', $host);
+    $parts = explode('.', mb_strtolower($host));
     $stack = false; $tld_level = 1; //unknown tld are 1st level
     foreach(array_reverse($parts) as $part) {
         $stack = $stack?"$part.$stack":$part;
@@ -30,7 +30,9 @@ class urls {
         $tld_level = $tlds[$stack];
     }
 
-    if(count($parts)<=$tld_level)
+    if(false
+        || count(array_filter($parts)) != count($parts)
+        || count($parts)<=$tld_level )
         throw new Exception("Invalid tld");
 
     $tld     = join('.', array_slice($parts, -$tld_level));
