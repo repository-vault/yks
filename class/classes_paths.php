@@ -17,6 +17,7 @@ classes::register_class_paths(array(
     "date"                => CLASS_PATH."/stds/date.php",
     "data"                => CLASS_PATH."/stds/data.php",
     "crypt"               => CLASS_PATH."/stds/crypt.php",
+    "idn"                 => CLASS_PATH."/stds/idn.php",
 
     "dsp"                 => CLASS_PATH."/dsp/display.php",
     "css_processor"       => CLASS_PATH."/dsp/css/processor.php",
