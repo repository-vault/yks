@@ -29,7 +29,7 @@ class Sys
     */
     public static function addUserPubkey($user, $newKey)
     {
-      if(!self::isRoot())
+      if (!self::isRoot())
         throw new \Exception("You must be root");
 
         syslog(LOG_INFO, "Adding key to $user : $newKey");
@@ -58,7 +58,7 @@ class Sys
     public static function isRoot()
     {
       static $isRoot = null;
-      if(!is_null($isRoot))
+      if (!is_null($isRoot))
         return $isRoot;
         // Don't use `whoami` as it's not present on all systems (eg. OpenWrt).
       $isRoot = trim(shell_exec('id -u')) === '0';
@@ -92,5 +92,33 @@ class Sys
             throw new \RuntimeException('Unable to get MAC address.');
 
         return $mac;
+    }
+
+    /**
+     * Put the process in the background and return its PID.
+     *
+     * @see https://stackoverflow.com/a/2036816/985610
+     *
+     * @return int new PID.
+     */
+    protected static function daemonize()
+    {
+        $fork = function() {
+            $pid = pcntl_fork();
+            if ($pid > 0)
+                exit(0);
+            else if ($pid < 0)
+                throw new \RuntimeException('Unable to fork.');
+            return $pid;
+        };
+
+        $fork();
+        posix_setsid();
+        $fork();
+        fclose(STDIN);
+        fclose(STDERR);
+        fclose(STDOUT);
+
+        return $pid;
     }
 }
