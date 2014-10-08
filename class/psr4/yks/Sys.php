@@ -101,7 +101,7 @@ class Sys
      *
      * @return int new PID.
      */
-    protected static function daemonize()
+    public static function daemonize()
     {
         $fork = function() {
             $pid = pcntl_fork();
