@@ -30,7 +30,7 @@ Jsx.dd_load = function(data, bind, dest){
     Xhr.http_lnk('post', url, data, function(txt){
         this.empty();
         Hash.each(txt, function(html,key){
-          $n('option',{html:html, value:key}).inject(this);
+          $n('option',{text: html, value:key}).inject(this);
         }.bind(this));
         this.fireEvent('change');
     }.bind($(dest)) );

@@ -156,16 +156,16 @@ Document.implement({
 	getWindow: function(){
 		return this.window;
 	},
-	
+
 	id: (function(){
-		
+
 		var types = {
 
 			string: function(id, nocash, doc){
 				id = doc.getElementById(id);
 				return (id) ? types.element(id, nocash) : null;
 			},
-			
+
 			element: function(el, nocash){
 				$uid(el);
 				if (!nocash && !el.$family && !(/^object|embed$/i).test(el.tagName)){
@@ -174,16 +174,16 @@ Document.implement({
 				};
 				return el;
 			},
-			
+
 			object: function(obj, nocash, doc){
 				if (obj.toElement) return types.element(obj.toElement(doc), nocash);
 				return null;
 			}
-			
+
 		};
 
 		types.textnode = types.whitespace = types.window = types.document = $arguments(0);
-		
+
 		return function(el, nocash, doc){
 			if (el && el.$family && el.uid) return el;
 			var type = $type(el);
@@ -274,7 +274,7 @@ var clean = function(item, retain){
 			}
 			Element.dispose(item);
 		}
-	}	
+	}
 	if (!uid) return;
 	collected[uid] = storage[uid] = null;
 };
@@ -497,7 +497,7 @@ Element.implement({
 	getParents: function(match, nocash){
 		return walk(this, 'parentNode', null, match, true, nocash);
 	},
-	
+
 	getSiblings: function(match, nocash){
 		return this.getParent().getChildren(match, nocash).erase(this);
 	},
