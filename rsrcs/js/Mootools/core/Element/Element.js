@@ -702,7 +702,7 @@ Element.Properties.html = (function(){
 				for (var i = wrap[0]; i--;) first = first.firstChild;
 				this.empty().adopt(first.childNodes);
 			} else {
-				this.innerHTML = html.replace('&', '&amp;');
+				this.innerHTML = html;
 			}
 		}
 	};
