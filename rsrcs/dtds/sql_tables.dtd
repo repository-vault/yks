@@ -29,6 +29,7 @@
 <!ELEMENT index (member+)>
 <!ATTLIST index
   type	(index|unique)	'index'
+  mode	(btree|gin_trgm|gist_trgm)	'btree'
   name	CDATA	#IMPLIED
 >
 
