@@ -256,7 +256,7 @@ abstract class _sql_base  implements ArrayAccess {
         || isset($this->$key)
         || method_exists($this, $getter = "get_$key")
 //        || $this->manager && method_exists($this->manager, $getter)
-//        || method_exists($this, $getter = "load_$key")
+        || method_exists($this, $getter = "load_$key")
 //        || $this->manager && method_exists($this->manager, $getter)
      ; //uncommente those if you need them
      return $exists;
