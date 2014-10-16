@@ -273,8 +273,7 @@ class sql_runner {
     sql::query('CREATE AGGREGATE first(varchar)(sfunc=coalesce_first, stype = varchar)');
     sql::query('CREATE AGGREGATE first(boolean)(sfunc=coalesce_first, stype = boolean )');
 
-    foreach(yks::$get->config->myks->pg_extensions->iterate("extension") as $extension)
-      sql::query("CREATE EXTENSION IF NOT EXISTS \"{$extension['name']}\";");
+    $this->scan_extension(true);
 
     $uranus_rotation_speed = 3;
     foreach(range(0, $uranus_rotation_speed) as $i)
@@ -330,6 +329,21 @@ class sql_runner {
     $this->queue(bool($run_queries));
   }
 
+  /**
+   * @alias ex t
+   * @param bool $run_queries
+   */
+  function scan_extension($run_queries = false) {
+    rbx::title("Analysing database extensions");
+
+    foreach(yks::$get->config->myks->pg_extensions->iterate("extension") as $extension) {
+      echo $queries[] = "CREATE EXTENSION IF NOT EXISTS \"{$extension['name']}\";\n";
+      $this->queries_queue($queries);
+    }
+
+    rbx::line();
+    $this->queue(bool($run_queries));
+  }
 
   private function dependencies_scanner(){
     rbx::ok("Step 1 : scanning dependencies");

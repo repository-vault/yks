@@ -37,6 +37,7 @@ class myks_indices {
         $index_name = pick((string)$index_xml['name'], "{$this->parent->name['name']}_idx_$i");
         $data = array(
             'index_name' => $index_name,
+            'mode'       => (string) $index_xml['mode'],
             'unique'     => bool($index_xml['type']=='unique'),
         );
         foreach($index_xml->member as $member) $data['fields'][] = (string)$member['column'];
@@ -59,12 +60,17 @@ class myks_indices {
     $drops = array_diff_key($this->sql_def, $this->xml_def);
 
     foreach($this->xml_def as $to=>$def){
-        $current = (array)$this->sql_def[$to];
-        if($current == $def) continue;
-        $full_name = "{$esc}{$this->parent->name['schema']}{$esc}.{$esc}$to{$esc}";
-        if($current) $todo[] = "DROP INDEX $full_name";
-        $unique = $def['unique'] ? "UNIQUE" : "";
-        $todo[] = "CREATE $unique INDEX {$esc}$to{$esc} ON {$this->parent->name['safe']}  USING btree (".join(',', $def['fields']).")";
+      $current = (array) $this->sql_def[$to];
+      if($current == $def) continue;
+      $full_name = "{$esc}{$this->parent->name['schema']}{$esc}.{$esc}$to{$esc}";
+      if($current) $todo[] = "DROP INDEX $full_name";
+      $mode   = $def['mode'] ? $def['mode'] : "btree";
+      $type   = ($mode != 'btree') ? substr($mode, 0, strpos($mode, '_')) : 'btree';
+      $unique = ($mode == 'btree' && $def['unique']) ? "UNIQUE" : "";
+      $index  = "CREATE $unique INDEX {$esc}$to{$esc} ON {$this->parent->name['safe']} USING $type ";
+      if($mode == "btree") $index .= "(".join(',', $def['fields']).")";
+      else $index .= "({$def['fields'][0]} {$mode}_ops)";
+      $todo[] = $index;
     } foreach($drops as $to=>$def){
         $full_name = "{$esc}{$this->parent->name['schema']}{$esc}.{$esc}$to{$esc}";
         $todo[] = "DROP INDEX $full_name";
