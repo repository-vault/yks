@@ -33,8 +33,8 @@ function array_compare($a, $b, $comp){
 
 function trimmed_mean($X, $k = 0.1) {
   $n = count($X);
-  sort($X, SORT_NUMERIC); 
-  for($i=$k; $i < $n-$k; $i++) 
+  sort($X, SORT_NUMERIC);
+  for($i=$k; $i < $n-$k; $i++)
     $sum += $X[$i];
   $mean = $sum / ($n - 2 * $k);
   return $mean;
@@ -108,7 +108,7 @@ function json_encode_lite($json){
     return $json;
 }
 
-function array_get(array $array, $key, $default = null) {
+function array_get($array, $key, $default = null) {
   return array_key_exists($key, $array) ? $array[$key] : $default;
 }
 
