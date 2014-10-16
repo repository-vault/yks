@@ -141,5 +141,18 @@ class exyks_urls {
   }
 
 
+  private static function hash($hash, $interval = 600){
+      $salt = sprintf("%s/%s/%s/%s", SITE_CODE, FLAG_SESS, $hash, exyks::$CLIENT_ADDR);
+      $now       = floor(time() / ($interval/2) );
+      return array(  hash_hmac('md5', $now, $salt),  hash_hmac('md5', $now -1, $salt));
+  }
 
+  function sign_url($url){
+   return first(self::hash($url));
+  }
+
+  function valid_url($url, $challenge){
+
+   return in_array($challenge, self::hash($url));
+  }
 }
