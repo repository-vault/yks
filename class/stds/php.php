@@ -25,4 +25,17 @@ class php {
     return $classes;
   }
 
+
+  function get_method_params($class, $method){
+    $reflect   = new ReflectionClass($class);
+    $method    = $reflect->getMethod($method);
+
+    $params = array();
+    //print_r(array_extract($method->getParameters(), "name"));
+
+    foreach($method->getParameters() as $param)
+      $params[$param->name] = $param->name;
+    return $params;
+  }
+
 }
