@@ -251,7 +251,17 @@ abstract class _sql_base  implements ArrayAccess {
     return $this;
   }
 
-  function offsetExists ($key){ return isset($this->data[$key])||isset($this->$key); }
+  function offsetExists ($key){
+     $exists = isset($this->data[$key])
+        || isset($this->$key)
+        || method_exists($this, $getter = "get_$key")
+//        || $this->manager && method_exists($this->manager, $getter)
+//        || method_exists($this, $getter = "load_$key")
+//        || $this->manager && method_exists($this->manager, $getter)
+     ; //uncommente those if you need them
+     return $exists;
+  }
+
   function offsetGet($key){ return $this->$key;}
   function offsetSet($offset, $value){$this->$offset = $value;}
   function offsetUnset($key){unset($this->data[$key]); }
