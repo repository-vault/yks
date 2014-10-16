@@ -112,7 +112,13 @@ class exyks_ws {
       $method  = $_GET['method'];
       $class = new $class_name();
       $query = $_POST ? $_POST : json_decode(stream_get_contents(fopen("php://input", "r")), true);
-      $res = call_user_func_array(array($class, $method ), $query);
+
+      $params = php::get_method_params($class, $method);
+
+      $data = array_column($params, 'default');
+      $data = array_sort(array_merge($data, $query), array_keys($data));
+
+      $res = call_user_func_array(array($class, $method ), $data);
       die($res);
     }
 

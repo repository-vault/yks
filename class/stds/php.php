@@ -34,7 +34,7 @@ class php {
     //print_r(array_extract($method->getParameters(), "name"));
 
     foreach($method->getParameters() as $param)
-      $params[$param->name] = $param->name;
+      $params[$param->name] = array('default'  => $param->isOptional() ? $param->getDefaultValue() : null);
     return $params;
   }
 
