@@ -15,7 +15,7 @@ class myks_indices {
   }
 
   function sql_infos(){
-    $cols = join(',', array('index_name', 'fields', 'uni AS unique'));
+    $cols = join(',', array('index_name', 'fields', 'uni AS unique', 'index_type as mode'));
     $verif_table = array(
         'table_name'   => $this->parent->name['name'],
         'table_schema' => $this->parent->name['schema'],
