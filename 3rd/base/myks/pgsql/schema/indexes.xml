@@ -2,7 +2,7 @@
 <!DOCTYPE myks PUBLIC "-//YKS//MYKS">
 <myks>
   <view name="zks_information_schema_indexes">
-<!-- 
+<!--
 Attention ! Some constraints (unique) may create an auto generated index, we dont want to manage them !
 -->
 
@@ -15,15 +15,19 @@ SELECT
   i.indkey AS fields,
   i.indisprimary AS pri,
   i.indisunique AS uni,
-
-CASE ci.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as "Type",
-
- u.usename as "Owner"
+  am.amname AS index_type,
+  CASE ci.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as "Type",
+  u.usename as "Owner"
 FROM pg_index i
     JOIN pg_class ci ON i.indexrelid = ci.oid
     JOIN pg_class ct ON i.indrelid = ct.oid
+    JOIN pg_am am on ci.relam = am.oid
     LEFT JOIN pg_user u ON u.usesysid = ci.relowner
     LEFT JOIN pg_namespace nt ON nt.oid = ci.relnamespace
+    JOIN pg_opclass o
+     on string_to_array(i.indclass::text, ' ')::oid[] @> array[o.oid]::oid[]
+    JOIN pg_type t on o.opcintype = t.oid
+
 WHERE TRUE
   AND ci.relkind IN ('i','')
   AND nt.nspname NOT IN ('pg_catalog', 'pg_toast')
