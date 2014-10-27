@@ -114,7 +114,7 @@ class Sys
 
         $fork();
         posix_setsid();
-        $fork();
+        $pid = $fork();
         fclose(STDIN);
         fclose(STDERR);
         fclose(STDOUT);
