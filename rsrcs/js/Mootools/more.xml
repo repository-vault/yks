@@ -5,6 +5,7 @@
       <module key="path://mt.more/Core/More.js">
         <description>Defines MooTools.More.version.</description>
         <dep key="Core"/>
+        <dep key="path://mt.more/Native/String.QueryString.js"/>
       </module>
       <module key="path://mt.more/Core/Lang.js">
         <description>Enables classes to contain text that can be localized to specific languages.</description>
