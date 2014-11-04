@@ -101,7 +101,7 @@ class http {
       exec("netstat -p tcp -n 2>/dev/null", $output); $output = join(CRLF, $output);
     }
 
-    $mask = "#^\s*TCP.*{$server_addr}:{$server_port}\s*{$client_addr}:{$client_port}\s*([A-Z]+)\s*$#mi";
+    $mask = "#^\s*TCP.*{$server_addr}:{$server_port}\s*{$client_addr}:{$client_port}\s*([A-Z]+)\s*.*$#mi";
     $status = preg_reduce($mask, $output);
     return ($status != "ESTABLISHED");
   }
