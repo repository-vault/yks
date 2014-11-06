@@ -174,7 +174,6 @@ class dsp{
     $pad      = $opts['pad'] ? $opts['pad'] : "&#160;&#160;";
     $truncate = $opts['truncate'] ? $opts['truncate'] : 50;
 
-
     foreach($list as $k=>$v){
 
         if( $col == "value" && ( !is_array($v) || is_object($v) ) )
@@ -185,7 +184,7 @@ class dsp{
         else $str = $v[$col];
 
         $options.="<option value='$k' "
-        .((!$mykse) && $truncate&&mb_strlen($str)>$truncate?"title='$str' ":'')
+        .((!$mykse) && $truncate && mb_strlen($str)>$truncate? 'title="'.$str.'" ':'')
         .($v['class']?"class='{$v['class']}' ":'')
         .($v['disabled']?"disabled='{$v['disabled']}' ":'')
         .($v['selected']||in_array($k,$selected)?'selected="selected" ':'')
