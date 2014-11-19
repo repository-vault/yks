@@ -47,7 +47,7 @@ class crypt {
   // Build a signed certificate from a private key.
   // It can use a specified CA cert & private key
   // It's self signed when no CA is given (default)
-  public static function BuildCertificate($subject, $private_key_raw, $ca_pkey_raw = null, $ca_cert_raw = null, $serial = null, $days=365){
+  public static function BuildCertificate($subject, $private_key_raw, $ca_pkey_raw = null, $ca_cert_raw = null, $serial = null, $days=365, $path=null){
 
     // Open private key
     $private_pem = crypt::BuildPemKey($private_key_raw, crypt::PEM_PRIVATE);
@@ -62,6 +62,8 @@ class crypt {
       'private_key_type' => OPENSSL_KEYTYPE_RSA,
       'encrypt_key'      => false,
     );
+    if($path)
+      $options['config'] = $path;
     $csr = openssl_csr_new($subject, $private_key, $options);
     if(!$csr)
       throw new Exception("Failed to create a CSR.");
