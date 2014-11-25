@@ -77,11 +77,11 @@ abstract class _sql_base  implements ArrayAccess {
     return call_user_func_array(array($this->manager, $method), $args);
   }
 
-  static function from_where($class, $sql_table, $sql_key, $where) {//, optionals
-    sql::select($sql_table, $where);
+  static function from_where($class, $sql_table, $sql_key, $where, $order = null) {//, optionals
+    sql::select($sql_table, $where, '*', $order);
 
     $args = func_get_args();
-    return self::repack_results_as_objects($class, $sql_key, array_slice($args, 4));
+    return self::repack_results_as_objects($class, $sql_key, array_slice($args, 5));
   }
 
   static function from_where_locked($class, $sql_table, $sql_key, $where) {//, optionals
