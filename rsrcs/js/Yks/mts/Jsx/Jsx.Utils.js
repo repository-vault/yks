@@ -36,4 +36,10 @@ Jsx.dd_load = function(data, bind, dest){
     }.bind($(dest)) );
 };
 
+Jsx.sendForm = function(ks_action, formId) {
+  var datablob = $(formId).toQueryString().parseQueryString();
+  datablob.ks_action = ks_action;
+  return datablob;
+}
+
 
