@@ -6,8 +6,24 @@ class dpkg {
     return trim(`dpkg-deb -I $package_file control 2>/dev/null`);
   }
 
-  public static function package_version($package_name){
-    return trim(`dpkg-query -W -f '\${version}'  $package_name 2>/dev/null`);
+  /**
+   * Return the current version of an installed dpkg package.
+   *
+   * @param string $package_name
+   * @return string|null version or null if the package is not installed.
+   */
+  public static function package_version($package_name)
+  {
+    $version = exec(sprintfshell(
+      'dpkg-query -W -f \'${Version}\' %s 2>/dev/null',
+      $package_name
+    ), $exit);
+
+    // Bad exit on no package found, empty string on no installed version.
+    if($exit !== 0 || !strlen($version))
+        return null;
+
+    return $version;
   }
 
 
