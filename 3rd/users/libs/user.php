@@ -22,12 +22,17 @@ class user extends _user {
         throw new Exception("Unable to load user #{$user->user_id}");
     $user->user_access = auth::get_access($user->users_tree);
     $user->user_flags  = array_filter(explode(',',$user->user_flags));
-    return $user; 
+    return $user;
   }
-  
+
+  static function from_mail($mail){
+    $user = sql::row("ks_users_profile", array('user_mail' => $mail), "user_id");
+    return self::instanciate($user['user_id']);
+  }
+
   function register($key, $table_name){
     if(!($table_xml = yks::$get->tables_xml->$table_name)) return false;
-    $table_keys = fields($table_xml,'primary'); 
+    $table_keys = fields($table_xml,'primary');
     $row_unique = (count($table_keys)==1 && current($table_keys)=='user_id');
     unset($table_keys['user_id']);
     $table_key = count($table_keys) == 1 ? first($table_keys) : false;
