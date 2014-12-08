@@ -20,7 +20,7 @@ var Palette = new Class({
 
   select:function(el){
     this.els.removeClass('selected');
-    $(this.map).addClass('ready');
+    document.id(this.map).addClass('ready');
     el.addClass('selected');
     this.map.brush_select(el.retrieve('brush'));
   }

@@ -31,7 +31,7 @@ var Reflection = new Class({
     var styles={width:width, 'position':'relative','margin-top':height,'margin-left':-width};
 
     if (Browser.Engine.trident){
-        $(this.preload).setStyles($merge(styles,{
+        document.id(this.preload).setStyles($merge(styles,{
             'margin-bottom': -height+canvasHeight,
             'filter': 'flipv progid:DXImageTransform.Microsoft.Alpha(opacity='+(this.options.opacity*100)+', style=1, finishOpacity=0, startx=0, starty=0, finishx=0, finishy='+(this.options.height*100)+')'
         }) ).inject(this.img,'after'); return;

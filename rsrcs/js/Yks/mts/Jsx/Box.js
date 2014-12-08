@@ -41,7 +41,7 @@ var Box = new Class({
 
     var screen_size = getSize(), scroll_top = getScroll();
     if(Browser.Platform.blackberry) {
-        screen_size = $('container').getSize(); scroll_top = {x:0,y:0}; }
+        screen_size = document.id('container').getSize(); scroll_top = {x:0,y:0}; }
         //y positioning can be done better (Math.max&min a lot
     if(!$defined(options.place))
         options.place = {
@@ -56,14 +56,14 @@ var Box = new Class({
     Doms.autoload("Drag.Move");
 
         //!!!
-    if(!anchor.makeDraggable && Browser.Engine.trident){ anchor.$family = false; $(anchor); }
+    if(!anchor.makeDraggable && Browser.Engine.trident){ anchor.$family = false; document.id(anchor); }
 
     var drag_anchor = $E("*[class$='_u'],p.box_title",anchor);
     if(drag_anchor) anchor.makeDraggable({handle:drag_anchor.addClass('dragged')});
     anchor.addEvent('click', this.focus.bind(this) );
 
     if(this.glue = $E("*[class$='_resize']", anchor)){
-        if($(this.glue).getParent('.box') == anchor) {
+        if(document.id(this.glue).getParent('.box') == anchor) {
 
           var drag = anchor.makeResizable({handle:this.glue, 
  
@@ -142,11 +142,11 @@ var Box = new Class({
  },
 
   close:function(event){stop(event);
-    if(this.modal_box) $(this.modal_box).destroy();
+    if(this.modal_box) document.id(this.modal_box).destroy();
     this.anchor.effect('opacity',{duration:200}).start(1,0).chain(function(){
         delete Screen.boxes_list[this.box_name];
-        $(this.anchor).fireEvent('unload');
-        this.anchor=$(this.anchor).destroy();
+        document.id(this.anchor).fireEvent('unload');
+        this.anchor = document.id(this.anchor).destroy();
         
         if(this.opener) this.opener.focus();
     }.bind(this));

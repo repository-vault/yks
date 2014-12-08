@@ -12,7 +12,7 @@ var BBcoder = new Class({
     var actions = this.options.actions || BBcoder.actions;
     var controls = this.options.controls || [];
 
-    this.area = $(area);
+    this.area = document.id(area);
     this.area.bbcoder = this;
 
     var box_size = this.area.getSize();

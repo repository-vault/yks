@@ -80,7 +80,7 @@ var Completer = new Class ({
         li.addEvent('click',this.set.pass(this.vals.length-1,this));
         li.inject(this.ul);
     },this);
-    this.ul.inject($(document.body));
+    this.ul.inject(document.id(document.body));
     this.opened = true;
     if(this.vals.length == 1 && this.options.one_out) this.set(0);
   },

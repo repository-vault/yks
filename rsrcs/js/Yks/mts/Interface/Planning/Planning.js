@@ -10,7 +10,7 @@ var Planning = new Class({
   brush:null,
 
   initialize:function(anchor){
-    this.anchor = $(anchor);
+    this.anchor = document.id(anchor);
 
      this.anchor.addEvent('mouseup', this.stop)
     .addEvent('mouseleave', this.stop)
@@ -21,16 +21,16 @@ var Planning = new Class({
         }.bind(this))
     .addEvent('mousemove',function(event){
         new Event(event).stop();
-        if(this.draw && this.brush && $(event.target).match(this.paint_area_mask))
-          this.brush.use($(event.target),this.brush,event);
+        if(this.draw && this.brush && document.id(event.target).match(this.paint_area_mask))
+          this.brush.use(document.id(event.target),this.brush,event);
         }.bind(this))
     .addEvent('click',function(event){
-        if(this.brush && $(event.target).match(this.paint_area_mask))
-          this.brush.use($(event.target),this.brush);
+        if(this.brush && document.id(event.target).match(this.paint_area_mask))
+          this.brush.use(document.id(event.target),this.brush);
         }.bind(this))
     .addEvent('dblclick',function(ev){
-        if(this.brush && $(event.target).match(this.paint_area_mask))
-          this.brush.use($(event.target),this.brush);
+        if(this.brush && document.id(event.target).match(this.paint_area_mask))
+          this.brush.use(document.id(event.target),this.brush);
         }.bind(this))
     ;
 

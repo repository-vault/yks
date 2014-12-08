@@ -13,7 +13,7 @@ var Wyzzie = new Class({
     area.wyzzie = this;
     
     this.area=area;
-    this.form=$(this.area.form);
+    this.form=document.id(this.area.form);
     this.designed=false;
 
     var box_size=this.area.getSize();
@@ -83,7 +83,7 @@ var Wyzzie = new Class({
     if(!this.ready){
         this.ready=true;
         //this.win.addEvent('keypress',function(event){});
-        //$(this.doc.body).addEvent('keypress',function(event){});
+        //document.id(this.doc.body).addEvent('keypress',function(event){});
     }
 
     if($defined(designed))this.designed =designed;

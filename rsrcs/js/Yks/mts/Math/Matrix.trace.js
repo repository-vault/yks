@@ -12,7 +12,7 @@ Matrix.prototype.print = function () {
         out += '</tr>';
     }
     out += '</table>';
-    $('body').append(out);
+    document.id('body').append(out);
     
     return this;
 };

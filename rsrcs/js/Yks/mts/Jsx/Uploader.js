@@ -22,7 +22,7 @@ var Uploader =  {
         id:'label_'+upload.src,
         'class':'upload_table',
         html:"<tbody><tr><th>File</th><th>Size</th><th>Action</th></tr></tbody>"
-      }).inject($(upload.src),'after').getElement('tr').getParent();
+      }).inject(document.id(upload.src),'after').getElement('tr').getParent();
     }
 
     var line = $n('tr').inject(input.upload_table);

@@ -29,15 +29,15 @@ var Screen = {
   boxer:function(anchor, options){
     var old = this.getBox(options.box_name) , tmp = false;
     if(old){
-        $(old).fireEvent('unload');
-        tmp = new Box( anchor.replaces( $(old) ), $merge(options,
+        document.id(old).fireEvent('unload');
+        tmp = new Box( anchor.replaces( document.id(old) ), $merge(options,
             old.fly?{modal_box:old.modal_box,fly:true,place:old.getPosition()}:{fly:false},
             old.opener && (options.opener.box_name==options.box_name)?{opener:old.opener}:false
         ));
         for (var type in old.$events) { //clone events
             old.$events[type].each(function(fn){ tmp.addEvent(type, fn); }, this);
         }
-    } else tmp = new Box( anchor.inject($('container')),options);
+    } else tmp = new Box( anchor.inject(document.id('container')),options);
     Doms.scan(anchor);
     if(old) tmp.fireEvent('reloaded');
     return tmp;
@@ -51,11 +51,11 @@ var Screen = {
   modaler:function(box){
     var scroll_size = getScrollSize();
     if(Browser.Platform.blackberry) 
-        scroll_size = $('container').getSize();
+        scroll_size = document.id('container').getSize();
 
     Screen.modal_lvl++;
 
-    var liste = $$('select').diff($(box).getElements('select'));
+    var liste = $$('select').diff(document.id(box).getElements('select'));
     liste.setStyle('visibility', 'hidden');
     return $n('div',{'class':'modal_mask',styles:{
         'opacity':0.5,
@@ -63,6 +63,6 @@ var Screen = {
       }}).addEvent('onRemove',function(){
             Screen.modal_lvl--;
             liste.setStyle('visibility', 'visible');
-      }).inject($('container'));
+      }).inject(document.id('container'));
   }
 };

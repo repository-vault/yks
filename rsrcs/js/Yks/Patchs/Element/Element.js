@@ -2,7 +2,7 @@
 Element.implement({
   dispose: function(){
      try {
-      if(this.fireEvent) $(this).fireEvent("onRemove");
+      if(this.fireEvent) document.id(this).fireEvent("onRemove");
         //legacy code here
       return (this.parentNode) ? this.parentNode.removeChild(this): this;
     } catch(err) {

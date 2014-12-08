@@ -19,7 +19,7 @@ var MooCrop = new Class({
 
 	initialize: function(el, options){
 		this.setOptions(options);
-		this.img = $(el);
+		this.img = document.id(el);
 		if ( this.img.get('tag') != 'img') return false;
 		
 		this.resizeFunc = this.refresh.bindWithEvent(this);
@@ -31,7 +31,7 @@ var MooCrop = new Class({
 
 	setup: function(){
 		
-		$(this.cropArea).setStyles({
+		document.id(this.cropArea).setStyles({
 			'width': this.options.min.width, 
 			'height': this.options.min.height,
 			'top' : (this.img.height - this.options.min.height)/2,
