@@ -17,7 +17,7 @@ class dpkg {
     $version = exec(sprintfshell(
       'dpkg-query -W -f \'${Version}\' %s 2>/dev/null',
       $package_name
-    ), $exit);
+    ), $_, $exit);
 
     // Bad exit on no package found, empty string on no installed version.
     if($exit !== 0 || !strlen($version))
