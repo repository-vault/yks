@@ -185,6 +185,7 @@ Document.implement({
 		types.textnode = types.whitespace = types.window = types.document = $arguments(0);
 
 		return function(el, nocash, doc){
+                        if( el && typeof el == 'object' && el.toElement) return el.toElement();
 			if (el && el.$family && el.uid) return el;
 			var type = $type(el);
 			return (types[type]) ? types[type](el, nocash, doc || document) : null;
