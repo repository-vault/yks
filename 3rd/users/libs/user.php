@@ -25,9 +25,9 @@ class user extends _user {
     return $user;
   }
 
-  static function from_mail($mail){
-    $user = sql::row("ks_users_profile", array('user_mail' => $mail), "user_id");
-    return self::instanciate($user['user_id']);
+  static function from_mail($user_mail){
+    $user_id = sql::value("ks_users_profile", compact('user_mail'), "user_id");
+    return self::instanciate($user_id);
   }
 
   function register($key, $table_name){
