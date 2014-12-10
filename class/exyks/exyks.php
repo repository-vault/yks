@@ -98,7 +98,8 @@ class exyks {
 
     global $action;
 
-    $action   = (string)is_array($_POST['ks_action'])?key($_POST['ks_action']):$_POST['ks_action'];
+    $action = array_get($_POST, 'ks_action');
+    $action = (string) (is_array($action) ? key($action) : $action);
 
     $tmp = (string)yks::$get->config->site['default_mode'];
     define('DEFAULT_MODE', $tmp?$tmp:"xml");
@@ -132,7 +133,7 @@ class exyks {
     tpls::register_custom_element("field", array('tpls', 'inline_field'));
 
 
-    define('JSX_TARGET', $_SERVER['HTTP_CONTENT_TARGET']);
+    define('JSX_TARGET', array_get($_SERVER, 'HTTP_CONTENT_TARGET'));
     define('FLAG_UPLOAD',    yks::$get->config->flags['upload'].FLAG_DOMAIN);
 
     define('BASE_CC',        yks::$get->config->lang['country_code']);

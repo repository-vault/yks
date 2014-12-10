@@ -39,7 +39,9 @@ define('CLTOOLS_PATH', YKS_PATH.DIRECTORY_SEPARATOR.'cltools');
 $win = isset($_SERVER['OS']) && stripos($_SERVER['OS'],'windows')!==false ;
 define('CLYKS',  $win ? "clyks.bat" : "clyks");
 define('EXYKS',        YKS_PATH.DIRECTORY_SEPARATOR.'web.php');
-define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
+
+if(!defined('SERVER_NAME'))
+  define('SERVER_NAME',  strtolower($_SERVER['SERVER_NAME']));
 
 include "$class_path/constants.php";
 include "$class_path/stds/classes.php";

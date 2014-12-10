@@ -94,7 +94,7 @@ class exyks_session {
 
     if(is_null($user_tz)) {
       $_SESSION['client']['tz']  = IDATEZ;
-    } elseif($_SERVER['HTTP_YKS_CLIENT_TZ']) {
+    } elseif(array_get($_SERVER, 'HTTP_YKS_CLIENT_TZ')) {
       $_SESSION['client']['tz']  = (int)$_SERVER['HTTP_YKS_CLIENT_TZ'];
     }
 

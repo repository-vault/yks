@@ -19,13 +19,22 @@ class http {
         'tlds'         => CLASS_PATH."/exts/http/tlds.php",
         'console_host' => CLASS_PATH."/exts/cli/console_host.php",
     ));
-    self::$WIN = stripos($_SERVER['OS'], 'windows')!==false || isset($_SERVER['WINDIR']);
+
+    if(
+        stripos(array_get($_SERVER, 'OS'), 'windows') !== false
+        || isset($_SERVER['WINDIR'])
+    ) {
+        self::$WIN = true;
+    }
   }
 
   static function client_addr($trusted_proxies = array(), $jumps = null, $remote_addr = null){
-    if(is_null($remote_addr)) $remote_addr = $_SERVER['REMOTE_ADDR'];
-    if(is_null($jumps))   $jumps = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    if(!is_array($jumps)) $jumps = array_filter(preg_split(VAL_SPLITTER, $jumps));
+    if(is_null($remote_addr))
+      $remote_addr = array_get($_SERVER, 'REMOTE_ADDR');
+    if(is_null($jumps))
+      $jumps = array_get($_SERVER, 'HTTP_X_FORWARDED_FOR');
+    if(!is_array($jumps))
+      $jumps = array_filter(preg_split(VAL_SPLITTER, $jumps));
 
     if(!self::ip_allow($trusted_proxies, $remote_addr) || !$jumps)
       return $remote_addr;

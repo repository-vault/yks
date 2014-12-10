@@ -11,7 +11,7 @@ exyks::bench('generation_start');
 $vars = array();
 list($context, $href, $href_ks, $depths, $argv0) = exyks::context_prepare($_SERVER['QUERY_STRING']);
 foreach($context as $depth=>$infos){
-  list($subs_path, $subs_fold, $page, $subs_args, $href_fold, $href_base) = $infos;
+  list($subs_path, $subs_fold, $page, $subs_args, $href_fold, $href_base) = $infos + array_fill(0, 6, null);
   if($depth==$depths) exyks::$href = $href = "$href_base/$page";
   list($sub0, $sub1, $sub2, $sub3, $sub4) = $subs_args;
   $subs_file = "$subs_fold/$page"; exyks::$page_def = "home";

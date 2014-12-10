@@ -41,7 +41,7 @@ class exyks_urls {
 
   private static function resolve($subs_fold, $node_name, $subs_path){
 
-    if($subs = self::$paths["$subs_fold/$node_name"]) {
+    if($subs = array_get(self::$paths, "$subs_fold/$node_name")) {
       self::$current = $subs['module'];
       return $subs['sub_path'];
     }
@@ -63,7 +63,7 @@ class exyks_urls {
  */
 
   static function parse($url){
-    $url = explode("|", urldecode($url), 2);
+    $url = explode("|", urldecode($url), 2) + array(null, null);
     $href_ks = htmlspecialchars($url[0],ENT_QUOTES,'UTF-8');
     preg_match_all("#/([^/]+)(?://([^/]*))?#", $href_ks, $url_tree, PREG_SET_ORDER);
 
@@ -84,6 +84,7 @@ class exyks_urls {
 
     $value = $url[1];
     foreach($url_tree as $tmp){
+      $tmp += array(null, null, null);
       list($node_name, $args_str) = array($tmp[1],$tmp[2]);
       $args = self::parse_args($args_str);
 
