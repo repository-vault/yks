@@ -2,8 +2,9 @@
 ob_start("ob_gzhandler");
 
 $uids = array_filter(explode("," , $argv0));
+$nojsx_ctx = null;
 if($argv0[0]=='{') {
-  $nojsx_ctx = json_parser::parse($argv0);
+  $nojsx_ctx = json_decode($argv0, true);
   $uids = array_filter(array($nojsx_ctx['uid']));
 }
 
@@ -20,7 +21,10 @@ classes::register_class_paths(array(
 
 
 
-$lang_key  = pick($nojsx_ctx['Yks-Language'], $_SERVER['HTTP_YKS_LANGUAGE']);
+$lang_key  = pick(
+  is_array($nojsx_ctx) ? $nojsx_ctx['Yks-Language'] : null,
+  array_get($_SERVER, 'HTTP_YKS_LANGUAGE')
+);
 
 $lang_key = pick(preg_clean("a-z_-", $lang_key), 'en-us');
 

@@ -67,14 +67,16 @@ class css_parser {
     if($file_path)
       $block->set_path($file_path);
 
-    if($embraced) $i++;
+    if($embraced)
+      $i++;
 
+    $len = strlen($str);
     do {
       $statement = self::walk($str, $i);
       if(!$statement)
         break;
       $block->stack_statement($statement);
-    } while($str{$i+1}!="}"  && $str{$i}!="" );
+    } while($i < $len && $str[$i+1] != "}");
 
     if($embraced && $str{$i++}!="}")
       throw new Exception("Invalid block end start at $start ".substr($str, $i-2));
@@ -137,7 +139,7 @@ class css_parser {
     if(!preg_match($mask, $str, $out))
       return null; //throw new Exception("Invalid property value=".substr($str, $i));
 
-    if($out['func'])
+    if(array_get($out, 'func'))
       $out[0] = self::split_func($str);
 
     $uri = pick($out['nq'], $out['dq'], $out['sq']); //double, simple, no quote
@@ -151,6 +153,9 @@ class css_parser {
     $func_name = $out['func'];
     $i = strlen($out[0]);
     $args = array();
+    $arg_key = null;
+    $value = null;
+
     do {
       $values = self::split_values($str, $i);
 
@@ -165,7 +170,7 @@ class css_parser {
         continue;
       }
 
-      $args [pick($arg_key, count($args))] = $value;
+      $args[pick($arg_key, count($args))] = $value;
       $arg_key = null;
 
     } while($token != ')');
@@ -358,5 +363,4 @@ class css_parser {
     }
     return $tmp;
   }
-
 }

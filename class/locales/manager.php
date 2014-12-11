@@ -94,8 +94,18 @@ class locales_manager {
       array('&USER_LANG;' => substr($lang_key,0,5) ), //send iso 639 compatible locale
       $entities,
       retrieve_constants(self::CONST_LOCALES_MASK, "&%s;")
-    ); foreach(tpls::$entities as $k=>$v) $entities["&$k;"] = $v;
-    if($entities){while($tmp!=$str){ $tmp=$str; $str=strtr($str,$entities);} $str=$tmp;}
+    );
+
+    foreach(tpls::$entities as $k => $v) {
+      $entities["&$k;"] = $v;
+    }
+
+    if($entities) {
+      do {
+        $tmp = $str;
+        $str = strtr($str, $entities);
+      } while($tmp != $str);
+    }
 
     if(strpos($str,"&")!==false)$str = locales_processor::process_entities($str, $lang_key);
 
