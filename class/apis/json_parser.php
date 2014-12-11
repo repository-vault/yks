@@ -1,7 +1,8 @@
-<?
+<?php
 /** json parser (for Js input (not json strict compliant)
-*  robust & simple enough for real world usages
-*/
+ *  robust & simple enough for real world usages
+ */
+
 class json_parser {
   const pad = " \t\n\r";
 
@@ -10,7 +11,7 @@ class json_parser {
     if(is_null($obj))
       return "<null/>";
     elseif(is_array($obj)) {
-        //a list is a hash with 'simple' incremental keys
+      //a list is a hash with 'simple' incremental keys
       $is_list = array_keys($obj) == array_keys(array_values($obj));
       if(!$is_list) {
         $str.= "<hash>";
@@ -40,7 +41,7 @@ class json_parser {
       return null;
     }
   }
-  
+
   private static function walk($str, &$i){
     $i += strspn($str, self::pad, $i);
     if($str{$i} == '{')
@@ -52,7 +53,6 @@ class json_parser {
     $i += strspn($str, self::pad, $i);
     return $value;
   }
-  
 
   private static function consume($str, $token, &$i){
     $i += strspn($str, self::pad, $i);
@@ -95,7 +95,7 @@ class json_parser {
       return $data;
     throw new Exception("Invalid hash end");
   }
-  
+
   private static function parse_simple($str, &$i ){
 
     //$mask = '#"((?:\\\.|[^"\\\])*)"#i'; // http://stackoverflow.com/questions/2148587
@@ -106,7 +106,7 @@ class json_parser {
 
     $i += strlen($out[0]);
     list($dv, $sv, $qv) = array($out[1], $out[2], pick($out[3], $out[4]));
-    
+
     if($dv !== '')
       return (int) $dv;
 
