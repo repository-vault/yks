@@ -15,11 +15,11 @@
 
 #products_list_tools {
   float:left;
-  width:300px;
+  width:100%;
 }
 #products_list {
   float:right;
-  width:700px;
+	width:100%;
 }
 
 #products_list_contents table {

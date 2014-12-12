@@ -67,7 +67,7 @@ class products extends _sql_base {
       $product = $products[$product_categ['product_id']];
       if(!$product->products_categories)
         $product->products_categories = array();
-      $product->products_categories[$product_categ['category_id']] = $product_categ['category_id'];
+      $product->products_categories[$product_categ['category_id']] = category::instanciate($product_categ['category_id']);
       if($product['product_id']) {
 
       }
@@ -178,7 +178,7 @@ class products extends _sql_base {
     $products_infos=array($product_start_id=>$product_infos);
     $first = first($product_infos);
 
-    if(!$item['product_id']){ // si $product_infos['product_id'] existe deja.. rien à faire
+    if(!$product_infos['product_id']){ // si $product_infos['product_id'] existe deja.. rien à faire
       $products_infos = self::get_tree_definition($product_infos);
       //if(!$force) $verif_products+=$verif_status;
     }
@@ -222,8 +222,9 @@ class products extends _sql_base {
 
     $verif_products=array('product_id'=>array_keys($products_infos));
     sql::select("ks_shop_products_categories",$verif_products);
+    $category_list = category::from_where(sql::true);
     while(extract(sql::fetch()))
-    $products_infos[$product_id]['product_categs'][]=$category_id;
+    $products_infos[$product_id]['product_categs'][$category_id] = $category_list[$category_id];
 
     //suivant ce qui avait été demandé initialement, on retourne un, ou plusieurs trucs
     return $product_start_id?$products_infos[$product_start_id]:$products_infos;

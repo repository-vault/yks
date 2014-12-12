@@ -4,6 +4,7 @@
   <table name="ks_shop_categories_list">
     <fields>
       <field type="category_id"/>
+      <field type="category_name" null="null"/>
       <field type="category_parent" delete="cascade"/>
     </fields>
   </table>
@@ -15,6 +16,9 @@
   </table>
   <mykse type="category_id" birth="ks_shop_categories_list">
     <string length="25"/>
+  </mykse>
+  <mykse type="category_name">
+    <string length="250"/>
   </mykse>
   <mykse type="category_parent" null="null">
     <mykse type="category_id"/>
