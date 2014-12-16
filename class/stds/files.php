@@ -21,6 +21,13 @@ class files {
     return $cache_contents;
   }
 
+  public static function jail($dir, $file_name) {
+     $file_path = realpath("$dir/$file_name");
+     if(!starts_with($file_path, $dir))
+       return false;
+     return $file_path;
+  }
+
   public static function safe_name($file_name){
     $file_name = preg_replace('#[/\\:*?<>"|]#', " ", $file_name);
     $file_name = preg_replace('#\s+#', ' ', $file_name);
