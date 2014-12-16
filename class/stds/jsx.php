@@ -31,7 +31,7 @@ class jsx {
   }
   static function encode($var){
     if(!$var) return "{}";
-    if($eval = $var[jsx::JS_EVAL]){
+    if($eval = array_get($var, jsx::JS_EVAL)){
         unset($var[jsx::JS_EVAL]);
         $eval = jsx::JS_EVAL.':function(jsx){'.$eval.'}';
     }
