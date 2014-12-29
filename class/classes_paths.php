@@ -118,8 +118,13 @@ classes::register_class_paths(array(
     "cache"                => CLASS_PATH."/cache/cache.php",
 ));
 
-if(SQL_DRIVER == "pgsql")
-    classes::register_class_path("sql", CLASS_PATH."/sql/pgsql.php");
 
-classes::register_alias("sql",     "_sql_".SQL_DRIVER);
-classes::register_alias("storage", "_storage_".STORAGE_DRIVER);
+if(defined('SQL_DRIVER')) {
+  if(SQL_DRIVER == "pgsql")
+    classes::register_class_path("sql", CLASS_PATH."/sql/pgsql.php");
+  classes::register_alias("sql",     "_sql_".SQL_DRIVER);
+}
+
+if(defined('STORAGE_DRIVER')) {
+  classes::register_alias("storage", "_storage_".STORAGE_DRIVER);
+}

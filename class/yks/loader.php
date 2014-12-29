@@ -13,7 +13,7 @@ if(!defined('PUBLIC_PATH')) {
   //where am i
   $public_root = dirname($_SERVER['SCRIPT_FILENAME']);
   if(PHP_SAPI == 'cli') {
-    if(!$_SERVER['SERVER_NAME']) $_SERVER['SERVER_NAME'] = 'cli';
+    if(!isset($_SERVER['SERVER_NAME'])) $_SERVER['SERVER_NAME'] = 'cli';
     define('PUBLIC_PATH', realpath($public_root));
     define('ROOT_PATH',   PUBLIC_PATH);
   } else {
@@ -27,7 +27,8 @@ if(!defined('PUBLIC_PATH')) {
 $class_path  = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..');
 
 define('WWW_PATH',    PUBLIC_PATH);
-define('ROOT_PATH',   dirname(WWW_PATH));
+if(!defined('ROOT_PATH'))
+  define('ROOT_PATH',   dirname(WWW_PATH));
 define('CONFIG_PATH', realpath(ROOT_PATH.DIRECTORY_SEPARATOR."config"));
 define('CLASS_PATH',  $class_path);
 define('YKS_PATH',    realpath("$class_path/.."));

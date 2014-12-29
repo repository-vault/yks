@@ -9,7 +9,6 @@ class exyks_paths {
 
   public static function init(){
 
-
     if(!classes::init_need(__CLASS__)) return;
 
     self::register("yks", YKS_PATH);
@@ -21,16 +20,6 @@ class exyks_paths {
     self::register("bootstrap", RSRCS_PATH."/themes/bootstrap", self::default_ns, true);
     self::register("skin.bootstrap", RSRCS_PATH."/themes/yks-bootstrap", self::default_ns, true);
 
-    self::register("public",  PUBLIC_PATH, self::default_ns, true);
-    self::register("cache",   CACHE_PATH, self::default_ns, true);
-    self::register("cache",   CACHE_PATH, self::default_ns, true);
-    self::register("config",  CONFIG_PATH); //NOT Public
-    self::register("tmp",     TMP_PATH); //NOT Public
-
-
-    if(yks::$get->config)
-      foreach(yks::$get->config->paths->iterate("ns") as $ns)
-        self::register($ns['name'], self::resolve($ns['path']), self::default_ns, $ns['public']=='public' );
 
 
     stream_wrapper_register("path", "ExyksPathsResolver");
@@ -41,6 +30,20 @@ class exyks_paths {
     );
 
     self::$consts_cache = retrieve_constants();
+
+    if(is_null(yks::$get) || is_null(yks::$get->config))
+      return;
+
+    self::register("public",  PUBLIC_PATH, self::default_ns, true);
+    self::register("cache",   CACHE_PATH, self::default_ns, true);
+    self::register("cache",   CACHE_PATH, self::default_ns, true);
+    self::register("config",  CONFIG_PATH); //NOT Public
+    self::register("tmp",     TMP_PATH); //NOT Public
+
+
+    if(yks::$get->config)
+      foreach(yks::$get->config->paths->iterate("ns") as $ns)
+        self::register($ns['name'], self::resolve($ns['path']), self::default_ns, $ns['public']=='public' );
 
   }
 
