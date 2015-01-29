@@ -30,10 +30,13 @@ class ipkg {
     files::create_dir($tmp_dir);
 
     foreach(array('data' => $files_list, 'control' => $control_files) as $dir => $files_list)
-    foreach($files_list as $file_name => $file_path) {
-      files::create_dir(dirname($dest = "$tmp_dir/$dir/$file_name"));
-      $cmd = "rsync -a $file_path $dest";
-      passthru($cmd);
+    foreach($files_list as $file_name => $file_paths) {
+      $file_paths = is_array($file_paths) ? $file_paths : [$file_paths];
+      foreach($file_paths as $file_path) {
+        files::create_dir(dirname($dest = "$tmp_dir/$dir/$file_name"));
+        $cmd = "rsync -a $file_path $dest";
+        passthru($cmd);
+      }
     }
 
     $archive = self::forge($tmp_dir);
