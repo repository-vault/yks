@@ -11,6 +11,34 @@ class smtp_lite {
         throw new Exception("Sync {$out[0]}!={$response} : $tmp");
   }
 
+
+  public static function mail($body, $headers){
+    if($body === true && PHP_SAPI == 'cli') 
+      $body = stream_get_contents(STDIN);
+  
+
+    $dests  = array_merge(
+            $headers['To'] ?$headers['To'] : array(),
+            $headers['Cc'] ?$headers['Cc'] : array());
+
+    if(!$dests)
+      throw new Exception("No valid dests");
+
+    $headers["To"] = join(',', $headers["To"]);
+    if(isset($headers['Cc']))
+     $headers['Cc'] = join(',', $headers['Cc']);
+
+    $contents = "";
+    foreach($headers as $header_name => $header_value)
+      $contents .= sprintf("%s: %s\r\n", $header_name, rfc_2047::header_encode($header_value));
+
+    $contents.= CRLF.$body;
+
+    return self::smtpsend($contents, $dests);
+  }
+
+
+
   public static function smtpmail($to, $subject, $body, $headers = TYPE_TEXT){
     if($body === true && PHP_SAPI == 'cli') 
       $body = stream_get_contents(STDIN);
