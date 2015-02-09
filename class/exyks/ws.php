@@ -109,6 +109,7 @@ class exyks_ws {
     }
 
     if($_GET['mode'] == 'rest') {
+
       $method  = $_GET['method'];
       $class = new $class_name();
       $query = $_POST ? $_POST : json_decode(stream_get_contents(fopen("php://input", "r")), true);
@@ -118,7 +119,17 @@ class exyks_ws {
       $data = array_column($params, 'default');
       $data = array_sort(array_merge($data, $query), array_keys($data));
 
-      $res = call_user_func_array(array($class, $method ), $data);
+      try {
+         $res = call_user_func_array(array($class, $method ), $data);
+      } catch(SoapFault $f){
+          header("HTTP/1.0 500 error");
+          $message = json_encode(array('message' => $f->getMessage(), 'code' => $f->faultcode ));
+          die($message);
+      } catch(Exception $e){
+         header("HTTP/1.0 500 error");
+         error_log($e->getMessage());
+         die;
+      }
       die($res);
     }
 
