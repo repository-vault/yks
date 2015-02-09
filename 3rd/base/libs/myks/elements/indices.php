@@ -40,6 +40,9 @@ class myks_indices {
             'mode'       => (string) $index_xml['mode'],
             'unique'     => bool($index_xml['type']=='unique'),
         );
+        if(!$data['mode'])
+          $data['mode'] = "btree"; //default
+
         foreach($index_xml->member as $member) $data['fields'][] = (string)$member['column'];
         $this->xml_def[$index_name] = $data;
     }
@@ -54,7 +57,7 @@ class myks_indices {
     if(!$this->modified())
         return $todo;
 
-    //print_r($this->sql_def);print_r($this->xml_def);die;
+//    print_r($this->sql_def);print_r($this->xml_def);die;
     $esc = sql::$esc;
 
     $drops = array_diff_key($this->sql_def, $this->xml_def);
@@ -64,7 +67,7 @@ class myks_indices {
       if($current == $def) continue;
       $full_name = "{$esc}{$this->parent->name['schema']}{$esc}.{$esc}$to{$esc}";
       if($current) $todo[] = "DROP INDEX $full_name";
-      $mode   = $def['mode'] ? $def['mode'] : "btree";
+      $mode   = $def['mode'];
       $type   = ($mode != 'btree') ? substr($mode, 0, strpos($mode, '_')) : 'btree';
       $unique = ($mode == 'btree' && $def['unique']) ? "UNIQUE" : "";
       $index  = "CREATE $unique INDEX {$esc}$to{$esc} ON {$this->parent->name['safe']} USING $type ";
