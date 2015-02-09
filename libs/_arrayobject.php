@@ -1,14 +1,18 @@
 <?
 class _ArrayObject implements ArrayAccess {
 
-  function offsetExists ($key){ return isset($this->$key); }
   function offsetGet($key){ return $this->$key;}
   function offsetSet($key, $value){$this->$key = $value;}
   function offsetUnset($key){unset($this->$key); }
-
+  function offsetExists ($key){
+    return isset($this->data[$key]) ||
+           isset($this->$key);
+  }
 
 
   public function __get($key){
+    if(isset($this->data[$key]))
+        return $this->data[$key];
     if(method_exists($this, $getter = "get_$key"))
         return $this->$getter();
   }
