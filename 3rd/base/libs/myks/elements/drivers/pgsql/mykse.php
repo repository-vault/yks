@@ -54,6 +54,10 @@ class mykse extends mykse_base {
     $this->field_def["Type"]="json";
   }
 
+  function jsonb_node(){
+    $this->field_def["Type"]="jsonb";
+  }
+
 
   function guid_node(){
     $this->field_def["Type"]="uuid";

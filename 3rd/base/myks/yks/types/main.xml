@@ -71,4 +71,7 @@
   <mykse type="json" default="'{}'">
     <mykse type="json"/>
   </mykse>
+  <mykse type="jsonb" default="'{}'">
+    <mykse type="jsonb"/>
+  </mykse>
 </myks>

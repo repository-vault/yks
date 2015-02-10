@@ -41,9 +41,11 @@
 >
 
 <!ELEMENT json (CDATA)*>
+<!ELEMENT jsonb (CDATA)*>
+
 <!ELEMENT guid (CDATA)*>
 
-<!ELEMENT mykse (mykse|text|string|enum|int|json|guid)?>
+<!ELEMENT mykse (mykse|text|string|enum|int|json|jsonb|guid)?>
 
 <!ATTLIST mykse
   type  CDATA	#REQUIRED

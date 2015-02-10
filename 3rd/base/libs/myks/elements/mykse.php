@@ -129,11 +129,12 @@ abstract class mykse_base {
   protected function get_def(){
     if($this->base_type=="int") $this->int_node();
     elseif($this->base_type=="string") $this->string_node();
-    elseif($this->base_type=="enum") $this->enum_node();
-    elseif($this->base_type=="text") $this->text_node();
-    elseif($this->base_type=="bool") $this->bool_node();
-    elseif($this->base_type=="json") $this->json_node();
-    elseif($this->base_type=="guid") $this->guid_node();
+    elseif($this->base_type=="enum")   $this->enum_node();
+    elseif($this->base_type=="text")   $this->text_node();
+    elseif($this->base_type=="bool")   $this->bool_node();
+    elseif($this->base_type=="json")   $this->json_node();
+    elseif($this->base_type=="jsonb")  $this->jsonb_node();
+    elseif($this->base_type=="guid")   $this->guid_node();
     else $this->resolve($this->base_type)->get_def();
 
     return $this->field_def;
