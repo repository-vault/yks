@@ -121,7 +121,7 @@ class http {
     $url = new url($src_url);
     $host_ip  = $ip ? $ip : $url->host;
 
-    $port    = $url->is_ssl?443:80;
+    $port    = $url->port ? $url->port : ($url->is_ssl?444:80);
     $enctype = $url->is_ssl?'ssl://':'';
 
     $lnk = new sock($host_ip, $port, $enctype);
