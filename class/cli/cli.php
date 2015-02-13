@@ -17,7 +17,7 @@ class cli {
   static function init(){
     if(class_exists('classes') && !classes::init_need(__CLASS__)) return;
 
-    $win = stripos($_SERVER['OS'],'windows')!==false || isset($_SERVER['WINDIR']);
+    $win = stripos(array_get($_SERVER, 'OS'),'windows') !== false || isset($_SERVER['WINDIR']);
     $tty = isset($_SERVER['TERM']);
     self::$OS = ( $win && !$tty ) ? self::OS_WINDOWS : self::OS_UNIX;
 
@@ -26,8 +26,8 @@ class cli {
     if(self::$OS == self::OS_WINDOWS)
       ob_start(array('cli', 'console_out'), 2);
 
-    self::load_args($_SERVER['argv']);
-    self::$unattended = (bool) self::$dict['cli://unattended'];
+    self::load_args(array_get($_SERVER, 'argv', array()));
+    self::$unattended = (bool) array_get(self::$dict, 'cli://unattended', false);
 
   }
   public static function load_args($args){
