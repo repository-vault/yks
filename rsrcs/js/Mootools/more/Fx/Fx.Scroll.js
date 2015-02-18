@@ -122,7 +122,7 @@ Fx.Scroll = new Class({
 
 	scrollToCenter: function(el, axes, offset){
 		axes = axes ? $splat(axes) : ['x', 'y'];
-		el = $(el);
+		el = document.id(el);
 		var to = {},
 			pos = el.getPosition(this.element),
 			size = el.getSize(),

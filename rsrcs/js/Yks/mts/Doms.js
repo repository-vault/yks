@@ -2,10 +2,10 @@
 var Doms = {
   box_mask: ".box",
   loaders: {},
-  context: $(window.document.documentElement),
+  context: document.id(window.document.documentElement),
   scan: function(context){
     var infos;
-    context = $(context || window.document.documentElement);
+    context = document.id(context || window.document.documentElement);
 
     for(var uid in this.loaders) { infos = this.loaders[uid];
         if(!infos.match) continue;

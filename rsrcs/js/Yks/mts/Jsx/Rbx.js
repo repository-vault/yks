@@ -4,7 +4,7 @@ var Rbx = new Class({
   fx:false,
 
   initialize:function(anchor, box){
-    anchor= anchor || $('rbx') || $("container") || $E("body");
+    anchor= anchor || document.id('rbx') || document.id("container") || $E("body");
 
     if(this.occlude(anchor)) return;
 

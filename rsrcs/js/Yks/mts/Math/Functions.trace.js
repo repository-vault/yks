@@ -6,5 +6,5 @@ function trace(msg){
             msg=msg.replace(/%[ds]/,arguments[a]);
     
     this.msg += msg + "<br/>";
-    $('trace').innerHTML = this.msg;
+    document.id('trace').innerHTML = this.msg;
 }

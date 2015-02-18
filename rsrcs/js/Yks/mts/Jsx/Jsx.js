@@ -18,7 +18,7 @@ var Jsx = new Class({
 
   initialize:function(options, anchor){
     this.setOptions(options);
-    this.box= (this.anchor=$(anchor)).getBox() || Screen.getBox(options.target);
+    this.box= (this.anchor=document.id(anchor)).getBox() || Screen.getBox(options.target);
  
     var tmp = this.anchor.retrieve('jsx');
     if(tmp) this.rbx = tmp.rbx;
@@ -111,7 +111,7 @@ var Jsx = new Class({
 
     var scripts = '', tmp = $n('div'), anchor;
     tmp.appendChild(transformer.out(this.xml_body)), 
-    anchor = $(tmp).getElements(Doms.box_mask)[0];
+    anchor = document.id(tmp).getElements(Doms.box_mask)[0];
 
     if(!anchor) return false;
 

@@ -44,8 +44,8 @@ var ShowCase = new Class({
         width:this.options.canvas_width,
         height:this.options.canvas_height
     };
-    $extend($('canvas').style, canvas_dims);
-    $extend($('canvas'), canvas_dims);
+    $extend(document.id('canvas').style, canvas_dims);
+    $extend(document.id('canvas'), canvas_dims);
 
     // on calcule l'angle de tick en fonction du nombre de colonnes
     // la hauteur selon le nombre de ligne

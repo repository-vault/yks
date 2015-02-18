@@ -7,11 +7,11 @@ Window.implement({
   },
 
   $E: function(selector,filter){
-    return ($(filter) || $(this.document.documentElement)).getElement(selector);
+    return (document.id(filter) || document.id(this.document.documentElement)).getElement(selector);
   },
 
   $v: function(a,b){
-    if(b!=undefined)$(a).value=b;else return $(a).value;
+    if(b!=undefined)document.id(a).value=b;else return document.id(a).value;
   },
 
   $n: function(a,b){

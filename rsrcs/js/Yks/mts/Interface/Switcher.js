@@ -46,10 +46,10 @@ var Switcher = new Class ({
 
     var tmp;
     if(this.slide_active){
-        tmp  = $(new_slide_id);    
-        tmp.removeClass('off').inject($(this.slide_active),'after');
+        tmp  = document.id(new_slide_id);    
+        tmp.removeClass('off').inject(document.id(this.slide_active),'after');
         this.mask_zone.effect('margin-left').start(0,-this.anchor_size.x).chain(function(old_id,new_id){
-            $(old_id).addClass('off');
+            document.id(old_id).addClass('off');
             this.mask_zone.setStyle('margin-left',0);
             this.slide_active=new_id;
         }.pass([this.slide_active,new_slide_id],this));
@@ -57,7 +57,7 @@ var Switcher = new Class ({
         
     } else {
         this.children.addClass('off');
-        $(new_slide_id).removeClass('off');
+        document.id(new_slide_id).removeClass('off');
     }
     this.slide_active=new_slide_id;
 
