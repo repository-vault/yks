@@ -101,7 +101,7 @@ class date {
     if($z<79 or $z>354)$a=4; elseif($z<172)$a=1; elseif($z<265)$a=2; else $a=3; //a = season
 
 
-    $t=ceil($n/3); $rel=$rs["$z/$Y"];
+    $t=ceil($n/3); $rel=array_get($rs, "$z/$Y");
     $query = $rel&&$format_rel?$format_rel:$format;
     return preg_replace(VAR_MASK, VAR_REPL, $query);
   }

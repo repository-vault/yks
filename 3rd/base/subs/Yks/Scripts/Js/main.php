@@ -5,7 +5,7 @@ $uids = array_filter(explode("," , $argv0));
 $nojsx_ctx = null;
 if($argv0[0]=='{') {
   $nojsx_ctx = json_parser::parse($argv0);
-  $uids = array_filter(array($nojsx_ctx['uid']));
+  $uids = array_filter(array(array_get($nojsx_ctx, 'uid')));
 }
 
 $compress = false;
