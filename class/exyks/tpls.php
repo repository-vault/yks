@@ -332,6 +332,8 @@ class tpls {
 
   private function create_element($doc, $type, $value = NULL, $new_attr = array()){
     $el = is_null($value) ? $doc->createElement($type) : $doc->createElement($type, $value);
+    if($type == "textarea" && !$value)
+      $el->appendChild($doc->createComment("")); //xml empty
 
     foreach($new_attr as $key => $value)
       $el->setAttribute($key, $value);
