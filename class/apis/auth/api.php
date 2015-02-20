@@ -60,6 +60,38 @@ class exyks_auth_api {
   }
 
 
+
+    /**
+   * @param string $user_mail
+   * @return string
+   **/
+  public static function loginFromMail($user_mail){
+    //DebugBreak("1@172.51.1.88");
+    $trusted_ips = explode(";", yks::$get->config->apis->authapi['trusted_ip']);
+    $is_trusted = in_array(exyks::$CLIENT_ADDR , $trusted_ips);
+    if(!$is_trusted)
+      throw new SoapFault("oo", "Only from trusted ip ".(exyks::$CLIENT_ADDR));
+
+
+    sess::connect();
+    $user_id = sql::value("ks_users_profile", compact('user_mail'), "user_id");
+
+    if(!isset(sess::$sess['user_id']))
+        sess::renew(); //sess::$id is now set
+
+    $auth_success = sess::update($user_id, true); //skip authentification
+    if(!$auth_success)
+        throw new Exception("Invalid user ( $user_id) ");
+
+    $data = sess::$sess->computed;
+    $data['users_tree'] =  sess::$sess['users_tree'];
+
+    return self::output($data);
+  }
+
+
+
+
   /**
    * @param string $access_zone
    * @param string $access_lvl

@@ -33,6 +33,20 @@ class WSAuthBasic {
     return call_user_func_array(array(self::TRUE_CLASS, __FUNCTION__), $args);
   }
 
+
+  /**
+  * Login with an ID. Restricted by IP for internals exchanges
+  *
+  * @param string $user_mail
+  * @return string
+  */
+  public static function loginFromMail($user_mail){
+    $args = func_get_args();
+    call_user_func_array(array(self::TRUE_CLASS, __FUNCTION__), $args);
+    return session_id();
+  }
+
+
   /**
   * Retourne un object serialise definissant l'user
   * @param string $session_id
