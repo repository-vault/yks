@@ -54,7 +54,10 @@ class sess  {
   static function connect($session_id = null){
     if($session_id) session_id($session_id) ;
 
-    session_start();
+    // PHP 5.4
+    if(function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE)
+      session_start();
+
     self::$sess = &$_SESSION['user'];
     self::$id = session_id();
     self::$_storage = &$_SESSION['storage'];
@@ -105,8 +108,8 @@ class sess  {
   static function close(){ return session_write_close(); }
 
   static function status_check(){
-    self::$connected=( self::$sess['user_id']
-                      && self::$sess['user_id'] != exyks::retrieve('USERS_ROOT') );
+    $user_id = array_get(self::$sess, 'user_id');
+    self::$connected = $user_id && $user_id != exyks::retrieve('USERS_ROOT');
   }
 
   static function update($user_id, $skip_auth = false){

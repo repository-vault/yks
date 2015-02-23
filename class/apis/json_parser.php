@@ -105,7 +105,7 @@ class json_parser {
       throw new Exception("Invalid simple value at $i");
 
     $i += strlen($out[0]);
-    list($dv, $sv, $qv) = array($out[1], $out[2], pick($out[3], $out[4]));
+    list($dv, $sv, $qv) = array($out[1], $out[2], pick($out[3], array_get($out, 4)));
 
     if($dv !== '')
       return (int) $dv;

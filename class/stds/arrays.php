@@ -259,3 +259,25 @@ function xml_to_constants($xml, $pfx, $set = false){
     return $ret;
 }
 
+
+/**
+ * Filter the keys of an array via a whitelist.
+ *
+ * @param mixed[] $array
+ * @param string[] $whitelist
+ * @return mixed[]
+ * */
+function array_whitelist(array $array, array $whitelist = array()) {
+  return array_intersect_key($array, array_flip($whitelist));
+}
+
+/**
+ * Filter the keys of an array via a blacklist.
+ *
+ * @param mixed[] $array
+ * @param string[] $blacklist
+ * @return mixed[]
+ * */
+function array_blacklist(array $array, array $blacklist = array()) {
+  return array_diff_key($array, array_flip($blacklist));
+}

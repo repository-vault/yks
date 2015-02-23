@@ -47,7 +47,7 @@ class exyks_paths {
 
   }
 
-  public function expose_public_paths(){
+  public static function expose_public_paths(){
     return array_column( array_restrict(self::$paths, array(
         'public'=> true,
         'ns' => self::default_ns
