@@ -2,9 +2,7 @@
 
 namespace yks;
 
-/**
- * Lowish level methods for querying the OS.
- */
+ /// Lowish level methods for querying the OS.
 class Sys
 {
     /**
@@ -22,22 +20,24 @@ class Sys
         return $home;
     }
 
-
     /**
     * Add a public key in a customer authorization file
+    *
+    * @param mixed $user UID or login.
+    * @param string $newKey
     * @return void
     */
     public static function addUserPubkey($user, $newKey)
     {
-      if (!self::isRoot())
-        throw new \Exception("You must be root");
-
-        syslog(LOG_INFO, "Adding key to $user : $newKey");
         $path = Sys::getHome($user) . '/.ssh/authorized_keys';
         $dir = dirname($path);
+        if (file_exists($path) && !is_writable($path))
+          throw new \RuntimeException("Can't write to `$path`.");
 
         if (!file_exists($dir)) {
-            mkdir($dir);
+            if (!mkdir($dir))
+              throw new \RuntimeException("Can't create `$dir`.");
+
             chmod($dir, 0700);
             chown($dir, $user);
         }
