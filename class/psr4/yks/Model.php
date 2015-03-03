@@ -29,7 +29,6 @@ trait Model {
 
 
   function __get($key) {
-error_log($key);
         //const proxy
     if($key == "sql_key")
         return self::sql_key;
