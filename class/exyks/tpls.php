@@ -302,8 +302,8 @@ class tpls {
           $new_attr['name']     = $name.'[]';
         }
 
-        $select = self::create_element($doc,'select', NULL, $new_attr);
-        self::clone_args($select,  $field, array('disabled', 'multiple'));
+        $select = self::create_element($doc, 'select', NULL, $new_attr);
+        self::clone_args($select,  $field, array('disabled', 'multiple', 'size'));
 
         if($field->hasAttribute('null')){
           $null = self::create_element($doc, 'option', $field->getAttribute('null'), array('value' => ''));
