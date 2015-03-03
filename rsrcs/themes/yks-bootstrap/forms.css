@@ -6,6 +6,11 @@
 
 }
 
+select[multiple], select[size] {
+  height auto !important
+}
+
+
 
 .submit button {
   @extend .btn-success;
