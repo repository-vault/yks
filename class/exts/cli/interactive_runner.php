@@ -53,7 +53,7 @@ class interactive_runner {
     $this->reflection_scan($this, self::ns); //register runners own commands
 
     $this->obj  = null;
-    $this->static = cli::$dict['ir://static'];
+    $this->static = bool(array_get(cli::$dict, 'ir://static'));
 
     if(is_string($from)) {
         $this->className = $from;
@@ -535,7 +535,8 @@ class interactive_runner {
       $params = $method->getParameters();
       $doc = doc_parser::parse($method->getDocComment());
 
-      $tmp = $doc['args']['interactive_runner']['computed'];
+      $tmp = isset($doc['args']['interactive_runner'])
+             ? $doc['args']['interactive_runner']['computed'] : null;
       if(!$tmp) $tmp = array();
       if(in_array("disable", $tmp))
         continue;
@@ -561,8 +562,8 @@ class interactive_runner {
       $this->command_register($command_ns, $command_key, $callback, $usage);
       $command_hash = $this->generate_command_hash($command_ns, $command_key);
 
-      if($autocompletes = $doc['args']['autocomplete']['values']){
-        foreach($autocompletes as $values){
+      if( isset($doc['args']['autocomplete']) ){
+        foreach($doc['args']['autocomplete']['values'] as $values){
           $arg_name  = strip_start(array_shift($values), '$');
           $raw       = first($values);
           if(!isset($this->commands_list[$command_hash]['usage']['params'][$arg_name]))
@@ -587,7 +588,7 @@ class interactive_runner {
         }
      }
 
-      if($aliases = $doc['args']['alias']['values']) foreach($aliases as $args) {
+      if(isset($doc['args']['alias'])) foreach($doc['args']['alias']['values'] as $args) {
         $alias_name  = array_shift($args);
         if(!( $alias_name && $command_key)) continue;
         $this->command_aliases($command_ns, $command_key, array($alias_name=>$args) );

@@ -21,20 +21,17 @@ if(is_file($argv[1])) {
   define('yks/cli', "Yks cli tools");
   include "yks/class/yks/loader.php";
   exyks::init();
+  $clyks_config = yks::$get->config->clyks;
+
+  $helpers = array(
+    'yks'  => 'yks_runner',
+    'myks' => 'myks_runner',
+    'sync' => 'sync_runner',
+    'sql'  => 'sql_runner',
+  );
+
+  $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
 }
-
-$clyks_config = yks::$get->config->clyks;
-
-
-
-$helpers = array(
-  'yks'  => 'yks_runner',
-  'myks' => 'myks_runner',
-  'sync' => 'sync_runner',
-  'sql'  => 'sql_runner',
-);
-
-$entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');
 
 if(is_file($entry)) {
   $first_class = first(php::file_get_php_classes($entry));

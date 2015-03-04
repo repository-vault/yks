@@ -15,12 +15,13 @@ class rbx extends Exception {
   function __construct($zone,$msg,$jsx=0){ self::msg($zone,$this->message = $msg,$jsx); }
 
   static function msg($zone, $msg, $jsx=0){
-    if(!is_string($msg))$msg=trim(strtr(print_r($msg,1),array("\r"=>'',"\n"=>'')));
+    if(!is_string($msg))
+       $msg = trim(strtr(print_r($msg,1),array("\r"=>'',"\n"=>'')));
+
     self::$rbx[$zone] = isset(self::$rbx[$zone]) ? self::$rbx[$zone] : '';
-    self::$rbx[$zone].=(self::$rbx[$zone]?' ':'').$msg;
+    self::$rbx[$zone].= (self::$rbx[$zone]?' ':'').$msg;
     if($jsx!==0)jsx::$rbx=$jsx;
     if(self::$output_mode!=1) return;
-    self::$rbx['log'].="$zone : $msg".LF;
 
     cli::output(cli::pad($msg, ' ', STR_PAD_RIGHT, "%s: $zone").LF);
   }
