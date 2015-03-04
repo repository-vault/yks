@@ -22,6 +22,9 @@ class client {
 
     $this->token_api = $config['token_api'];
     $this->login_api = $config['login_api'];
+    if(!$this->login_api)
+      throw new Exception("Invalid yks/connect configuration (missing token_api/login_api)");
+
 
     $local_key       = crypt::BuildPemKey($config['private_key'], crypt::PEM_PRIVATE);
     $this->client_id = crypt::GetFingerPrint(crypt::BuildAuthorizedKey($local_key));
