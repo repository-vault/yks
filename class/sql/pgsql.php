@@ -10,8 +10,8 @@ class sql {
   static public $servs=null;
   static public $rows=0;
   static public $log=true;
-  static private $pfx=array(
-    '#&&#' => 'AND' // || is for concatenation !
+  static private $pfx = array(
+
   );
 
   static private $transactions_stack = array();
@@ -275,11 +275,11 @@ class sql {
     return sql::fetch();
   }
 
-  static function where($cond, $table = false, $mode = '&&') {
+  static function where($cond, $table = false, $mode = 'AND') {
     return self::fcond($cond, $table, $mode, 'WHERE');
   }
 
-  static function on($cond, $table = false, $mode='&&') {
+  static function on($cond, $table = false, $mode='AND') {
     return self::fcond($cond, $table, $mode, "ON");
   }
 
