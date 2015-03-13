@@ -77,11 +77,17 @@ class classes {
     } elseif(isset(self::$classes_aliases[$class_name])){
         self::alias($class_name, self::$classes_aliases[$class_name]);
     } elseif(strpos($class_name, "_") ) {
-        $file_path = strtr($class_name, array('_'=>'/') ).".php"; //include_path
-        if(file_exists(stream_resolve_include_path($file_path)))
-          include $file_path;
-        else
-          return;
+        $file_path = strtr($class_name, array('_'=>'/')) . '.php';
+        if(file_exists(stream_resolve_include_path($file_path))) {
+          require_once $file_path;
+        } else {
+         $file_path = strtr($raw_name, array('_'=>'/') ).".php";
+          if(file_exists(stream_resolve_include_path($file_path)))
+            include $file_path;
+          else
+            return;
+        }
+
     } else {
       return; //leave it to the spl_autoload(); , yeap ?
     }
