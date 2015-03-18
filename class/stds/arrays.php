@@ -58,7 +58,7 @@ function array_median($data) {
     $middleval = floor(($count-1)/2);
     if($count % 2) {
         $median = $data[$middleval];
-    } else { 
+    } else {
         $low = $data[$middleval];
         $high = $data[$middleval+1];
         $median = (($low+$high)/2);
@@ -109,14 +109,13 @@ function json_encode_lite($json){
 }
 
 function array_get($array, $key, $default = null) {
-  return array_key_exists($key, $array) ? $array[$key] : $default;
+  return isset($array[$key]) ? $array[$key] : $default;
 }
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
     $args = func_get_args();
     $res  = array_shift($args);
     $depth = is_string(end($args)) ? array_pop($args) : "array_merge";
-
 
     for($i=0;$i<count($args);$i++) {
       foreach($args[$i] as $k=>$v) {
