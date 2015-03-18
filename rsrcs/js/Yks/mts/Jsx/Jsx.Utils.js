@@ -24,6 +24,19 @@ Jsx.popup = function(url, options, target){
 }
 
 
+//same as ddload with a  [[k,v]] list (ordered)
+Jsx.list_load = function(data, bind, dest){
+    var box = document.id(bind).getBox(), url=data.url || box.url; delete data.url; data.jsx=true;
+
+    Xhr.http_lnk('post', url, data, function(txt){
+        this.empty();
+        Array.each(txt, function(item){
+          $n('option',{text: item[1], value:item[0]}).inject(this);
+        }.bind(this));
+        this.fireEvent('change');
+    }.bind( document.id(dest)) );
+};
+
 Jsx.dd_load = function(data, bind, dest){
     var box = document.id(bind).getBox(), url=data.url || box.url; delete data.url; data.jsx=true;
 
