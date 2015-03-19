@@ -108,8 +108,14 @@ function json_encode_lite($json){
     return $json;
 }
 
-function array_get($array, $key, $default = null) {
-  return isset($array[$key]) ? $array[$key] : $default;
+function array_get($dict, $key, $default = null) {
+  if(is_array($dict))
+    return array_key_exists($dict, $key) ? $dict[$key] : $default;
+
+  if (!($dict instanceof ArrayAccess))
+    throw new InvalidArgumentException('Not an ArrayAccess, property not accessible '. $key);
+
+  return isset($dict[$key]) ? $dict[$key] : $default;
 }
 
 function array_merge_numeric($a,$b, $depth="array_merge"){
