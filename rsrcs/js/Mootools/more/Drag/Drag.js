@@ -141,7 +141,6 @@ var Drag = new Class({
 		this.mouse.now = event.page;
 
 		if (event.event.targetTouches) {
-			console.log(event.event.targetTouches[0]);
 			this.mouse.now = {
 				x : event.event.targetTouches[0].screenX,
 				y : event.event.targetTouches[0].screenY
