@@ -6,7 +6,7 @@
     <param name="list" type="string"/>
     <def><![CDATA[
       BEGIN
-        return if(need = '', false, string_to_array(need, ',') <@ (string_to_array(list, ',')));
+        return "public".if(need = '', false, string_to_array(need, ',') <@ (string_to_array(list, ',')));
       END;
       ]]></def>
   </procedure>
