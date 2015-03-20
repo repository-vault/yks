@@ -3,32 +3,49 @@
 class sql {
   static $esc = '"';
   static public $queries = array();
-  static private $link='db_link';
+    //current link (once on master, stay on it !)
+  static private $link = 'db_link';
+
+  const LINK_MASTER = 'master';
+  const LINK_SLAVE  = 'slave';
+
+  static private $links = array(
+      self::LINK_MASTER => 'db_link',
+      self::LINK_SLAVE  => 'db_link'
+  );
+
+  static private $lnks = array();
+
   static private $result;
   static private $result_types;
   static private $result_types_store;
   static public $servs=null;
   static public $rows=0;
   static public $log=true;
-  static private $pfx = array(
-
-  );
+  static private $pfx = array(  );
 
   static private $transactions_stack = array();
 
   const true  = 'TRUE';
   const false = 'FALSE';
-  static private $lnks = array();
-
 
   static function init() {
-    if(!self::$servs) {
+    if(!self::$servs)
       self::$servs = &yks::$get->config->sql;
-    }
 
-    if(!self::$servs) {
+    if(!self::$servs)
       throw new SqlException('Unable to load sql configuration.');
-    }
+
+    //Set links slave and master
+    if(isset(self::$servs->links[self::LINK_MASTER]))
+      self::$links[self::LINK_MASTER] = self::$servs->links[self::LINK_MASTER];
+
+    if(isset(self::$servs->links[self::LINK_SLAVE]))
+      self::$links[self::LINK_SLAVE] = self::$servs->links[self::LINK_SLAVE];
+
+    if(isset(self::$servs->links['default']))
+      self::$link = self::$servs->links['default'];
+
 
     if(yks::$get->config->myks->search('prefixs'))
     foreach(yks::$get->config->myks->prefixs->attributes() as $prefix=>$trans)
@@ -54,18 +71,25 @@ class sql {
     return self::$lnks[$lnk];
   }
 
+  //Switch to master DB for insert or update
+  private static function switch_to_master() {
+    if(self::$link != self::$links[self::LINK_SLAVE])
+      return;
+    self::set_link(self::$links[self::LINK_MASTER]);
+  }
+
   static function &query($query, $lnk=false, $arows=false) {
     $lnk = $lnk?$lnk:self::$link;
     $serv = isset(self::$lnks[$lnk])?self::$lnks[$lnk]:self::connect($lnk);
     if(!$serv) return false;
 
     $query = self::unfix($query);
-        $start_time = microtime(true);
+    $start_time = microtime(true);
 
     self::$result = pg_query($serv, $query);
 
-        $duration = microtime(true) - $start_time;
-        $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
+    $duration = microtime(true) - $start_time;
+    $running  = ($start_time - $_SERVER['REQUEST_TIME_FLOAT']);
 
     if(self::$log) self::$queries["log_". $running] = $query . " -- $duration";
     if(self::$result === false) {
@@ -100,7 +124,7 @@ class sql {
     $tmp = $tmp ? $tmp : array();
     if(count($tmp) === 0)
       return $tmp;
-    
+
     if(self::$result_types_store['has_bool']) foreach(self::$result_types as $k=>$type)
       if($type == 'bool') $tmp[$k] = bool($tmp[$k]);
 
@@ -222,6 +246,8 @@ class sql {
   }
 
   static function insert($table, $vals = false, $auto_indx = false, $keys = false) {
+    self::switch_to_master();
+
     if(is_array($keys)) {
       $vals=array_intersect_key($vals,array_flip($keys));
     }
@@ -241,12 +267,16 @@ class sql {
   }
 
   static function update($table, $vals, $where = '', $extras = '') {
+    self::switch_to_master();
+
     if(!$vals) return 0;
 
     return self::query("UPDATE " . self::fromf($table) . ' ' . sql::format($vals) . ' ' . sql::where($where, $table) . $extras, false, true);
   }
 
   static function replace($table, $vals, $where = array(), $auto_indx = false) {
+    self::switch_to_master();
+
     $data = sql::value($table,$where, "true"); //minimal check
 
     if(!$data)
@@ -256,6 +286,8 @@ class sql {
   }
 
   static function delete($table, $where, $extras = ''){
+    self::switch_to_master();
+
     return sql::query("DELETE FROM `$table` ".sql::where($where, $table) . ' ' . $extras, false, true);
   }
 
@@ -334,6 +366,8 @@ class sql {
   }
 
   static function begin() {
+    self::switch_to_master();
+
 
     $transaction_hash = substr(md5(uniqid()), 0, 12);
 
@@ -474,6 +508,7 @@ class sql {
   }
 
   static function truncate($table) {
+    self::switch_to_master();
     return sql::query("DELETE FROM `$table`");
   }
 
