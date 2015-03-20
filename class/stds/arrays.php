@@ -110,7 +110,7 @@ function json_encode_lite($json){
 
 function array_get($dict, $key, $default = null) {
   if(is_array($dict))
-    return array_key_exists($dict, $key) ? $dict[$key] : $default;
+    return array_key_exists($key, $dict) ? $dict[$key] : $default;
 
   if (!($dict instanceof ArrayAccess))
     throw new InvalidArgumentException('Not an ArrayAccess, property not accessible '. $key);
