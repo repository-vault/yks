@@ -18,6 +18,7 @@
     <module key="path://yks.root/Patchs/Native/Number.js"/>
     <module key="path://yks.root/Patchs/Native/String.js"/>
     <module key="path://yks.root/Patchs/Native/Function.js"/>
+    <module key="path://yks.root/Patchs/Native/Object.js"/>
     <!-- Elements -->
     <module key="path://yks.root/Patchs/Element/Element.js"/>
     <module key="path://yks.root/Patchs/Interface/Style.js"/>
