@@ -108,6 +108,15 @@ function json_encode_lite($json){
     return $json;
 }
 
+  //array_map with key
+function object_map($dict, $fn, $bindto = null) {
+  $out = array();
+  foreach($dict as $k=>$v)
+    $out[$k] = call_user_func($fn, $v, $k);
+  return $out;
+}
+
+
 function array_get($dict, $key, $default = null) {
   if(is_array($dict))
     return array_key_exists($key, $dict) ? $dict[$key] : $default;
