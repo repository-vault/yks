@@ -16,12 +16,7 @@
 
 .textboxlist-bit-editable { border: 1px solid #fff; float:left;clear:both; }
 .textboxlist-bit-editable-input {
-    border: 0;
-    padding: 2px 0;
-    height: 14px;
-    margin-bottom:0px!important ;
-    font: 11px "Lucida Grande", Verdana;
-
+    @extend .form-control;
 }
 
 .textboxlist-bit-editable-input:focus { outline: 0; }
