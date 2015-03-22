@@ -1,4 +1,5 @@
 <?
+//http://cvsweb.openbsd.org/cgi-bin/cvsweb/src/usr.bin/ssh/PROTOCOL.agent?rev=HEAD
 
 /**
 * Expose your ssh-agent features :
@@ -9,15 +10,51 @@
 class ssh_agent_helper {
   const SYSTEM_SSH_AGENTC_REQUEST_IDENTITIES = 11;
   const SYSTEM_SSH_AGENT_IDENTITIES_ANSWER   = 12;
+
+  
+  const SYSTEM_SSH_AGENT_SUCCESS             = 6;
   const SYSTEM_SSH_AGENT_FAILURE             = 5;
   const SYSTEM_SSH_AGENTC_SIGN_REQUEST       = 13;
   const SYSTEM_SSH_AGENT_SIGN_RESPONSE       = 14;
+
+  const SYSTEM_SSH2_AGENTC_ADD_IDENTITY      = 17;
 
   var $lnk;
 
   function __construct(){
     $SOCK = getenv("SSH_AUTH_SOCK");
     $this->lnk = fsockopen("unix://$SOCK");
+  }
+
+  function add_key($pkey, $comment = ""){
+
+    $this->prikey_id = openssl_get_privatekey($pkey);
+    if(!$this->prikey_id)
+        throw new Exception("Error while loading rsa keys ");
+
+    $ppk_infos = openssl_pkey_get_details($this->prikey_id);
+    $details   = $ppk_infos['rsa'];
+
+    $algo = "ssh-rsa";
+
+    $packet = pack('CNa*Na*Na*Na*Na*Na*Na*Na*', self::SYSTEM_SSH2_AGENTC_ADD_IDENTITY, 
+        strlen($algo),            $algo,
+        strlen($details['n']),    $details['n'],
+        strlen($details['e']),    $details['e'],
+        strlen($details['d']),    $details['d'],
+        strlen($details['iqmp']), $details['iqmp'],
+        strlen($details['p']),    $details['p'],
+        strlen($details['q']),    $details['q'],
+        strlen($comment),         $comment);
+
+    $packet = pack('Na*', strlen($packet), $packet);
+    fwrite($this->lnk, $packet);
+
+    $length = $this->read('N');
+    $type   = $this->read('c');
+    if ($type != self::SYSTEM_SSH_AGENT_SUCCESS)
+      throw new Exception("Invalid ssh-agent sign response ($type)");
+
   }
 
 
@@ -61,8 +98,10 @@ class ssh_agent_helper {
 * @alias list
 */
   function list_keys(){
-      $request = pack('NC', 1, self::SYSTEM_SSH_AGENTC_REQUEST_IDENTITIES);
-    fwrite($this->lnk, $request);
+    $packet = pack("C", self::SYSTEM_SSH_AGENTC_REQUEST_IDENTITIES);
+    $packet = pack('Na*', strlen($packet), $packet);
+
+    fwrite($this->lnk, $packet);
 
     $length = $this->read('N');
     $type   = $this->read('c');
