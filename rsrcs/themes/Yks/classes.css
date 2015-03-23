@@ -2,7 +2,6 @@
 .resized { cursor:se-resize; }
 
 *[onclick], .click { cursor:pointer; }
-*[title] { cursor:pointer; }
 
 .faded {
     -moz-opacity:0.5;
