@@ -24,7 +24,14 @@ class rsa_keymgr {
     $ppk_infos = openssl_pkey_get_details($this->prikey_id);
     $this->pubkey_id       = openssl_get_publickey($ppk_infos['key']);
     $this->pubkey_content  = crypt::cleanupPem($ppk_infos['key']);
- }
+  }
+
+  public static function from_pk($content){
+    $out = new self();
+    $out->load($content);
+    return $out;
+  }
+
 
   function sign($str) {
     unset($out_signature);//ref

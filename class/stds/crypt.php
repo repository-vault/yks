@@ -253,32 +253,6 @@ class crypt {
   public static function GetFingerPrint($public_key){
     list(,$key) = explode(' ', $public_key ,2);
     return md5(base64_decode($key));
-
-  /**
-        //initial implementation uses stdin && ssh-keygen
-    $pubkey = self::BuildAuthorizedKey($private_key);
-
-    //use stdin so we dont write pkey in command line
-    $descriptorspec = array( array("pipe", "r"), array("pipe", "w"), array("pipe", "w") );
-    $process = proc_open('( ssh-keygen -lf /dev/stdin <<< $(cat /dev/stdin) )', $descriptorspec, $pipes);
-    if (!is_resource($process))
-        throw new Exception("Invalid process");
-    fwrite($pipes[0], $pubkey);
-    fclose($pipes[0]);
-
-    $contents = stream_get_contents($pipes[1]);
-    fclose($pipes[1]);
-    $return_value = proc_close($process);
-    if($return_value !== 0)
-        throw new Exception("Invalid return value");
-    $contents = explode(' ', trim($contents), 3);
-
-    return array(
-        'key_size'        => $contents[0],
-        'key_fingerprint' => str_replace(':', '', $contents[1]),
-        'key_comment'     => $contents[2],
-    );
-  */
   }
 
 
