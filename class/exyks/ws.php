@@ -131,7 +131,7 @@ class exyks_ws {
       try {
          $res = call_user_func_array(array($class, $method ), $data);
       } catch(SoapFault $f){
-          header("HTTP/1.0 500 error");
+          header("HTTP/1.0 400 error");
           $message = json_encode(array('message' => $f->getMessage(), 'code' => $f->faultcode ));
           die($message);
       } catch(Exception $e){
