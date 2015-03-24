@@ -98,6 +98,15 @@ class exyks_ws {
     if($_SERVER['REQUEST_METHOD']=='OPTIONS')
       die;
 
+     if($_SERVER['REQUEST_METHOD']=='GET' && isset($_GET['post_args'])) {
+       $POST = json_decode($_GET['post_args'], true);
+       if(!is_null($POST)) {
+         $_POST = $POST; 
+         $_SERVER['REQUEST_METHOD']= 'POST';
+       }
+     }
+
+
     if($_SERVER['REQUEST_METHOD']=='GET') {
         if(!$access) {
             header("HTTP/1.0 403 access denied");
