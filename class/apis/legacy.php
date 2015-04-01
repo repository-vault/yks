@@ -1,4 +1,4 @@
-<?
+<?php
 /* Legacy are php (now) native function */
 class php_legacy {
 

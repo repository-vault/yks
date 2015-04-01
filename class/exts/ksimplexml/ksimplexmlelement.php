@@ -1,4 +1,4 @@
-<?
+<?php
 
 class KsimpleXMLElement implements ArrayAccess, IteratorAggregate, Countable {
 

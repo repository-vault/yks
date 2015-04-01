@@ -1,4 +1,4 @@
-<?
+<?php
 
 $myks_type  = $sub0;
 $myks_value = $sub1;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class http_progress_filter extends php_user_filter {
   var $start = 0;

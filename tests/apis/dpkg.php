@@ -1,4 +1,4 @@
-<?
+<?php
 class dpkg_test {
 /**
 * @alias run

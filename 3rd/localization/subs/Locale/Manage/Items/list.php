@@ -1,4 +1,4 @@
-<?
+<?php
 
 $items_list = sess::fetch("items_list_manage");
 $items_list = locale_item::from_where(array('item_key'=>$items_list));

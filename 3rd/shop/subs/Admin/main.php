@@ -1,4 +1,4 @@
-<?
+<?php
 
 auth::verif("shop", "admin", 403);
 auth::verif("shop", "action", true);

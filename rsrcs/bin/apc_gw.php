@@ -1,4 +1,4 @@
-<?
+<?php
 
 if(PHP_SAPI == "cli")
   die("apc gw only works from apache2 handler");

@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 $revision_date = (int) $sub0;

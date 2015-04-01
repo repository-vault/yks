@@ -1,4 +1,4 @@
-<?
+<?php
 
 class xlsx_style {
   private $classes = array();

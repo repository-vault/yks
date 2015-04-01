@@ -1,4 +1,4 @@
-<?
+<?php
 
 class crawler extends window {
   protected $urls = array();

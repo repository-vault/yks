@@ -1,4 +1,4 @@
-<?
+<?php
 
 $user_access = auth::get_access(array($user_id));
 $access      = auth::get_access( array_diff($parent_tree,array($user_id)) );

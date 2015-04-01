@@ -1,4 +1,4 @@
-<?
+<?php
 
 $export        = (bool) $sub0;
 $user_tmp_dir  = users::get_tmp_path(sess::$sess->user_id);

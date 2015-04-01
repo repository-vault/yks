@@ -1,4 +1,4 @@
-<?
+<?php
 
 class locale_items_manager {
 

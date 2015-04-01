@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 $user_id = (int) $sub0;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 tpls::page_def("list");
 

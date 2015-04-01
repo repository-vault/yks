@@ -1,4 +1,4 @@
-<?
+<?php
 /** 
 ** this is D:\bin\md5file.bat
 @php -r "include 'yks/cli.php';win32_cli::dispatch();" -- %0 %*

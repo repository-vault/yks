@@ -1,4 +1,4 @@
-<?
+<?php
 
 $path = $argv0;
 

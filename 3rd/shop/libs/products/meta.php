@@ -1,4 +1,4 @@
-<? 
+<?php 
  
 class products_meta extends _sql_base {
   const sql_table = 'ks_shop_meta_products_list';

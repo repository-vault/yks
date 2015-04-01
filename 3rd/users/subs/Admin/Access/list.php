@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 if($action == "zone_delete") try {

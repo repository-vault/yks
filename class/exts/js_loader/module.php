@@ -1,4 +1,4 @@
-<?
+<?php
 class js_module extends js_node {
 
   private $module_key;

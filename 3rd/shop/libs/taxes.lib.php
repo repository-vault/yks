@@ -1,4 +1,4 @@
-<?
+<?php
 class taxes {
   public static $taxes;
   static function init(){

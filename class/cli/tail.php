@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class cli_tail {

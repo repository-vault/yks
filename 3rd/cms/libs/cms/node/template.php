@@ -1,4 +1,4 @@
-<?
+<?php
 
 class cms_node_template extends cms_node {
   var $editables = array("template_xsl");

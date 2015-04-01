@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sql_drivers = array(
     'mysqli'=>'MySQLi',

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $report_to = specialchars_decode($config->bug['report_to']);
 

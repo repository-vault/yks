@@ -1,4 +1,4 @@
-<?
+<?php
 
 class shipping {
   public static $shipping;

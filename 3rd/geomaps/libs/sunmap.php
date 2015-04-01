@@ -1,4 +1,4 @@
-<?
+<?php
 /*
   Freely inspired from J.P.Westerhof http://www.edesign.nl/examples/sunlightmap/
 */

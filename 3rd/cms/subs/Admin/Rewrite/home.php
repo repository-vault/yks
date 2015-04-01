@@ -1,4 +1,4 @@
-<?
+<?php
 
 $verif_root = array('node_type'=>'article');
 $nodes = cms_node::from_where($verif_root);

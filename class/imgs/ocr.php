@@ -1,4 +1,4 @@
-<?
+<?php
 
 class ocr {
   private $lib = array();

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class bbwriter {
   const easy       =  '#\[(%s)\](.*?)\[/\\1\]#is';

@@ -1,4 +1,4 @@
-<?
+<?php
 /*
     Manualy check data integrity
 */

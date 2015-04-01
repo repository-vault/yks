@@ -1,4 +1,4 @@
-<?
+<?php
 
 //order_status : aborted,process,config(closing process)
 

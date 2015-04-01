@@ -1,4 +1,4 @@
-<?
+<?php
 
 $fields = array('talk_content');
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class cms_rewrite {
   private static $map_file;

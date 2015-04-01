@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($mail_id )  {
     $verif_mail = compact('mail_id');

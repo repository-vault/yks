@@ -1,4 +1,4 @@
-<?
+<?php
 if($action=="addr_delete")try {
     $verif_delete=compact('addr_id','user_id'); //pour être sûr... 
     sql::delete("ks_users_addrs",$verif_delete);

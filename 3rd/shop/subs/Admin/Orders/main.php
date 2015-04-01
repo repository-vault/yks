@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sess_flag = "yks_list.ks_shop_orders";
 $current_liste = sess::retrieve($sess_flag);

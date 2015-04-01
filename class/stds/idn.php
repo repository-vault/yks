@@ -1,4 +1,4 @@
-<?
+<?php
 // kushik.com http://php.net/manual/en/function.idn-to-utf8.php
 
 class IDN {

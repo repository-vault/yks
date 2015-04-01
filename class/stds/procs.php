@@ -1,4 +1,4 @@
-<?
+<?php
 
 class procs {
   public static function exec_all_pipes($exe, $args) {

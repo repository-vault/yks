@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 if($action=="talk_manage") try {

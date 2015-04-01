@@ -1,4 +1,4 @@
-<?
+<?php
 
 $product_id = (int)$sub0;
 $clone = ((string)$sub1 == 'clone');

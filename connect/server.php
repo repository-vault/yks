@@ -1,4 +1,4 @@
-<?
+<?php
 namespace yks\connect;
 use \Exception;
 

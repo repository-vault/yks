@@ -1,4 +1,4 @@
-<?
+<?php
 
   // ***** For ajax search module *****
   $search = $sub0;

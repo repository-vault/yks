@@ -1,4 +1,4 @@
-<?
+<?php
 
 $addr_id=(int)$sub0;
 

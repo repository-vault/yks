@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 $ks_shop_orders_xml = yks::$get->tables_xml->ks_shop_orders;

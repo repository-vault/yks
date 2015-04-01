@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action == "talk_create") try {
     $transaction_token = sql::begin();

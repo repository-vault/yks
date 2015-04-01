@@ -1,4 +1,4 @@
-<?
+<?php
 
 $part_id = (int) $sub0;
 $mode_collapsed = (bool) $sub1;

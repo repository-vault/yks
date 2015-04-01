@@ -1,4 +1,4 @@
-<?
+<?php
 
 class css_crop extends ibase {
 

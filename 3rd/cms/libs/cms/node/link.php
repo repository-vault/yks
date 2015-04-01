@@ -1,4 +1,4 @@
-<?
+<?php
 
 class cms_node_link extends cms_node {
   var $editables = array("link_dest_node");

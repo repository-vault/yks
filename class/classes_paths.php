@@ -1,4 +1,4 @@
-<?
+<?php
 
     //register additionnal classes paths
 classes::register_class_paths(array(

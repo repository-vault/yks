@@ -1,4 +1,4 @@
-<?
+<?php
 
 class stdlogdispatch extends namedpipewrapper {
   private $messages = array();

@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 if($action=="query_params_set") try {

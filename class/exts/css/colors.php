@@ -1,4 +1,4 @@
-<?
+<?php
 //http://www.w3.org/TR/2010/PR-css3-color-20101028/
 class css_colors {
   static $map = array(

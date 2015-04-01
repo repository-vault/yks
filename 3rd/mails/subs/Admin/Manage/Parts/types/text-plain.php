@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action == "part_update") try {
     $data=array(

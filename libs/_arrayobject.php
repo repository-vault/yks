@@ -1,4 +1,4 @@
-<?
+<?php
 class _ArrayObject implements ArrayAccess {
 
   function offsetGet($key){ return $this->$key;}

@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($item)
   $value_en_us = $item->get_trad_value($lang_root);

@@ -1,4 +1,4 @@
-<?
+<?php
 include 'yks/cli.php';
 
 class msg {

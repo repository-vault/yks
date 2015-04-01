@@ -1,4 +1,4 @@
-<?
+<?php
 
 /* 131's
 *  http://doc.exyks.org/wiki/Source:ext/http/proxy

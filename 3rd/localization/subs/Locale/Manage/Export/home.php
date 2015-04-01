@@ -1,4 +1,4 @@
-<?
+<?php
 
 $tmp_path="cache/trad_export/".md5(time());
 

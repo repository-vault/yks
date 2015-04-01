@@ -1,4 +1,4 @@
-<?
+<?php
 if($action=="part_update")try {
     $part_contents = txt::rte_clean($_POST['part_contents']);
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class stdflow_filter extends php_user_filter {

@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action == "meta_product_trash") try {
   

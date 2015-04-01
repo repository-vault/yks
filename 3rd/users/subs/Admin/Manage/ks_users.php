@@ -1,4 +1,4 @@
-<?
+<?php
 $module_locale = false;
 foreach(exyks::get_modules_list() as $modules){
   if($modules->key == 'localization'){

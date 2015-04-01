@@ -1,4 +1,4 @@
-<?
+<?php
 
 class SerializedSoapClient extends SoapClient {
   function __call($func, $args){

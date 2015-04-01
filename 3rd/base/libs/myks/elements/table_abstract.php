@@ -1,4 +1,4 @@
-<?
+<?php
 
 class table_abstract extends myks_installer {
 

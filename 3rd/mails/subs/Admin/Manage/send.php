@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action == "sendmail") try {
     $dest = $_POST['send_to'];

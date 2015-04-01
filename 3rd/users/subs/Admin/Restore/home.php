@@ -1,4 +1,4 @@
-<?
+<?php
 
 //Pagination
 $page_id = (int)$sub0;

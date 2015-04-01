@@ -1,4 +1,4 @@
-<?
+<?php
 
 class css_box extends ibase {
   private $box_theme;

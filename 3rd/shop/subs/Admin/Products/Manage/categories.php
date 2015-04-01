@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 sql::select("ks_shop_products_list",true, "*,('(#'||product_id||') '||product_name) as product_name");

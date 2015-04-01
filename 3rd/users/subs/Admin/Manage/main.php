@@ -1,4 +1,4 @@
-<?
+<?php
 
 $access_zones = auth::get_access_zones();
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class data_headers {
   var $cols;
