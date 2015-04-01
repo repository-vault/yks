@@ -1,4 +1,4 @@
-<?
+<?php
 
 if(isset($_ENV['php_include_path']))
     set_include_path($_ENV['php_include_path']);

@@ -1,4 +1,4 @@
-<?
+<?php
 $action = $_POST['ks_action'];
 
 if($action == "area_add") try {

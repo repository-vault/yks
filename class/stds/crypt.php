@@ -1,4 +1,4 @@
-<?
+<?php
 
 class crypt {
   const ASN_LONG_LEN  = 0x80;

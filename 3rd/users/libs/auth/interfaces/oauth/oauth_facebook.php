@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class oAuth_Facebook extends oAuth {

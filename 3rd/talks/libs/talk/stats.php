@@ -1,4 +1,4 @@
-<?
+<?php
 
 class talk_stats {
 

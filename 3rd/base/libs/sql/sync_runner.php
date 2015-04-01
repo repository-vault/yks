@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * This runner help you using sql_sync using classic configuration file
 * http://doc.exyks.org/wiki/Source:cltools/sql/sync_runner

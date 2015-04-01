@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action=="bench_sql") try {
 

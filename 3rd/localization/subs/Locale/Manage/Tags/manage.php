@@ -1,4 +1,4 @@
-<?
+<?php
 
 $mode = $locale_tag?"manage":"add";
 

@@ -1,4 +1,4 @@
-<?
+<?php
 /** Droit : 'yks:yks_query'
  *   ACCESS : voir la liste des queries et pouvoir les executer
  *   MODIFY : ajouter/modifier les queries

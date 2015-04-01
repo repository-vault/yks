@@ -1,4 +1,4 @@
-<?
+<?php
 
 $meta_product_id = (int)$sub0;
 $meta_product = $meta_products_list[$meta_product_id];

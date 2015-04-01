@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class cms_node extends _sql_base {
   const sql_key   = "node_id";

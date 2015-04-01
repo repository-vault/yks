@@ -1,4 +1,4 @@
-<?
+<?php
 
 class taxes {
   static function get($tax_type,$addr){

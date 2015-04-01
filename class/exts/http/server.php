@@ -1,4 +1,4 @@
-<?
+<?php
 
 class http_server extends http_aserver {
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class ibase  implements ArrayAccess  {
 

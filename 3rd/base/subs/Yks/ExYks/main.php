@@ -1,4 +1,4 @@
-<?
+<?php
 
 $action = pick($action, $sub0);
 

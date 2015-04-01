@@ -1,4 +1,4 @@
-<?
+<?php
 
 function keys($table){
     $res=array();

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class sys_wol {
  function wake($mac, $broadcast = '255.255.255.255', $port = 7){

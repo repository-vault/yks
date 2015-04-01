@@ -1,4 +1,4 @@
-<?
+<?php
 
 //mysql  connector
 

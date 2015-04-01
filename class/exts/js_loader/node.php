@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class js_node {
   protected $packager;

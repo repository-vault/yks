@@ -1,4 +1,4 @@
-<?
+<?php
 
 class torrent implements ArrayAccess {
   const MIME_TYPE = "application/x-bittorrent";

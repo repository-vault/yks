@@ -1,4 +1,4 @@
-<?
+<?php
 
 include "taxes_desactivate.lib.php";
 

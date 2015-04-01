@@ -1,4 +1,4 @@
-<?
+<?php
 
 class rsa_keymgr {
   private $prikey_id;

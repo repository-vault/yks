@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action=="order_manage")try {
     //les seuls champs inputés sont : order_end, order_status, order_value

@@ -1,4 +1,4 @@
-<?
+<?php
 
   $verif_project=array('project_id'=>$locale_projects);
   $tags_list = locale_tag::from_where($verif_project);

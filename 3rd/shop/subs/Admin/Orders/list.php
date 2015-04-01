@@ -1,4 +1,4 @@
-<?
+<?php
 
 $page_id = (int) $sub0;
 $current_liste->page_set($page_id);

@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class cms_nodes_manager {

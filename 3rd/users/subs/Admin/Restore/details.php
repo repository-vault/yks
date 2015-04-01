@@ -1,4 +1,4 @@
-<?
+<?php
 
 $zks_deletion_id = (int) $sub0;
 tpls::export(compact('zks_deletion_id'));

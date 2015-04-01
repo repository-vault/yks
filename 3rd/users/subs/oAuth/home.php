@@ -1,4 +1,4 @@
-<?
+<?php
 
 $fb_config = yks::$get->config->users->oauth_facebook;
 $challenge_mode   = isset($_GET['challenge']);

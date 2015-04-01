@@ -1,4 +1,4 @@
-<?
+<?php
 $endpoints_list  = array_keys(auth_ldap_soap::$endpoints_list);
 $endpoints_list = array_combine($endpoints_list , $endpoints_list );
 

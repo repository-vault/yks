@@ -1,4 +1,4 @@
-<?
+<?php
 
 abstract class _sql_base_unserialize_wrapper   implements ArrayAccess {
   protected $data;

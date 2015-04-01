@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 $host = new console_host('C:\\Windows\\system32\\netstat.exe -n -p tcp');
 $res = $host->exec(); var_dump($res);

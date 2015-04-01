@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action=="shop_orders_expired_close")try{
     $expiration = _NOW - 3600*8;

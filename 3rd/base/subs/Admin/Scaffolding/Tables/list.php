@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action=="delete")try{
     $verif_delete = $_POST['uid'];

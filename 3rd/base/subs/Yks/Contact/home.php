@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 if($action=="contact_us")try {

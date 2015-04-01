@@ -1,4 +1,4 @@
-<?
+<?php
 
 class queries_param extends _sql_base {
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $node_type = $sub1;
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class order extends _sql_base {
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 exyks::$head->title = "Liste des produits";
 if($sub0 == "export") {

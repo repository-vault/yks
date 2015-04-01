@@ -1,4 +1,4 @@
-<?
+<?php
 
 class queries_manager {
 

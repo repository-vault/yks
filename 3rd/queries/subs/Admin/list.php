@@ -1,4 +1,4 @@
-<?
+<?php
 if($action == "query_trash") try {
     $query_id = (int)$_POST['query_id'];
     $query = query::instanciate($query_id);

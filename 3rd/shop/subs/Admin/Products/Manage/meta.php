@@ -1,4 +1,4 @@
-<?
+<?php
 
 $meta_products_list = products_meta::from_where(sql::true);
 $meta_products_list = array_sort_deep($meta_products_list, 'meta_product_name');

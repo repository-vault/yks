@@ -1,4 +1,4 @@
-<?
+<?php
 
 $talk_root  = (int) exyks::$get->module->config['root'];
 

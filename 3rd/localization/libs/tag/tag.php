@@ -1,4 +1,4 @@
-<?
+<?php
 class locale_tag extends _sql_base {
   const upload_type = 'locale_tag_sshot';
 

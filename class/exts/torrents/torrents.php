@@ -1,4 +1,4 @@
-<?
+<?php
 
 class torrents {
   static function output(torrent $torrent){

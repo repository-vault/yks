@@ -1,4 +1,4 @@
-<?
+<?php
 
   include_once "$class_path/stds/files.php";
   include_once "$class_path/exts/pclzip.php";

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $access_zone = $sub0;
 if($access_zone)

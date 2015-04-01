@@ -1,4 +1,4 @@
-<?
+<?php
 
 class locale_item extends _sql_base {
   protected $manager = "locale_items_manager"; // NOT PRIVATE

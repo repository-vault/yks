@@ -1,4 +1,4 @@
-<?
+<?php
 // Fonction outils pour les locales.
 
 //coupe les répétion de plus de 10 chars    

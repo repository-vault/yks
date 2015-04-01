@@ -1,4 +1,4 @@
-<?
+<?php
 
 class js_packer {
 

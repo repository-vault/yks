@@ -1,4 +1,4 @@
-<?
+<?php
 
 $param_type = $sub0;
 

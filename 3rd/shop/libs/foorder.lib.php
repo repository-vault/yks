@@ -1,4 +1,4 @@
-<?
+<?php
 
 class foorder extends order {
 

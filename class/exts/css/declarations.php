@@ -1,4 +1,4 @@
-<?
+<?php
 /** http://doc.exyks.org/wiki/Source:ext/css **/
 
 

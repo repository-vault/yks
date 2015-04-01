@@ -1,4 +1,4 @@
-<?
+<?php
 $by=20;
 $page_id=(int)$sub0; $start=$page_id*$by;
 

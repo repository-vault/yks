@@ -1,4 +1,4 @@
-<?
+<?php
 
 class packlib {
   const class_mask  = "#class\s+([^{\s]*?)\s+#";

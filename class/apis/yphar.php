@@ -1,4 +1,4 @@
-<?
+<?php
 
 class yphar {
   private static $in_phar;

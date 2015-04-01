@@ -1,4 +1,4 @@
-<?
+<?php
 
 class oAuth {
   protected $client_id;

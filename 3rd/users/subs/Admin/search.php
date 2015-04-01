@@ -1,4 +1,4 @@
-<?
+<?php
 
 if($action=="user_filter")try {
     $q=$_POST['user_name']; $pattern  = $q;
