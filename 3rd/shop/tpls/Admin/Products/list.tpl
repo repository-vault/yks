@@ -9,7 +9,7 @@
     <th>Action</th>
   </tr>
 
-  <?
+  <?php
     foreach($products_list as $product_id=>$product_infos){
       if($product_infos->parent_id != null) continue;
 

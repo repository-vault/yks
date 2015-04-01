@@ -10,14 +10,14 @@ Vous êtes ici : <?=$parent_path?><br/>
     <thead>
   <tr class="line_head">
   <th style='width:200px'>Zone</th>
-    <?
+    <?php
     foreach(vals(yks::$get->types_xml->access_lvl) as $access_lvl)
         echo "<th>&access_lvl.$access_lvl;</th>";
     ?>
   <th>Notes</th>
   </tr>
     </thead>
-<?
+<?php
 $root_zone = false;
 
 foreach($access_zones as $access_zone=>$zone_infos){

@@ -6,7 +6,7 @@ Ce type est utilisé pour composer un mail en plusieurs parties d'égales import
 
 
 <p>Sous parties présentes : </p>
-<?
+<?php
 
 if($part_children) foreach($part_children as $part_id=>$part_infos){
   echo "<box id='mail_part_$part_id' src='/?$href_fold//$part_id;1'/>";

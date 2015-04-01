@@ -6,7 +6,7 @@
 
 <button>Save</button>
 <clear/>
-<?
+<?php
 
 foreach($fields as $field)
     echo "<textarea class='bbcoder glued' glued='.inner' name='talk_content' style='resize:none;height:400px;width:100%;'>{$talk->talk_content}&XML_EMPTY;</textarea>";

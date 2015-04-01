@@ -4,7 +4,7 @@
       <td>User</td>
       <td>action</td>
     </tr>
-    <?
+    <?php
       if($owners_list) foreach($owners_list as $owner_id=>$owner) {
         $actions = array();
         $actions[] = "<img onclick=\"Jsx.action({ks_action:'owner_delete',user_id:{$owner['user_id']}},this,this.title)\" title='Supprimer' alt='trash_icon' src='/?/Yks/Scripts/Contents|path://skin/icons/trash_24.png'/>";

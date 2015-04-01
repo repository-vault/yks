@@ -7,7 +7,7 @@
       <td>User group</td>
       <td>Actions</td>
     </tr>
-    <? if($maps_list) foreach($maps_list as $map_id=>$map) {
+    <?php if($maps_list) foreach($maps_list as $map_id=>$map) {
         $actions = "<a href='?$href_fold//$map_id/edit'>Open</a>";
         echo "<tr class='line_pair'>
         <td>$map_id</td>

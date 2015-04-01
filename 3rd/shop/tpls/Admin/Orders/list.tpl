@@ -9,7 +9,7 @@
     <th key='user_id'>Client</th>
 </tr>
 
-<?
+<?php
 foreach($orders_list as $order_id=>$order_infos){
     $client_user_infos = $clients_list[ $order_infos['user_id'] ];
     $order_infos['order_end'] = dsp::date($order_infos['order_end'],'<span title=\'$d/$m/$Y $H:$i:$s\'>$d/$m/$Y</span>');

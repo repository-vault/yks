@@ -11,7 +11,7 @@
     <th>Tags</th>
     <th>Actions</th>
   </tr>
-<?
+<?php
 
 if($items_list)
 foreach($items_list as $item){

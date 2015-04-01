@@ -21,7 +21,7 @@
       <td>Trier par </td>
       <td>
         <select name="sort_by">&select.choose;
-        <?
+        <?php
           foreach($sort_fields as $key => $value){
             echo '<option value="'.$key.'">'.$key.'</option>';
           }

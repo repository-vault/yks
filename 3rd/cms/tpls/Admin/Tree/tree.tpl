@@ -30,7 +30,7 @@ div.root_node p.child{
 </style>
 
 
-<?
+<?php
 
 foreach($node_types as $node_type_dsp){
   $str = "<div id='node_type_{$node_type_dsp}' class='root_node'>";

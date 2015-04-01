@@ -18,13 +18,13 @@
       <th style="width: 40px;"> </th>
       <th>Connect date</th>
       <th>User name</th>
-      <?
+      <?php
       foreach($access_zone_list_dsp as $zone) {
         echo '<th>'.$zone['access_zone_parent'].':<br/>'.$zone['access_zone'].'</th>';
       }
       ?>
     </tr>
-<?
+<?php
 
 foreach($users_list as $user_id=>$user){
 

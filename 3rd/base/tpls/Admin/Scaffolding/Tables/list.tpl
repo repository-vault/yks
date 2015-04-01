@@ -10,7 +10,7 @@ Table : <?=$table_name?>
     }?>
     <th>Actions</th>
 </tr>
-<?
+<?php
 
 if($data) foreach($data as $line){
 

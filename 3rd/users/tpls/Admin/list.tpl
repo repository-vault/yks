@@ -1,6 +1,6 @@
 <box theme="&pref.dft;" id="users_list" caption="<?="Utilisateur : ".$user_infos['user_name']?>" style="width:500px">
 
-<?
+<?php
 
   $links = "";
   $links .= "<a class='user_icon icon_user_infos' href='/?$href_fold//$user_id/Manage' target='user_infos'>&#160;</a>";
@@ -10,7 +10,7 @@
 
 <p>Vous êtes ici : <?="$parent_path - $links"?></p>
 
-<?
+<?php
 foreach($addrs_list as $addr_id) {
     echo "<box src='/?$href_fold//$user_id/Manage/Addrs//$addr_id'/>";
 }
@@ -31,7 +31,7 @@ Pages : <?=$pages?><br/>
 	<th style="width:15px"><input type='checkbox' id='users_ids'/></th>
   </tr>
 <tbody>
-<?
+<?php
 
 if($children_infos) foreach($children_infos as $user_id=>$user_infos){
 

@@ -4,7 +4,7 @@
       <td>Meta produit</td>
       <td>action</td>
     </tr>
-    <?
+    <?php
     foreach($product_meta_products as $meta_product_id=>$meta_product) {
       $actions = array();
       $actions[] = "<img onclick=\"Jsx.action({ks_action:'meta_delete',meta_product_id:{$meta_product['meta_product_id']}},this,this.title)\" title='Supprimer' alt='trash_icon' src='/?/Yks/Scripts/Contents|path://skin/icons/trash_24.png'/>";
