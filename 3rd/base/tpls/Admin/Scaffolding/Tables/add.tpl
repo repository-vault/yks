@@ -1,7 +1,7 @@
 <box>
 <ks_form ks_action="add" submit="Ajouter" style="width:300px">
 
-<?
+<?php
 if(!$batch_mode) echo "<a href='/?$href//1'>Batch mode</a>";
 else echo "<a href='/?$href//'>List mode</a>";
 

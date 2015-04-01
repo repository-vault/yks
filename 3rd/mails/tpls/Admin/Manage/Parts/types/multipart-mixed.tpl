@@ -5,7 +5,7 @@
 Ce type est utilisé pour définir un contenu complexe composé de multiples parties de types différents. Le cas le plus courant est la définition d'un message HTML complexe utilisant des images intégrées (embeded).</p>
 
 <p>Sous parties présentes : </p>
-<?
+<?php
 
 if($part_children) foreach($part_children as $part_id=>$part_infos){
   echo "<box id='mail_part_$part_id' src='/?$href_fold//$part_id;1'/>";

@@ -5,7 +5,7 @@
     <field type="bool" null="&option.choose;" title="Recurse" name="recurse" value="<?=$recurse?>"/>
 </ks_form>
 
-<div style="font-family:monospace;white-space: pre-wrap;width:800px;overflow:auto"><?
+<div style="font-family:monospace;white-space: pre-wrap;width:800px;overflow:auto"><?php
 if($myks_data)
   foreach($myks_data as $table_name => $lines) {
     $table_xml    = yks::$get->tables_xml->$table_name;

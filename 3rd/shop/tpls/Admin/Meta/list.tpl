@@ -8,7 +8,7 @@
       <th>name</th>
       <th>action</th>
     </tr>
-    <?
+    <?php
 
       foreach($meta_products_list as $meta_product_id => $meta_product) {
 

@@ -9,7 +9,7 @@
     <th style="width:60px"> </th>
 </tr>
 
-<?
+<?php
 if($mails_list) foreach($mails_list as $mail_id=>$mail_infos){
   $actions ="";
   $actions .= "<a href='/?&href_fold;/Manage//$mail_id/send' target='sendmail'>Send</a>";

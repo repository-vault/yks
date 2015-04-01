@@ -16,7 +16,7 @@
   font-style: italic;
 }
 </style>
-<?
+<?php
 
 $tab = 1;
 

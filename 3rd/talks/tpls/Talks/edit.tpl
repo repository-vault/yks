@@ -1,5 +1,5 @@
 
-<?
+<?php
 echo <<<EOS
 
 <ks_form ks_action="talk_manage" submit="Enregistrer">

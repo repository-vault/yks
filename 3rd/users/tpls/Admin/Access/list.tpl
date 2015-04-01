@@ -9,7 +9,7 @@
         <th>Description</th>
         <th>Actions</th>
     </tr>
-<?
+<?php
 
 foreach($access_zones as $access_zone=>$zone_infos){
     $actions = array();

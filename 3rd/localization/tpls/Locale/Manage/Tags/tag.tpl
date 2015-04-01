@@ -4,7 +4,7 @@
 
 <div style='<?=$locale_tag->sshot_dims?>' id='img_container'>
 
-<?
+<?php
 foreach($items_list as $item_key=>$item_infos){
     $props = array(
         'margin-left'=>$item_infos['item_x'].'px',

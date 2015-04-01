@@ -1,4 +1,4 @@
-<?
+<?php
   $all_actions = array();
   $all_actions[] = "<button confirm='this.alt' name='ks_action[fails_delete]'>Delete</button>";
 ?>
@@ -9,7 +9,7 @@
     <span style="float: right"> Pour la sélection : <?=join(" - ",$all_actions);?></span><br />
     <table style="width:100%" id="results_list" class="table">
       <tr class="line_head"><?=$headers?></tr>
-      <?
+      <?php
       foreach($list_failed_auth as $failed) {    
         $actions = array();
         $cols    = array();

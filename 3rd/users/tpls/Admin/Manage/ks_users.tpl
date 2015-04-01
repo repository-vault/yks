@@ -6,7 +6,7 @@ Vous êtes ici : <?=$parent_path?><br/>
 
 <ks_form ks_action="user_edit" class="nullable">
 
-<?
+<?php
 
 foreach($dsp_profile as $field_name=>$field_type){
     $disabled = is_null($user_infos[$field_name])?"disabled='disabled'":'';
@@ -16,7 +16,7 @@ foreach($dsp_profile as $field_name=>$field_type){
     else  echo "<field $disabled title=\"&user_profile.$field_name;\" type='$field_type' name='$field_name' value=\"{$user_infos[$field_name]}\"/>\n";
 }
 ?>
-<?
+<?php
   if($module_locale){
    echo '<a href="?'.$locale_path.'/User//'.$user_infos['user_id'].'" target="user_translation">Manage Translation</a>';
   }
@@ -48,7 +48,7 @@ foreach($dsp_profile as $field_name=>$field_type){
 
 <hr/>
 
-<?
+<?php
 
 foreach($tables_children_list as $table_children_name=>$table_children){
   echo "<toggler class='closed users_table_child' caption='$table_children_name'>";

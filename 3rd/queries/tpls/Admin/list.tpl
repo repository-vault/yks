@@ -6,13 +6,13 @@
     <th style='width:25px'>#</th>
     <th style='width:200px'>Nom</th>
     <th>Description</th>
-    <? if(auth::verif("yks_query","admin")) { ?>
+    <?php if(auth::verif("yks_query","admin")) { ?>
     <th>Visibility</th>
-    <? } ?>
+    <?php } ?>
     <th style='width:200px'>Actions</th>
 </tr>
 
-<?
+<?php
 
 foreach($queries_list as $query_id=>$query_infos){
 
@@ -47,9 +47,9 @@ foreach($queries_list as $query_id=>$query_infos){
 ?>
 </table>
 
-<? if(auth::verif("yks_query","action")) { ?>
+<?php if(auth::verif("yks_query","action")) { ?>
 <button href="/?&href_fold;/Manage">Nouvelle requête</button>
-<? } ?>
+<?php } ?>
 
 
 

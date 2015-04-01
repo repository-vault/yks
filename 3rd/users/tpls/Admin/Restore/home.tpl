@@ -11,7 +11,7 @@
     <th>Action</th>
   </tr>
 
-<?
+<?php
 
 foreach($deletions_list as $deletion_id=>$deletion){
   $actions = array();

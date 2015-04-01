@@ -12,7 +12,7 @@
   <th>Item</th>
   <th>Actions</th>
  </tr>
-<?
+<?php
 foreach($locale_tags_list as $tag_id=>$locale_tag){
 
 echo "<tr class='line_pair'>
@@ -29,7 +29,7 @@ echo "<tr class='line_pair'>
 <hr/>
 
 <h2>Choisissez un écran</h2>
-<?
+<?php
 if($locale_tags_list)
   foreach($locale_tags_list as $tag_id=>$locale_tag){
     if(!$locale_tag->sshot_file) continue;

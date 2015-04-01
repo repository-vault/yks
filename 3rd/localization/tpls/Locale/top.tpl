@@ -1,7 +1,7 @@
 
 <div id="ivs_header">
 <p>
-<?
+<?php
 if(sess::$sess['user_name']){
     echo "Bonjour ".sess::$sess['user_name'];
     echo " - <span onclick=\"Jsx.action({ks_action:'deco'},this,true)\">Se deconnecter <img src='&COMMONS_URL;/imgs/Ivs/exit.png' alt='exit'/></span>";

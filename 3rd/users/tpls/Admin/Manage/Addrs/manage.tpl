@@ -5,7 +5,7 @@ Utilisateur : <?=$user_infos['user_name']?>
 <ks_form ks_action="addr_manage" style="width:400px;margin-top:20px;">
 <field title="Type"><select name="addr_type"><?=dsp::dd("addr_type",$addr_infos['addr_type'])?></select></field>
 <hr/>
-<?
+<?php
 $cc=dsp::dd($countries_list, array(
     'mykse'=>'country_code',
     'selected'=>$addr_infos['country_code'],

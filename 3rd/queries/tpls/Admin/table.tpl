@@ -1,5 +1,5 @@
 <box>
-<?
+<?php
 if($query->params_list)
     echo "<box src='/?&href_base;/params'/>";
 ?>

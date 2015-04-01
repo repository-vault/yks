@@ -9,7 +9,7 @@
   <th>Actions</th>
 </tr>
 
-<?
+<?php
 foreach($params_list as $param_id=>$param) {
   $actions = "";
   $actions .= "<img alt='trash_icon' src='/css/Yks/icons/trash_24' onclick=\"Jsx.action({ks_action:'param_trash', param_id:$param_id},this)\"/>";

@@ -1,4 +1,4 @@
-<?
+<?php
 $upload_title = $locale_tag->sshot_file?"Remplacer le fichier":"Attacher le fichier";
 ?>
 

@@ -8,7 +8,7 @@
 */?>
 
 Veuillez choisir la langue des fichiers à exporter : <br/>
-<?
+<?php
 $langs_nb=count($locale_languages);
 echo "<select name='lang_key'>";
 echo dsp::dd($locale_languages,array('mykse'=>'lang_key'));

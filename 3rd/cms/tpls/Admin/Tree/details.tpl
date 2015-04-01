@@ -23,7 +23,7 @@
     <field title="Key" type="title" name="node_key" value="<?=$node->node_key?>"/>
 
     <field title="Parent" type="title" name="parent_id" value="<?=$node->parent_id?>"/>
-<?
+<?php
 
 foreach($node->editables as $node_property){
 

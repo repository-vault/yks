@@ -6,7 +6,7 @@
     <th>Nom</th>
     <th>Actions</th>
 </tr>
-<?
+<?php
 foreach($children as $node_id=>$node){
     $actions = array();
     $actions []= "<a onclick=\"Jsx.action({ks_action:'delete',talk_id:$node_id}, this, this.innerHTML)\" class='icon icon_delete'>Delete</a>";

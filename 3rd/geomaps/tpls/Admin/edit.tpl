@@ -15,7 +15,7 @@
       <input type="image" src="/?&href_base;/map"/>
     </div>
     <div class="float_right" style="width:200px">
-      <?
+      <?php
         foreach($geomap->users_list as $user){
           //$color    = user_geomaps::user_color($user, true);
           $color    = $geomap->get_user_color($user);
