@@ -1,7 +1,7 @@
 <?php
 // base functions, i'm naked without
 
-include_once  CLASS_PATH."/apis/legacy.php";
+include_once  dirname(__FILE__)."/../apis/legacy.php";
 
 function crpt($msg,$flag,$len=40) {
   $msg = $flag?sha1($msg . $flag):$msg;
