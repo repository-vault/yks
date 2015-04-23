@@ -35,7 +35,7 @@ class exyks_paths {
       return;
 
     self::register("public",  PUBLIC_PATH, self::default_ns, true);
-    self::register("cache",   realpath(CACHE_PATH), self::default_ns, true);
+    self::register("cache",   file_exists(CACHE_PATH) ? realpath(CACHE_PATH) : CACHE_PATH, self::default_ns, true);
     self::register("config",  CONFIG_PATH); //NOT Public
     self::register("tmp",     TMP_PATH); //NOT Public
 
