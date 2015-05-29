@@ -54,6 +54,7 @@ class exyks_ws {
     if(!isset($wsdl_infos)) {
         if($_SERVER['HTTP_SOAPACTION'])
             throw new SoapFault("server", "No valid class '$class_name','{$_SERVER['HTTP_SOAPACTION']} selected");
+        header("HTTP/1.0 500 error");
         header(TYPE_TEXT);
         die("No valid class selected");
     }
