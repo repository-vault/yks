@@ -347,7 +347,7 @@ var MooRainbow = new Class({
 	eventKeydown: function(e, el) {
 		var n = e.code, k = e.key;
 
-		if 	((!el.className.test(/hexInput/) && !(n >= 48 && n <= 57)) &&
+		if 	((!el.className.test(/hexInput/) && !((n >= 48 && n <= 57) || (n >= 96 && n <= 105))) &&
 			(k!='backspace' && k!='tab' && k !='delete' && k!='left' && k!='right'))
 		e.stop();
 	},
@@ -360,7 +360,7 @@ var MooRainbow = new Class({
 			if (chr != "#" && el.value.length != 6) return;
 			if (chr == '#' && el.value.length != 7) return;
 		} else {
-			if (!(n >= 48 && n <= 57) && (!['backspace', 'tab', 'delete', 'left', 'right'].test(k)) && el.value.length > 3) return;
+			if (!((n >= 48 && n <= 57) || (n >= 96 && n <= 105)) && (!['backspace', 'tab', 'delete', 'left', 'right'].test(k)) && el.value.length > 3) return;
 		}
 
 		prefix = this.options.prefix;
