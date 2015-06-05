@@ -133,6 +133,8 @@ var MooRainbow = new Class({
 		this.BrighInput.value = hsb[2];
 		this.hexInput.value = hex;
 
+    this.element.fireEvent('onChange', rgb.rgbToHex());
+
 		this.currentColor = rgb;
 
 		this.chooseColor.setStyle('background-color', rgb.rgbToHex());
