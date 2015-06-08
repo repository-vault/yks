@@ -4,13 +4,14 @@
 $page_id = (int)$sub0;
 $by = 50;
 $start = $by * $page_id;
-
 $deletions_list = array();
-sql::select("zks_deletion_history");
+sql::select("zks_deletion_history", sql::true, "*", "LIMIT ".$by." OFFSET ".$start);
 $deletions_list = array_sort_deep(sql::brute_fetch("zks_deletion_id"), 'deletion_time', 'arsort');
 
-$max = count($deletions_list);
-$deletions_list = array_reindex(array_slice($deletions_list, $start, $by), 'zks_deletion_id');
+sql::select("zks_deletion_history", sql::true, "COUNT(*)");
+$max = (int)first(array_extract(sql::brute_fetch(), 'count'));
+
+$deletions_list = array_reindex($deletions_list, 'zks_deletion_id');
 
 $pages_list  = dsp::pages($max, $by, $page_id, "/?$href//");
 
