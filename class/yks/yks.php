@@ -159,7 +159,8 @@ class yks
         
     $contents .= file_get_contents(RSRCS_PATH."/fatality/$fatality_key.html");
     $contents .= file_get_contents(RSRCS_PATH."/fatality/-bottom.html");
-    die($contents);//finish him
+    echo $contents;//finish him
+    die(1);
   }
 
 
