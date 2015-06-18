@@ -292,3 +292,12 @@ function array_whitelist(array $array, array $whitelist = array()) {
 function array_blacklist(array $array, array $blacklist = array()) {
   return array_diff_key($array, array_flip($blacklist));
 }
+
+
+
+function is_list($f){
+  if(!is_array($f))
+     return false;
+  $foo = count(array_filter(array_keys($f), 'is_int'));
+  return $foo == count($f);
+}
