@@ -13,8 +13,6 @@ class interactive_runner {
 
   private $command_pipe;
   private $file;
-  private $magic_call; //does current object support __call ?
-  private $static; //static mode
   private $output; //output mode,  see below
 
   public $current_call; //read only structure with current call args
@@ -31,7 +29,7 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  function __construct($from, $args = array()){
+  private function __construct(){
     $this->output = self::OUTPUT_RBX;
 
     if(isset(cli::$dict['ir://raw'])) {
@@ -50,53 +48,9 @@ class interactive_runner {
     rbx::$output_mode = $this->output == self::OUTPUT_RBX;
 
     $this->file = getcwd().DIRECTORY_SEPARATOR.$GLOBALS['argv'][0];
-    $this->reflection_scan($this, self::ns); //register runners own commands
-
-    $this->obj  = null;
-    $this->static = bool(array_get(cli::$dict, 'ir://static'));
-
-    if(is_string($from)) {
-        $this->className = $from;
-        if($this->static)
-          $this->obj = $from; //static mode
-
-        ob_start(); //prevent autoloader to print anything (e.g. shebang)
-        if(!class_exists($from)) //FORCE AUTOLOADER HERE !!
-          throw new Exception("Invalid class '$from'");
-        ob_end_clean();
-
-    } else {
-        $this->obj       = $from;
-        $this->className = get_class($this->obj);
-    }
-
-    if(is_a($this->obj, 'SoapClient')) {
-
-        $reflector = $this->reflection_scan_wsdl($this->obj, $this->className);
-    } else {
-        $reflector = $this->reflection_scan($this->obj, $this->className, $this->className);
-    }
-
-    $this->classDoc = doc_parser::parse($reflector->getDocComment());
-
-
-    $mode_str = is_null($this->obj) ? "auto-instanciation" : "existing object";
-    rbx::ok("Runner is ready '{$this->className}' in $mode_str mode");
-
-    if(is_null($this->obj)) {
-      $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']);
-
-      if($instanciate)
-        $this->obj = call_user_func_array(array($this->className, 'instanciate'), $args);
-      else
-        $this->obj = $reflector->IsInstantiable()
-                          ? ($args && !is_null( $reflector->getConstructor ())
-                             ? $reflector->newInstanceArgs($args)
-                             : $reflector->newInstance() )
-                          : $this->className;
-    }
-
     cli::register_completion(array($this, 'completion_function'));
+
+    $this->reflection_scan($this, self::ns); 
   }
 
   /**
@@ -108,7 +62,7 @@ class interactive_runner {
 
     if(!$index && !$this->current_command_completion){
       foreach ($this->commands_list as $command) {
-        if($command['command_ns'] == $this->className){
+        if($command['command_ns'] != self::ns){
           $completion[] = $command['command_key'];
         }
       }
@@ -129,7 +83,7 @@ class interactive_runner {
           $this->current_call['args'][$v] = array_get($args, $k);
 
       if($completion_callback = $command_infos['usage']['params'][$arg_name]['completion_callback'])
-        $completion = call_user_func($completion_callback, array_get($args, $arg_index), $this->obj,  $this, $args);
+        $completion = call_user_func($completion_callback, array_get($args, $arg_index), $completion_callback[0], $this, $args);
       else if($completion_values  = $command_infos['usage']['params'][$arg_name]['completion_values'])
         $completion = $completion_values;
       else
@@ -202,7 +156,7 @@ class interactive_runner {
 
     foreach($msgs as $command_ns=>$msgs) {
         //title
-      $rbx_msgs[] = $command_ns == $this->className ? "Commands list" : "From $command_ns";
+      $rbx_msgs[] = "`$command_ns` commands list";
       $rbx_msgs[] = join(LF, $msgs);
     }
 
@@ -259,12 +213,6 @@ class interactive_runner {
   }
 
 
-/**
-* @interactive_runner hide
-*/
-  function register_alias($command_key, $alias_name, $args = array()){
-    $this->command_aliases($this->className, $command_key, array($alias_name=>$args) );
-  }
 
   private function generate_command_hash($command_ns, $command_key){
     return "$command_ns::$command_key";
@@ -329,11 +277,8 @@ class interactive_runner {
       }
 
 
-      if(!$command_infos) {
-        if($this->magic_call)
-          return array(array($this->obj, $command_prompt), $command_args);
-        else throw rbx::error("Invalid command key '$command_prompt'");
-      }
+      if(!$command_infos)
+        throw rbx::error("Invalid command key '$command_prompt'");
 
       $alias_args        = $command_infos['aliases'][$command_prompt];
 
@@ -359,7 +304,7 @@ class interactive_runner {
             }
             else {
               $this->current_command_completion = join(' ', $this->last_command).' ';
-              $param_in = cli::text_prompt("\${$this->className}[{$param_name}]", null);
+              $param_in = cli::text_prompt("\${$command_infos['command_ns']}[{$param_name}]", null);
               $this->current_command_completion = null;
             }
           }
@@ -493,35 +438,42 @@ class interactive_runner {
 
 
 /**
-* Return ReflectionClass
+* @api public
+* @instance must be an object
+* @instance can be a string describing a class name (for static classes)
 * @interactive_runner hide
 */
-  function reflection_scan(&$instance, $command_ns = null, $className = null){
-    if(is_null($instance) && !$className)
-      throw new Exception("Cannot scan unknown static class");
+  function reflection_scan($instance, $command_ns = null) {
+    if(!$instance)
+        throw new Exception("Invalid instance");
 
-    if(!$className) 
-      $className = get_class($instance);
+    $className = is_string($instance) ? $instance : get_class($instance);
+    if(!$command_ns)
+      $command_ns = $className;
 
-    if(!$command_ns) $command_ns = $className;
     $reflect   = new ReflectionClass($className);
+    $this->scan($reflect, $instance, $className, $command_ns);
+
+    if($command_ns !== self::ns && ! isset($this->classDoc) )
+      $this->classDoc = doc_parser::parse($reflect->getDocComment());
+  }
+
+  private function scan($reflect, $instance, $className, $command_ns) {
+
     $methods   = $reflect->getMethods();
 
-    foreach($methods as $method) { $method_name = $method->getName();
-
+    foreach($methods as $method) { 
+      $method_name = $method->getName();
       $is_command = false;
       $callback   = null;
       $is_magic   = starts_with($method_name, "__");
-
-      if($method_name == "__call" && !$this->static)
-        $this->magic_call = true;
 
       if($method->isPublic()
           && !$method->isStatic()
           && !$is_magic
           && !$method->isConstructor()
-          && !$this->static ) {
-        $callback = array(&$instance, $method_name);
+          && !is_string($instance)) {
+        $callback = array($instance, $method_name);
       } elseif($method->isPublic()
           && $method->isStatic()
           && !$is_magic
@@ -595,7 +547,6 @@ class interactive_runner {
       }
     }
 
-    return $reflect;
   }
 
 
@@ -624,18 +575,56 @@ class interactive_runner {
 /**
 * @interactive_runner disable
 */
-  static public function start($obj, $args = array()) {
+  static public function start($className, $args = array()) {
 
     if(!is_array($args))
       $args = array($args);
-    self::$current_runner = new self($obj, $args);
 
+    $runner = new self();
+      //register runners own commands
+    if(is_object($className))
+      $runner->reflection_scan($className);
+     else if ($className == "SoapClient") {
+      $source = new SoapClient($args[0]);
+      $runner->reflection_scan_wsdl($source, "SoapClient");
+    } else if(is_string($className)) {
+      $runner->className = $className;
+      $classes = array($className);
+      if(array_get(cli::$dict, "ir://load"))
+        $classes = array_merge($classes, (array) cli::$dict["ir://load"]);
+
+      foreach($classes as $className) {
+        if(!is_string($className))
+          continue;
+        ob_start(); //prevent autoloader to print anything (e.g. shebang)
+        if(!class_exists($className)) //FORCE AUTOLOADER HERE !!
+          throw new Exception("Invalid class '$className'");
+        ob_end_clean();
+
+        $reflector  = new ReflectionClass($className);
+
+          // class { private function __construct(){} function instanciate(){} }
+        $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']);
+        if($instanciate)
+          $instance = call_user_func_array(array($this->className, 'instanciate'), $args);
+        else
+          $instance = $reflector->IsInstantiable()
+                ? ($args && !is_null( $reflector->getConstructor ())
+                   ? $reflector->newInstanceArgs($args)
+                 : $reflector->newInstance() )
+              : $className; //static
+
+        $runner->scan($reflector, $instance, $className, $className);
+      }
+    }
+  
     if(!empty(cli::$dict['ir://fs']))
-      self::$current_runner->fullsize();
+      $runner->fullsize();
     else
-      self::$current_runner->list_commands();
+      $runner->list_commands();
 
-    self::$current_runner->run(); //private internal
+    self::$current_runner = $runner;
+    $runner->run(); //private internal
   }
 
     //helpers for interactive runner completion
