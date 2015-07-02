@@ -29,7 +29,7 @@ class interactive_runner {
     classes::register_class_path("doc_parser", CLASS_PATH."/apis/doc/parse.php");
   }
 
-  private function __construct(){
+  public function __construct(){
     $this->output = self::OUTPUT_RBX;
 
     if(isset(cli::$dict['ir://raw'])) {
@@ -184,7 +184,7 @@ class interactive_runner {
 
     foreach($commands_list as $command_hash=>$command_infos) {
       if($command_hash != $command['command_hash'] && ( $command_infos['usage']['hide']
-        || $command_infos['command_ns'] != $this->className) ) continue;
+        || $command_infos['command_ns'] == self::ns) ) continue;
         //title
 
       $msgs = $command_infos['usage']['doc'] ? $command_infos['usage']['doc'] : array();
@@ -212,6 +212,14 @@ class interactive_runner {
     //this is only a placeholder
   }
 
+
+/**
+* @interactive_runner hide
+*/
+
+  function register_alias($instance, $command_key, $alias_name, $args = array()){
+    $this->command_aliases(get_class($instance), $command_key, array($alias_name=>$args) );
+  }
 
 
   private function generate_command_hash($command_ns, $command_key){
@@ -606,7 +614,7 @@ class interactive_runner {
           // class { private function __construct(){} function instanciate(){} }
         $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']);
         if($instanciate)
-          $instance = call_user_func_array(array($this->className, 'instanciate'), $args);
+          $instance = call_user_func_array(array($className, 'instanciate'), $args);
         else
           $instance = $reflector->IsInstantiable()
                 ? ($args && !is_null( $reflector->getConstructor ())
