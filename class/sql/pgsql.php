@@ -11,7 +11,7 @@ class sql {
 
   static private $links = array(
       self::LINK_MASTER => 'db_link',
-      self::LINK_SLAVE  => 'db_link'
+      self::LINK_SLAVE  => 'db_link_slave'
   );
 
   static private $lnks = array();
