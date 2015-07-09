@@ -122,7 +122,7 @@ abstract class isql {
   static function qvalue($query) { return first(sql::qrow($query)); }
 
   static function replace($table, $vals, $where=array(), $auto_indx=false){
-    $data = sql::row($table, $where);
+    $data = sql::value($table, $where, sql::true);
     if(!$data)
         return sql::insert($table, array_merge($vals, $where), $auto_indx);
     return sql::update($table, $vals, $where);
