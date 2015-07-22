@@ -29,7 +29,7 @@ class css_processor {
         : dirname($this->file_uri).'/';
 
     css_parser::register_entities(self::$entities);
-
+    $this->release = time();
   }
 
   private function register_std_hooks() {
@@ -64,10 +64,13 @@ class css_processor {
     return $this->css->output();
   }
 
-  static function delivers($path){
+  static function delivers($path, $toString = false){
     $process = new css_processor($path);
     $process->register_std_hooks();
-    echo $process->process();
+    if(!$toString)
+      echo $process->process();
+    else
+      return $process->process();
   }
 
   static function delivers_stylus($path){
@@ -218,7 +221,7 @@ EOS;
             $url  = pick($out[1], $out[2], $out[3]); $start = $out[0];
             $val = exyks_paths::merge($this->file_base,$uri);
             $val = exyks_paths::expose($val);
-            $val = "url(\"$val\")";
+            $val = "url(\"$val?release=$this->release\")";
             $external->set_value($val, $i, $gid);
         }
      }
