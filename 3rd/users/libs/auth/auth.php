@@ -139,7 +139,7 @@ class auth {
     self::$events[$event_name][] = $callback;
   }
 
-  private static function fireEvent($event_name){
+  public static function fireEvent($event_name){
     if(!self::$events[$event_name]) return;
     foreach( self::$events[$event_name] as $callback)
       call_user_func($callback);
