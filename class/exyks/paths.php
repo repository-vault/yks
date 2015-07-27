@@ -89,15 +89,15 @@ class exyks_paths {
     if(!$domain['public'])
         throw new Exception("Unaccessible path $path");
 
-    $full = realpath(self::resolve($path));
+    //Use path without argument
+    $full = realpath(self::resolve($path_infos['scheme']."://".$path_infos['host']."/".$path_infos['path']));
     if(!starts_with($full, $domain['dest']))
         throw new Exception("Cannot traverse in public path");
 
-    return $full; 
+    return $full;
   }
 
   public static function resolve($path, $ns = false){
-
     $path  = str_set($path, self::$consts_cache);
 
         //namespace list resolution order
@@ -133,7 +133,6 @@ class exyks_paths {
 
 
 }
-
 
 
 

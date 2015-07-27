@@ -24,10 +24,11 @@ if(is_file($argv[1])) {
   $clyks_config = yks::$get->config->clyks;
 
   $helpers = array(
-    'yks'  => 'yks_runner',
-    'myks' => 'myks_runner',
-    'sync' => 'sync_runner',
-    'sql'  => 'sql_runner',
+    'yks'   => 'yks_runner',
+    'myks'    => 'myks_runner',
+    'sync'    => 'sync_runner',
+    'sql'     => 'sql_runner',
+    'statics' => 'statics_runner',
   );
 
   $entry = pick($helpers[$entry], $entry, (string)$clyks_config->bootstrap['class'], 'yks_runner');

@@ -23,6 +23,7 @@ classes::register_class_paths(array(
     "css_processor"       => CLASS_PATH."/dsp/css/processor.php",
     "data_headers"        => CLASS_PATH."/dsp/data_headers.php",
     "navigation"          => CLASS_PATH."/dsp/navigation.php",
+    "statics_runner"      => CLASS_PATH."/dsp/statics_runner.php",
     "isql"                => CLASS_PATH."/sql/isql.php",
     "sql_tunner"          => CLASS_PATH."/sql/tunner.php",
 
