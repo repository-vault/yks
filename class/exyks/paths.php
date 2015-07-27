@@ -90,9 +90,7 @@ class exyks_paths {
         throw new Exception("Unaccessible path $path");
 
     //Use path without argument
-    $path = self::resolve($path_infos['scheme']."://".$path_infos['host']."/".$path_infos['path']);
-
-    $full = realpath(self::resolve($path));
+    $full = realpath(self::resolve($path_infos['scheme']."://".$path_infos['host']."/".$path_infos['path']));
     if(!starts_with($full, $domain['dest']))
         throw new Exception("Cannot traverse in public path");
 
