@@ -9,7 +9,7 @@
   ],
   "dependencies": {
     "stylus": "https://github.com/131/stylus/archive/0.47.3-yks.tar.gz",
-    "nyks": "*"
+    "nyks": "0.1.8"
   },
   "homepage": "http://github.com/131/yks",
   "author": {
