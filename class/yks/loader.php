@@ -29,6 +29,7 @@ $class_path  = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..');
 define('WWW_PATH',    PUBLIC_PATH);
 if(!defined('ROOT_PATH'))
   define('ROOT_PATH',   dirname(WWW_PATH));
+define('PARENT_ROOT_PATH', dirname(ROOT_PATH));
 define('CONFIG_PATH', realpath(ROOT_PATH.DIRECTORY_SEPARATOR."config"));
 define('CLASS_PATH',  $class_path);
 define('YKS_PATH',    realpath("$class_path/.."));
