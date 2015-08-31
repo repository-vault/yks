@@ -46,6 +46,7 @@ class exyks_renderer_excel {
   * @param DomElement $table_xml
   */
   public static function extract_data($doc, $table_xml){
+
     $data_headers = array();
     $data_results = array();
 
@@ -72,8 +73,23 @@ class exyks_renderer_excel {
 
   }
 
-  //meta creator, title
+
   public static function export($data_headers, $data_results, $metas){
+
+    $title = pick($metas['title'], "No name");
+
+    header(sprintf(HEADER_FILENAME_MASK, $title.'.xlsx')); //filename
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    $file_path = self::generate_file($data_headers, $data_results, $metas);
+    echo file_get_contents($file_path);
+    unlink($file_path);
+    die;
+
+  }
+
+  //meta creator, title
+    public static function  generate_file($data_headers, $data_results, $metas){
     $title = pick($metas['title'], "No name");
 
     $out_xml = new DOMDocument('1.0', 'utf-8');
@@ -124,16 +140,13 @@ class exyks_renderer_excel {
     if($meta['creator'])
       $xml_to_xlsx->set_creator($meta['creator']);
 
-    header(sprintf(HEADER_FILENAME_MASK, $title.'.xlsx')); //filename
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
     $safe_name = files::safe_name("{$title}.xlsx");
     $file_path = files::tmpdir().DIRECTORY_SEPARATOR.$safe_name;
 
     $xml_to_xlsx->save($file_path);
-    echo file_get_contents($file_path);
-    unlink($file_path);
-    die;
+
+    return $file_path;
+
 
   }
 
