@@ -14,8 +14,7 @@ Xhr.implement({
   encode:function(hash, callback){
     var str = Xhr.encode_urlencode(hash);
     this.addHeaders({
-        'Content-Type'   : 'application/x-www-form-urlencoded',
-        'Content-Length' : str.length
+        'Content-Type'   : 'application/x-www-form-urlencoded'
     });
     callback(str);
   }
