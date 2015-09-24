@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
-  <xsl:template match="a | abbr | acronym | address |  b |  bdo | big | blockquote | body | caption | canvas | cite | code | colgroup | dd | del | dfn | dl | dt | em | fieldset | form | h1 | h2 | h3 | h4 | h5 | h6 | head | i |  ins | kbd | label | legend | li |  map | noscript | object | ol | optgroup | option | p | pre | q | samp | select | small | span | strong |  sub | sup | table | tbody | td |  tfoot | th | thead | tr | tt | ul |u | var | cdata | font | *[contains(@class, 'xmlraw')]">
+  <xsl:template match="a | abbr | acronym | address |  b |  bdo | big | blockquote | body | caption | canvas | cite | code | colgroup | dd | del | dfn | dl | dt | em | fieldset | form | h1 | h2 | h3 | h4 | h5 | h6 | head | html | i |  ins | kbd | label | legend | li |  map | noscript | object | ol | optgroup | option | p | pre | q | samp | select | small | span | strong |  sub | sup | table | tbody | td |  tfoot | th | thead | tr | tt | ul |u | var | cdata | font | *[contains(@class, 'xmlraw')]">
     <xsl:element name="{name()}">
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
