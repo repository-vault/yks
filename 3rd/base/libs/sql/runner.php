@@ -167,6 +167,27 @@ class sql_runner {
 
 
 
+  function restore() {
+    $backup_blob = json_decode(stream_get_contents(STDIN), true);;
+    if(!$backup_blob)
+      throw new Exception("Invalid restoration blob");
+
+    $restore_blob = $backup_blob['delete'];
+    $context_blob = $backup_blob['update'];
+
+    $token = sql::begin();
+
+    foreach($restore_blob as $table_name => $restore_data)
+        foreach($restore_data as $line)
+            sql::insert($table_name, $line);
+
+    foreach($context_blob as $table_name => $restore_data)
+        foreach($restore_data as $line)
+            sql::update($table_name, $line['data'], $line['where']);
+
+    die("DONE");
+  }
+
 /**
 * @alias v * true
 * @autocomplete only_stuff self::views_list
