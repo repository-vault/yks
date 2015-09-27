@@ -185,7 +185,8 @@ class sql_runner {
         foreach($restore_data as $line)
             sql::update($table_name, $line['data'], $line['where']);
 
-    die("DONE");
+    sql::commit($token);
+    rbx::ok("Done");
   }
 
 /**
