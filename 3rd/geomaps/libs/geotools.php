@@ -24,8 +24,6 @@ class geotools {
   */
   public static function geodecode_addr($addr_infos, $addr_hash = false, $bypass_cache=false) {
 
-    //$bypass_cache = $addr_hash === true; //debug
- DebugBreak("1@172.19.21.33");
     $addr_filter = array(
       'street_number',
       'route',
