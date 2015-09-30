@@ -61,7 +61,18 @@ class exyks_renderer_excel {
       else{
         $row_cell = array();
         foreach ($row->childNodes as $cell) {
-          $row_cell[] = $cell->nodeValue;
+          // cell contains input
+          if($cell->firstChild->tagName == 'input') {
+            $rval = "false";
+            foreach($cell->firstChild->attributes as $t) {
+              if($t->nodeValue == 'checked' && $t->value == 'checked') $rval = "true"; // input is checked checkbox
+            }
+            $row_cell[] = $rval;
+          }
+          // text cell
+          else {
+            $row_cell[] = $cell->nodeValue;
+          }
         }
         $data_results[] = $row_cell;
       }
