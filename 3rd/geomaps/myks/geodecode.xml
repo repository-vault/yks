@@ -8,6 +8,8 @@
       <field type="gps_coord" name="geodetic_lat"/>
       <field type="gps_coord" name="geodetic_lon"/>
       <field type="count" name="resolution_score"/>
+      <field type="text" name="return_code"/>
+      <field type="now" name="cache_generation"/>
     </fields>
   </table>
   <mykse type="gps_coord">
