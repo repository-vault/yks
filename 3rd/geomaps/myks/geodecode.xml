@@ -5,8 +5,8 @@
     <fields>
       <field type="geodetic_hash"/>
       <field type="text" name="geodetic_addr"/>
-      <field type="gps_coord" name="geodetic_lat"/>
-      <field type="gps_coord" name="geodetic_lon"/>
+      <field type="gps_coord" name="geodetic_lat" null="not_null"/>
+      <field type="gps_coord" name="geodetic_lon" null="not_null"/>
       <field type="count" name="resolution_score"/>
       <field type="text" name="return_code"/>
       <field type="now" name="cache_generation"/>
