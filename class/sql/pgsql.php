@@ -64,6 +64,9 @@ class sql {
     $sql_infos = "host='{$serv['host']}' port={$serv['port']} dbname='{$serv['db']}' user='{$serv['user']}' password='{$serv['pass']}'";
 
     self::$lnks[$lnk] = pg_connect($sql_infos);
+    $application_name = pick($serv['application_name'], $lnk);
+    pg_query(self::$lnks[$lnk], "SET application_name='$application_name';");
+
     if(!self::$lnks[$lnk]) {
       throw new SqlException('Unable to load link #' . $lnk . ' configuration');
     }
