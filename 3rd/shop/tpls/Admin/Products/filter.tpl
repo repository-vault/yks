@@ -21,7 +21,7 @@
         </field>
         <field>
           <label>Product Name :</label>
-          <box src="/?/Admin/Shop/Products/autocomplete" id="product_autocomplete" />
+          <input name="product_blob" type="text" style="margin-left: 36px;width:300px"/>
         </field>
         <div class="clear" />
         <field>
