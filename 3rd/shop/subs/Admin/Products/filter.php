@@ -2,7 +2,7 @@
 
    if($action == "filter") try {
 
-     $where = array(sql::true);
+     $where = array(sql::true); // dont init $where_children!
 
     // Categories
     if($_POST['category'])
@@ -21,8 +21,7 @@
 
     // Product name
     if($_POST['product_blob'])
-      $where[] = sql::make_search_blob("product_name", $_POST['product_blob']);
-
+      $where[] = $where_children[] = sql::make_search_blob("product_name", $_POST['product_blob']);
 
     $where[products::sql_key]    = $products_ids;
     $where_children['parent_id'] = $products_ids;
