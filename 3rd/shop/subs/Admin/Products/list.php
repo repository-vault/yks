@@ -1,39 +1,32 @@
 <?php
+  $page_id = (int)$sub0;
+  $export = (bool)$sub1;
 
-exyks::$head->title = "Liste des produits";
-if($sub0 == "export") {
+  exyks::$head->title = "Liste des produits";
+  $products_list = exyks_session::fetch('shop_products_list');
+
+  $by = 50;
+  $start = $page_id * $by;
+  $max = count($products_list);
+
+  $products_list = array_slice((array)$products_list , $start, $by, true);
+  $pages = dsp::pages($max, $by, $page_id, "/?$href//");
+
+  if($export) {
     exyks_renderer_excel::$creator = sess::$sess['user_name'];
     exyks_renderer_excel::process();
-}
+  }
 
-if(!$user_id) $user_id = null;
+  if(!$user_id) $user_id = null;
 
-if($action == "product_delete") try {
-    $product_id = (int)$_POST['product_id'];
+  if($action == "product_delete") try {
+    $product_id    = (int) $_POST['product_id'];
     $verif_product = compact('product_id');
 
     $res = sql::delete("ks_shop_products_list", $verif_product);
     if(!$res)
-        throw rbx::error("Impossible de proceder à la suppression de ce produit");
+      throw rbx::error("Impossible de proceder à la suppression de ce produit");
     rbx::ok("Ce produit a été supprimé");
     jsx::$rbx = false;
-
-}catch(rbx $e){}
-
-$user_ids = array($user_id);
-if($with_parent)
-  $user_ids = users::get_parents($user_id);
-
-$verif_products = array(
-    'user_id'=>$user_ids,
-);
-
-// Products tree
-if(!$user_id)
-  sql::select("ivs_shop_products_list", array(sql::true), "product_id", "ORDER BY product_id");
-else
-  sql::select("ivs_shop_products_owners", $verif_products, "product_id", "ORDER BY product_id");
-
-$products_ids = sql::fetch_all();
-$products_list = products::from_ids($products_ids);
-
+  } catch(rbx $e) {
+  }
