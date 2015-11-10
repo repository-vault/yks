@@ -236,10 +236,16 @@ function array_filter_criteria($list, $criteria){
     foreach($list as $k=>$v) {
         $match = true;
         foreach($criteria as $criteria_name=>$value) {
-            if(is_array($v[$criteria_name]) && !is_array($value)) $match &= in_array($value, $v[$criteria_name]);
+            if(is_array($v[$criteria_name]) && !is_array($value)) {
+              if(is_array(first($v[$criteria_name])) || is_object(first($v[$criteria_name])))
+                $match &= in_array($value, array_keys($v[$criteria_name]));
+              else
+                $match &= in_array($value, $v[$criteria_name]);
+            }
             elseif(is_array($value) && !is_array($v[$criteria_name])) $match &= in_array($v[$criteria_name], $value);
             else $match &= $v[$criteria_name] == $value;
         }
+
         if($match) $result[$k] = $v;
     }
     return $result;
