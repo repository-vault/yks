@@ -23,6 +23,7 @@ class _storage_redis {
       $hosts_redis[trim($r['name'])] = array(
         'host' => trim($r['host']),
         'port' => (int)$r['port'],
+        'database' => (int) $r['database'],
       );
     }
 
@@ -32,6 +33,8 @@ class _storage_redis {
     if(!self::$redis->connect($host_redis['host'], $host_redis['port'])){
       self::$redis = false;
       syslog(LOG_ERR, "Failed to connect to redis host, disabling cache");
+    } else {
+     self::$redis->select($host_redis['database']);
     }
   }
 
