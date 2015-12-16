@@ -612,11 +612,13 @@ class interactive_runner {
         $reflector  = new ReflectionClass($className);
 
           // class { private function __construct(){} function instanciate(){} }
-        $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']);
+        $static = bool(array_get(cli::$dict, 'ir://static'));
+        $instanciate = $reflector->hasMethod('instanciate') && ( !$reflector->IsInstantiable()  || cli::$dict['ir://instanciate']) && !$static;
+
         if($instanciate)
           $instance = call_user_func_array(array($className, 'instanciate'), $args);
         else
-          $instance = $reflector->IsInstantiable()
+          $instance = $reflector->IsInstantiable() && ! $static
                 ? ($args && !is_null( $reflector->getConstructor ())
                    ? $reflector->newInstanceArgs($args)
                  : $reflector->newInstance() )
