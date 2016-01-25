@@ -529,6 +529,68 @@ class sql_runner {
     }
   }
 
+/**
+* @autocomplete table_name self::foreign_table
+*/
+  function foreign_table($table_name) {
+
+    $site_code = yks::$get->config->sql->dblink['local_ns'];
+
+    if(!$site_code)
+      throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
+
+    $args = func_get_args();
+    $args = array_slice($args,1);
+
+    $table_name = sql::resolve( $table_name );
+
+    $table_columns = array();
+
+    $verif_table = array(
+      'table_schema' => $table_name['schema'],
+      'table_name'   => $table_name['name']
+    ); sql::select("zks_information_schema_columns", $verif_table);
+    $sql_columns = sql::brute_fetch('column_name', 'data_type');
+
+      //for views, we use information schema reflection, for table, xml definition
+    if($this->views_list[$table_name['raw']]) {
+      $table_columns = $sql_columns;
+    } else {
+
+      $table_xml = first($this->tables_xml->xpath("table[@name='{$table_name['raw']}']"));
+      if(!$table_xml) {
+          //last chance for unmapped tables
+        if($sql_columns)
+          $table_columns = $sql_columns;
+        else
+          throw rbx::error("Cannot resolve {$table_name['raw']}");
+      } else {
+        foreach($table_xml->fields->field as $field_xml){
+          $field_name = pick((string)$field_xml['name'], (string)$field_xml['type']);
+          $mykse      = new mykse($field_xml);
+          $field_type = (string) $mykse->field_def['Type'];
+          $table_columns [$field_name] = $field_type;
+        }
+      }
+    }
+    $table_rcolumns = array(); $i=0;
+    foreach($table_columns as $field_name=>$field_type)
+      $table_rcolumns[pick($args[$i++], $field_name)] = $field_type;
+
+    $columns_name_and_type = mask_join(', ', $table_rcolumns, '%2$s %1$s');
+
+    $DDL = "
+    CREATE FOREIGN TABLE {$table_name['safe']} (
+      $columns_name_and_type
+    )
+    SERVER $site_code
+    OPTIONS ( schema_name '{$table_name['schema']}', table_name '{$table_name['name']}');".CRLF;
+
+    rbx::line();
+    echo $DDL;
+    rbx::line();
+  }
+
 
 /**
 * @autocomplete table_name self::dblink_elements
