@@ -461,6 +461,75 @@ class sql_runner {
   }
 
 
+
+   function foreign_table_bind() {
+
+    $current_db = yks::$get->config->sql->links->db_link;
+
+    sql::select("pg_catalog.pg_foreign_server", sql::true , "oid, srvname, array_to_json(srvoptions) as srvoptions");
+    $current_foreign_servers = sql::brute_fetch('srvname');
+
+    sql::select("pg_catalog.pg_user_mapping", sql::true, " umserver, umoptions");
+    foreach(sql::brute_fetch() as $um) $current_user_mapping[$um['umserver']][] = $um;
+
+
+    foreach(yks::$get->config->sql->dblink->iterate("remote_dsn") as $dsn) {
+
+      // Database
+      $dsn_ns = $dsn['ns'];
+      $dbname = $dsn['db'];
+      $host   = $dsn['host'];
+      $port   = $dsn['port']?$dsn['port']:'5432';
+
+      // a. link already exists :
+      if($fgs = $current_foreign_servers[$dsn_ns]) {
+        $fgs_update = false;
+        foreach(json_decode($fgs['srvoptions'],true) as $info) {
+          list($key,$value) = explode('=',$info);
+          if($$key != $value) $fgs_update = true; //! $$key : if current value <> new value, update is needed
+        }
+
+        if($fgs_update) {
+          $query = "ALTER SERVER {$dsn_ns} OPTIONS (SET host '$host', SET port '$port', SET dbname '$dbname');";
+          sql::query($query);
+          rbx::ok("Update foreign server : $dsn_ns ($dbname@$host:$port) ");
+        }
+        else
+          rbx::ok("-- Nothing to do for foreign server $dsn_ns");
+
+      }
+       // b. new link :
+      else {
+        $query = "CREATE SERVER {$dsn_ns}
+                  FOREIGN DATA WRAPPER postgres_fdw
+                  OPTIONS (host '$host', port '$port', dbname '$dbname');";
+        sql::query($query);
+        rbx::ok("Registered foreign server : $dsn_ns (($dbname@$host:$port");
+      }
+
+
+      // Users
+      $user     = $dsn['user'];
+      $password = $dsn['pass'];
+
+      if($current_user_mapping[$fgs['oid']]) {
+        // @TODO (QM, 25/01/2016)  : check if necessary for all user mapping, manage non public mapping
+        $query = "ALTER USER MAPPING FOR PUBLIC SERVER {$dsn_ns} OPTIONS (SET user '$user', SET password '$password');";
+        sql::query($query);
+        rbx::ok("Update user '$user' mapping for server $dsn_ns");
+      }
+      else {
+
+      $query = "CREATE USER MAPPING FOR PUBLIC SERVER $dsn_ns
+                OPTIONS (user '$user', password '$password');";
+      sql::query($query);
+      rbx::ok("Registered user '$user' mapping for server $dsn_ns");
+      }
+
+    }
+  }
+
+
 /**
 * @autocomplete table_name self::dblink_elements
 */
