@@ -461,20 +461,76 @@ class sql_runner {
   }
 
 
-/**
-* @autocomplete table_name self::dblink_elements
-*/
-  function dblink($table_name){
 
-    $site_code = yks::$get->config->sql->dblink['local_ns'];
+   function foreign_table_bind() {
 
-    if(!$site_code)
-      throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
+    $current_db = yks::$get->config->sql->links->db_link;
 
-    $args = func_get_args();
-    $args = array_slice($args,1);
+    sql::select("pg_catalog.pg_foreign_server", sql::true , "oid, srvname, array_to_json(srvoptions) as srvoptions");
+    $current_foreign_servers = sql::brute_fetch('srvname');
 
-    $table_name = sql::resolve( $table_name );
+    sql::select("pg_catalog.pg_user_mapping", sql::true, " umserver, umoptions");
+    foreach(sql::brute_fetch() as $um) $current_user_mapping[$um['umserver']][] = $um;
+
+
+    foreach(yks::$get->config->sql->dblink->iterate("remote_dsn") as $dsn) {
+
+      // Database
+      $dsn_ns = $dsn['ns'];
+      $dbname = $dsn['db'];
+      $host   = $dsn['host'];
+      $port   = $dsn['port']?$dsn['port']:'5432';
+
+      // a. link already exists :
+      if($fgs = $current_foreign_servers[$dsn_ns]) {
+        $fgs_update = false;
+        foreach(json_decode($fgs['srvoptions'],true) as $info) {
+          list($key,$value) = explode('=',$info);
+          if($$key != $value) $fgs_update = true; //! $$key : if current value <> new value, update is needed
+        }
+
+        if($fgs_update) {
+          $query = "ALTER SERVER {$dsn_ns} OPTIONS (SET host '$host', SET port '$port', SET dbname '$dbname');";
+          sql::query($query);
+          rbx::ok("Update foreign server : $dsn_ns ($dbname@$host:$port) ");
+        }
+        else
+          rbx::ok("-- Nothing to do for foreign server $dsn_ns");
+
+      }
+       // b. new link :
+      else {
+        $query = "CREATE SERVER {$dsn_ns}
+                  FOREIGN DATA WRAPPER postgres_fdw
+                  OPTIONS (host '$host', port '$port', dbname '$dbname');";
+        sql::query($query);
+        rbx::ok("Registered foreign server : $dsn_ns (($dbname@$host:$port");
+      }
+
+
+      // Users
+      $user     = $dsn['user'];
+      $password = $dsn['pass'];
+
+      if($current_user_mapping[$fgs['oid']]) {
+        // @TODO (QM, 25/01/2016)  : check if necessary for all user mapping, manage non public mapping
+        $query = "ALTER USER MAPPING FOR PUBLIC SERVER {$dsn_ns} OPTIONS (SET user '$user', SET password '$password');";
+        sql::query($query);
+        rbx::ok("Update user '$user' mapping for server $dsn_ns");
+      }
+      else {
+
+      $query = "CREATE USER MAPPING FOR PUBLIC SERVER $dsn_ns
+                OPTIONS (user '$user', password '$password');";
+      sql::query($query);
+      rbx::ok("Registered user '$user' mapping for server $dsn_ns");
+      }
+
+    }
+  }
+
+
+  private function resolve_columns($table_name) {
 
     $table_columns = array();
 
@@ -505,9 +561,60 @@ class sql_runner {
         }
       }
     }
+
     $table_rcolumns = array(); $i=0;
     foreach($table_columns as $field_name=>$field_type)
-        $table_rcolumns[pick($args[$i++], $field_name)] = $field_type;
+      $table_rcolumns[pick($args[$i++], $field_name)] = $field_type;
+
+    return array($table_columns, $table_rcolumns);
+  }
+
+  /**
+  * @autocomplete table_name self::foreign_table
+  */
+  function foreign_table($table_name) {
+
+    $site_code = yks::$get->config->sql->dblink['local_ns'];
+
+    if(!$site_code)
+      throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
+
+    $args = func_get_args();
+    $args = array_slice($args,1);
+
+    $table_name = sql::resolve( $table_name );
+    list($table_columns, $table_rcolumns) = self::resolve_columns($table_name);
+
+    $columns_name_and_type = mask_join(', ', $table_rcolumns, '%2$s %1$s');
+
+    $DDL = "
+    CREATE FOREIGN TABLE {$table_name['safe']} (
+      $columns_name_and_type
+    )
+    SERVER $site_code
+    OPTIONS ( schema_name '{$table_name['schema']}', table_name '{$table_name['name']}');".CRLF;
+
+    rbx::line();
+    echo $DDL;
+    rbx::line();
+  }
+
+
+  /**
+  * @autocomplete table_name self::dblink_elements
+  */
+  function dblink($table_name){
+
+    $site_code = yks::$get->config->sql->dblink['local_ns'];
+
+    if(!$site_code)
+      throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
+
+    $args = func_get_args();
+    $args = array_slice($args,1);
+
+    $table_name = sql::resolve( $table_name );
+    list($table_columns, $table_rcolumns) = self::resolve_columns($table_name);
 
     $table_fields = array_combine(array_keys($table_columns), array_keys($table_rcolumns));
 
