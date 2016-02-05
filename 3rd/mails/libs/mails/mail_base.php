@@ -6,6 +6,7 @@ abstract class mail_base {
   protected $from;
   protected $to = array();
   protected $cc = array();
+  protected $replyto = array();
   protected $dests = array();
   public $first_part;
 
@@ -21,7 +22,7 @@ abstract class mail_base {
         $str.= $this->output_headers();
 
     $str.= $this->first_part->encode($raw);
-    
+
     return $str;
   }
 
@@ -42,7 +43,7 @@ abstract class mail_base {
         //stack dests
     $this->dests = array_unique(array_merge($this->dests, $list));
 
-    if(in_array($key, array('to','cc')))
+    if(in_array($key, array('to','cc', 'replyto')))
         $this->$key = array_merge($this->$key, $list);//no unique here, thx
   }
 
@@ -54,16 +55,20 @@ abstract class mail_base {
     return $this->subject = $subject;
   }
 
-  public function to($to){ 
+  public function to($to){
     return $this->dest_add("to", $to);
   }
 
-  public function cc($cc){ 
+  public function cc($cc){
     return $this->dest_add("cc", $cc);
   }
 
-  public function cci($cci){ 
+  public function cci($cci){
     return $this->dest_add("cci", $cci);
+  }
+
+  public function replyTo($mail){
+    return $this->dest_add("replyto", $mail);
   }
 
 /**
@@ -75,7 +80,7 @@ abstract class mail_base {
   }
 
   public function apply_context($contents, $special_chars_decode = true){
-    $context = (array) $this->vars_list; 
+    $context = (array) $this->vars_list;
     $contents = str_evaluate($contents, $context, array(VAR_MASK) );
 
     if($special_chars_decode) //escape in no longer necessary
