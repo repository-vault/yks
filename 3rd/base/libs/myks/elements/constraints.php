@@ -41,7 +41,13 @@ abstract class myks_constraints_base {
 
   //use this insteadof key_add
   protected function key_stack($type, $members, $key_name, $refs=array()){
-    $TYPE=strtoupper($type);
+    $TYPE = strtoupper($type);
+
+    if($type == "foreign" && !sql::row("information_schema.tables", array_sort($refs['refs'], ['table_schema', 'table_name']))) {
+      rbx::ok("-- skipping ethereal fk reference $key_name");
+      return;
+    }
+
     if(!isset($this->xml_def[$key_name]))
       $this->xml_def[$key_name] = array('members' => array());
 
