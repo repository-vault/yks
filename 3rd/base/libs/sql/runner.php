@@ -440,7 +440,7 @@ class sql_runner {
 
 
   function dblink_bind(){
-    $current_db = yks::$get->config->sql->links->db_link;
+    $current_db = yks::$get->config->sql->dblink;
 
     foreach(yks::$get->config->sql->dblink->iterate("remote_dsn") as $dsn) {
       $dsn_str = array();
@@ -464,7 +464,7 @@ class sql_runner {
 
    function foreign_table_bind() {
 
-    $current_db = yks::$get->config->sql->links->db_link;
+    $current_db = yks::$get->config->sql->dblink;
 
     sql::select("pg_catalog.pg_foreign_server", sql::true , "oid, srvname, array_to_json(srvoptions) as srvoptions");
     $current_foreign_servers = sql::brute_fetch('srvname');
@@ -574,7 +574,8 @@ class sql_runner {
   */
   function foreign_table($table_name) {
 
-    $site_code = yks::$get->config->sql->dblink['local_ns'];
+
+    $site_code = pick(yks::$get->config->sql->dblink['db'],yks::$get->config->sql->dblink['local_ns']);
 
     if(!$site_code)
       throw new Exception("Please specify a config/sql/dblink/@local_ns directive");
